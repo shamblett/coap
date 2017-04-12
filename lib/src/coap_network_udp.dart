@@ -7,15 +7,19 @@
 
 part of coap;
 
-/// Abstract networking class, allows different implementations for
-/// UDP, test etc.
-abstract class Network {
-  /// The internet address
-  InternetAddress address;
+class NetworkUDP extends Network {
+
+  /// UDP socket
+  RawDatagramSocket _socket;
 
   /// Send, returns the number of bytes sent or 0
-  int send(Datagram data);
+  int send(Datagram data) {
+    return _socket.send(data.data, data.address, data.port);
+  }
 
   /// Receive, if nothing is received null is returned.
-  Datagram receive();
+  Datagram receive() {
+    return _socket.receive();
+  }
+
 }

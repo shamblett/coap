@@ -14,3 +14,5 @@ import 'dart:io';
 part 'src/coap.dart';
 
 part 'src/coap_network.dart';
+
+part 'src/coap_network_udp.dart';
