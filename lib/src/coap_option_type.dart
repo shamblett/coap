@@ -9,70 +9,71 @@ part of coap;
 
 /// CoAP option types as defined in
 /// RFC 7252, Section 12.2 and other CoAP extensions.
-class OptionType {
-  static const int unknown = -1;
-  static const int reserved = 0;
 
-  /// C, opaque, 0-8 B, -
-  static const int ifMatch = 1;
+const int optionTypeUnknown = -1;
+const int optionTypeReserved = 0;
 
-  /// C, String, 1-270 B, ""
-  static const int uriHost = 3;
+/// C, opaque, 0-8 B, -
+const int optionTypeIfMatch = 1;
 
-  /// E, sequence of bytes, 1-4 B, -
-  static const int eTag = 4;
-  static const int ifNoneMatch = 5;
+/// C, String, 1-270 B, ""
+const int optionTypeUriHost = 3;
 
-  /// C, uint, 0-2 B
-  static const int uriPort = 7;
+/// E, sequence of bytes, 1-4 B, -
+const int optionTypeETag = 4;
+const int optionTypeIfNoneMatch = 5;
 
-  /// E, String, 1-270 B, -
-  static const int locationPath = 8;
+/// C, uint, 0-2 B
+const int optionTypeUriPort = 7;
 
-  /// C, String, 1-270 B, ""
-  static const int uriPath = 11;
+/// E, String, 1-270 B, -
+const int optionTypeLocationPath = 8;
 
-  /// C, 8-bit uint, 1 B, 0 (text/plain)
-  /// <seealso cref="ContentFormat"/>
-  static const int contentType = 12;
+/// C, String, 1-270 B, ""
+const int optionTypeUriPath = 11;
 
-  /// C, 8-bit uint, 1 B, 0 (text/plain)
-  static const int contentFormat = 12;
+/// C, 8-bit uint, 1 B, 0 (text/plain)
+/// <seealso cref="ContentFormat"/>
+const int optionTypeContentType = 12;
 
-  /// E, variable length, 1--4 B, 60 Seconds
-  static const int maxAge = 14;
+/// C, 8-bit uint, 1 B, 0 (text/plain)
+const int optionTypeContentFormat = 12;
 
-  /// C, String, 1-270 B, ""
-  static const int uriQuery = 15;
+/// E, variable length, 1--4 B, 60 Seconds
+const int optionTypeMaxAge = 14;
 
-  /// C, Sequence of Bytes, 1-n B, -
-  static const int accept = 17;
+/// C, String, 1-270 B, ""
+const int optionTypeUriQuery = 15;
 
-  /// C, Sequence of Bytes, 1-2 B, -. NOTE: this option has been replaced with <see cref="Message.Token"/> since draft 13.
-  /// draft-ietf-core-coap-03, draft-ietf-core-coap-12</remarks>
-  static const int token = 19;
+/// C, Sequence of Bytes, 1-n B, -
+const int optionTypeAccept = 17;
 
-  /// E, String, 1-270 B, -
-  static const int locationQuery = 20;
+/// C, Sequence of Bytes, 1-2 B, -. NOTE: this option has been replaced with <see cref="Message.Token"/> since draft 13.
+/// draft-ietf-core-coap-03, draft-ietf-core-coap-12</remarks>
+const int optionTypeToken = 19;
 
-  /// C, String, 1-270 B, "coap"
-  static const int proxyUri = 35;
-  static const int proxyScheme = 39;
-  static const int size1 = 60;
-  static const int reserved1 = 128;
-  static const int reserved2 = 132;
-  static const int reserved3 = 136;
-  static const int reserved4 = 140;
+/// E, String, 1-270 B, -
+const int optionTypeLocationQuery = 20;
 
-  /// E, Duration, 1 B, 0
-  static const int observe = 6;
-  static const int block2 = 23;
-  static const int block1 = 27;
-  static const int size2 = 28;
+/// C, String, 1-270 B, "coap"
+const int optionTypeProxyUri = 35;
 
-  /// no-op for fenceposting
-  static const int fencepostDivisor = 114;
-}
+const int optionTypeProxyScheme = 39;
+const int optionTypeSize1 = 60;
+const int optionTypeReserved1 = 128;
+const int optionTypeReserved2 = 132;
+const int optionTypeReserved3 = 136;
+const int optionTypeReserved4 = 140;
+
+/// E, Duration, 1 B, 0
+const int optionTypeObserve = 6;
+
+const int optionTypeBlock2 = 23;
+const int optionTypeBlock1 = 27;
+const int optionTypeSize2 = 28;
+
+/// no-op for fenceposting
+const int optionTypeFencepostDivisor = 114;
 
 /// CoAP option formats
 enum optionFormat { integer, string, opaque, unknown }
