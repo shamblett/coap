@@ -10,7 +10,7 @@ part of coap;
 /// This class describes the CoAP Media Type Registry as defined in
 /// RFC 7252, Section 12.3.
 class MediaType {
-  static Map<int, List<String>> _registry = new Map<int, List<String>>();
+  static final Map<int, List<String>> _registry = new Map<int, List<String>>();
 
   MediaType() {
     _registry[textPlain] = ["text/plain", "txt"];
