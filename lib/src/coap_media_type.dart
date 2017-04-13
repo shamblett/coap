@@ -10,35 +10,32 @@ part of coap;
 /// This class describes the CoAP Media Type Registry as defined in
 /// RFC 7252, Section 12.3.
 class MediaType {
-  static final Map<int, List<String>> _registry = new Map<int, List<String>>();
 
-  MediaType() {
-    _registry[textPlain] = ["text/plain", "txt"];
-    _registry[textXml] = ["text/xml", "xml"];
-    _registry[textCsv] = ["text/csv", "csv"];
-    _registry[textHtml] = ["text/html", "html"];
-    _registry[imageGif] = ["image/gif", "gif"];
-    _registry[imageJpeg] = ["image/jpeg", "jpg"];
-    _registry[imagePng] = ["image/png", "png"];
-    _registry[imageTiff] = ["image/tiff", "tif"];
-    _registry[audioRaw] = ["audio/raw", "raw"];
-    _registry[videoRaw] = ["video/raw", "raw"];
-    _registry[applicationLinkFormat] = ["application/link-format", "wlnk"];
-    _registry[applicationXml] = ["application/xml", "xml"];
-    _registry[applicationOctetStream] = ["application/octet-stream", "bin"];
-    _registry[applicationRdfXml] = ["application/rdf+xml", "rdf"];
-    _registry[applicationSoapXml] = ["application/soap+xml", "soap"];
-    _registry[applicationAtomXml] = ["application/atom+xml", "atom"];
-    _registry[applicationXmppXml] = ["application/xmpp+xml", "xmpp"];
-    _registry[applicationFastinfoset] = ["application/fastinfoset", "finf"];
-    _registry[applicationSoapFastinfoset] = [
-      "application/soap+fastinfoset",
-      "soap.finf"
-    ];
-    _registry[applicationXObixBinary] = ["application/x-obix-binary", "obix"];
-    _registry[applicationExi] = ["application/exi", "exi"];
-    _registry[applicationJson] = ["application/json", "json"];
-  }
+  /// Media registry
+  static final Map<int, List<String>> _registry = {
+    textPlain: ["text/plain", "txt"],
+    textXml: ["text/xml", "xml"],
+    textCsv: ["text/csv", "csv"],
+    textHtml: ["text/html", "html"],
+    imageGif: ["image/gif", "gif"],
+    imageJpeg: ["image/jpeg", "jpg"],
+    imagePng: ["image/png", "png"],
+    imageTiff: ["image/tiff", "tif"],
+    audioRaw: ["audio/raw", "raw"],
+    videoRaw: ["video/raw", "raw"],
+    applicationLinkFormat: ["application/link-format", "wlnk"],
+    applicationXml: ["application/xml", "xml"],
+    applicationOctetStream: ["application/octet-stream", "bin"],
+    applicationRdfXml: ["application/rdf+xml", "rdf"],
+    applicationSoapXml: ["application/soap+xml", "soap"],
+    applicationAtomXml: ["application/atom+xml", "atom"],
+    applicationXmppXml: ["application/xmpp+xml", "xmpp"],
+    applicationFastinfoset: ["application/fastinfoset", "finf"],
+    applicationSoapFastinfoset: ["application/soap+fastinfoset", "soap.finf"],
+    applicationXObixBinary: ["application/x-obix-binary", "obix"],
+    applicationExi: ["application/exi", "exi"],
+    applicationJson: ["application/json", "json"]
+  };
 
   /// undefined
   static const int undefined = -1;
