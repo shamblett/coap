@@ -16,3 +16,5 @@ part 'src/coap.dart';
 part 'src/coap_network.dart';
 
 part 'src/coap_network_udp.dart';
+
+part 'src/coap_option_type.dart';

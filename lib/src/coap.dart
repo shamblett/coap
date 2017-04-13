@@ -9,6 +9,11 @@ part of coap;
 
 /// The Coap package API
 class Coap {
+  /// Construction
+  /// Default is to use UDP
+  Coap() {
+    _network = new NetworkUDP();
+  }
 
   /// The network interface to use
   Network _network;
@@ -26,11 +31,4 @@ class Coap {
 
   /// The address
   InternetAddress address;
-
-  /// Construction
-  /// Default is to use UDP
-  Coap() {
-    _network = new NetworkUDP();
-  }
-
 }
