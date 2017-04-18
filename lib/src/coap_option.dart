@@ -172,4 +172,33 @@ class Option {
         return optionFormat.unknown;
     }
   }
+
+  /// Hash code override
+  int get hashCode {
+    const int prime = 31;
+    int result = 1;
+    result = prime * result + _type;
+  }
+
+  /// Equals override
+  bool operator ==(dynamic other) {
+    if (other is! Option) {
+      return false;
+    }
+    if (_type != other.type) {
+      return false;
+    }
+    return true;
+  }
+
+  /// Creates an option.
+  static Option create(OptionType type) {
+    switch (type) {
+      case OptionType.Block1:
+      case OptionType.Block2:
+        return new BlockOption(type);
+      default:
+        return new Option(type);
+    }
+  }
 }

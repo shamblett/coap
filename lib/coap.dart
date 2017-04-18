@@ -22,6 +22,9 @@ part 'src/coap_option_type.dart';
 
 part 'src/coap_option.dart';
 
+part 'src/coap_block_option.dart';
+
+
 part 'src/coap_media_type.dart';
 
 part 'src/coap_constants.dart';
