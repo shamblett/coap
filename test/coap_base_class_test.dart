@@ -10,6 +10,8 @@ import 'package:test/test.dart';
 
 void main() {
   group("Options", () {
+    test('Option', () {});
+
     test('Media types', () {
       final int type = MediaType.applicationJson;
       expect(MediaType.name(type), "application/json");
@@ -22,6 +24,13 @@ void main() {
       expect(MediaType.fileExtension(unknownType), "unknown/200");
       expect(MediaType.isPrintable(unknownType), false);
       expect(MediaType.isImage(unknownType), false);
+
+      final int defaultContentType = 10;
+      List<int> accepted = null;
+      final List<Option> supported = new List<Option>();
+      expect(
+          MediaType.negotiationContent(defaultContentType, accepted, supported),
+          defaultContentType);
     });
   });
 }

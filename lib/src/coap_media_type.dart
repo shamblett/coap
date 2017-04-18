@@ -164,8 +164,8 @@ class MediaType {
       supported.forEach((int ct) {
         if (ct == accept.intValue) return ct;
       });
+      hasAccept = true;
     });
-    hasAccept = true;
     return hasAccept ? MediaType.undefined : defaultContentType;
   }
 
@@ -179,5 +179,17 @@ class MediaType {
     return MediaType.undefined;
   }
 
-
+  static List<int> parseWildcard(String regex) {
+    final List<int> res = new List<int>();
+    final String regex1 = regex.trim().substring(0, regex.indexOf('*')).trim() +
+        ".*";
+    final RegExp r = new RegExp(regex1);
+    _registry.forEach((int key, List<String> value) {
+      final String mime = value[0];
+      if (r.hasMatch(mime)) {
+        res.Add(key);
+      }
+    });
+    return res;
+  }
 }
