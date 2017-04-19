@@ -162,7 +162,9 @@ class MediaType {
     bool hasAccept = false;
     accepted.forEach((Option accept) {
       supported.forEach((int ct) {
-        if (ct == accept.intValue) return ct;
+        if (ct == accept.intValue) {
+          return ct;
+        }
       });
       hasAccept = true;
     });
@@ -181,8 +183,8 @@ class MediaType {
 
   static List<int> parseWildcard(String regex) {
     final List<int> res = new List<int>();
-    final String regex1 = regex.trim().substring(0, regex.indexOf('*')).trim() +
-        ".*";
+    final String regex1 =
+        regex.trim().substring(0, regex.indexOf('*')).trim() + ".*";
     final RegExp r = new RegExp(regex1);
     _registry.forEach((int key, List<String> value) {
       final String mime = value[0];

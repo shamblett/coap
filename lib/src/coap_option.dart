@@ -121,7 +121,7 @@ class Option {
   }
 
   String _toValueString() {
-    switch (_getFormatByType(_type)) {
+    switch (getFormatByType(_type)) {
       case optionFormat.integer:
         return (_type == optionTypeAccept || _type == optionTypeContentFormat)
             ? ("\"" + MediaType.name(intValue) + "\"")
@@ -139,7 +139,7 @@ class Option {
   }
 
   /// Returns the option format based on the option type.
-  optionFormat _getFormatByType(int type) {
+  static optionFormat getFormatByType(int type) {
     switch (type) {
       case optionTypeContentFormat:
       case optionTypeMaxAge:
@@ -318,5 +318,25 @@ class Option {
       default:
         return "Unknown ({type})";
     }
+  }
+
+  /// Checks whether an option is critical.
+  static bool isCritical(int type) {
+    return (type & 1) > 1;
+  }
+
+  /// Checks whether an option is elective.
+  static bool isElective(int type) {
+    return (type & 1) == 0;
+  }
+
+  /// Checks whether an option is unsafe.
+  static bool isUnsafe(int type) {
+    return (type & 2) > 0;
+  }
+
+  /// Checks whether an option is safe.
+  static bool isSafe(int type) {
+    return !isUnsafe(type);
   }
 }
