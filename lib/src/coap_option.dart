@@ -178,6 +178,7 @@ class Option {
     const int prime = 31;
     int result = 1;
     result = prime * result + _type;
+    return result;
   }
 
   /// Equals override
@@ -192,13 +193,130 @@ class Option {
   }
 
   /// Creates an option.
-  static Option create(OptionType type) {
+  static Option create(int type) {
     switch (type) {
-      case OptionType.Block1:
-      case OptionType.Block2:
+      case optionTypeBlock1:
+      case optionTypeBlock2:
         return new BlockOption(type);
       default:
         return new Option(type);
+    }
+  }
+
+  /// Creates an option.
+  static Option createRaw(int type, typed.Uint8Buffer raw) {
+    final Option opt = create(type);
+    opt._valueBytes = raw;
+    return opt;
+  }
+
+  /// Creates an option.
+  static Option createString(int type, String str) {
+    final Option opt = create(type);
+    opt.stringValue = str;
+    return opt;
+  }
+
+  /// Creates an option.
+  static Option createVal(int type, int val) {
+    final Option opt = create(type);
+    opt.intValue = val;
+    return opt;
+  }
+
+  /// Creates an option.
+  static Option createLongVal(int type, int val) {
+    final Option opt = create(type);
+    opt.longValue = val;
+    return opt;
+  }
+
+  /// Splits a string into a set of options, e.g. a uri path.
+  static List<Option> split(int type, String s, String delimiter) {
+    final List<Option> opts = new List<Option>();
+    if (s.isNotEmpty) {
+      s.replaceRange(0, s.indexOf('/'), '');
+    }
+
+    if (s.isNotEmpty) {
+      s.split(delimiter).forEach((String str) {
+        if (delimiter == "/" || str.isNotEmpty) {
+          opts.add(Option.createString(type, str));
+        }
+      });
+    }
+    return opts;
+  }
+
+  /// Joins the string values of a set of options.
+  static String join(List<Option> options, String delimiter) {
+    String s;
+    if (null == options) {
+      return s;
+    } else {
+      String sb;
+      bool append = false;
+      options.forEach((Option opt) {
+        if (append) {
+          sb += delimiter;
+        } else {
+          append = true;
+        }
+        sb += opt.stringValue;
+      });
+      return sb;
+    }
+  }
+
+  /// Returns a string representation of the option type.
+  static String stringify(int type) {
+    switch (type) {
+      case optionTypeReserved:
+        return "Reserved";
+      case optionTypeContentFormat:
+        return "Content-Format";
+      case optionTypeMaxAge:
+        return "Max-Age";
+      case optionTypeProxyUri:
+        return "Proxy-Uri";
+      case optionTypeETag:
+        return "ETag";
+      case optionTypeUriHost:
+        return "Uri-Host";
+      case optionTypeLocationPath:
+        return "Location-Path";
+      case optionTypeUriPort:
+        return "Uri-Port";
+      case optionTypeLocationQuery:
+        return "Location-Query";
+      case optionTypeUriPath:
+        return "Uri-Path";
+      case optionTypeToken:
+        return "Token";
+      case optionTypeUriQuery:
+        return "Uri-Query";
+      case optionTypeObserve:
+        return "Observe";
+      case optionTypeAccept:
+        return "Accept";
+      case optionTypeIfMatch:
+        return "If-Match";
+      case optionTypeFencepostDivisor:
+        return "Fencepost-Divisor";
+      case optionTypeBlock2:
+        return "Block2";
+      case optionTypeBlock1:
+        return "Block1";
+      case optionTypeSize2:
+        return "Size2";
+      case optionTypeSize1:
+        return "Size1";
+      case optionTypeIfNoneMatch:
+        return "If-None-Match";
+      case optionTypeProxyScheme:
+        return "Proxy-Scheme";
+      default:
+        return "Unknown ({type})";
     }
   }
 }

@@ -9,6 +9,6 @@ part of coap;
 
 /// This class describes the block options of the CoAP messages
 class BlockOption extends Option {
-  BlockOption(int type);
+  BlockOption(int type) : super(type);
 
 }

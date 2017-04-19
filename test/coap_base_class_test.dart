@@ -26,7 +26,7 @@ void main() {
       expect(MediaType.isImage(unknownType), false);
 
       final int defaultContentType = 10;
-      List<int> accepted = null;
+      final List<int> accepted = null;
       final List<Option> supported = new List<Option>();
       expect(
           MediaType.negotiationContent(defaultContentType, accepted, supported),

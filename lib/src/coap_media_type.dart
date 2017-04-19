@@ -187,7 +187,7 @@ class MediaType {
     _registry.forEach((int key, List<String> value) {
       final String mime = value[0];
       if (r.hasMatch(mime)) {
-        res.Add(key);
+        res.add(key);
       }
     });
     return res;
