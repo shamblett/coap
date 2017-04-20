@@ -38,30 +38,34 @@ class Option {
 
   /// Int32 representation of value bytes
   int get intValue {
-    final typed.Uint32Buffer buff = new typed.Uint32Buffer();
-    buff.addAll(_valueBytes);
+    final Uint32List buff = new Uint32List.view(_valueBytes.buffer);
     return buff[0];
   }
 
   set intValue(int val) {
-    final typed.Uint32Buffer buff = new typed.Uint32Buffer();
+    final Uint32List buff = new Uint32List(1);
     buff[0] = val;
     _valueBytes.clear();
-    _valueBytes.addAll(buff);
+    _valueBytes.addAll(buff.buffer.asUint8List());
+    while (_valueBytes.last == 0) {
+      _valueBytes.removeLast();
+    }
   }
 
   /// Int64 representation of value bytes
   int get longValue {
-    final typed.Uint64Buffer buff = new typed.Uint64Buffer();
-    buff.addAll(_valueBytes);
+    final Uint64List buff = new Uint64List.view(_valueBytes.buffer);
     return buff[0];
   }
 
   set longValue(int val) {
-    final typed.Uint64Buffer buff = new typed.Uint64Buffer();
+    final Uint64List buff = new Uint64List(1);
     buff[0] = val;
     _valueBytes.clear();
-    _valueBytes.addAll(buff);
+    _valueBytes.addAll(buff.buffer.asUint8List());
+    while (_valueBytes.last == 0) {
+      _valueBytes.removeLast();
+    }
   }
 
   /// Gets the name of the option that corresponds to its type.
@@ -71,7 +75,7 @@ class Option {
 
   /// Gets the value's length in bytes of the option.
   int length() {
-    return _valueBytes.length;
+    return _valueBytes.lengthInBytes;
   }
 
   /// Gets the value of the option according to its type.

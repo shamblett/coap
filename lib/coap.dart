@@ -8,7 +8,9 @@
 library coap;
 
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:typed_data/typed_data.dart' as typed;
+
 
 /// The Coap package exported interface
 
