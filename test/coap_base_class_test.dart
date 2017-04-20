@@ -31,6 +31,8 @@ void main() {
       expect(opt2.length(), 2);
       expect(opt1.intValue, oneByteValue);
       expect(opt2.intValue, twoByteValue);
+      expect(opt1.type, optionTypeContentType);
+      expect(opt2.type, optionTypeContentType);
     });
 
     test('LongValue', () {
@@ -44,6 +46,16 @@ void main() {
       expect(opt2.length(), 5);
       expect(opt1.longValue, fourByteValue);
       expect(opt2.longValue, fiveByteValue);
+      expect(opt1.type, optionTypeContentType);
+      expect(opt2.type, optionTypeContentType);
+    });
+
+    test('String', () {
+      final String s = "hello world";
+      final Option opt = Option.createString(optionTypeContentType, s);
+      expect(opt.length(), 11);
+      expect(s, opt.stringValue);
+      expect(opt.type, optionTypeContentType);
     });
   });
 
