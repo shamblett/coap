@@ -78,6 +78,31 @@ void main() {
       final Option opt = Option.createVal(
           optionTypeMaxAge, CoapConstants.defaultMaxAge);
       expect(opt.isDefault(), isTrue);
+      final Option opt1 = Option.create(
+          optionTypeToken);
+      expect(opt1.isDefault(), isTrue);
+      final Option opt2 = Option.create(
+          optionTypeReserved);
+      expect(opt2.isDefault(), isFalse);
+
+    });
+
+    test('To string', () {
+      final Option opt = Option.createVal(
+          optionTypeMaxAge, CoapConstants.defaultMaxAge);
+      expect(opt.toString(), "Max-Age: 60");
+    });
+
+    test('Option format', () {
+      expect(Option.getFormatByType(optionTypeMaxAge), optionFormat.integer);
+      expect(Option.getFormatByType(optionTypeUriHost), optionFormat.string);
+      expect(Option.getFormatByType(optionTypeETag), optionFormat.opaque);
+      expect(Option.getFormatByType(1000), optionFormat.unknown);
+    });
+
+    test('Hash code', () {
+      final Option opt = Option.createVal(optionTypeMaxAge, 10);
+      expect(opt.hashCode, 45);
     });
 
     test('Equality', () {
@@ -91,6 +116,7 @@ void main() {
 
       expect(opt1 == opt2, isFalse);
       expect(opt2 == opt22, isTrue);
+      expect(opt1 == null, isFalse);
     });
   });
 

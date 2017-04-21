@@ -135,7 +135,7 @@ class Option {
 
   /// Returns a human-readable string representation of the option's value.
   String toString() {
-    return name() + ": " + _toValueString();
+    return name + ": " + _toValueString();
   }
 
   /// Returns the option format based on the option type.
