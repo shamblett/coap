@@ -38,10 +38,10 @@ void main() {
     test('LongValue', () {
       final int fourByteValue = pow(2, 32) - 1;
       final int fiveByteValue = fourByteValue + 1;
-      final Option opt1 = Option.createLongVal(
-          optionTypeContentType, fourByteValue);
-      final Option opt2 = Option.createLongVal(
-          optionTypeContentType, fiveByteValue);
+      final Option opt1 =
+      Option.createLongVal(optionTypeContentType, fourByteValue);
+      final Option opt2 =
+      Option.createLongVal(optionTypeContentType, fiveByteValue);
       expect(opt1.length, 4);
       expect(opt2.length, 5);
       expect(opt1.longValue, fourByteValue);
@@ -75,21 +75,18 @@ void main() {
     });
 
     test('Is default', () {
-      final Option opt = Option.createVal(
-          optionTypeMaxAge, CoapConstants.defaultMaxAge);
+      final Option opt =
+      Option.createVal(optionTypeMaxAge, CoapConstants.defaultMaxAge);
       expect(opt.isDefault(), isTrue);
-      final Option opt1 = Option.create(
-          optionTypeToken);
+      final Option opt1 = Option.create(optionTypeToken);
       expect(opt1.isDefault(), isTrue);
-      final Option opt2 = Option.create(
-          optionTypeReserved);
+      final Option opt2 = Option.create(optionTypeReserved);
       expect(opt2.isDefault(), isFalse);
-
     });
 
     test('To string', () {
-      final Option opt = Option.createVal(
-          optionTypeMaxAge, CoapConstants.defaultMaxAge);
+      final Option opt =
+      Option.createVal(optionTypeMaxAge, CoapConstants.defaultMaxAge);
       expect(opt.toString(), "Max-Age: 60");
     });
 
@@ -111,13 +108,54 @@ void main() {
 
       final Option opt1 = Option.createVal(optionTypeContentType, oneByteValue);
       final Option opt2 = Option.createVal(optionTypeContentType, twoByteValue);
-      final Option opt22 = Option.createVal(
-          optionTypeContentType, twoByteValue);
+      final Option opt22 =
+      Option.createVal(optionTypeContentType, twoByteValue);
 
       expect(opt1 == opt2, isFalse);
       expect(opt2 == opt22, isTrue);
       expect(opt1 == null, isFalse);
     });
+
+    test('Empty token', () {
+      final Option opt1 = Option.create(optionTypeToken);
+      final Option opt2 = Option.create(optionTypeToken);
+      final Option opt22 = Option.createString(optionTypeToken, "full");
+
+      expect(opt1 == opt2, isTrue);
+      expect(opt2 == opt22, isFalse);
+      expect(opt1.length, 0);
+    });
+
+    test('1 Byte token', () {
+      final Option opt1 = Option.createVal(optionTypeToken, 0xCD);
+      final Option opt2 = Option.createVal(optionTypeToken, 0xCD);
+      final Option opt22 = Option.createVal(optionTypeToken, 0xCE);
+
+      expect(opt1 == opt2, isTrue);
+      expect(opt2 == opt22, isFalse);
+      expect(opt1.length, 1);
+    });
+
+    test('2 Byte token', () {
+      final Option opt1 = Option.createVal(optionTypeToken, 0xABCD);
+      final Option opt2 = Option.createVal(optionTypeToken, 0xABCD);
+      final Option opt22 = Option.createVal(optionTypeToken, 0xABCE);
+
+      expect(opt1 == opt2, isTrue);
+      expect(opt2 == opt22, isFalse);
+      expect(opt1.length, 2);
+    });
+
+    test('4 Byte token', () {
+      final Option opt1 = Option.createVal(optionTypeToken, 0x1234ABCD);
+      final Option opt2 = Option.createVal(optionTypeToken, 0x1234ABCD);
+      final Option opt22 = Option.createVal(optionTypeToken, 0x1234ABCE);
+
+      expect(opt1 == opt2, isTrue);
+      expect(opt2 == opt22, isFalse);
+      expect(opt1.length, 4);
+    });
+
   });
 
   group('Media types', () {
