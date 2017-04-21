@@ -69,18 +69,14 @@ class Option {
   }
 
   /// Gets the name of the option that corresponds to its type.
-  String name() {
-    return _type.toString();
-  }
+  String get name => Option.stringify(_type);
 
   /// Gets the value's length in bytes of the option.
-  int length() {
-    return _valueBytes.lengthInBytes;
-  }
+  int get length => _valueBytes.lengthInBytes;
 
   /// Gets the value of the option according to its type.
-  dynamic value(int type) {
-    switch (type) {
+  dynamic get value {
+    switch (_type) {
       case optionTypeReserved:
         return null;
       case optionTypeContentType:
@@ -117,7 +113,7 @@ class Option {
         return intValue == CoapConstants.defaultMaxAge;
         break;
       case optionTypeToken:
-        return _valueBytes.length == 0;
+        return _valueBytes.lengthInBytes == 0;
         break;
       default:
         return false;
@@ -191,6 +187,9 @@ class Option {
       return false;
     }
     if (_type != other.type) {
+      return false;
+    }
+    if (_valueBytes != other.valueBytes) {
       return false;
     }
     return true;

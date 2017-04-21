@@ -27,8 +27,8 @@ void main() {
       final int twoByteValue = oneByteValue + 1;
       final Option opt1 = Option.createVal(optionTypeContentType, oneByteValue);
       final Option opt2 = Option.createVal(optionTypeContentType, twoByteValue);
-      expect(opt1.length(), 1);
-      expect(opt2.length(), 2);
+      expect(opt1.length, 1);
+      expect(opt2.length, 2);
       expect(opt1.intValue, oneByteValue);
       expect(opt2.intValue, twoByteValue);
       expect(opt1.type, optionTypeContentType);
@@ -42,8 +42,8 @@ void main() {
           optionTypeContentType, fourByteValue);
       final Option opt2 = Option.createLongVal(
           optionTypeContentType, fiveByteValue);
-      expect(opt1.length(), 4);
-      expect(opt2.length(), 5);
+      expect(opt1.length, 4);
+      expect(opt2.length, 5);
       expect(opt1.longValue, fourByteValue);
       expect(opt2.longValue, fiveByteValue);
       expect(opt1.type, optionTypeContentType);
@@ -53,9 +53,44 @@ void main() {
     test('String', () {
       final String s = "hello world";
       final Option opt = Option.createString(optionTypeContentType, s);
-      expect(opt.length(), 11);
+      expect(opt.length, 11);
       expect(s, opt.stringValue);
       expect(opt.type, optionTypeContentType);
+    });
+
+    test('Name', () {
+      final Option opt = Option.create(optionTypeUriQuery);
+      expect(opt.name, "Uri-Query");
+    });
+
+    test('Value', () {
+      final Option opt = Option.createVal(optionTypeMaxAge, 10);
+      expect(opt.value, 10);
+      final Option opt1 = Option.createString(optionTypeUriQuery, "Hello");
+      expect(opt1.value, "Hello");
+      final Option opt2 = Option.create(optionTypeReserved);
+      expect(opt2.value, isNull);
+      final Option opt3 = Option.create(1000);
+      expect(opt3.value, isNull);
+    });
+
+    test('Is default', () {
+      final Option opt = Option.createVal(
+          optionTypeMaxAge, CoapConstants.defaultMaxAge);
+      expect(opt.isDefault(), isTrue);
+    });
+
+    test('Equality', () {
+      final int oneByteValue = 255;
+      final int twoByteValue = 256;
+
+      final Option opt1 = Option.createVal(optionTypeContentType, oneByteValue);
+      final Option opt2 = Option.createVal(optionTypeContentType, twoByteValue);
+      final Option opt22 = Option.createVal(
+          optionTypeContentType, twoByteValue);
+
+      expect(opt1 == opt2, isFalse);
+      expect(opt2 == opt22, isTrue);
     });
   });
 
