@@ -189,7 +189,10 @@ class Option {
     if (_type != other.type) {
       return false;
     }
-    if (_valueBytes != other.valueBytes) {
+    if (length != other.length) {
+      return false;
+    }
+    if (_valueBytes.toString() != other.valueBytes.toString()) {
       return false;
     }
     return true;
