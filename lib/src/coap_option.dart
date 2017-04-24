@@ -251,15 +251,17 @@ class Option {
   }
 
   /// Splits a string into a set of options, e.g. a uri path.
+  /// Remove any leading /
   static List<Option> split(int type, String s, String delimiter) {
     final List<Option> opts = new List<Option>();
-    if (s.isNotEmpty) {
-      s.replaceRange(0, s.indexOf('/'), '');
-      print(s);
+    final RegExp exp = new RegExp(r"^\/*\/");
+    final Match pos = exp.firstMatch(s);
+    String tmp = s;
+    if (pos != null) {
+      tmp = s.substring(pos.end, s.length);
     }
-
-    if (s.isNotEmpty) {
-      s.split(delimiter).forEach((String str) {
+    if (tmp.isNotEmpty) {
+      tmp.split(delimiter).forEach((String str) {
         if (delimiter == "/" || str.isNotEmpty) {
           opts.add(Option.createString(type, str));
         }
@@ -274,7 +276,7 @@ class Option {
     if (null == options) {
       return s;
     } else {
-      String sb;
+      String sb = "";
       bool append = false;
       options.forEach((Option opt) {
         if (append) {

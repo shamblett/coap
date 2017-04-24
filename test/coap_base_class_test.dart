@@ -272,12 +272,29 @@ void main() {
 
     test('Split', () {
       final List<Option>opts = Option.split(
-          optionTypeUriPath, "///hello/from/me", "/");
+          optionTypeUriPath, "hello/from/me", "/");
       expect(opts.length, 3);
       expect(opts[0].stringValue, "hello");
       expect(opts[0].type, optionTypeUriPath);
       expect(opts[1].stringValue, "from");
       expect(opts[2].stringValue, "me");
+
+      final List<Option>opts1 = Option.split(
+          optionTypeUriPath, "///hello/from/me/again", "/");
+      expect(opts1.length, 4);
+      expect(opts1[0].stringValue, "hello");
+      expect(opts1[0].type, optionTypeUriPath);
+      expect(opts1[1].stringValue, "from");
+      expect(opts1[2].stringValue, "me");
+      expect(opts1[3].stringValue, "again");
+    });
+
+    test('Join', () {
+      final Option opt1 = Option.createString(optionTypeUriPath, "Hello");
+      final Option opt2 = Option.createString(optionTypeUriPath, "from");
+      final Option opt3 = Option.createString(optionTypeUriPath, "me");
+      final String str = Option.join([opt1, opt2, opt3], "/");
+      expect(str, "Hello/from/me");
     });
 
 
