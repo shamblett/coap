@@ -255,6 +255,7 @@ class Option {
     final List<Option> opts = new List<Option>();
     if (s.isNotEmpty) {
       s.replaceRange(0, s.indexOf('/'), '');
+      print(s);
     }
 
     if (s.isNotEmpty) {

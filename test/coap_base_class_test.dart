@@ -74,6 +74,11 @@ void main() {
       expect(opt3.value, isNull);
     });
 
+    test('Long value', () {
+      final Option opt = Option.createLongVal(optionTypeMaxAge, 10);
+      expect(opt.value, 10);
+    });
+
     test('Is default', () {
       final Option opt =
       Option.createVal(optionTypeMaxAge, CoapConstants.defaultMaxAge);
@@ -195,7 +200,87 @@ void main() {
       option.intValue = 18273;
       expect(option.valueBytes[0], 97);
       expect(option.valueBytes[1], 71);
+
+      option.intValue = 1 << 16;
+      expect(option.valueBytes[0], 0);
+      expect(option.valueBytes[1], 0);
+      expect(option.valueBytes[2], 1);
+
+      option.intValue = 23984773;
+      expect(option.valueBytes[0], 133);
+      expect(option.valueBytes[1], 250);
+      expect(option.valueBytes[2], 109);
+      expect(option.valueBytes[3], 1);
+
+      option.intValue = 0xFFFFFFFF;
+      expect(option.valueBytes[0], 0xFF);
+      expect(option.valueBytes[1], 0xFF);
+      expect(option.valueBytes[2], 0xFF);
+      expect(option.valueBytes[3], 0xFF);
     });
+
+    test('Set long value', () {
+      final Option option = Option.create(optionTypeReserved);
+
+      option.longValue = 0;
+      expect(option.valueBytes[0], 0);
+
+      option.longValue = 11;
+      expect(option.valueBytes[0], 11);
+
+      option.longValue = 255;
+      expect(option.valueBytes[0], 255);
+
+      option.longValue = 256;
+      expect(option.valueBytes[0], 0);
+      expect(option.valueBytes[1], 1);
+
+      option.longValue = 18273;
+      expect(option.valueBytes[0], 97);
+      expect(option.valueBytes[1], 71);
+
+      option.longValue = 1 << 16;
+      expect(option.valueBytes[0], 0);
+      expect(option.valueBytes[1], 0);
+      expect(option.valueBytes[2], 1);
+
+      option.longValue = 23984773;
+      expect(option.valueBytes[0], 133);
+      expect(option.valueBytes[1], 250);
+      expect(option.valueBytes[2], 109);
+      expect(option.valueBytes[3], 1);
+
+      option.longValue = 0xFFFFFFFF;
+      expect(option.valueBytes[0], 0xFF);
+      expect(option.valueBytes[1], 0xFF);
+      expect(option.valueBytes[2], 0xFF);
+      expect(option.valueBytes[3], 0xFF);
+
+      option.longValue = 0x9823749837239845;
+      expect(option.valueBytes.toList(), [69, 152, 35, 55, 152, 116, 35, 152]);
+
+      option.longValue = 0xFFFFFFFFFFFFFFFF;
+      expect(option.valueBytes[0], 0xFF);
+      expect(option.valueBytes[1], 0xFF);
+      expect(option.valueBytes[2], 0xFF);
+      expect(option.valueBytes[3], 0xFF);
+      expect(option.valueBytes[4], 0xFF);
+      expect(option.valueBytes[5], 0xFF);
+      expect(option.valueBytes[6], 0xFF);
+      expect(option.valueBytes[7], 0xFF);
+    });
+
+    test('Split', () {
+      final List<Option>opts = Option.split(
+          optionTypeUriPath, "///hello/from/me", "/");
+      expect(opts.length, 3);
+      expect(opts[0].stringValue, "hello");
+      expect(opts[0].type, optionTypeUriPath);
+      expect(opts[1].stringValue, "from");
+      expect(opts[2].stringValue, "me");
+    });
+
+
   });
 
   group('Media types', () {
