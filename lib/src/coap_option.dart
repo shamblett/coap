@@ -22,7 +22,12 @@ class Option {
 
   set valueBytes(typed.Uint8Buffer buff) => _valueBytes = buff;
 
-  /// Value bytes in network byte order (big-endian)
+  set valueBytesList(List<int> bytes) {
+    _valueBytes.clear();
+    _valueBytes.addAll(bytes);
+  }
+
+  /// Value bytes
   typed.Uint8Buffer _valueBytes;
 
   /// String representation of value bytes
@@ -43,12 +48,16 @@ class Option {
   }
 
   set intValue(int val) {
-    final Uint32List buff = new Uint32List(1);
-    buff[0] = val;
-    _valueBytes.clear();
-    _valueBytes.addAll(buff.buffer.asUint8List());
-    while (_valueBytes.last == 0) {
-      _valueBytes.removeLast();
+    if (val == 0) {
+      _valueBytes.add(0);
+    } else {
+      final Uint32List buff = new Uint32List(1);
+      buff[0] = val;
+      _valueBytes.clear();
+      _valueBytes.addAll(buff.buffer.asUint8List());
+      while (_valueBytes.last == 0) {
+        _valueBytes.removeLast();
+      }
     }
   }
 
@@ -59,12 +68,16 @@ class Option {
   }
 
   set longValue(int val) {
-    final Uint64List buff = new Uint64List(1);
-    buff[0] = val;
-    _valueBytes.clear();
-    _valueBytes.addAll(buff.buffer.asUint8List());
-    while (_valueBytes.last == 0) {
-      _valueBytes.removeLast();
+    if (val == 0) {
+      _valueBytes.add(0);
+    } else {
+      final Uint64List buff = new Uint64List(1);
+      buff[0] = val;
+      _valueBytes.clear();
+      _valueBytes.addAll(buff.buffer.asUint8List());
+      while (_valueBytes.last == 0) {
+        _valueBytes.removeLast();
+      }
     }
   }
 
@@ -192,7 +205,7 @@ class Option {
     if (length != other.length) {
       return false;
     }
-    if (_valueBytes.toString() != other.valueBytes.toString()) {
+    if (valueBytes.toString() != other.valueBytes.toString()) {
       return false;
     }
     return true;

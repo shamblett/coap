@@ -156,6 +156,46 @@ void main() {
       expect(opt1.length, 4);
     });
 
+    test('Set value', () {
+      final Option option = Option.create(optionTypeReserved);
+
+      option.valueBytes = new typed.Uint8Buffer(4);
+      expect(option.length, 4);
+
+      option.valueBytesList = [69, 152, 35, 55, 152, 116, 35, 152];
+      expect(option.valueBytes, [69, 152, 35, 55, 152, 116, 35, 152]);
+    });
+
+    test('Set string value', () {
+      final Option option = Option.create(optionTypeReserved);
+
+      option.stringValue = "";
+      expect(option.length, 0);
+
+      option.stringValue = "CoAP.NET";
+      expect(option.stringValue, "CoAP.NET");
+    });
+
+    test('Set int value', () {
+      final Option option = Option.create(optionTypeReserved);
+
+      option.intValue = 0;
+      expect(option.valueBytes[0], 0);
+
+      option.intValue = 11;
+      expect(option.valueBytes[0], 11);
+
+      option.intValue = 255;
+      expect(option.valueBytes[0], 255);
+
+      option.intValue = 256;
+      expect(option.valueBytes[0], 0);
+      expect(option.valueBytes[1], 1);
+
+      option.intValue = 18273;
+      expect(option.valueBytes[0], 97);
+      expect(option.valueBytes[1], 71);
+    });
   });
 
   group('Media types', () {
