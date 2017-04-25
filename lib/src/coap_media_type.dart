@@ -172,12 +172,17 @@ class MediaType {
 
   static int parse(String type) {
     if (type == null) return MediaType.undefined;
+    int keyRet;
     _registry.forEach((int key, List<String> value) {
       if (value[0].toLowerCase() == type.toLowerCase()) {
-        return key;
+        keyRet = key;
       }
     });
-    return MediaType.undefined;
+    if (keyRet != null) {
+      return keyRet;
+    } else {
+      return MediaType.undefined;
+    }
   }
 
   static List<int> parseWildcard(String regex) {
