@@ -271,16 +271,16 @@ void main() {
     });
 
     test('Split', () {
-      final List<Option>opts = Option.split(
-          optionTypeUriPath, "hello/from/me", "/");
+      final List<Option> opts =
+      Option.split(optionTypeUriPath, "hello/from/me", "/");
       expect(opts.length, 3);
       expect(opts[0].stringValue, "hello");
       expect(opts[0].type, optionTypeUriPath);
       expect(opts[1].stringValue, "from");
       expect(opts[2].stringValue, "me");
 
-      final List<Option>opts1 = Option.split(
-          optionTypeUriPath, "///hello/from/me/again", "/");
+      final List<Option> opts1 =
+      Option.split(optionTypeUriPath, "///hello/from/me/again", "/");
       expect(opts1.length, 4);
       expect(opts1[0].stringValue, "hello");
       expect(opts1[0].type, optionTypeUriPath);
@@ -333,13 +333,25 @@ void main() {
       expect(MediaType.isImage(unknownType), false);
     });
 
-//    test('Negotiation Content', () {
-//      final int defaultContentType = 10;
-//      final List<int> accepted = null;
-//      final List<Option> supported = new List<Option>();
-//      expect(
-//          MediaType.negotiationContent(defaultContentType, accepted, supported),
-//          defaultContentType);
-//    });
+    test('Negotiation Content', () {
+      final int defaultContentType = 10;
+      final List<int> supported = [11, 5];
+      List<Option> accepted = new List<Option>();
+      final Option opt1 = Option.createVal(optionTypeMaxAge, 10);
+      final Option opt2 = Option.createVal(optionTypeContentFormat, 5);
+      accepted.add(opt1);
+      accepted.add(opt2);
+      expect(
+          MediaType.negotiationContent(defaultContentType, supported, accepted),
+          5);
+      opt2.intValue = 67;
+      expect(
+          MediaType.negotiationContent(defaultContentType, supported, accepted),
+          MediaType.undefined);
+      accepted = null;
+      expect(
+          MediaType.negotiationContent(defaultContentType, supported, accepted),
+          defaultContentType);
+    });
   });
 }

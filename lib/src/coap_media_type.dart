@@ -158,16 +158,15 @@ class MediaType {
   static int negotiationContent(int defaultContentType, List<int> supported,
       List<Option> accepted) {
     if (accepted == null) return defaultContentType;
-
     bool hasAccept = false;
-    accepted.forEach((Option accept) {
-      supported.forEach((int ct) {
-        if (ct == accept.intValue) {
+    for (Option opt in accepted) {
+      for (int ct in supported) {
+        if (ct == opt.intValue) {
           return ct;
         }
-      });
+      }
       hasAccept = true;
-    });
+    }
     return hasAccept ? MediaType.undefined : defaultContentType;
   }
 
