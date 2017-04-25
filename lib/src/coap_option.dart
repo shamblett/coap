@@ -344,12 +344,12 @@ class Option {
 
   /// Checks whether an option is critical.
   static bool isCritical(int type) {
-    return (type & 1) > 1;
+    return type.isOdd;
   }
 
   /// Checks whether an option is elective.
   static bool isElective(int type) {
-    return (type & 1) == 0;
+    return type.isEven;
   }
 
   /// Checks whether an option is unsafe.

@@ -297,7 +297,25 @@ void main() {
       expect(str, "Hello/from/me");
     });
 
+    test('Critical', () {
+      expect(Option.isCritical(optionTypeUriPath), true);
+      expect(Option.isCritical(optionTypeReserved1), false);
+    });
 
+    test('Elective', () {
+      expect(Option.isElective(optionTypeReserved1), true);
+      expect(Option.isElective(optionTypeUriPath), false);
+    });
+
+    test('Unsafe', () {
+      expect(Option.isUnsafe(optionTypeUriHost), true);
+      expect(Option.isUnsafe(optionTypeIfMatch), false);
+    });
+
+    test('Safe', () {
+      expect(Option.isSafe(optionTypeUriHost), false);
+      expect(Option.isSafe(optionTypeIfMatch), true);
+    });
   });
 
   group('Media types', () {
