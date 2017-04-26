@@ -353,5 +353,28 @@ void main() {
           MediaType.negotiationContent(defaultContentType, supported, accepted),
           defaultContentType);
     });
+
+    test('Parse', () {
+      int res = MediaType.parse(null);
+      expect(res, MediaType.undefined);
+
+      res = MediaType.parse("application/xml");
+      expect(res, MediaType.applicationXml);
+    });
+
+    test('Parse wild card', () {
+      List<int> res = MediaType.parseWildcard(null);
+      expect(res, isNull);
+
+      res = MediaType.parseWildcard("xml*");
+      expect(res, [
+        MediaType.textXml,
+        MediaType.applicationXml,
+        MediaType.applicationRdfXml,
+        MediaType.applicationSoapXml,
+        MediaType.applicationAtomXml,
+        MediaType.applicationXmppXml
+      ]);
+    });
   });
 }

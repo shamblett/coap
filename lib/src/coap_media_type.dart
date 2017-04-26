@@ -186,6 +186,7 @@ class MediaType {
   }
 
   static List<int> parseWildcard(String regex) {
+    if (regex == null) return null;
     final List<int> res = new List<int>();
     final String regex1 =
         regex.trim().substring(0, regex.indexOf('*')).trim() + ".*";
