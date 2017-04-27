@@ -318,6 +318,55 @@ void main() {
     });
   });
 
+  group('Block Option', () {
+    test('Get value', () {
+      /// Helper function that creates a BlockOption with the specified parameters
+      /// and serializes them to a byte array.
+      typed.Uint8Buffer toBytes(int szx, bool m, int num) {
+        final BlockOption opt =
+        new BlockOption.fromParts(optionTypeBlock1, num, szx, m);
+        return opt.valueBytes;
+      }
+
+      // Original test assumes network byte ordering is needed, hence the reverse
+      expect(toBytes(0, false, 0), [0x0]);
+      expect(toBytes(0, false, 1), [0x10]);
+      expect(toBytes(0, false, 15), [0xf0]);
+      expect(toBytes(0, false, 16), [0x01, 0x00].reversed);
+      expect(toBytes(0, false, 79), [0x04, 0xf0].reversed);
+      expect(toBytes(0, false, 113), [0x07, 0x10].reversed);
+      expect(toBytes(0, false, 26387), [0x06, 0x71, 0x30].reversed);
+      expect(toBytes(0, false, 1048575), [0xff, 0xff, 0xf0].reversed);
+      expect(toBytes(7, false, 1048575), [0xff, 0xff, 0xf7].reversed);
+      expect(toBytes(7, true, 1048575), [0xff, 0xff, 0xff].reversed);
+    });
+
+    test('Combined', () {
+      /// Converts a BlockOption with the specified parameters to a byte array and
+      /// back and checks that the result is the same as the original.
+      void testCombined(int szx, bool m, int num) {
+        final BlockOption block =
+        new BlockOption.fromParts(optionTypeBlock1, num, szx, m);
+        final BlockOption copy = new BlockOption(optionTypeBlock1);
+        copy.valueBytes = block.valueBytes;
+        expect(block.szx, copy.szx);
+        expect(block.m, copy.m);
+        expect(block.num, copy.num);
+      }
+
+      testCombined(0, false, 0);
+      testCombined(0, false, 1);
+      testCombined(0, false, 15);
+      testCombined(0, false, 16);
+      testCombined(0, false, 79);
+      testCombined(0, false, 113);
+      testCombined(0, false, 26387);
+      testCombined(0, false, 1048575);
+      testCombined(7, false, 1048575);
+      testCombined(7, true, 1048575);
+    });
+  });
+
   group('Media types', () {
     test('Properties', () {
       final int type = MediaType.applicationJson;
