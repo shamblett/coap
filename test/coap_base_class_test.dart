@@ -428,8 +428,8 @@ void main() {
   });
 
   group('Configuration', () {
-    test('Configuration', () {
-      final CoapConfig conf = new CoapConfig("test/config.yaml");
+    test('Configuration all', () {
+      final CoapConfig conf = new CoapConfig("test/config_all.yaml");
       expect(conf.version, "RFC7252");
       expect(conf.defaultPort, 1);
       expect(conf.defaultSecurePort, 2);
@@ -451,6 +451,32 @@ void main() {
       expect(conf.exchangeLifetime, 16);
       expect(conf.markAndSweepInterval, 17);
       expect(conf.channelReceivePacketSize, 18);
+      //TODO expect(conf.deduplicator,"");
+    });
+
+    test('Configuration default', () {
+      final CoapConfig conf = new CoapConfig("test/config_default.yaml");
+      expect(conf.version, "RFC7252");
+      expect(conf.defaultPort, 5683);
+      expect(conf.defaultSecurePort, 5684);
+      expect(conf.httpPort, 8080);
+      expect(conf.ackTimeout, 2000);
+      expect(conf.AckRandomFactor, 1.5);
+      expect(conf.AckTimeoutScale, 2.0);
+      expect(conf.MaxRetransmit, 4);
+      expect(conf.MaxMessageSize, 1024);
+      expect(conf.DefaultBlockSize, 512);
+      expect(conf.blockwiseStatusLifetime, 10 * 60 * 1000);
+      expect(conf.useRandomIDStart, isTrue);
+      expect(conf.useRandomTokenStart, isTrue);
+      expect(conf.notificationMaxAge, 128 * 1000);
+      expect(conf.notificationCheckIntervalTime, 24 * 60 * 60 * 1000);
+      expect(conf.notificationCheckIntervalCount, 100);
+      expect(conf.notificationReregistrationBackoff, 2000);
+      expect(conf.cropRotationPeriod, 2000);
+      expect(conf.exchangeLifetime, 247 * 1000);
+      expect(conf.markAndSweepInterval, 10000);
+      expect(conf.channelReceivePacketSize, 2048);
       //TODO expect(conf.deduplicator,"");
     });
   });

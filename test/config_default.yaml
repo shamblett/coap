@@ -1,0 +1,5 @@
+# A test COAP config file
+# Syntax is YAML
+
+version: "RFC7252"
+
