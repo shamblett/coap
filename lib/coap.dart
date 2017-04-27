@@ -32,3 +32,5 @@ part 'src/coap_config.dart';
 part 'src/coap_media_type.dart';
 
 part 'src/coap_constants.dart';
+
+part 'src/log/coap_ilogger.dart';
