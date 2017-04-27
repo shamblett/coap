@@ -1,0 +1,25 @@
+# A test COAP config file
+# Syntax is YAML
+
+defaultPort: 1
+defaultSecurePort: 2
+httpPort: 3
+ackTimeout: 4
+AckRandomFactor: 5.0
+AckTimeoutScale: 6.0
+MaxRetransmit: 7
+MaxMessageSize: 8
+DefaultBlockSize: 9
+blockwiseStatusLifetime: 10
+useRandomIDStart: false
+useRandomTokenStart: false
+notificationMaxAge: 11
+notificationCheckIntervalTime: 12
+notificationCheckIntervalCount: 13
+notificationReregistrationBackoff: 14
+cropRotationPeriod: 15
+exchangeLifetime: 16
+markAndSweepInterval: 17
+channelReceivePacketSize: 18
+#TODO deduplicator:""
+

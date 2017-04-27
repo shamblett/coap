@@ -39,5 +39,21 @@ class CoapConfig extends config.ConfigurationItem {
 
   int MaxMessageSize = 1024;
 
+  /// The default preferred size of block in blockwise transfer.
+  int DefaultBlockSize = CoapConstants.defaultBlockSize;
 
+  int blockwiseStatusLifetime = 10 * 60 * 1000; // ms
+  bool useRandomIDStart = true;
+  bool useRandomTokenStart = true;
+
+  int notificationMaxAge = 128 * 1000; // ms
+  int notificationCheckIntervalTime = 24 * 60 * 60 * 1000; // ms
+  int notificationCheckIntervalCount = 100; // ms
+  int notificationReregistrationBackoff = 2000; // ms
+
+  //TODO string deduplicator = CoAP.Deduplication.DeduplicatorFactory.MarkAndSweepDeduplicator;
+  int cropRotationPeriod = 2000; // ms
+  int exchangeLifetime = 247 * 1000; // ms
+  int markAndSweepInterval = 10 * 1000; // ms
+  int channelReceivePacketSize = 2048;
 }
