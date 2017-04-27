@@ -12,7 +12,7 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'dart:convert';
 import 'package:typed_data/typed_data.dart' as typed;
-
+import 'package:safe_config/safe_config.dart' as config;
 
 /// The Coap package exported interface
 
@@ -28,7 +28,7 @@ part 'src/coap_option.dart';
 
 part 'src/coap_block_option.dart';
 
-
+part 'src/coap_config.dart';
 part 'src/coap_media_type.dart';
 
 part 'src/coap_constants.dart';
