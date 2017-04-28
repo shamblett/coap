@@ -13,6 +13,7 @@ import 'dart:typed_data';
 import 'dart:convert';
 import 'package:typed_data/typed_data.dart' as typed;
 import 'package:safe_config/safe_config.dart' as config;
+import 'package:log4dart/log4dart_vm.dart' as logger;
 
 /// The Coap package exported interface
 
@@ -34,3 +35,11 @@ part 'src/coap_media_type.dart';
 part 'src/coap_constants.dart';
 
 part 'src/log/coap_ilogger.dart';
+
+part 'src/log/coap_null_logger.dart';
+
+part 'src/log/coap_console_logger.dart';
+
+part 'src/log/coap_file_logger.dart';
+
+part 'src/log/coap_log_manager.dart';

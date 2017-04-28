@@ -1,6 +1,8 @@
 # A test COAP config file
 # Syntax is YAML
 
+# Protocol section
+
 version: "RFC7252"
 defaultPort: 1
 defaultSecurePort: 2
@@ -24,3 +26,14 @@ markAndSweepInterval: 17
 channelReceivePacketSize: 18
 #TODO deduplicator:""
 
+# Logging section
+
+# Target is none, console or file
+logTarget: "console"
+# Log file can contain the path
+logFile: "coap_test.log"
+# Log levels
+logError: false
+logDebug: true
+logWarn: true
+logInfo: true

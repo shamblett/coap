@@ -14,6 +14,8 @@ part of coap;
 class CoapConfig extends config.ConfigurationItem {
   CoapConfig(String filename) : super.fromFile(filename);
 
+  /// Protocol options
+
   /// The version of the CoAP protocol.
   String version = "RFC7252";
 
@@ -79,4 +81,25 @@ class CoapConfig extends config.ConfigurationItem {
   int markAndSweepInterval = 10 * 1000; // ms
   @config.optionalConfiguration
   int channelReceivePacketSize = 2048;
+
+  /// Logging options
+
+  /// Log to null, console or file
+  @config.optionalConfiguration
+  String logTarget = "none";
+
+  /// If logging to a file the file name, with path
+  /// if needed.
+  @config.optionalConfiguration
+  String logFile = "coaplog.txt";
+
+  /// Log level options
+  @config.optionalConfiguration
+  bool logError = true;
+  @config.optionalConfiguration
+  bool logWarn = false;
+  @config.optionalConfiguration
+  bool logDebug = false;
+  @config.optionalConfiguration
+  bool logInfo = false;
 }

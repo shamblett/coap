@@ -15,9 +15,6 @@ abstract class Ilogger {
   /// Is error enabled
   bool isErrorEnabled();
 
-  /// Is fatal enabled
-  bool isFatalEnabled();
-
   /// Is info enabled
   bool isInfoEnabled();
 
@@ -29,9 +26,6 @@ abstract class Ilogger {
 
   /// Logs an error message.
   void error(String message);
-
-  /// Logs a fatal message.
-  void fatal(String message);
 
   /// Logs an info message.
   void info(String message);

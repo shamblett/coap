@@ -452,6 +452,12 @@ void main() {
       expect(conf.markAndSweepInterval, 17);
       expect(conf.channelReceivePacketSize, 18);
       //TODO expect(conf.deduplicator,"");
+      expect(conf.logTarget, "console");
+      expect(conf.logFile, "coap_test.log");
+      expect(conf.logError, false);
+      expect(conf.logInfo, true);
+      expect(conf.logWarn, true);
+      expect(conf.logDebug, true);
     });
 
     test('Configuration default', () {
@@ -478,6 +484,12 @@ void main() {
       expect(conf.markAndSweepInterval, 10000);
       expect(conf.channelReceivePacketSize, 2048);
       //TODO expect(conf.deduplicator,"");
+      expect(conf.logTarget, "none");
+      expect(conf.logFile, "coaplog.txt");
+      expect(conf.logError, true);
+      expect(conf.logInfo, false);
+      expect(conf.logWarn, false);
+      expect(conf.logDebug, false);
     });
   });
 }
