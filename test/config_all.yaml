@@ -8,11 +8,11 @@ defaultPort: 1
 defaultSecurePort: 2
 httpPort: 3
 ackTimeout: 4
-AckRandomFactor: 5.0
-AckTimeoutScale: 6.0
-MaxRetransmit: 7
-MaxMessageSize: 8
-DefaultBlockSize: 9
+ackRandomFactor: 5.0
+ackTimeoutScale: 6.0
+maxRetransmit: 7
+maxMessageSize: 8
+defaultBlockSize: 9
 blockwiseStatusLifetime: 10
 useRandomIDStart: false
 useRandomTokenStart: false

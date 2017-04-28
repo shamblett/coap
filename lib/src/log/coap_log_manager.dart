@@ -7,10 +7,9 @@
 
 part of coap;
 
-/// Allows selection and management of logging or the coap library.
+/// Allows selection and management of logging for the coap library.
 class LogManager {
-
-  Ilogger _logger;
+  static Ilogger _logger;
 
   LogManager(String type, [String path]) {
     bool setCommon = true;
@@ -25,11 +24,17 @@ class LogManager {
 
     // Logging common configuration
     if (setCommon) {
-      logger.LoggerFactory.config[".*"].debugEnabled = CoapConfig.logDebug;
-      logger.LoggerFactory.config[".*"].errorEnabled = CoapConfig.logError;
-      logger.LoggerFactory.config[".*"].warnEnabled = CoapConfig.logWarn;
-      logger.LoggerFactory.config[".*"].infoEnabled = CoapConfig.logInfo;
+      logging.LoggerFactory.config[".*"].debugEnabled =
+          CoapConfig.inst.logDebug;
+      logging.LoggerFactory.config[".*"].errorEnabled =
+          CoapConfig.inst.logError;
+      logging.LoggerFactory.config[".*"].warnEnabled = CoapConfig.inst.logWarn;
+      logging.LoggerFactory.config[".*"].infoEnabled = CoapConfig.inst.logInfo;
+      logging.LoggerFactory.config[".*"].logFormat = "[%d] %c %n:%x %n";
     }
   }
 
+  Ilogger get logger => _logger;
+
+  set logger(Ilogger logger) => _logger = logger;
 }

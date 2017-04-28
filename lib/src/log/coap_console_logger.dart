@@ -10,31 +10,31 @@ part of coap;
 /// Provides logging to the console
 class ConsoleLogger extends Ilogger {
 
-  static final _logger = logger.LoggerFactory.getLoggerFor(ConsoleLogger);
+  static final _logger = logging.LoggerFactory.getLoggerFor(ConsoleLogger);
 
   ConsoleLogger() {
-    logger.LoggerFactory.config["ConsoleLogger"].appenders =
-    [new logger.ConsoleAppender()];
+    logging.LoggerFactory.config["ConsoleLogger"].appenders =
+    [new logging.ConsoleAppender()];
   }
 
   /// Is debug enabled
   bool isDebugEnabled() {
-    return logger.LoggerFactory.config["ConsoleLogger"].debugEnabled;
+    return logging.LoggerFactory.config["ConsoleLogger"].debugEnabled;
   }
 
   /// Is error enabled
   bool isErrorEnabled() {
-    return logger.LoggerFactory.config["ConsoleLogger"].errorEnabled;
+    return logging.LoggerFactory.config["ConsoleLogger"].errorEnabled;
   }
 
   /// Is info enabled
   bool isInfoEnabled() {
-    return logger.LoggerFactory.config["ConsoleLogger"].infoEnabled;
+    return logging.LoggerFactory.config["ConsoleLogger"].infoEnabled;
   }
 
   /// Is warning enabled
   bool isWarnEnabled() {
-    return logger.LoggerFactory.config["ConsoleLogger"].warnEnabled;
+    return logging.LoggerFactory.config["ConsoleLogger"].warnEnabled;
   }
 
   /// Logs a debug message.

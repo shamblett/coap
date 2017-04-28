@@ -428,18 +428,18 @@ void main() {
   });
 
   group('Configuration', () {
-    test('Configuration all', () {
+    test('All', () {
       final CoapConfig conf = new CoapConfig("test/config_all.yaml");
       expect(conf.version, "RFC7252");
       expect(conf.defaultPort, 1);
       expect(conf.defaultSecurePort, 2);
       expect(conf.httpPort, 3);
       expect(conf.ackTimeout, 4);
-      expect(conf.AckRandomFactor, 5.0);
-      expect(conf.AckTimeoutScale, 6.0);
-      expect(conf.MaxRetransmit, 7);
-      expect(conf.MaxMessageSize, 8);
-      expect(conf.DefaultBlockSize, 9);
+      expect(conf.ackRandomFactor, 5.0);
+      expect(conf.ackTimeoutScale, 6.0);
+      expect(conf.maxRetransmit, 7);
+      expect(conf.maxMessageSize, 8);
+      expect(conf.defaultBlockSize, 9);
       expect(conf.blockwiseStatusLifetime, 10);
       expect(conf.useRandomIDStart, isFalse);
       expect(conf.useRandomTokenStart, isFalse);
@@ -460,18 +460,18 @@ void main() {
       expect(conf.logDebug, true);
     });
 
-    test('Configuration default', () {
+    test('Default', () {
       final CoapConfig conf = new CoapConfig("test/config_default.yaml");
       expect(conf.version, "RFC7252");
       expect(conf.defaultPort, 5683);
       expect(conf.defaultSecurePort, 5684);
       expect(conf.httpPort, 8080);
       expect(conf.ackTimeout, 2000);
-      expect(conf.AckRandomFactor, 1.5);
-      expect(conf.AckTimeoutScale, 2.0);
-      expect(conf.MaxRetransmit, 4);
-      expect(conf.MaxMessageSize, 1024);
-      expect(conf.DefaultBlockSize, 512);
+      expect(conf.ackRandomFactor, 1.5);
+      expect(conf.ackTimeoutScale, 2.0);
+      expect(conf.maxRetransmit, 4);
+      expect(conf.maxMessageSize, 1024);
+      expect(conf.defaultBlockSize, 512);
       expect(conf.blockwiseStatusLifetime, 10 * 60 * 1000);
       expect(conf.useRandomIDStart, isTrue);
       expect(conf.useRandomTokenStart, isTrue);
@@ -490,6 +490,11 @@ void main() {
       expect(conf.logInfo, false);
       expect(conf.logWarn, false);
       expect(conf.logDebug, false);
+    });
+
+    test('Instance', () {
+      final CoapConfig conf = new CoapConfig("test/config_default.yaml");
+      expect(conf == CoapConfig.inst, isTrue);
     });
   });
 }

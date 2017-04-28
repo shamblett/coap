@@ -12,7 +12,13 @@ part of coap;
 /// the config file to contain only those entries that override the defaults.
 /// The file can't be empty, so version must as a minimum be present.
 class CoapConfig extends config.ConfigurationItem {
-  CoapConfig(String filename) : super.fromFile(filename);
+  CoapConfig(String filename) : super.fromFile(filename) {
+    _config = this;
+  }
+
+  static CoapConfig _config;
+
+  static CoapConfig get inst => _config;
 
   /// Protocol options
 
@@ -40,21 +46,21 @@ class CoapConfig extends config.ConfigurationItem {
   /// RESPONSE_RANDOM_FACTOR)
   ///
   @config.optionalConfiguration
-  double AckRandomFactor = CoapConstants.ackRandomFactor;
+  double ackRandomFactor = CoapConstants.ackRandomFactor;
 
   @config.optionalConfiguration
-  double AckTimeoutScale = 2.0;
+  double ackTimeoutScale = 2.0;
 
   /// The max time that a message would be retransmitted
   @config.optionalConfiguration
-  int MaxRetransmit = CoapConstants.maxRetransmit;
+  int maxRetransmit = CoapConstants.maxRetransmit;
 
   @config.optionalConfiguration
-  int MaxMessageSize = 1024;
+  int maxMessageSize = 1024;
 
   /// The default preferred size of block in blockwise transfer.
   @config.optionalConfiguration
-  int DefaultBlockSize = CoapConstants.defaultBlockSize;
+  int defaultBlockSize = CoapConstants.defaultBlockSize;
 
   @config.optionalConfiguration
   int blockwiseStatusLifetime = 10 * 60 * 1000; // ms

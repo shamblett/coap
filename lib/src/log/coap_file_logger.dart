@@ -10,31 +10,31 @@ part of coap;
 /// Provides logging to a file
 class FileLogger extends Ilogger {
 
-  static final _logger = logger.LoggerFactory.getLoggerFor(FileLogger);
+  static final _logger = logging.LoggerFactory.getLoggerFor(FileLogger);
 
   FileLogger(String path) {
-    logger.LoggerFactory.config["FileLogger"].appenders =
-    [new logger.FileAppender(path)];
+    logging.LoggerFactory.config["FileLogger"].appenders =
+    [new logging.FileAppender(path)];
   }
 
   /// Is debug enabled
   bool isDebugEnabled() {
-    return logger.LoggerFactory.config["FileLogger"].debugEnabled;
+    return logging.LoggerFactory.config["FileLogger"].debugEnabled;
   }
 
   /// Is error enabled
   bool isErrorEnabled() {
-    return logger.LoggerFactory.config["FileLogger"].errorEnabled;
+    return logging.LoggerFactory.config["FileLogger"].errorEnabled;
   }
 
   /// Is info enabled
   bool isInfoEnabled() {
-    return logger.LoggerFactory.config["FileLogger"].infoEnabled;
+    return logging.LoggerFactory.config["FileLogger"].infoEnabled;
   }
 
   /// Is warning enabled
   bool isWarnEnabled() {
-    return logger.LoggerFactory.config["FileLogger"].warnEnabled;
+    return logging.LoggerFactory.config["FileLogger"].warnEnabled;
   }
 
   /// Logs a debug message.
