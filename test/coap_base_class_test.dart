@@ -497,4 +497,15 @@ void main() {
       expect(conf == CoapConfig.inst, isTrue);
     });
   });
+
+  group('Logging', () {
+    test('Null', () {
+      final LogManager logmanager = new LogManager('none');
+      final Ilogger logger = logmanager.logger;
+      expect(logger.isDebugEnabled(), isFalse);
+      expect(logger.isErrorEnabled(), isFalse);
+      expect(logger.isInfoEnabled(), isFalse);
+      expect(logger.isWarnEnabled(), isFalse);
+    });
+  });
 }

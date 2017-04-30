@@ -1,0 +1,14 @@
+# A test COAP config file
+# Syntax is YAML
+
+# Logging section
+
+# Target is none, console or file
+logTarget: "console"
+# Log file can contain the path
+logFile: "test/coap_test_log.txt"
+# Log levels
+logError: true
+logDebug: true
+logWarn: true
+logInfo: true
