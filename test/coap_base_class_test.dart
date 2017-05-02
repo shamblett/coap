@@ -557,7 +557,8 @@ void main() {
       expect(logger.isInfoEnabled(), isTrue);
       expect(logger.isWarnEnabled(), isTrue);
       logger.warn("Warning message");
-//      expect(logFile.lengthSync(), 230);
+      sleep(const Duration(seconds: 1));
+      //expect(logFile.lengthSync(), 230);
 //      logger.info("Information message");
 //      logger.error("Error message");
 //      logger.debug("Debug message");

@@ -8,9 +8,9 @@
 part of coap;
 
 /// Provides logging to the console
-class ConsoleLogger extends Ilogger {
+class ConsoleLogger implements Ilogger {
 
-  static final _logger = logging.LoggerFactory.getLoggerFor(ConsoleLogger);
+  static final _logger = logging.LoggerFactory.getLogger("ConsoleLogger");
 
   ConsoleLogger() {
     logging.LoggerFactory.config["ConsoleLogger"].appenders =

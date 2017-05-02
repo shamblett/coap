@@ -8,7 +8,7 @@
 part of coap;
 
 /// Provides logging to null
-class NullLogger extends Ilogger {
+class NullLogger implements Ilogger {
   /// Is debug enabled
   bool isDebugEnabled() {
     return false;

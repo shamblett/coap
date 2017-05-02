@@ -8,9 +8,9 @@
 part of coap;
 
 /// Provides logging to a file
-class FileLogger extends Ilogger {
+class FileLogger implements Ilogger {
 
-  static final _logger = logging.LoggerFactory.getLoggerFor(FileLogger);
+  static final _logger = logging.LoggerFactory.getLogger("FileLogger");
 
   FileLogger(String path) {
     logging.LoggerFactory.config["FileLogger"].appenders =
