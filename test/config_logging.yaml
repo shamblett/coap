@@ -1,6 +1,11 @@
 # A test COAP config file
 # Syntax is YAML
 
+# Protocol section
+
+version: "RFC7252"
+
+
 # Logging section
 
 # Target is none, console or file

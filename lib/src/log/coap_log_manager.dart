@@ -11,12 +11,12 @@ part of coap;
 class LogManager {
   static Ilogger _logger;
 
-  LogManager(String type, [String path]) {
+  LogManager(String type) {
     bool setCommon = true;
     if (type == "console") {
       _logger = new ConsoleLogger();
     } else if (type == "file") {
-      _logger = new FileLogger(path);
+      _logger = new FileLogger(CoapConfig.inst.logFile);
     } else {
       _logger = new NullLogger();
       setCommon = false;

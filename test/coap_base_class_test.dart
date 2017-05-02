@@ -7,8 +7,10 @@
 import 'package:coap/coap.dart';
 import 'package:test/test.dart';
 import 'package:typed_data/typed_data.dart' as typed;
+import 'package:log4dart/log4dart_vm.dart';
 import 'dart:convert';
 import 'dart:math';
+import 'dart:io';
 
 void main() {
   group("Options", () {
@@ -506,6 +508,60 @@ void main() {
       expect(logger.isErrorEnabled(), isFalse);
       expect(logger.isInfoEnabled(), isFalse);
       expect(logger.isWarnEnabled(), isFalse);
+      logger.warn("Warning message");
+      logger.info("Information message");
+      logger.error("Error message");
+      logger.debug("Debug message");
+    });
+
+    test('Console', () {
+      final CoapConfig conf = new CoapConfig("test/config_logging.yaml");
+      final LogManager logmanager = new LogManager('console');
+      final Ilogger logger = logmanager.logger;
+      // Add a string appender to test correct log strings
+      LoggerFactory.config["ConsoleLogger"].appenders =
+      [new StringAppender()];
+      final StringAppender appender = LoggerFactory.config["ConsoleLogger"]
+          .appenders.last;
+      expect(logger.isDebugEnabled(), isTrue);
+      expect(logger.isErrorEnabled(), isTrue);
+      expect(logger.isInfoEnabled(), isTrue);
+      expect(logger.isWarnEnabled(), isTrue);
+      logger.warn("Warning message");
+      expect(appender.content.contains("WARN ConsoleLogger: Warning message"),
+          isTrue);
+      appender.clear();
+      logger.info("Information message");
+      expect(
+          appender.content.contains("INFO ConsoleLogger: Information message"),
+          isTrue);
+      appender.clear();
+      logger.error("Error message");
+      expect(appender.content.contains("ERROR ConsoleLogger: Error message"),
+          isTrue);
+      appender.clear();
+      logger.debug("Debug message");
+      expect(appender.content.contains("DEBUG ConsoleLogger: Debug message"),
+          isTrue);
+      appender.clear();
+    });
+
+    test('File', () {
+      final CoapConfig conf = new CoapConfig("test/config_logging.yaml");
+      final LogManager logmanager = new LogManager('file');
+      final File logFile = new File(conf.logFile);
+      logFile.deleteSync();
+      final Ilogger logger = logmanager.logger;
+      expect(logger.isDebugEnabled(), isTrue);
+      expect(logger.isErrorEnabled(), isTrue);
+      expect(logger.isInfoEnabled(), isTrue);
+      expect(logger.isWarnEnabled(), isTrue);
+      logger.warn("Warning message");
+//      expect(logFile.lengthSync(), 230);
+//      logger.info("Information message");
+//      logger.error("Error message");
+//      logger.debug("Debug message");
+//      expect(logFile.lengthSync(), 230);
     });
   });
 }
