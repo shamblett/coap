@@ -516,12 +516,13 @@ void main() {
 
     test('Console', () {
       final CoapConfig conf = new CoapConfig("test/config_logging.yaml");
+      expect(conf.logTarget, "console");
       final LogManager logmanager = new LogManager('console');
       final Ilogger logger = logmanager.logger;
       // Add a string appender to test correct log strings
       LoggerFactory.config["ConsoleLogger"].appenders.add(new StringAppender());
-      final StringAppender appender = LoggerFactory.config["ConsoleLogger"]
-          .appenders.last;
+      final StringAppender appender =
+          LoggerFactory.config["ConsoleLogger"].appenders.last;
       expect(logger.isDebugEnabled(), isTrue);
       expect(logger.isErrorEnabled(), isTrue);
       expect(logger.isInfoEnabled(), isTrue);
