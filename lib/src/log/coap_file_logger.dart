@@ -8,7 +8,7 @@
 part of coap;
 
 /// Provides logging to a file
-class FileLogger implements Ilogger {
+class FileLogger implements ILogger {
 
   static final _logger = logging.LoggerFactory.getLogger("FileLogger");
 

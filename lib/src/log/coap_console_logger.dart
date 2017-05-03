@@ -8,7 +8,7 @@
 part of coap;
 
 /// Provides logging to the console
-class ConsoleLogger implements Ilogger {
+class ConsoleLogger implements ILogger {
 
   static final _logger = logging.LoggerFactory.getLogger("ConsoleLogger");
 

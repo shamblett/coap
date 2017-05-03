@@ -503,7 +503,7 @@ void main() {
   group('Logging', () {
     test('Null', () {
       final LogManager logmanager = new LogManager('none');
-      final Ilogger logger = logmanager.logger;
+      final ILogger logger = logmanager.logger;
       expect(logger.isDebugEnabled(), isFalse);
       expect(logger.isErrorEnabled(), isFalse);
       expect(logger.isInfoEnabled(), isFalse);
@@ -518,7 +518,7 @@ void main() {
       final CoapConfig conf = new CoapConfig("test/config_logging.yaml");
       expect(conf.logTarget, "console");
       final LogManager logmanager = new LogManager('console');
-      final Ilogger logger = logmanager.logger;
+      final ILogger logger = logmanager.logger;
       // Add a string appender to test correct log strings
       LoggerFactory.config["ConsoleLogger"].appenders.add(new StringAppender());
       final StringAppender appender =
@@ -553,7 +553,7 @@ void main() {
       if (logFile.existsSync()) {
         logFile.deleteSync();
       }
-      final Ilogger logger = logmanager.logger;
+      final ILogger logger = logmanager.logger;
       expect(logger.isDebugEnabled(), isTrue);
       expect(logger.isErrorEnabled(), isTrue);
       expect(logger.isInfoEnabled(), isTrue);

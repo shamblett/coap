@@ -9,7 +9,7 @@ part of coap;
 
 /// Allows selection and management of logging for the coap library.
 class LogManager {
-  static Ilogger _logger;
+  static ILogger _logger;
 
   LogManager(String type) {
     bool setCommon = true;
@@ -34,7 +34,7 @@ class LogManager {
     }
   }
 
-  Ilogger get logger => _logger;
+  ILogger get logger => _logger;
 
-  set logger(Ilogger logger) => _logger = logger;
+  set logger(ILogger logger) => _logger = logger;
 }
