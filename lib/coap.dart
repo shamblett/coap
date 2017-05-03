@@ -29,6 +29,8 @@ part 'src/coap_option.dart';
 
 part 'src/coap_block_option.dart';
 
+part 'src/coap_code.dart';
+
 part 'src/coap_config.dart';
 part 'src/coap_media_type.dart';
 
