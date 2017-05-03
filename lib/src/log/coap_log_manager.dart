@@ -30,7 +30,7 @@ class LogManager {
           CoapConfig.inst.logError;
       logging.LoggerFactory.config[".*"].warnEnabled = CoapConfig.inst.logWarn;
       logging.LoggerFactory.config[".*"].infoEnabled = CoapConfig.inst.logInfo;
-      logging.LoggerFactory.config[".*"].logFormat = "[%d] %c %n:%x %n";
+      logging.LoggerFactory.config[".*"].logFormat = "[%d] %c: %m";
     }
   }
 

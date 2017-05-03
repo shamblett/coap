@@ -549,8 +549,10 @@ void main() {
     test('File', () {
       final CoapConfig conf = new CoapConfig("test/config_logging.yaml");
       final LogManager logmanager = new LogManager('file');
-      final File logFile = new File(conf.logFile);
-      logFile.deleteSync();
+      final logFile = new File(conf.logFile);
+      if (logFile.existsSync()) {
+        logFile.deleteSync();
+      }
       final Ilogger logger = logmanager.logger;
       expect(logger.isDebugEnabled(), isTrue);
       expect(logger.isErrorEnabled(), isTrue);
@@ -558,11 +560,12 @@ void main() {
       expect(logger.isWarnEnabled(), isTrue);
       logger.warn("Warning message");
       sleep(const Duration(seconds: 1));
-      //expect(logFile.lengthSync(), 230);
-//      logger.info("Information message");
-//      logger.error("Error message");
-//      logger.debug("Debug message");
-//      expect(logFile.lengthSync(), 230);
+      logger.info("Information message");
+      sleep(const Duration(seconds: 1));
+      logger.error("Error message");
+      sleep(const Duration(seconds: 1));
+      logger.debug("Debug message");
+      expect(logFile.lengthSync() > 0, isTrue);
     });
   });
 }
