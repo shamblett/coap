@@ -43,3 +43,5 @@ part 'src/log/coap_console_logger.dart';
 part 'src/log/coap_file_logger.dart';
 
 part 'src/log/coap_log_manager.dart';
+
+part 'src/deduplication/coap_ideduplicator.dart';
