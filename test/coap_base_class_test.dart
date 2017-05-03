@@ -519,8 +519,7 @@ void main() {
       final LogManager logmanager = new LogManager('console');
       final Ilogger logger = logmanager.logger;
       // Add a string appender to test correct log strings
-      LoggerFactory.config["ConsoleLogger"].appenders =
-      [new StringAppender()];
+      LoggerFactory.config["ConsoleLogger"].appenders.add(new StringAppender());
       final StringAppender appender = LoggerFactory.config["ConsoleLogger"]
           .appenders.last;
       expect(logger.isDebugEnabled(), isTrue);
