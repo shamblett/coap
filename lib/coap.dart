@@ -14,6 +14,7 @@ import 'dart:convert';
 import 'package:typed_data/typed_data.dart' as typed;
 import 'package:safe_config/safe_config.dart' as config;
 import 'package:log4dart/log4dart_vm.dart' as logging;
+import 'package:eventable/eventable.dart' as events;
 
 /// The Coap package exported interface
 
@@ -31,6 +32,9 @@ part 'src/coap_block_option.dart';
 
 part 'src/coap_code.dart';
 
+part 'src/coap_message.dart';
+
+part 'src/coap_message_type.dart';
 part 'src/coap_config.dart';
 part 'src/coap_media_type.dart';
 
