@@ -31,7 +31,8 @@ class Option {
   typed.Uint8Buffer _valueBytes;
 
   /// String representation of value bytes
-  String get stringValue => new Utf8Decoder().convert(_valueBytes.toList());
+  String get stringValue =>
+      new convertor.Utf8Decoder().convert(_valueBytes.toList());
 
   void _stringEncodeValue(String val) {
     val.codeUnits.forEach((int unit) {
