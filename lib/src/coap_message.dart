@@ -174,4 +174,23 @@ class Message extends Object with events.EventEmitter {
   void cancel() {
     isCancelled = true;
   }
+
+  /// To string.
+  String toString() {
+    String payload = payloadString;
+    if (payload == null) {
+      payload = "[no payload]";
+    } else {
+      final int len = payloadSize;
+      final int nl = payload.indexOf('\n');
+      if (nl >= 0) payload = payload.substring(0, nl);
+      if (len > 24) payload = payload.substring(0, 24);
+      payload = "\"" + payload + "\"";
+      if (payload.length != len + 2)
+        payload += "... " + payloadSize.toString() + " bytes";
+    }
+    return "${type.toString()}-${codeString} ID=${id
+        .toString()}, Token=${tokenString}, Options=[${Util.optionsToString(
+        this)}], ${payload}";
+  }
 }
