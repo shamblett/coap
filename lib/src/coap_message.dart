@@ -41,6 +41,8 @@ class Message extends Object with events.EventEmitter {
   /// Option map
   Map<int, List<Option>> _optionMap = new Map<int, List<Option>>();
 
+  Map<int, List<Option>> get optionMap => _optionMap;
+
   /// Gets or sets the 0-8 byte token.
   typed.Uint8Buffer _token;
 
@@ -202,28 +204,30 @@ class Message extends Object with events.EventEmitter {
     if (obj == null) {
       return false;
     }
-    if (this == obj) {
+    if (identical(this, obj)) {
       return true;
     }
-    if (this.runtimeType != obj.runtimeType) {
+    if ((obj is Message) && (type != obj.type)) {
       return false;
     }
-    final Message other = obj as Message;
-    if (type != other.type) {
+    if ((obj is Message) && (code != obj.code)) {
       return false;
     }
-    if (code != other.code) {
-      return false;
-    }
-    if (id != other.id) {
+    if ((obj is Message) && (id != obj.id)) {
       return false;
     }
     if (optionMap == null) {
-      if (other.optionMap != null) return false;
-    } else if (optionMap != other._optionMap) {
+      if ((obj is Message) && (obj.optionMap != null)) return false;
+    } else if ((obj is Message) && (optionMap != obj.optionMap)) {
       return false;
     }
-    if (!Util.areSequenceEqualTo(_payload, other._payload)) return false;
+    Message other;
+    if (obj is Message) {
+      other = obj;
+    }
+    if (!Util.areSequenceEqualTo(payload, other.payload)) {
+      return false;
+    }
     return true;
   }
 
@@ -232,7 +236,7 @@ class Message extends Object with events.EventEmitter {
 
   /// Gets all options of the given type.
   Iterable<Option> getOptions(int optionType) {
-    return _optionMap.containsKey(optionType) ? _optionMap[optionType] : null;
+    return optionMap.containsKey(optionType) ? optionMap[optionType] : null;
   }
 
   /// Select options helper
