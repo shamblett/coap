@@ -38,6 +38,9 @@ class Message extends Object with events.EventEmitter {
   /// The ID of this CoAP message.
   int id = none;
 
+  /// Option map
+  Map<int, List<Option>> _optionMap = new Map<int, List<Option>>();
+
   /// Gets or sets the 0-8 byte token.
   typed.Uint8Buffer _token;
 
@@ -193,4 +196,56 @@ class Message extends Object with events.EventEmitter {
         .toString()}, Token=${tokenString}, Options=[${Util.optionsToString(
         this)}], ${payload}";
   }
+
+  /// Equals.
+  bool operator ==(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (this == obj) {
+      return true;
+    }
+    if (this.runtimeType != obj.runtimeType) {
+      return false;
+    }
+    final Message other = obj as Message;
+    if (type != other.type) {
+      return false;
+    }
+    if (code != other.code) {
+      return false;
+    }
+    if (id != other.id) {
+      return false;
+    }
+    if (optionMap == null) {
+      if (other.optionMap != null) return false;
+    } else if (optionMap != other._optionMap) {
+      return false;
+    }
+    if (!Util.areSequenceEqualTo(_payload, other._payload)) return false;
+    return true;
+  }
+
+  /// Hash code.
+  int get hashCode => super.hashCode;
+
+  /// Gets all options of the given type.
+  Iterable<Option> getOptions(int optionType) {
+    return _optionMap.containsKey(optionType) ? _optionMap[optionType] : null;
+  }
+
+  /// Select options helper
+  Iterable _selectOptions(int optionType, func(Option option)) sync* {
+    final Iterable<Option> opts = getOptions(optionType);
+    if (opts != null) {
+      for (Option opt in opts) {
+        yield func(opt);
+      }
+    }
+  }
+
+  /// Gets If-Match options.
+  typed.Uint8Buffer get ifMatches =>
+      _selectOptions(optionTypeIfMatch, (Option o) => o.valueBytes);
 }
