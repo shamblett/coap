@@ -70,7 +70,12 @@ class Message extends Object with events.EventEmitter {
     return true;
   }
 
-  /// Gets or sets the 0-8 byte token.
+  /// Gets all options of the given type.
+  Iterable<Option> getOptions(int optionType) {
+    return optionMap.containsKey(optionType) ? optionMap[optionType] : null;
+  }
+
+  /// The 0-8 byte token.
   typed.Uint8Buffer _token;
 
   typed.Uint8Buffer get token => _token;
@@ -260,11 +265,6 @@ class Message extends Object with events.EventEmitter {
 
   /// Hash code.
   int get hashCode => super.hashCode;
-
-  /// Gets all options of the given type.
-  Iterable<Option> getOptions(int optionType) {
-    return optionMap.containsKey(optionType) ? optionMap[optionType] : null;
-  }
 
   /// Select options helper
   Iterable _selectOptions(int optionType, func(Option option)) sync* {
