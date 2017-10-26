@@ -252,4 +252,11 @@ class Message extends Object with events.EventEmitter {
   /// Gets If-Match options.
   typed.Uint8Buffer get ifMatches =>
       _selectOptions(optionTypeIfMatch, (Option o) => o.valueBytes);
+
+  bool isIfMatch(typed.Uint8Buffer what) {
+    if (Util.areSequenceEqualTo(what, ifMatches)) {
+      return true;
+    }
+    return false;
+  }
 }
