@@ -11,14 +11,15 @@ part of coap;
 class Util {
   /// Insertion sort, to make the options list stably ordered.
   static void insertionSort<T>(List<T> list, Comparator<T> comparison) {
-    list.sort(comparison);
+    collection.insertionSort(list, compare: comparison);
   }
 
   /// Checks if all items in both of the two enumerables are equal.
-  public static
-
-  Boolean AreSequenceEqualTo<T>(IEnumerable<T> first, IEnumerable<T> second) {
-    return AreSequenceEqualTo<T>(first, second, null);
+  static bool areSequenceEqualTo<T>(Iterable<T> first, Iterable<T> second,
+      [collection.Equality<T> equality = const collection.DefaultEquality()]) {
+    final collection.IterableEquality ie =
+    new collection.IterableEquality(equality);
+    return ie.equals(first, second);
   }
 
   /// Stringify options in a message.
