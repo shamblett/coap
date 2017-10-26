@@ -43,6 +43,33 @@ class Message extends Object with events.EventEmitter {
 
   Map<int, List<Option>> get optionMap => _optionMap;
 
+  /// Adds an option to the list of options of this CoAP message.
+  Message addOption(Option option) {
+    if (option == null) {
+      throw new ArgumentError.notNull("Message::addOption - option is null");
+    }
+    if (option.type == optionTypeToken) {
+      // be compatible with draft 13-
+      token = option.valueBytes;
+      return this;
+    }
+    _optionMap[option.type] = new List<Option>();
+    return this;
+  }
+
+  /// Adds all option to the list of options of this CoAP message.
+  void addOptions(Iterable<Option> options) {
+    for (Option opt in options) {
+      addOption(opt);
+    }
+  }
+
+  /// Removes all options of the given type from this CoAP message.
+  bool removeOptions(int optionType) {
+    _optionMap.remove(optionType);
+    return true;
+  }
+
   /// Gets or sets the 0-8 byte token.
   typed.Uint8Buffer _token;
 
