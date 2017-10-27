@@ -75,11 +75,6 @@ class Util {
 
   /// Stringify options in a message.
   static String optionsToString(Message msg) {
-
-  }
-
-  /// Stringify options in a message.
-  static String optionsToString(Message msg) {
     return "";
   }
 }
