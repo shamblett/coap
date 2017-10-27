@@ -108,6 +108,12 @@ class Message extends Object with events.EventEmitter {
     return list.length > 0 ? list.first : null;
   }
 
+  /// Checks if this CoAP message has options of the specified option type.
+  /// Returns true if options of the specified type exists.
+  bool hasOption(int type) {
+    return getFirstOption(type) != null;
+  }
+
   /// The 0-8 byte token.
   typed.Uint8Buffer _token;
 
@@ -309,10 +315,9 @@ class Message extends Object with events.EventEmitter {
     }
   }
 
-  /// Gets If-Match options.
+  /// If-Matches.
   typed.Uint8Buffer get ifMatches =>
       _selectOptions(optionTypeIfMatch, (Option o) => o.valueBytes);
-
   bool isIfMatch(typed.Uint8Buffer what) {
     if (Util.areSequenceEqualTo(what, ifMatches)) {
       return true;
@@ -320,7 +325,6 @@ class Message extends Object with events.EventEmitter {
     return false;
   }
 
-  /// Adds an If-Match option
   Message addIfMatch(typed.Uint8Buffer opaque) {
     if (opaque == null) {
       throw new ArgumentError.notNull("Message::addIfMatch");
@@ -332,7 +336,6 @@ class Message extends Object with events.EventEmitter {
     return addOption(Option.createRaw(optionTypeIfMatch, opaque));
   }
 
-  /// Removes an If-match option
   Message removeIfMatch(typed.Uint8Buffer opaque) {
     final List<Option> list = getOptions(optionTypeIfMatch);
     if (list != null) {
@@ -343,9 +346,55 @@ class Message extends Object with events.EventEmitter {
     return this;
   }
 
-  /// Clear If-Matches
   Message clearIfMatches() {
     removeOptions(optionTypeIfMatch);
     return this;
   }
+
+  /// Etags
+  typed.Uint8Buffer get etags =>
+      _selectOptions(optionTypeETag, (Option o) => o.valueBytes);
+
+  bool containsETag(typed.Uint8Buffer what) =>
+      Util.contains(
+          getOptions(optionTypeETag),
+              (Option o) => Util.areSequenceEqualTo(what, o.valueBytes));
+
+  Message addETag(typed.Uint8Buffer opaque) {
+    if (opaque == null) {
+      throw new ArgumentError.notNull("Message::addETag");
+    }
+    return addOption(Option.createRaw(optionTypeETag, opaque));
+  }
+
+  Message removeETag(typed.Uint8Buffer opaque) {
+    final List<Option> list = getOptions(optionTypeETag);
+    if (list != null) {
+      final Option opt = Util.firstOrDefault(
+          list, (Option o) => Util.areSequenceEqualTo(opaque, o.valueBytes));
+      if (opt != null) {
+        list.remove(opt);
+      }
+    }
+    return this;
+  }
+
+  Message clearETags() {
+    removeOptions(optionTypeETag);
+    return this;
+  }
+
+  /// IfNoneMatch
+  bool get ifNoneMatch => hasOption(optionTypeIfNoneMatch);
+
+  set ifNonematch(int value) {
+    if (value != null) {
+      Option.create(optionTypeIfNoneMatch);
+    } else {
+      removeOptions(optionTypeIfNoneMatch);
+    }
+  }
+
+/// Uri's
+
 }
