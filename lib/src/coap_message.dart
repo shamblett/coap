@@ -75,6 +75,39 @@ class Message extends Object with events.EventEmitter {
     return optionMap.containsKey(optionType) ? optionMap[optionType] : null;
   }
 
+  /// Gets a list of all options.
+  Iterable<Option> getSortedOptions() {
+    final List<Option> list = new List<Option>();
+    for (Iterable<Option> opts in _optionMap.values) {
+      if (opts.length > 0) list.addAll(opts);
+    }
+    return list;
+  }
+
+  /// Sets an option.
+  void setOption(Option opt) {
+    if (opt != null) {
+      removeOptions(opt.type);
+      addOption(opt);
+    }
+  }
+
+  /// Sets all options with the specified option type.
+  void setOptions(Iterable<Option> options) {
+    if (options == null) return;
+    for (Option opt in options) {
+      removeOptions(opt.type);
+    }
+    addOptions(options);
+  }
+
+  /// Gets the first option of the specified option type.
+  /// Returns the first option of the specified type, or null
+  Option getFirstOption(int optionType) {
+    final List<Option> list = getOptions(optionType);
+    return list.length > 0 ? list.first : null;
+  }
+
   /// The 0-8 byte token.
   typed.Uint8Buffer _token;
 
@@ -286,4 +319,6 @@ class Message extends Object with events.EventEmitter {
     }
     return false;
   }
+
+
 }
