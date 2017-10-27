@@ -622,5 +622,137 @@ class Message extends Object with events.EventEmitter {
     setOption(Option.createVal(optionTypeMaxAge, value));
   }
 
+  /// Accept
+  int get accept {
+    final Option opt = getFirstOption(optionTypeAccept);
+    return (null == opt) ? MediaType.undefined : opt.value;
+  }
 
+  set accept(int value) {
+    if (value == MediaType.undefined) {
+      removeOptions(optionTypeAccept);
+    } else {
+      setOption(Option.createVal(optionTypeAccept, value));
+    }
+  }
+
+  /// Proxy uri
+  Uri get proxyUri {
+    final Option opt = getFirstOption(optionTypeProxyUri);
+    if (opt == null) {
+      return null;
+    }
+    String proxyUriString = opt.toString();
+    if (!proxyUriString.startsWith("coap://") &&
+        !proxyUriString.startsWith("coaps://") &&
+        !proxyUriString.startsWith("http://") &&
+        !proxyUriString.startsWith("https://")) {
+      proxyUriString = "coap://" + proxyUriString;
+    }
+    return new Uri.dataFromString(proxyUriString);
+  }
+
+  set proxyUri(Uri value) {
+    if (value == null) {
+      removeOptions(optionTypeProxyUri);
+    } else {
+      setOption(Option.createString(optionTypeProxyUri, value.toString()));
+    }
+  }
+
+  /// Proxy scheme
+  String get proxyScheme {
+    final Option opt = getFirstOption(optionTypeProxyScheme);
+    return opt == null ? null : opt.toString();
+  }
+
+  set proxyScheme(String value) {
+    if (value == null) {
+      removeOptions(optionTypeProxyScheme);
+    } else {
+      setOption(Option.createString(optionTypeProxyScheme, value));
+    }
+  }
+
+  /// Observe
+  int get observe {
+    final Option opt = getFirstOption(optionTypeObserve);
+    if (opt == null) {
+      return null;
+    } else {
+      return opt.value;
+    }
+  }
+
+  set observe(int value) {
+    if (value == null) {
+      removeOptions(optionTypeObserve);
+    } else if (value < 0 || ((1 << 24) - 1) < value) {
+      throw new ArgumentError.value(
+          value,
+          "Message::observe",
+          "Observe option must be between 0 and ${((1 << 24) -
+              1)} (3 bytes) inclusive");
+    } else {
+      setOption(Option.createVal(optionTypeObserve, value));
+    }
+  }
+
+  /// Size 1
+  int get size1 {
+    final Option opt = getFirstOption(optionTypeSize1);
+    return opt == null ? 0 : opt.value;
+  }
+
+  set size1(int value) {
+    if (value == null) {
+      removeOptions(optionTypeSize1);
+    } else {
+      setOption(Option.createVal(optionTypeSize1, value));
+    }
+  }
+
+  /// Size 2
+  int get size2 {
+    final Option opt = getFirstOption(optionTypeSize2);
+    return opt == null ? 0 : opt.value;
+  }
+
+  set size2(int value) {
+    if (value == null) {
+      removeOptions(optionTypeSize2);
+    } else {
+      setOption(Option.createVal(optionTypeSize2, value));
+    }
+  }
+
+  /// Block 1
+  BlockOption get block1 => getFirstOption(optionTypeBlock1) as BlockOption;
+
+  set block1(BlockOption value) {
+    if (value == null) {
+      removeOptions(optionTypeBlock1);
+    } else {
+      setOption(value);
+    }
+  }
+
+  void setBlock1(int szx, bool m, int num) {
+    setOption(new BlockOption.fromParts(optionTypeBlock1, num, szx, m));
+  }
+
+  /// Block 2
+  BlockOption get block2 => getFirstOption(optionTypeBlock2) as BlockOption;
+
+  set block2(BlockOption value) {
+    if (value == null) {
+      removeOptions(optionTypeBlock2);
+    } else {
+      setOption(value);
+    }
+  }
+
+  void setBlock2(int szx, bool m, int num) {
+    setOption(new BlockOption.fromParts(optionTypeBlock2, num, szx, m));
+  }
 }
