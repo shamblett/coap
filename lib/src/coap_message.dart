@@ -320,5 +320,32 @@ class Message extends Object with events.EventEmitter {
     return false;
   }
 
+  /// Adds an If-Match option
+  Message addIfMatch(typed.Uint8Buffer opaque) {
+    if (opaque == null) {
+      throw new ArgumentError.notNull("Message::addIfMatch");
+    }
+    if (opaque.length > 8) {
+      throw new ArgumentError.value(opaque.length, "Message::addIfMatch",
+          "Content of If-Match option is too large");
+    }
+    return addOption(Option.createRaw(optionTypeIfMatch, opaque));
+  }
 
+  /// Removes an If-match option
+  Message removeIfMatch(typed.Uint8Buffer opaque) {
+    final List<Option> list = getOptions(optionTypeIfMatch);
+    if (list != null) {
+      final Option opt = Util.firstOrDefault(
+          list, (Option o) => Util.areSequenceEqualTo(opaque, o.valueBytes));
+      if (opt != null) list.remove(opt);
+    }
+    return this;
+  }
+
+  /// Clear If-Matches
+  Message clearIfMatches() {
+    removeOptions(optionTypeIfMatch);
+    return this;
+  }
 }
