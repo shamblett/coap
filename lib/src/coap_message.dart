@@ -588,6 +588,39 @@ class Message extends Object with events.EventEmitter {
     return this;
   }
 
-/// Content type
+  /// Content type
+  int get contentType {
+    final Option opt = getFirstOption(optionTypeContentType);
+    return (null == opt) ? MediaType.undefined : opt.value;
+  }
+
+  set contentType(int value) {
+    if (value == MediaType.undefined) {
+      removeOptions(optionTypeContentType);
+    } else {
+      setOption(Option.createVal(optionTypeContentType, value));
+    }
+  }
+
+  /// The content-format of this CoAP message,
+  /// Same as ContentType, only another name.
+  int get contentFormat => contentType;
+
+  set contentFormat(int value) => contentType = value;
+
+  /// The max-age of this CoAP message.
+  int get maxAge {
+    final Option opt = getFirstOption(optionTypeMaxAge);
+    return (null == opt) ? CoapConstants.defaultMaxAge : opt.value;
+  }
+
+  set maxAge(int value) {
+    if (value < 0 || value > 4294967295) {
+      throw new ArgumentError.value(value, "Message::maxAge",
+          "Max-Age option must be between 0 and 4294967295 (4 bytes) inclusive");
+    }
+    setOption(Option.createVal(optionTypeMaxAge, value));
+  }
+
 
 }
