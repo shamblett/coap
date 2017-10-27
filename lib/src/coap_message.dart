@@ -395,6 +395,70 @@ class Message extends Object with events.EventEmitter {
     }
   }
 
-/// Uri's
+  /// Uri's
+  String get uriHost {
+    final Option host = getFirstOption(optionTypeUriHost);
+    return host == null ? null : host.toString();
+  }
 
+  set uriHost(String value) {
+    if (value == null) {
+      throw new ArgumentError.notNull("Message::uriHost");
+    }
+    if (value.length < 1 || value.length > 255) {
+      throw new ArgumentError.value(value.length, "Message::uriHost",
+          "URI-Host option's length must be between 1 and 255 inclusive");
+    }
+    setOption(Option.createString(optionTypeUriHost, value));
+  }
+
+  String get uriPath => "/" + Option.join(getOptions(optionTypeUriPath), "/");
+
+  set uriPath(String value) =>
+      setOptions(Option.split(optionTypeUriPath, value, "/"));
+
+  Iterable<String> get uriPaths sync* {
+    final Iterable<Option> opts = getOptions(optionTypeUriPath);
+    if (opts != null) {
+      for (Option opt in opts) {
+        yield opt.toString();
+      }
+    }
+  }
+
+  Message addUriPath(String path) {
+    if (path == null) {
+      throw new ArgumentError.notNull("Message::addUriPath");
+    }
+    if (path.length > 255) {
+      throw new ArgumentError.value(path.length, "Message::addUriPath",
+          "Uri Path option's length must be between 0 and 255 inclusive");
+    }
+    return addOption(Option.createString(optionTypeUriPath, path));
+  }
+
+  Message removeUriPath(String path) {
+    final List<Option> list = getOptions(optionTypeUriPath);
+    if (list != null) {
+      final Option opt =
+      Util.firstOrDefault(list, (Option o) => path == o.toString());
+      if (opt != null) list.remove(opt);
+    }
+    return this;
+  }
+
+  Message clearUriPath() {
+    removeOptions(optionTypeUriPath);
+    return this;
+  }
+
+  String get uriQuery => Option.join(getOptions(optionTypeUriQuery), "&");
+
+  set uriQuery(String value) {
+    String tmp = value;
+    if (value.isNotEmpty && value.startsWith("?")) {
+      tmp = value.substring(1);
+    }
+    setOptions(Option.split(optionTypeUriQuery, tmp, "&"));
+  }
 }
