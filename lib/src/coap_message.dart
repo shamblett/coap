@@ -461,4 +461,133 @@ class Message extends Object with events.EventEmitter {
     }
     setOptions(Option.split(optionTypeUriQuery, tmp, "&"));
   }
+
+  Iterable<String> get uriQueries sync* {
+    final Iterable<Option> opts = getOptions(optionTypeUriQuery);
+    if (opts != null) {
+      for (Option opt in opts) {
+        yield opt.toString();
+      }
+    }
+  }
+
+  Message addUriQuery(String query) {
+    if (query == null) {
+      throw new ArgumentError.notNull("Message::addUriQuery");
+    }
+    if (query.length > 255) {
+      throw new ArgumentError.value(query.length, "Message::addUriQuery",
+          "Uri Query option's length must be between 0 and 255 inclusive");
+    }
+    return addOption(Option.createString(optionTypeUriQuery, query));
+  }
+
+  Message removeUriQuery(String query) {
+    final List<Option> list = getOptions(optionTypeUriQuery);
+    if (list != null) {
+      final Option opt =
+      Util.firstOrDefault(list, (Option o) => query == o.toString());
+      if (opt != null) list.remove(opt);
+    }
+    return this;
+  }
+
+  Message clearUriQuery() {
+    removeOptions(optionTypeUriQuery);
+    return this;
+  }
+
+  /// Uri port
+  int get uriPort {
+    final Option opt = getFirstOption(optionTypeUriPort);
+    return opt == null ? null : opt.value;
+  }
+
+  /// Location
+  String get locationPath =>
+      Option.join(getOptions(optionTypeLocationPath), "/");
+
+  set locationPath(String value) =>
+      setOptions(Option.split(optionTypeLocationPath, value, "/"));
+
+  Iterable<String> get locationPaths =>
+      _selectOptions(optionTypeLocationPath, (Option o) => o.toString());
+
+  String get location {
+    String path = "/" + locationPath;
+    final String query = locationQuery;
+    if (query.isNotEmpty) {
+      path += "?" + query;
+    }
+    return path;
+  }
+
+  Message addLocationPath(String path) {
+    if (path == null) {
+      throw new ArgumentError.notNull("Message::addLocationPath");
+    }
+    if (path.length > 255) {
+      throw new ArgumentError.value(path.length, "Message::addLocationPath",
+          "Location Path option's length must be between 0 and 255 inclusive");
+    }
+    return addOption(Option.createString(optionTypeLocationPath, path));
+  }
+
+  Message removelocationPath(String path) {
+    final List<Option> list = getOptions(optionTypeLocationPath);
+    if (list != null) {
+      final Option opt =
+      Util.firstOrDefault(list, (Option o) => path == o.toString());
+      if (opt != null) list.remove(opt);
+    }
+    return this;
+  }
+
+  Message clearLocationPath() {
+    removeOptions(optionTypeLocationPath);
+    return this;
+  }
+
+  String get locationQuery =>
+      Option.join(getOptions(optionTypeLocationQuery), "&");
+
+  set locationQuery(String value) {
+    String tmp = value;
+    if (value.isNotEmpty && value.startsWith("?")) {
+      tmp = value.substring(1);
+    }
+    setOptions(Option.split(optionTypeLocationQuery, tmp, "&"));
+  }
+
+  Iterable<String> get locationQueries =>
+      _selectOptions(optionTypeLocationQuery, (Option o) => o.toString());
+
+  Message addLocationQuery(String query) {
+    if (query == null) {
+      throw new ArgumentError.notNull("Message::addLocationQuery");
+    }
+    if (query.length > 255) {
+      throw new ArgumentError.value(query.length, "Message::addLocationQuery",
+          "Location Query option's length must be between 0 and 255 inclusive");
+    }
+    return addOption(Option.createString(optionTypeLocationQuery, query));
+  }
+
+  Message removeLocationQuery(String query) {
+    final List<Option> list = getOptions(optionTypeLocationQuery);
+    if (list != null) {
+      final Option opt =
+      Util.firstOrDefault(list, (Option o) => query == o.toString());
+      if (opt != null) list.remove(opt);
+    }
+    return this;
+  }
+
+  Message clearLocationQuery() {
+    removeOptions(optionTypeLocationQuery);
+    return this;
+  }
+
+/// Content type
+
 }
