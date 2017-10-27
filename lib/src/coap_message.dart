@@ -235,14 +235,14 @@ class Message extends Object with events.EventEmitter {
     String temp = payload;
     if (payload == null) temp = "";
     _payload = _utfEncoder.convert(temp);
-    MessContentType = mediaType;
+    contentType = mediaType;
     return this;
   }
 
   /// Sets the payload of this CoAP message.
-  Message setPayloadMedia(typed.Uint8Buffer payload, int mediaType) {
+  Message setPayloadMediaRaw(typed.Uint8Buffer payload, int mediaType) {
     _payload = payload;
-    MessContentType = mediaType;
+    contentType = mediaType;
     return this;
   }
 
