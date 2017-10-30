@@ -53,4 +53,10 @@ part 'src/log/coap_log_manager.dart';
 
 part 'src/deduplication/coap_ideduplicator.dart';
 
-part 'util/coap_util.dart';
+part 'src/util/coap_util.dart';
+
+part 'src/specification/coap_ispec.dart';
+
+part 'src/codec/coap_imessage_encoder.dart';
+
+part 'src/codec/coap_imessage_decoder.dart';
