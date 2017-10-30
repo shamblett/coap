@@ -42,13 +42,10 @@ class Util {
   static String messageToString(Message msg) {
     final StringBuffer sb = new StringBuffer();
     String kind = "Message";
-    String code = "Code";
     if (msg.isRequest) {
       kind = "Request";
-      code = "Method";
     } else if (msg.isResponse) {
       kind = "Response";
-      code = "Status";
     }
     sb.writeln("==[ COAP $kind ]============================================");
     sb.writeln("ID     : ${msg.id}");
@@ -61,7 +58,7 @@ class Util {
     if (msg.destination != null) {
       sb.writeln("Dest : ${msg.destination}");
     }
-    sb.writeln("Options: ${ optionsToString(msg)}");
+    sb.writeln("Options: ${optionsToString(msg)}");
     sb.writeln("Payload: ${msg.payloadSize} Bytes");
     if (msg.payloadSize > 0 && MediaType.isPrintable(msg.contentType)) {
       sb.writeln(
@@ -73,8 +70,64 @@ class Util {
     return sb.toString();
   }
 
+  /// Stringify an iterable.
+  static String iterableToString<T>(Iterable<T> source) {
+    if ((source == null) || (source.isEmpty)) {
+      return "";
+    }
+    final StringBuffer sb = new StringBuffer();
+    for (T item in source) {
+      sb.write(item.toString());
+      sb.write(",");
+    }
+    final String ret = sb.toString();
+    return ret.substring(0, ret.length - 2);
+  }
+
   /// Stringify options in a message.
   static String optionsToString(Message msg) {
-    return "";
+    if (msg == null) {
+      return "Message is null - no options";
+    }
+    final StringBuffer sb = new StringBuffer();
+    sb.writeln("If-Match : " + iterableToString(msg.ifMatches) ?? "None");
+    sb.write("Uri Host : ");
+    msg.hasOption(optionTypeUriHost) ? sb.writeln(msg.uriHost) : "None";
+    sb.writeln("E-tags : " + iterableToString(msg.etags) ?? "None");
+    msg.hasOption(optionTypeIfNoneMatch) ? sb.writeln(msg.ifNoneMatch) : "None";
+    sb.write("Uri Port : ");
+    if ((msg.uriPort != null) && (msg.uriPort > 0)) {
+      sb.writeln(msg.uriPort);
+    } else {
+      sb.writeln("None");
+    }
+    sb.writeln(
+        "Location Paths: " + iterableToString(msg.locationPaths) ?? "None");
+    sb.writeln("Uri Paths : " + iterableToString(msg.uriPaths) ?? "None");
+    sb.write("Content-Type : ");
+    sb.writeln(
+        msg.contentType != MediaType.undefined ? msg.contentType : "None");
+    sb.write("Max Age : ");
+    msg.hasOption(optionTypeMaxAge) ? sb.writeln(msg.maxAge) : "None";
+    sb.writeln("Uri Queries : " + iterableToString(msg.uriQueries) ?? "None");
+    sb.write("Accept : ");
+    sb.writeln(msg.contentType != MediaType.undefined ? msg.accept : "None");
+    sb.writeln("Location Queries : " + iterableToString(msg.locationQueries) ??
+        "None");
+    sb.write("Proxy Uri : ");
+    msg.hasOption(optionTypeProxyUri) ? sb.writeln(msg.proxyUri) : "None";
+    sb.write("Proxy Scheme : ");
+    sb.writeln(msg.proxyScheme ?? "None");
+    sb.write("Block 1 : ");
+    sb.writeln(msg.block1 ?? "None");
+    sb.write("Block 2 : ");
+    sb.writeln(msg.block2 ?? "None");
+    sb.write("Observe : ");
+    sb.writeln(msg.observe ?? "None");
+    sb.write("Size 1 : ");
+    sb.writeln(msg.size1 ?? "None");
+    sb.write("Size 2 : ");
+    sb.writeln(msg.size2 ?? "None");
+    return sb.toString();
   }
 }
