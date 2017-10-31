@@ -19,10 +19,16 @@ class CoapReregisteringEvent {}
 /// 1. operations to answer a request by a response using respond()
 /// 2. different ways to handle incoming responses: receiveResponse() or Response event
 class CoapRequest extends CoapMessage {
+  /// Initializes a request message.
+  CoapRequest(int code) : this.isConfirmable(code, true);
 
   /// Initializes a request message.
-  CoapRequestMessage(int method)
-      : super(method, true);
+  /// True if the request is Confirmable
+  CoapRequest.isConfirmable(int code, bool confirmable)
+      : super.withCode(
+      confirmable ? CoapMessageType.con : CoapMessageType.non, code) {
+    _method = code;
+  }
 
   int _method;
   bool _multicast;
