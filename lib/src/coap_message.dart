@@ -8,13 +8,13 @@
 part of coap;
 
 /// Event classes
-class AcknowledgedEvent {}
+class CoapAcknowledgedEvent {}
 
-class RejectedEvent {}
+class CoapRejectedEvent {}
 
-class TimedOutEvent {}
+class CoapTimedOutEvent {}
 
-class CancelledEvent {}
+class CoapCancelledEvent {}
 
 /// The class Message models the base class of all CoAP messages.
 /// CoAP messages are of type Request, Response or EmptyMessage,
@@ -154,7 +154,7 @@ class CoapMessage extends Object with events.EventEmitter {
 
   set isAcknowledged(bool value) {
     _acknowledged = value;
-    emitEvent(new AcknowledgedEvent());
+    emitEvent(new CoapAcknowledgedEvent());
   }
 
   /// Indicates whether this message has been rejected.
@@ -164,7 +164,7 @@ class CoapMessage extends Object with events.EventEmitter {
 
   set isRejected(bool value) {
     _rejected = value;
-    emitEvent(new RejectedEvent());
+    emitEvent(new CoapRejectedEvent());
   }
 
   /// Indicates whether this message has been timed out.
@@ -174,7 +174,7 @@ class CoapMessage extends Object with events.EventEmitter {
 
   set isTimedOut(bool value) {
     _timedOut = value;
-    emitEvent(new TimedOutEvent());
+    emitEvent(new CoapTimedOutEvent());
   }
 
   /// Indicates whether this message has been cancelled.
@@ -184,7 +184,7 @@ class CoapMessage extends Object with events.EventEmitter {
 
   set isCancelled(bool value) {
     _cancelled = value;
-    emitEvent(new CancelledEvent());
+    emitEvent(new CoapCancelledEvent());
   }
 
   /// Indicates whether this message is a duplicate.

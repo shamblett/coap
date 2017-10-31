@@ -37,6 +37,10 @@ part 'src/coap_message.dart';
 
 part 'src/coap_empty_message.dart';
 
+part 'src/coap_request.dart';
+
+part 'src/coap_response.dart';
+
 part 'src/coap_message_type.dart';
 
 part 'src/coap_config.dart';
@@ -63,3 +67,5 @@ part 'src/specification/coap_ispec.dart';
 part 'src/codec/coap_imessage_encoder.dart';
 
 part 'src/codec/coap_imessage_decoder.dart';
+
+part 'src/net/coap_iendpoint.dart';
