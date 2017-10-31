@@ -21,6 +21,12 @@ class CancelledEvent {}
 /// each of which has a MessageType, a message identifier,
 /// a token (0-8 bytes), a collection of Options and a payload.
 class Message extends Object with events.EventEmitter {
+  /// Instantiates a message with the given type.
+  Message(this.type);
+
+  /// Instantiates a message with the given type and code.
+  Message.withCode(this.type, this.code);
+
   /// Indicates that no ID has been set.
   static const int none = -1;
 
@@ -118,7 +124,9 @@ class Message extends Object with events.EventEmitter {
   typed.Uint8Buffer _token;
 
   typed.Uint8Buffer get token => _token;
+
   String get tokenString => _token.toString();
+
   set token(typed.Uint8Buffer value) {
     if (value != null && value.length > 8) {
       throw new ArgumentError.value(value, "Message::token",
@@ -318,6 +326,7 @@ class Message extends Object with events.EventEmitter {
   /// If-Matches.
   typed.Uint8Buffer get ifMatches =>
       _selectOptions(optionTypeIfMatch, (Option o) => o.valueBytes);
+
   bool isIfMatch(typed.Uint8Buffer what) {
     if (Util.areSequenceEqualTo(what, ifMatches)) {
       return true;
