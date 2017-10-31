@@ -35,7 +35,10 @@ part 'src/coap_code.dart';
 
 part 'src/coap_message.dart';
 
+part 'src/coap_empty_message.dart';
+
 part 'src/coap_message_type.dart';
+
 part 'src/coap_config.dart';
 part 'src/coap_media_type.dart';
 

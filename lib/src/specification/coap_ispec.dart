@@ -22,7 +22,6 @@ abstract class ISpec {
 
   /// Decodes a CoAP message from a bytes array.
   /// Returns the decoded message, or null if the bytes array can not be recognized.
-  ///
   Message decode(typed.Uint8Buffer bytes);
 
   /// Gets an IMessageEncoder.
