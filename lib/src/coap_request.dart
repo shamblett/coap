@@ -104,4 +104,53 @@ class CoapRequest extends CoapMessage {
 
   /// The endpoint for this request
   CoapIEndPoint endPoint;
+
+  /// Uri
+  CoapRequest setUri(String value) {
+    String tmp = value;
+    if (!value.startsWith("coap://") && !value.startsWith("coaps://"))
+      tmp = "coap://" + value;
+    uri = new Uri.dataFromString(tmp);
+    return this;
+  }
+
+  /// Sets CoAP's observe option. If the target resource of this request
+  /// responds with a success code and also sets the observe option, it will
+  /// send more responses in the future whenever the resource's state changes.
+  CoapRequest markObserve() {
+    observe = 0;
+    return this;
+  }
+
+  /// Sets CoAP's observe option to the value of 1 to proactively cancel.
+  CoapRequest markObserveCancel() {
+    observe = 1;
+    return this;
+  }
+
+  /// Gets the value of a query parameter as a String,
+  /// or null if the parameter does not exist.
+  String getParameter(String name) {
+    for (CoapOption query in getOptions(optionTypeUriQuery)) {
+      final String val = query.stringValue;
+      if (val.isEmpty) {
+        continue;
+      }
+      if (val.startsWith(name + "=")) return val.substring(name.length + 1);
+    }
+    return null;
+  }
+
+  /// Sends this message.
+  CoapRequest send() {
+    _validateBeforeSending();
+    endPoint.sendRequest(this);
+    return this;
+  }
+
+  void _validateBeforeSending() {
+    if (destination == null)
+      throw new StateError(
+          "CoapRequest::validateBeforeSending - Missing destination");
+  }
 }
