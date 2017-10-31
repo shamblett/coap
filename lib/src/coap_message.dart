@@ -348,9 +348,9 @@ class CoapMessage extends Object with events.EventEmitter {
   CoapMessage removeIfMatch(typed.Uint8Buffer opaque) {
     final List<CoapOption> list = getOptions(optionTypeIfMatch);
     if (list != null) {
-      final CoapOption opt = CoapUtil.firstOrDefault(
-          list, (CoapOption o) =>
-          CoapUtil.areSequenceEqualTo(opaque, o.valueBytes));
+      final CoapOption opt = CoapUtil.firstOrDefault(list,
+              (CoapOption o) =>
+              CoapUtil.areSequenceEqualTo(opaque, o.valueBytes));
       if (opt != null) list.remove(opt);
     }
     return this;
@@ -381,9 +381,9 @@ class CoapMessage extends Object with events.EventEmitter {
   CoapMessage removeETag(typed.Uint8Buffer opaque) {
     final List<CoapOption> list = getOptions(optionTypeETag);
     if (list != null) {
-      final CoapOption opt = CoapUtil.firstOrDefault(
-          list, (CoapOption o) =>
-          CoapUtil.areSequenceEqualTo(opaque, o.valueBytes));
+      final CoapOption opt = CoapUtil.firstOrDefault(list,
+              (CoapOption o) =>
+              CoapUtil.areSequenceEqualTo(opaque, o.valueBytes));
       if (opt != null) {
         list.remove(opt);
       }
@@ -498,8 +498,8 @@ class CoapMessage extends Object with events.EventEmitter {
   CoapMessage removeUriQuery(String query) {
     final List<CoapOption> list = getOptions(optionTypeUriQuery);
     if (list != null) {
-      final CoapOption opt =
-      CoapUtil.firstOrDefault(list, (CoapOption o) => query == o.toString());
+      final CoapOption opt = CoapUtil.firstOrDefault(
+          list, (CoapOption o) => query == o.toString());
       if (opt != null) list.remove(opt);
     }
     return this;
@@ -514,6 +514,13 @@ class CoapMessage extends Object with events.EventEmitter {
   int get uriPort {
     final CoapOption opt = getFirstOption(optionTypeUriPort);
     return opt == null ? null : opt.value;
+  }
+
+  set uriPort(int value) {
+    if (value == 0)
+      removeOptions(optionTypeUriPort);
+    else
+      setOption(CoapOption.createVal(optionTypeUriPort, value));
   }
 
   /// Location
@@ -589,8 +596,8 @@ class CoapMessage extends Object with events.EventEmitter {
   CoapMessage removeLocationQuery(String query) {
     final List<CoapOption> list = getOptions(optionTypeLocationQuery);
     if (list != null) {
-      final CoapOption opt =
-      CoapUtil.firstOrDefault(list, (CoapOption o) => query == o.toString());
+      final CoapOption opt = CoapUtil.firstOrDefault(
+          list, (CoapOption o) => query == o.toString());
       if (opt != null) list.remove(opt);
     }
     return this;

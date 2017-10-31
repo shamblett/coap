@@ -131,4 +131,9 @@ class CoapUtil {
     sb.writeln(msg.size2 ?? "None");
     return sb.toString();
   }
+
+  /// Regex to check if a host name is an IP address
+  static RegExp regIP = new RegExp(
+      r"(\\[[0-9a-f:]+\\]|[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})",
+      caseSensitive: false);
 }

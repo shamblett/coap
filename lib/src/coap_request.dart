@@ -8,7 +8,11 @@
 part of coap;
 
 /// Event classes
-class CoapRespondEvent {}
+class CoapRespondEvent {
+  CoapResponse resp;
+
+  CoapRespondEvent(this.resp);
+}
 
 class CoapRespondingEvent {}
 
@@ -30,10 +34,74 @@ class CoapRequest extends CoapMessage {
     _method = code;
   }
 
+  /// The request method(code)
   int _method;
-  bool _multicast;
+
+  int get method => _method;
+
+  /// Indicates whether this request is a multicast request or not.
+  bool multicast;
+
+  /// The URI of this CoAP message.
   Uri _uri;
+
+  Uri get uri {
+    if (_uri == null) {
+      _uri = new Uri(
+          scheme: CoapConstants.uriScheme,
+          host: uriHost ?? "localhost",
+          port: uriPort,
+          path: uriPath,
+          query: uriQuery);
+    }
+    return _uri;
+  }
+
+  set uri(Uri value) {
+    if (value == null) {
+      return;
+    }
+    final String host = value.host;
+    int port = value.port;
+    if ((host.isNotEmpty) &&
+        (!CoapUtil.regIP.hasMatch(host)) &&
+        (host != "localhost")) {
+      uriHost = host;
+    }
+    if (port < 0) {
+      if ((value.scheme.isNotEmpty) ||
+          (value.scheme == CoapConstants.uriScheme)) {
+        port = CoapConstants.defaultPort;
+      } else if (value.scheme == CoapConstants.secureUriScheme) {
+        port = CoapConstants.defaultSecurePort;
+      }
+    }
+    if (uriPort != port) {
+      if (port != CoapConstants.defaultPort) {
+        uriPort = port;
+      } else {
+        uriPort = 0;
+      }
+    }
+    uriPath = value.path;
+    uriQuery = value.query;
+    InternetAddress.lookup(host)
+      ..then((List<InternetAddress> addresses) {
+        destination = addresses.isNotEmpty ? addresses[0] : null;
+        _uri = value;
+      });
+  }
+
+  /// The response to this request.
   CoapResponse _currentResponse;
-  CoapIEndPoint _endPoint;
-  Object _sync;
+
+  CoapResponse get response => _currentResponse;
+
+  set response(CoapResponse value) {
+    _currentResponse = value;
+    emitEvent(new CoapRespondEvent(value));
+  }
+
+  /// The endpoint for this request
+  CoapIEndPoint endPoint;
 }
