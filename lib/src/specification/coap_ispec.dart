@@ -8,7 +8,7 @@
 part of coap;
 
 /// Represents a draft version of CoAP specification.
-abstract class ISpec {
+abstract class CoapISpec {
   /// Gets the name of this draft.
   String get name;
 
@@ -18,15 +18,15 @@ abstract class ISpec {
   /// Encodes a CoAP message into a bytes array.
   /// Returns the encoded bytes, or null if the message can not be encoded,
   /// i.e. the message is not a Request, a Response or an EmptyMessage.
-  typed.Uint8Buffer encode(Message msg);
+  typed.Uint8Buffer encode(CoapMessage msg);
 
   /// Decodes a CoAP message from a bytes array.
   /// Returns the decoded message, or null if the bytes array can not be recognized.
-  Message decode(typed.Uint8Buffer bytes);
+  CoapMessage decode(typed.Uint8Buffer bytes);
 
   /// Gets an IMessageEncoder.
-  IMessageEncoder newMessageEncoder();
+  CoapIMessageEncoder newMessageEncoder();
 
   /// Gets an IMessageDecoder.
-  IMessageDecoder newMessageDecoder(typed.Uint8Buffer data);
+  CoapIMessageDecoder newMessageDecoder(typed.Uint8Buffer data);
 }

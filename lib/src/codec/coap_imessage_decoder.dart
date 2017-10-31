@@ -8,7 +8,7 @@
 part of coap;
 
 /// Provides methods to parse incoming byte arrays to messages.
-abstract class IMessageDecoder {
+abstract class CoapIMessageDecoder {
   /// Checks if the decoding message is well formed.
   bool get isWellFormed;
 
@@ -37,8 +37,8 @@ abstract class IMessageDecoder {
   Response decodeResponse();
 
   /// Decodes as an EmptyMessage.
-  EmptyMessage decodeEmptyMessage();
+  CoapEmptyMessage decodeEmptyMessage();
 
   /// Decodes as a CoAP message.
-  Message decode();
+  CoapMessage decode();
 }

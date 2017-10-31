@@ -9,7 +9,7 @@ part of coap;
 
 /// This class describes the CoAP Media Type Registry as defined in
 /// RFC 7252, Section 12.3.
-class MediaType {
+class CoapMediaType {
   /// Media registry
   static final Map<int, List<String>> _registry = {
     textPlain: ["text/plain", "txt"],
@@ -156,10 +156,10 @@ class MediaType {
   }
 
   static int negotiationContent(int defaultContentType, List<int> supported,
-      List<Option> accepted) {
+      List<CoapOption> accepted) {
     if (accepted == null) return defaultContentType;
     bool hasAccept = false;
-    for (Option opt in accepted) {
+    for (CoapOption opt in accepted) {
       for (int ct in supported) {
         if (ct == opt.intValue) {
           return ct;
@@ -167,11 +167,11 @@ class MediaType {
       }
       hasAccept = true;
     }
-    return hasAccept ? MediaType.undefined : defaultContentType;
+    return hasAccept ? CoapMediaType.undefined : defaultContentType;
   }
 
   static int parse(String type) {
-    if (type == null) return MediaType.undefined;
+    if (type == null) return CoapMediaType.undefined;
     int keyRet;
     _registry.forEach((int key, List<String> value) {
       if (value[0].toLowerCase() == type.toLowerCase()) {
@@ -181,7 +181,7 @@ class MediaType {
     if (keyRet != null) {
       return keyRet;
     } else {
-      return MediaType.undefined;
+      return CoapMediaType.undefined;
     }
   }
 

@@ -8,8 +8,8 @@
 part of coap;
 
 /// This class describes the options of the CoAP messages.
-class Option {
-  Option(int type) {
+class CoapOption {
+  CoapOption(int type) {
     this._type = type;
     this._valueBytes = new typed.Uint8Buffer();
   }
@@ -83,7 +83,7 @@ class Option {
   }
 
   /// Gets the name of the option that corresponds to its type.
-  String get name => Option.stringify(_type);
+  String get name => CoapOption.stringify(_type);
 
   /// Gets the value's length in bytes of the option.
   int get length => _valueBytes.lengthInBytes;
@@ -138,7 +138,7 @@ class Option {
     switch (getFormatByType(_type)) {
       case optionFormat.integer:
         return (_type == optionTypeAccept || _type == optionTypeContentFormat)
-            ? ("\"" + MediaType.name(intValue) + "\"")
+            ? ("\"" + CoapMediaType.name(intValue) + "\"")
             : intValue.toString();
       case optionFormat.string:
         return "\"" + stringValue + "\"";
@@ -197,7 +197,7 @@ class Option {
 
   /// Equals override
   bool operator ==(dynamic other) {
-    if (other is! Option) {
+    if (other is! CoapOption) {
       return false;
     }
     if (_type != other.type) {
@@ -213,48 +213,48 @@ class Option {
   }
 
   /// Creates an option.
-  static Option create(int type) {
+  static CoapOption create(int type) {
     switch (type) {
       case optionTypeBlock1:
       case optionTypeBlock2:
-        return new BlockOption(type);
+        return new CoapBlockOption(type);
       default:
-        return new Option(type);
+        return new CoapOption(type);
     }
   }
 
   /// Creates an option.
-  static Option createRaw(int type, typed.Uint8Buffer raw) {
-    final Option opt = create(type);
+  static CoapOption createRaw(int type, typed.Uint8Buffer raw) {
+    final CoapOption opt = create(type);
     opt._valueBytes = raw;
     return opt;
   }
 
   /// Creates an option.
-  static Option createString(int type, String str) {
-    final Option opt = create(type);
+  static CoapOption createString(int type, String str) {
+    final CoapOption opt = create(type);
     opt.stringValue = str;
     return opt;
   }
 
   /// Creates an option.
-  static Option createVal(int type, int val) {
-    final Option opt = create(type);
+  static CoapOption createVal(int type, int val) {
+    final CoapOption opt = create(type);
     opt.intValue = val;
     return opt;
   }
 
   /// Creates an option.
-  static Option createLongVal(int type, int val) {
-    final Option opt = create(type);
+  static CoapOption createLongVal(int type, int val) {
+    final CoapOption opt = create(type);
     opt.longValue = val;
     return opt;
   }
 
   /// Splits a string into a set of options, e.g. a uri path.
   /// Remove any leading /
-  static List<Option> split(int type, String s, String delimiter) {
-    final List<Option> opts = new List<Option>();
+  static List<CoapOption> split(int type, String s, String delimiter) {
+    final List<CoapOption> opts = new List<CoapOption>();
     final RegExp exp = new RegExp(r"^\/*\/");
     final Match pos = exp.firstMatch(s);
     String tmp = s;
@@ -264,7 +264,7 @@ class Option {
     if (tmp.isNotEmpty) {
       tmp.split(delimiter).forEach((String str) {
         if (delimiter == "/" || str.isNotEmpty) {
-          opts.add(Option.createString(type, str));
+          opts.add(CoapOption.createString(type, str));
         }
       });
     }
@@ -272,14 +272,14 @@ class Option {
   }
 
   /// Joins the string values of a set of options.
-  static String join(List<Option> options, String delimiter) {
+  static String join(List<CoapOption> options, String delimiter) {
     String s;
     if (null == options) {
       return s;
     } else {
       String sb = "";
       bool append = false;
-      options.forEach((Option opt) {
+      options.forEach((CoapOption opt) {
         if (append) {
           sb += delimiter;
         } else {

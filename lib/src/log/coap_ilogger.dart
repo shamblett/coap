@@ -8,7 +8,7 @@
 part of coap;
 
 /// Provides methods to log messages.
-abstract class ILogger {
+abstract class CoapILogger {
   /// Is debug enabled
   bool isDebugEnabled();
 

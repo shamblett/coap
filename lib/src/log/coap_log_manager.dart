@@ -8,17 +8,17 @@
 part of coap;
 
 /// Allows selection and management of logging for the coap library.
-class LogManager {
-  static ILogger _logger;
+class CoapLogManager {
+  static CoapILogger _logger;
 
-  LogManager(String type) {
+  CoapLogManager(String type) {
     bool setCommon = true;
     if (type == "console") {
-      _logger = new ConsoleLogger();
+      _logger = new CoapConsoleLogger();
     } else if (type == "file") {
-      _logger = new FileLogger(CoapConfig.inst.logFile);
+      _logger = new CoapFileLogger(CoapConfig.inst.logFile);
     } else {
-      _logger = new NullLogger();
+      _logger = new CoapNullLogger();
       setCommon = false;
     }
 
@@ -34,7 +34,7 @@ class LogManager {
     }
   }
 
-  ILogger get logger => _logger;
+  CoapILogger get logger => _logger;
 
-  set logger(ILogger logger) => _logger = logger;
+  set logger(CoapILogger logger) => _logger = logger;
 }

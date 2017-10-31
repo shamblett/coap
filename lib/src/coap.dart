@@ -12,19 +12,19 @@ class Coap {
   /// Construction
   /// Default is to use UDP
   Coap() {
-    _network = new NetworkUDP();
+    _network = new CoapNetworkUDP();
   }
 
   /// The network interface to use
-  Network _network;
+  CoapNetwork _network;
 
-  NetworkUDP get udpNetwork => _network as NetworkUDP;
+  CoapNetworkUDP get udpNetwork => _network as CoapNetworkUDP;
 
-  Network get network => _network;
+  CoapNetwork get network => _network;
 
-  set udpNetwork(NetworkUDP net) => _network = net;
+  set udpNetwork(CoapNetworkUDP net) => _network = net;
 
-  set network(Network net) => _network = net;
+  set network(CoapNetwork net) => _network = net;
 
   /// Port, defaults to 5683
   int port = 5683;

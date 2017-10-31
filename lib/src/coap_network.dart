@@ -9,7 +9,7 @@ part of coap;
 
 /// Abstract networking class, allows different implementations for
 /// UDP, test etc.
-abstract class Network {
+abstract class CoapNetwork {
   /// The internet address
   InternetAddress address;
 

@@ -9,7 +9,7 @@ part of coap;
 
 /// This class describes the CoAP Code Registry as defined in
 /// draft-ietf-core-coap-08, section 11.1
-class Code {
+class CoapCode {
   static const int empty = 0;
 
   static const int successCode = 2;

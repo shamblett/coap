@@ -7,7 +7,7 @@
 
 part of coap;
 
-class NetworkUDP extends Network {
+class CoapNetworkUDP extends CoapNetwork {
 
   /// UDP socket
   RawDatagramSocket _socket;

@@ -8,15 +8,15 @@
 part of coap;
 
 /// This class describes the block options of the CoAP messages
-class BlockOption extends Option {
-  BlockOption(int type) : super(type) {
+class CoapBlockOption extends CoapOption {
+  CoapBlockOption(int type) : super(type) {
     this.intValue = 0;
   }
 
   /// num - Block number
   /// szx - Block size
   /// m - More flag
-  BlockOption.fromParts(int type, int num, int szx, bool m) : super(type) {
+  CoapBlockOption.fromParts(int type, int num, int szx, bool m) : super(type) {
     this.intValue = _encode(num, szx, m);
   }
 

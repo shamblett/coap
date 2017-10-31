@@ -8,7 +8,7 @@
 part of coap;
 
 /// Utility methods
-class Util {
+class CoapUtil {
   /// Insertion sort, to make the options list stably ordered.
   static void insertionSort<T>(List<T> list, Comparator<T> comparison) {
     collection.insertionSort(list, compare: comparison);
@@ -39,7 +39,7 @@ class Util {
   }
 
   /// Stringify a message.
-  static String messageToString(Message msg) {
+  static String messageToString(CoapMessage msg) {
     final StringBuffer sb = new StringBuffer();
     String kind = "Message";
     if (msg.isRequest) {
@@ -60,7 +60,7 @@ class Util {
     }
     sb.writeln("Options: ${optionsToString(msg)}");
     sb.writeln("Payload: ${msg.payloadSize} Bytes");
-    if (msg.payloadSize > 0 && MediaType.isPrintable(msg.contentType)) {
+    if (msg.payloadSize > 0 && CoapMediaType.isPrintable(msg.contentType)) {
       sb.writeln(
           "---------------------------------------------------------------");
       sb.writeln(msg.payloadString);
@@ -85,7 +85,7 @@ class Util {
   }
 
   /// Stringify options in a message.
-  static String optionsToString(Message msg) {
+  static String optionsToString(CoapMessage msg) {
     if (msg == null) {
       return "Message is null - no options";
     }
@@ -106,12 +106,13 @@ class Util {
     sb.writeln("Uri Paths : " + iterableToString(msg.uriPaths) ?? "None");
     sb.write("Content-Type : ");
     sb.writeln(
-        msg.contentType != MediaType.undefined ? msg.contentType : "None");
+        msg.contentType != CoapMediaType.undefined ? msg.contentType : "None");
     sb.write("Max Age : ");
     msg.hasOption(optionTypeMaxAge) ? sb.writeln(msg.maxAge) : "None";
     sb.writeln("Uri Queries : " + iterableToString(msg.uriQueries) ?? "None");
     sb.write("Accept : ");
-    sb.writeln(msg.contentType != MediaType.undefined ? msg.accept : "None");
+    sb.writeln(
+        msg.contentType != CoapMediaType.undefined ? msg.accept : "None");
     sb.writeln("Location Queries : " + iterableToString(msg.locationQueries) ??
         "None");
     sb.write("Proxy Uri : ");

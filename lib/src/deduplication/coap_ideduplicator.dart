@@ -9,7 +9,7 @@ part of coap;
 
 /// Provides methods to detect duplicates.
 /// Note that CONs and NONs can be duplicates.
-abstract class IDeduplicator {
+abstract class CoapIDeduplicator {
   /// Starts.
   void start();
 

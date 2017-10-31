@@ -8,7 +8,7 @@
 part of coap;
 
 /// Types of CoAP messages.
-class MessageType {
+class CoapMessageType {
 
   /// Unknown type.
   static const int unknown = -1;

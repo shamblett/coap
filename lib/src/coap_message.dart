@@ -20,12 +20,12 @@ class CancelledEvent {}
 /// CoAP messages are of type Request, Response or EmptyMessage,
 /// each of which has a MessageType, a message identifier,
 /// a token (0-8 bytes), a collection of Options and a payload.
-class Message extends Object with events.EventEmitter {
+class CoapMessage extends Object with events.EventEmitter {
   /// Instantiates a message with the given type.
-  Message(this.type);
+  CoapMessage(this.type);
 
   /// Instantiates a message with the given type and code.
-  Message.withCode(this.type, this.code);
+  CoapMessage.withCode(this.type, this.code);
 
   /// Indicates that no ID has been set.
   static const int none = -1;
@@ -34,23 +34,23 @@ class Message extends Object with events.EventEmitter {
   static const int invalidID = none;
 
   /// The type of this CoAP message.
-  int type = MessageType.unknown;
+  int type = CoapMessageType.unknown;
 
   /// The code of this CoAP message.
   int code;
 
-  String get codeString => Code.codeToString(code);
+  String get codeString => CoapCode.codeToString(code);
 
   /// The ID of this CoAP message.
   int id = none;
 
   /// Option map
-  Map<int, List<Option>> _optionMap = new Map<int, List<Option>>();
+  Map<int, List<CoapOption>> _optionMap = new Map<int, List<CoapOption>>();
 
-  Map<int, List<Option>> get optionMap => _optionMap;
+  Map<int, List<CoapOption>> get optionMap => _optionMap;
 
   /// Adds an option to the list of options of this CoAP message.
-  Message addOption(Option option) {
+  CoapMessage addOption(CoapOption option) {
     if (option == null) {
       throw new ArgumentError.notNull("Message::addOption - option is null");
     }
@@ -59,13 +59,13 @@ class Message extends Object with events.EventEmitter {
       token = option.valueBytes;
       return this;
     }
-    _optionMap[option.type] = new List<Option>();
+    _optionMap[option.type] = new List<CoapOption>();
     return this;
   }
 
   /// Adds all option to the list of options of this CoAP message.
-  void addOptions(Iterable<Option> options) {
-    for (Option opt in options) {
+  void addOptions(Iterable<CoapOption> options) {
+    for (CoapOption opt in options) {
       addOption(opt);
     }
   }
@@ -77,21 +77,21 @@ class Message extends Object with events.EventEmitter {
   }
 
   /// Gets all options of the given type.
-  Iterable<Option> getOptions(int optionType) {
+  Iterable<CoapOption> getOptions(int optionType) {
     return optionMap.containsKey(optionType) ? optionMap[optionType] : null;
   }
 
   /// Gets a list of all options.
-  Iterable<Option> getSortedOptions() {
-    final List<Option> list = new List<Option>();
-    for (Iterable<Option> opts in _optionMap.values) {
+  Iterable<CoapOption> getSortedOptions() {
+    final List<CoapOption> list = new List<CoapOption>();
+    for (Iterable<CoapOption> opts in _optionMap.values) {
       if (opts.length > 0) list.addAll(opts);
     }
     return list;
   }
 
   /// Sets an option.
-  void setOption(Option opt) {
+  void setOption(CoapOption opt) {
     if (opt != null) {
       removeOptions(opt.type);
       addOption(opt);
@@ -99,9 +99,9 @@ class Message extends Object with events.EventEmitter {
   }
 
   /// Sets all options with the specified option type.
-  void setOptions(Iterable<Option> options) {
+  void setOptions(Iterable<CoapOption> options) {
     if (options == null) return;
-    for (Option opt in options) {
+    for (CoapOption opt in options) {
       removeOptions(opt.type);
     }
     addOptions(options);
@@ -109,8 +109,8 @@ class Message extends Object with events.EventEmitter {
 
   /// Gets the first option of the specified option type.
   /// Returns the first option of the specified type, or null
-  Option getFirstOption(int optionType) {
-    final List<Option> list = getOptions(optionType);
+  CoapOption getFirstOption(int optionType) {
+    final List<CoapOption> list = getOptions(optionType);
     return list.length > 0 ? list.first : null;
   }
 
@@ -136,10 +136,10 @@ class Message extends Object with events.EventEmitter {
   }
 
   /// Gets a value that indicates whether this CoAP message is a request message.
-  bool get isRequest => Code.isRequest(code);
+  bool get isRequest => CoapCode.isRequest(code);
 
   /// Gets a value that indicates whether this CoAP message is a response message.
-  bool get isResponse => Code.isResponse(code);
+  bool get isResponse => CoapCode.isResponse(code);
 
   /// The destination endpoint.
   InternetAddress destination;
@@ -228,10 +228,10 @@ class Message extends Object with events.EventEmitter {
   String get payloadString => _utfDecoder.convert(_payload);
 
   set payloadString(String value) =>
-      setPayloadMedia(value, MediaType.textPlain);
+      setPayloadMedia(value, CoapMediaType.textPlain);
 
   /// Sets the payload of this CoAP message.
-  Message setPayload(String payload) {
+  CoapMessage setPayload(String payload) {
     String temp = payload;
     if (payload == null) temp = "";
     _payload = _utfEncoder.convert(temp);
@@ -239,7 +239,7 @@ class Message extends Object with events.EventEmitter {
   }
 
   /// Sets the payload of this CoAP message.
-  Message setPayloadMedia(String payload, int mediaType) {
+  CoapMessage setPayloadMedia(String payload, int mediaType) {
     String temp = payload;
     if (payload == null) temp = "";
     _payload = _utfEncoder.convert(temp);
@@ -248,7 +248,7 @@ class Message extends Object with events.EventEmitter {
   }
 
   /// Sets the payload of this CoAP message.
-  Message setPayloadMediaRaw(typed.Uint8Buffer payload, int mediaType) {
+  CoapMessage setPayloadMediaRaw(typed.Uint8Buffer payload, int mediaType) {
     _payload = payload;
     contentType = mediaType;
     return this;
@@ -274,7 +274,7 @@ class Message extends Object with events.EventEmitter {
         payload += "... " + payloadSize.toString() + " bytes";
     }
     return "${type.toString()}-${codeString} ID=${id
-        .toString()}, Token=${tokenString}, Options=[${Util.optionsToString(
+        .toString()}, Token=${tokenString}, Options=[${CoapUtil.optionsToString(
         this)}], ${payload}";
   }
 
@@ -286,25 +286,25 @@ class Message extends Object with events.EventEmitter {
     if (identical(this, obj)) {
       return true;
     }
-    if ((obj is Message) && (type != obj.type)) {
+    if ((obj is CoapMessage) && (type != obj.type)) {
       return false;
     }
-    if ((obj is Message) && (code != obj.code)) {
+    if ((obj is CoapMessage) && (code != obj.code)) {
       return false;
     }
-    if ((obj is Message) && (id != obj.id)) {
+    if ((obj is CoapMessage) && (id != obj.id)) {
       return false;
     }
     if (optionMap == null) {
-      if ((obj is Message) && (obj.optionMap != null)) return false;
-    } else if ((obj is Message) && (optionMap != obj.optionMap)) {
+      if ((obj is CoapMessage) && (obj.optionMap != null)) return false;
+    } else if ((obj is CoapMessage) && (optionMap != obj.optionMap)) {
       return false;
     }
-    Message other;
-    if (obj is Message) {
+    CoapMessage other;
+    if (obj is CoapMessage) {
       other = obj;
     }
-    if (!Util.areSequenceEqualTo(payload, other.payload)) {
+    if (!CoapUtil.areSequenceEqualTo(payload, other.payload)) {
       return false;
     }
     return true;
@@ -314,10 +314,10 @@ class Message extends Object with events.EventEmitter {
   int get hashCode => super.hashCode;
 
   /// Select options helper
-  Iterable _selectOptions(int optionType, func(Option option)) sync* {
-    final Iterable<Option> opts = getOptions(optionType);
+  Iterable _selectOptions(int optionType, func(CoapOption option)) sync* {
+    final Iterable<CoapOption> opts = getOptions(optionType);
     if (opts != null) {
-      for (Option opt in opts) {
+      for (CoapOption opt in opts) {
         yield func(opt);
       }
     }
@@ -325,16 +325,16 @@ class Message extends Object with events.EventEmitter {
 
   /// If-Matches.
   typed.Uint8Buffer get ifMatches =>
-      _selectOptions(optionTypeIfMatch, (Option o) => o.valueBytes);
+      _selectOptions(optionTypeIfMatch, (CoapOption o) => o.valueBytes);
 
   bool isIfMatch(typed.Uint8Buffer what) {
-    if (Util.areSequenceEqualTo(what, ifMatches)) {
+    if (CoapUtil.areSequenceEqualTo(what, ifMatches)) {
       return true;
     }
     return false;
   }
 
-  Message addIfMatch(typed.Uint8Buffer opaque) {
+  CoapMessage addIfMatch(typed.Uint8Buffer opaque) {
     if (opaque == null) {
       throw new ArgumentError.notNull("Message::addIfMatch");
     }
@@ -342,45 +342,48 @@ class Message extends Object with events.EventEmitter {
       throw new ArgumentError.value(opaque.length, "Message::addIfMatch",
           "Content of If-Match option is too large");
     }
-    return addOption(Option.createRaw(optionTypeIfMatch, opaque));
+    return addOption(CoapOption.createRaw(optionTypeIfMatch, opaque));
   }
 
-  Message removeIfMatch(typed.Uint8Buffer opaque) {
-    final List<Option> list = getOptions(optionTypeIfMatch);
+  CoapMessage removeIfMatch(typed.Uint8Buffer opaque) {
+    final List<CoapOption> list = getOptions(optionTypeIfMatch);
     if (list != null) {
-      final Option opt = Util.firstOrDefault(
-          list, (Option o) => Util.areSequenceEqualTo(opaque, o.valueBytes));
+      final CoapOption opt = CoapUtil.firstOrDefault(
+          list, (CoapOption o) =>
+          CoapUtil.areSequenceEqualTo(opaque, o.valueBytes));
       if (opt != null) list.remove(opt);
     }
     return this;
   }
 
-  Message clearIfMatches() {
+  CoapMessage clearIfMatches() {
     removeOptions(optionTypeIfMatch);
     return this;
   }
 
   /// Etags
   typed.Uint8Buffer get etags =>
-      _selectOptions(optionTypeETag, (Option o) => o.valueBytes);
+      _selectOptions(optionTypeETag, (CoapOption o) => o.valueBytes);
 
   bool containsETag(typed.Uint8Buffer what) =>
-      Util.contains(
+      CoapUtil.contains(
           getOptions(optionTypeETag),
-              (Option o) => Util.areSequenceEqualTo(what, o.valueBytes));
+              (CoapOption o) =>
+              CoapUtil.areSequenceEqualTo(what, o.valueBytes));
 
-  Message addETag(typed.Uint8Buffer opaque) {
+  CoapMessage addETag(typed.Uint8Buffer opaque) {
     if (opaque == null) {
       throw new ArgumentError.notNull("Message::addETag");
     }
-    return addOption(Option.createRaw(optionTypeETag, opaque));
+    return addOption(CoapOption.createRaw(optionTypeETag, opaque));
   }
 
-  Message removeETag(typed.Uint8Buffer opaque) {
-    final List<Option> list = getOptions(optionTypeETag);
+  CoapMessage removeETag(typed.Uint8Buffer opaque) {
+    final List<CoapOption> list = getOptions(optionTypeETag);
     if (list != null) {
-      final Option opt = Util.firstOrDefault(
-          list, (Option o) => Util.areSequenceEqualTo(opaque, o.valueBytes));
+      final CoapOption opt = CoapUtil.firstOrDefault(
+          list, (CoapOption o) =>
+          CoapUtil.areSequenceEqualTo(opaque, o.valueBytes));
       if (opt != null) {
         list.remove(opt);
       }
@@ -388,7 +391,7 @@ class Message extends Object with events.EventEmitter {
     return this;
   }
 
-  Message clearETags() {
+  CoapMessage clearETags() {
     removeOptions(optionTypeETag);
     return this;
   }
@@ -398,7 +401,7 @@ class Message extends Object with events.EventEmitter {
 
   set ifNonematch(int value) {
     if (value != null) {
-      Option.create(optionTypeIfNoneMatch);
+      CoapOption.create(optionTypeIfNoneMatch);
     } else {
       removeOptions(optionTypeIfNoneMatch);
     }
@@ -406,7 +409,7 @@ class Message extends Object with events.EventEmitter {
 
   /// Uri's
   String get uriHost {
-    final Option host = getFirstOption(optionTypeUriHost);
+    final CoapOption host = getFirstOption(optionTypeUriHost);
     return host == null ? null : host.toString();
   }
 
@@ -418,24 +421,25 @@ class Message extends Object with events.EventEmitter {
       throw new ArgumentError.value(value.length, "Message::uriHost",
           "URI-Host option's length must be between 1 and 255 inclusive");
     }
-    setOption(Option.createString(optionTypeUriHost, value));
+    setOption(CoapOption.createString(optionTypeUriHost, value));
   }
 
-  String get uriPath => "/" + Option.join(getOptions(optionTypeUriPath), "/");
+  String get uriPath =>
+      "/" + CoapOption.join(getOptions(optionTypeUriPath), "/");
 
   set uriPath(String value) =>
-      setOptions(Option.split(optionTypeUriPath, value, "/"));
+      setOptions(CoapOption.split(optionTypeUriPath, value, "/"));
 
   Iterable<String> get uriPaths sync* {
-    final Iterable<Option> opts = getOptions(optionTypeUriPath);
+    final Iterable<CoapOption> opts = getOptions(optionTypeUriPath);
     if (opts != null) {
-      for (Option opt in opts) {
+      for (CoapOption opt in opts) {
         yield opt.toString();
       }
     }
   }
 
-  Message addUriPath(String path) {
+  CoapMessage addUriPath(String path) {
     if (path == null) {
       throw new ArgumentError.notNull("Message::addUriPath");
     }
@@ -443,44 +447,44 @@ class Message extends Object with events.EventEmitter {
       throw new ArgumentError.value(path.length, "Message::addUriPath",
           "Uri Path option's length must be between 0 and 255 inclusive");
     }
-    return addOption(Option.createString(optionTypeUriPath, path));
+    return addOption(CoapOption.createString(optionTypeUriPath, path));
   }
 
-  Message removeUriPath(String path) {
-    final List<Option> list = getOptions(optionTypeUriPath);
+  CoapMessage removeUriPath(String path) {
+    final List<CoapOption> list = getOptions(optionTypeUriPath);
     if (list != null) {
-      final Option opt =
-      Util.firstOrDefault(list, (Option o) => path == o.toString());
+      final CoapOption opt =
+      CoapUtil.firstOrDefault(list, (CoapOption o) => path == o.toString());
       if (opt != null) list.remove(opt);
     }
     return this;
   }
 
-  Message clearUriPath() {
+  CoapMessage clearUriPath() {
     removeOptions(optionTypeUriPath);
     return this;
   }
 
-  String get uriQuery => Option.join(getOptions(optionTypeUriQuery), "&");
+  String get uriQuery => CoapOption.join(getOptions(optionTypeUriQuery), "&");
 
   set uriQuery(String value) {
     String tmp = value;
     if (value.isNotEmpty && value.startsWith("?")) {
       tmp = value.substring(1);
     }
-    setOptions(Option.split(optionTypeUriQuery, tmp, "&"));
+    setOptions(CoapOption.split(optionTypeUriQuery, tmp, "&"));
   }
 
   Iterable<String> get uriQueries sync* {
-    final Iterable<Option> opts = getOptions(optionTypeUriQuery);
+    final Iterable<CoapOption> opts = getOptions(optionTypeUriQuery);
     if (opts != null) {
-      for (Option opt in opts) {
+      for (CoapOption opt in opts) {
         yield opt.toString();
       }
     }
   }
 
-  Message addUriQuery(String query) {
+  CoapMessage addUriQuery(String query) {
     if (query == null) {
       throw new ArgumentError.notNull("Message::addUriQuery");
     }
@@ -488,39 +492,39 @@ class Message extends Object with events.EventEmitter {
       throw new ArgumentError.value(query.length, "Message::addUriQuery",
           "Uri Query option's length must be between 0 and 255 inclusive");
     }
-    return addOption(Option.createString(optionTypeUriQuery, query));
+    return addOption(CoapOption.createString(optionTypeUriQuery, query));
   }
 
-  Message removeUriQuery(String query) {
-    final List<Option> list = getOptions(optionTypeUriQuery);
+  CoapMessage removeUriQuery(String query) {
+    final List<CoapOption> list = getOptions(optionTypeUriQuery);
     if (list != null) {
-      final Option opt =
-      Util.firstOrDefault(list, (Option o) => query == o.toString());
+      final CoapOption opt =
+      CoapUtil.firstOrDefault(list, (CoapOption o) => query == o.toString());
       if (opt != null) list.remove(opt);
     }
     return this;
   }
 
-  Message clearUriQuery() {
+  CoapMessage clearUriQuery() {
     removeOptions(optionTypeUriQuery);
     return this;
   }
 
   /// Uri port
   int get uriPort {
-    final Option opt = getFirstOption(optionTypeUriPort);
+    final CoapOption opt = getFirstOption(optionTypeUriPort);
     return opt == null ? null : opt.value;
   }
 
   /// Location
   String get locationPath =>
-      Option.join(getOptions(optionTypeLocationPath), "/");
+      CoapOption.join(getOptions(optionTypeLocationPath), "/");
 
   set locationPath(String value) =>
-      setOptions(Option.split(optionTypeLocationPath, value, "/"));
+      setOptions(CoapOption.split(optionTypeLocationPath, value, "/"));
 
   Iterable<String> get locationPaths =>
-      _selectOptions(optionTypeLocationPath, (Option o) => o.toString());
+      _selectOptions(optionTypeLocationPath, (CoapOption o) => o.toString());
 
   String get location {
     String path = "/" + locationPath;
@@ -531,7 +535,7 @@ class Message extends Object with events.EventEmitter {
     return path;
   }
 
-  Message addLocationPath(String path) {
+  CoapMessage addLocationPath(String path) {
     if (path == null) {
       throw new ArgumentError.notNull("Message::addLocationPath");
     }
@@ -539,39 +543,39 @@ class Message extends Object with events.EventEmitter {
       throw new ArgumentError.value(path.length, "Message::addLocationPath",
           "Location Path option's length must be between 0 and 255 inclusive");
     }
-    return addOption(Option.createString(optionTypeLocationPath, path));
+    return addOption(CoapOption.createString(optionTypeLocationPath, path));
   }
 
-  Message removelocationPath(String path) {
-    final List<Option> list = getOptions(optionTypeLocationPath);
+  CoapMessage removelocationPath(String path) {
+    final List<CoapOption> list = getOptions(optionTypeLocationPath);
     if (list != null) {
-      final Option opt =
-      Util.firstOrDefault(list, (Option o) => path == o.toString());
+      final CoapOption opt =
+      CoapUtil.firstOrDefault(list, (CoapOption o) => path == o.toString());
       if (opt != null) list.remove(opt);
     }
     return this;
   }
 
-  Message clearLocationPath() {
+  CoapMessage clearLocationPath() {
     removeOptions(optionTypeLocationPath);
     return this;
   }
 
   String get locationQuery =>
-      Option.join(getOptions(optionTypeLocationQuery), "&");
+      CoapOption.join(getOptions(optionTypeLocationQuery), "&");
 
   set locationQuery(String value) {
     String tmp = value;
     if (value.isNotEmpty && value.startsWith("?")) {
       tmp = value.substring(1);
     }
-    setOptions(Option.split(optionTypeLocationQuery, tmp, "&"));
+    setOptions(CoapOption.split(optionTypeLocationQuery, tmp, "&"));
   }
 
   Iterable<String> get locationQueries =>
-      _selectOptions(optionTypeLocationQuery, (Option o) => o.toString());
+      _selectOptions(optionTypeLocationQuery, (CoapOption o) => o.toString());
 
-  Message addLocationQuery(String query) {
+  CoapMessage addLocationQuery(String query) {
     if (query == null) {
       throw new ArgumentError.notNull("Message::addLocationQuery");
     }
@@ -579,35 +583,35 @@ class Message extends Object with events.EventEmitter {
       throw new ArgumentError.value(query.length, "Message::addLocationQuery",
           "Location Query option's length must be between 0 and 255 inclusive");
     }
-    return addOption(Option.createString(optionTypeLocationQuery, query));
+    return addOption(CoapOption.createString(optionTypeLocationQuery, query));
   }
 
-  Message removeLocationQuery(String query) {
-    final List<Option> list = getOptions(optionTypeLocationQuery);
+  CoapMessage removeLocationQuery(String query) {
+    final List<CoapOption> list = getOptions(optionTypeLocationQuery);
     if (list != null) {
-      final Option opt =
-      Util.firstOrDefault(list, (Option o) => query == o.toString());
+      final CoapOption opt =
+      CoapUtil.firstOrDefault(list, (CoapOption o) => query == o.toString());
       if (opt != null) list.remove(opt);
     }
     return this;
   }
 
-  Message clearLocationQuery() {
+  CoapMessage clearLocationQuery() {
     removeOptions(optionTypeLocationQuery);
     return this;
   }
 
   /// Content type
   int get contentType {
-    final Option opt = getFirstOption(optionTypeContentType);
-    return (null == opt) ? MediaType.undefined : opt.value;
+    final CoapOption opt = getFirstOption(optionTypeContentType);
+    return (null == opt) ? CoapMediaType.undefined : opt.value;
   }
 
   set contentType(int value) {
-    if (value == MediaType.undefined) {
+    if (value == CoapMediaType.undefined) {
       removeOptions(optionTypeContentType);
     } else {
-      setOption(Option.createVal(optionTypeContentType, value));
+      setOption(CoapOption.createVal(optionTypeContentType, value));
     }
   }
 
@@ -619,7 +623,7 @@ class Message extends Object with events.EventEmitter {
 
   /// The max-age of this CoAP message.
   int get maxAge {
-    final Option opt = getFirstOption(optionTypeMaxAge);
+    final CoapOption opt = getFirstOption(optionTypeMaxAge);
     return (null == opt) ? CoapConstants.defaultMaxAge : opt.value;
   }
 
@@ -628,26 +632,26 @@ class Message extends Object with events.EventEmitter {
       throw new ArgumentError.value(value, "Message::maxAge",
           "Max-Age option must be between 0 and 4294967295 (4 bytes) inclusive");
     }
-    setOption(Option.createVal(optionTypeMaxAge, value));
+    setOption(CoapOption.createVal(optionTypeMaxAge, value));
   }
 
   /// Accept
   int get accept {
-    final Option opt = getFirstOption(optionTypeAccept);
-    return (null == opt) ? MediaType.undefined : opt.value;
+    final CoapOption opt = getFirstOption(optionTypeAccept);
+    return (null == opt) ? CoapMediaType.undefined : opt.value;
   }
 
   set accept(int value) {
-    if (value == MediaType.undefined) {
+    if (value == CoapMediaType.undefined) {
       removeOptions(optionTypeAccept);
     } else {
-      setOption(Option.createVal(optionTypeAccept, value));
+      setOption(CoapOption.createVal(optionTypeAccept, value));
     }
   }
 
   /// Proxy uri
   Uri get proxyUri {
-    final Option opt = getFirstOption(optionTypeProxyUri);
+    final CoapOption opt = getFirstOption(optionTypeProxyUri);
     if (opt == null) {
       return null;
     }
@@ -665,13 +669,13 @@ class Message extends Object with events.EventEmitter {
     if (value == null) {
       removeOptions(optionTypeProxyUri);
     } else {
-      setOption(Option.createString(optionTypeProxyUri, value.toString()));
+      setOption(CoapOption.createString(optionTypeProxyUri, value.toString()));
     }
   }
 
   /// Proxy scheme
   String get proxyScheme {
-    final Option opt = getFirstOption(optionTypeProxyScheme);
+    final CoapOption opt = getFirstOption(optionTypeProxyScheme);
     return opt == null ? null : opt.toString();
   }
 
@@ -679,13 +683,13 @@ class Message extends Object with events.EventEmitter {
     if (value == null) {
       removeOptions(optionTypeProxyScheme);
     } else {
-      setOption(Option.createString(optionTypeProxyScheme, value));
+      setOption(CoapOption.createString(optionTypeProxyScheme, value));
     }
   }
 
   /// Observe
   int get observe {
-    final Option opt = getFirstOption(optionTypeObserve);
+    final CoapOption opt = getFirstOption(optionTypeObserve);
     if (opt == null) {
       return null;
     } else {
@@ -703,13 +707,13 @@ class Message extends Object with events.EventEmitter {
           "Observe option must be between 0 and ${((1 << 24) -
               1)} (3 bytes) inclusive");
     } else {
-      setOption(Option.createVal(optionTypeObserve, value));
+      setOption(CoapOption.createVal(optionTypeObserve, value));
     }
   }
 
   /// Size 1
   int get size1 {
-    final Option opt = getFirstOption(optionTypeSize1);
+    final CoapOption opt = getFirstOption(optionTypeSize1);
     return opt == null ? 0 : opt.value;
   }
 
@@ -717,13 +721,13 @@ class Message extends Object with events.EventEmitter {
     if (value == null) {
       removeOptions(optionTypeSize1);
     } else {
-      setOption(Option.createVal(optionTypeSize1, value));
+      setOption(CoapOption.createVal(optionTypeSize1, value));
     }
   }
 
   /// Size 2
   int get size2 {
-    final Option opt = getFirstOption(optionTypeSize2);
+    final CoapOption opt = getFirstOption(optionTypeSize2);
     return opt == null ? 0 : opt.value;
   }
 
@@ -731,14 +735,15 @@ class Message extends Object with events.EventEmitter {
     if (value == null) {
       removeOptions(optionTypeSize2);
     } else {
-      setOption(Option.createVal(optionTypeSize2, value));
+      setOption(CoapOption.createVal(optionTypeSize2, value));
     }
   }
 
   /// Block 1
-  BlockOption get block1 => getFirstOption(optionTypeBlock1) as BlockOption;
+  CoapBlockOption get block1 =>
+      getFirstOption(optionTypeBlock1) as CoapBlockOption;
 
-  set block1(BlockOption value) {
+  set block1(CoapBlockOption value) {
     if (value == null) {
       removeOptions(optionTypeBlock1);
     } else {
@@ -747,13 +752,14 @@ class Message extends Object with events.EventEmitter {
   }
 
   void setBlock1(int szx, bool m, int num) {
-    setOption(new BlockOption.fromParts(optionTypeBlock1, num, szx, m));
+    setOption(new CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m));
   }
 
   /// Block 2
-  BlockOption get block2 => getFirstOption(optionTypeBlock2) as BlockOption;
+  CoapBlockOption get block2 =>
+      getFirstOption(optionTypeBlock2) as CoapBlockOption;
 
-  set block2(BlockOption value) {
+  set block2(CoapBlockOption value) {
     if (value == null) {
       removeOptions(optionTypeBlock2);
     } else {
@@ -762,6 +768,6 @@ class Message extends Object with events.EventEmitter {
   }
 
   void setBlock2(int szx, bool m, int num) {
-    setOption(new BlockOption.fromParts(optionTypeBlock2, num, szx, m));
+    setOption(new CoapBlockOption.fromParts(optionTypeBlock2, num, szx, m));
   }
 }
