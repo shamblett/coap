@@ -125,7 +125,7 @@ class CoapMessage extends Object with events.EventEmitter {
 
   typed.Uint8Buffer get token => _token;
 
-  String get tokenString => _token.toString();
+  String get tokenString => CoapByteArrayUtil.toHexString(_token);
 
   set token(typed.Uint8Buffer value) {
     if (value != null && value.length > 8) {

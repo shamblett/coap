@@ -143,7 +143,7 @@ class CoapOption {
       case optionFormat.string:
         return "\"" + stringValue + "\"";
       default:
-        return _valueBytes.toString();
+        return CoapByteArrayUtil.toHexString(_valueBytes);
     }
   }
 

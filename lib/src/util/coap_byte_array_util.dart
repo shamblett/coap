@@ -8,7 +8,7 @@
 part of coap;
 
 /// Utility methods for bytes array.
-class CoapByteArrayUtils {
+class CoapByteArrayUtil {
   /// Hashing constants
   static const int p = 16777619;
   static const int hashSeed = 2166136261;

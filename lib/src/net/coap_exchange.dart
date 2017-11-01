@@ -173,10 +173,25 @@ class CoapKeyToken {
   CoapKeyToken(typed.Uint8Buffer token) {
     if (token == null) throw new ArgumentError.notNull("CoapKeyToken::token");
     _token = token;
-    _hash = CoapByteArrayUtils.computeHash(_token);
+    _hash = CoapByteArrayUtil.computeHash(_token);
   }
 
   typed.Uint8Buffer _token;
   int _hash;
 
+  int get getHashCode => _hash;
+
+  /// Dart style
+  int get hashCode => _hash;
+
+  bool operator ==(Object obj) {
+    if ((obj != null) && (obj is CoapKeyToken)) {
+      return _hash == obj.hashCode;
+    }
+    return false;
+  }
+
+  String toString() {
+    return "KeyToken[${CoapByteArrayUtil.toHexString(_token)}]";
+  }
 }
