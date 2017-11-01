@@ -63,6 +63,8 @@ part 'src/deduplication/coap_ideduplicator.dart';
 
 part 'src/util/coap_util.dart';
 
+part 'src/util/coap_byte_array_util.dart';
+
 part 'src/specification/coap_ispec.dart';
 
 part 'src/codec/coap_imessage_encoder.dart';

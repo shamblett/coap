@@ -13,6 +13,7 @@ dependencies:
  log4dart: 'any'
  eventable: '^5.2.1'
  collection: '>=1.14.3'
+ hex: 'any'
 
 dev_dependencies:
   test: '^0.12.0'
