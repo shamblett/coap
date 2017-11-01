@@ -159,7 +159,7 @@ class CoapKeyId {
 
   bool operator ==(Object obj) {
     if ((obj != null) && (obj is CoapKeyId)) {
-      return _id == obj._id && (_endpoint == obj._endpoint);
+      return (_id == obj._id) && (_endpoint == obj._endpoint);
     }
     return false;
   }
@@ -193,5 +193,33 @@ class CoapKeyToken {
 
   String toString() {
     return "KeyToken[${CoapByteArrayUtil.toHexString(_token)}]";
+  }
+}
+
+class CoapKeyUri {
+  CoapKeyUri(Uri uri, InternetAddress ep) {
+    _uri = uri;
+    _endpoint = ep;
+    _hash = uri.hashCode * 31 + (ep == null ? 0 : ep.hashCode);
+  }
+
+  Uri _uri;
+  InternetAddress _endpoint;
+  int _hash;
+
+  int get getHashCode => _hash;
+
+  /// Dart style
+  int get hashCode => _hash;
+
+  bool operator ==(Object obj) {
+    if ((obj != null) && (obj is CoapKeyUri)) {
+      return (_uri == obj._uri) && (_endpoint == obj._endpoint);
+    }
+    return false;
+  }
+
+  String toString() {
+    return "KeyUri[$_uri for $_endpoint]";
   }
 }
