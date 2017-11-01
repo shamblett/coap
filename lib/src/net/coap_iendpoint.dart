@@ -9,23 +9,46 @@ part of coap;
 
 /// Events
 /// Occurs when a request is about to be sent.
+class CoapSendingRequestEvent {
+  CoapRequest request;
 
-class CoapSendingRequestEvent {}
+  CoapSendingRequestEvent(this.request);
+}
 
 /// Occurs when a response is about to be sent.
-class CoapSendingResponseEvent {}
+class CoapSendingResponseEvent {
+  CoapResponse response;
+
+  CoapSendingResponseEvent(this.response);
+}
 
 /// Occurs when a an empty message is about to be sent.
-class CoapSendingEmptyMessageEvent {}
+class CoapSendingEmptyMessageEvent {
+  CoapEmptyMessage empty;
+
+  CoapSendingEmptyMessageEvent(this.empty);
+}
 
 /// Occurs when a request request has been received.
-class CoapReceivingRequestEvent {}
+class CoapReceivingRequestEvent {
+  CoapRequest request;
+
+  CoapReceivingRequestEvent(this.request);
+}
 
 /// Occurs when a response has been received.
-class CoapReceivingResponseEvent {}
+class CoapReceivingResponseEvent {
+  CoapResponse response;
+
+  CoapReceivingResponseEvent(this.response);
+}
 
 /// Occurs when an empty message has been received.
-class CoapReceivingEmptyMessageEvent {}
+class CoapReceivingEmptyMessageEvent {
+  CoapEmptyMessage empty;
+
+  CoapReceivingEmptyMessageEvent(this.empty);
+}
 
 /// Represents a communication endpoint multiplexing CoAP message exchanges
 /// between (potentially multiple) clients and servers.

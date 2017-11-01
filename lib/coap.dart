@@ -70,3 +70,9 @@ part 'src/codec/coap_imessage_encoder.dart';
 part 'src/codec/coap_imessage_decoder.dart';
 
 part 'src/net/coap_iendpoint.dart';
+
+part 'src/net/coap_imessage_deliverer.dart';
+
+part 'src/net/coap_ioutbox.dart';
+
+part 'src/net/coap_exchange.dart';
