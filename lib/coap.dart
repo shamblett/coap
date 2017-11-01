@@ -17,6 +17,7 @@ import 'package:safe_config/safe_config.dart' as config;
 import 'package:log4dart/log4dart_vm.dart' as logging;
 import 'package:eventable/eventable.dart' as events;
 import 'package:collection/collection.dart' as collection;
+import 'package:hex/hex.dart' as hex;
 
 /// The Coap package exported interface
 
