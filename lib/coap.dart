@@ -8,6 +8,7 @@
 library coap;
 
 import 'dart:io';
+import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 import 'dart:convert' as convertor;

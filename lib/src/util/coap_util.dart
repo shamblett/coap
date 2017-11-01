@@ -136,4 +136,10 @@ class CoapUtil {
   static RegExp regIP = new RegExp(
       r"(\\[[0-9a-f:]+\\]|[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})",
       caseSensitive: false);
+
+  /// Sleep function that allows asynchronous activity to continue.
+  /// Time units are milliseconds
+  static Future asyncSleep(int milliseconds) {
+    return new Future.delayed(new Duration(milliseconds: milliseconds));
+  }
 }

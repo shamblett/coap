@@ -14,9 +14,17 @@ class CoapRespondEvent {
   CoapRespondEvent(this.resp);
 }
 
-class CoapRespondingEvent {}
+class CoapRespondingEvent {
+  CoapResponse resp;
 
-class CoapReregisteringEvent {}
+  CoapRespondingEvent(this.resp);
+}
+
+class CoapReregisteringEvent {
+  CoapRequest resp;
+
+  CoapReregisteringEvent(this.resp);
+}
 
 /// This class describes the functionality of a CoAP Request as
 /// a subclass of a CoAP Message. It provides:
@@ -100,6 +108,8 @@ class CoapRequest extends CoapMessage {
   set response(CoapResponse value) {
     _currentResponse = value;
     emitEvent(new CoapRespondEvent(value));
+    // Add to the internal response stream
+    _responseStream.add(value);
   }
 
   /// The endpoint for this request
@@ -145,6 +155,8 @@ class CoapRequest extends CoapMessage {
   CoapRequest send() {
     _validateBeforeSending();
     endPoint.sendRequest(this);
+    // Clear the internal response stream
+    _responseStream.stream.drain();
     return this;
   }
 
@@ -152,5 +164,66 @@ class CoapRequest extends CoapMessage {
     if (destination == null)
       throw new StateError(
           "CoapRequest::validateBeforeSending - Missing destination");
+  }
+
+  /// Response stream, used by waitForResponse
+  StreamController<CoapResponse> _responseStream =
+  new StreamController<CoapResponse>();
+
+  /// Wait for a response.
+  /// Returns the response, or null if timeout occured.
+  FutureOr<CoapResponse> waitForResponse(int millisecondsTimeout) {
+    final Completer<CoapResponse> completer = new Completer<CoapResponse>();
+    if ((_currentResponse == null) &&
+        (!isCancelled) &&
+        (!isTimedOut) &&
+        (!isRejected)) {
+      final sleepFuture = CoapUtil.asyncSleep(millisecondsTimeout);
+      final responseFuture =
+      _responseStream.stream.listen((CoapResponse resp) {});
+      Future.any<CoapResponse>([sleepFuture, responseFuture.asFuture()])
+        ..then((CoapResponse resp) {
+          _currentResponse = response;
+          responseFuture.cancel();
+          return completer.complete(response);
+        });
+      return completer.future;
+    }
+    return _currentResponse;
+  }
+
+  /// Fire the respond event
+  void fireRespond(CoapResponse response) {
+    emitEvent(new CoapRespondEvent(response));
+  }
+
+  /// Fire the responding event
+  void fireResponding(CoapResponse response) {
+    emitEvent(new CoapRespondingEvent(response));
+  }
+
+  /// Fire the reregistering event
+  void fireReregistering(CoapRequest request) {
+    emitEvent(new CoapReregisteringEvent(request));
+  }
+
+  /// Construct a GET request.
+  static CoapRequest newGet() {
+    return new CoapRequest(CoapCode.methodGET);
+  }
+
+  /// Construct a POST request.
+  static CoapRequest newPost() {
+    return new CoapRequest(CoapCode.methodPOST);
+  }
+
+  /// Construct a PUT request.
+  static CoapRequest newPut() {
+    return new CoapRequest(CoapCode.methodPUT);
+  }
+
+  /// Construct a DELETE request.
+  static CoapRequest newDelete() {
+    return new CoapRequest(CoapCode.methodDELETE);
   }
 }
