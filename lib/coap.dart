@@ -79,3 +79,5 @@ part 'src/net/coap_imessage_deliverer.dart';
 part 'src/net/coap_ioutbox.dart';
 
 part 'src/net/coap_exchange.dart';
+
+part 'src/stack/coap_blockwise_status.dart';
