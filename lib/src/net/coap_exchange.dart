@@ -105,7 +105,7 @@ class CoapExchange extends Object with events.EventEmitter {
   /// type was a CON and the request has not been acknowledged
   /// yet, it sends an ACK to the client.
   void sendAccept() {
-    assert(_origin == Origin.remote);
+    assert(_origin == CoapOrigin.remote);
     if (request.type == CoapMessageType.con && !request.isAcknowledged) {
       request.isAcknowledged = true;
       final CoapEmptyMessage ack = CoapEmptyMessage.newACK(request);

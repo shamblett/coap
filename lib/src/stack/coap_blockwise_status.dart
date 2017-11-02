@@ -41,7 +41,7 @@ class CoapBlockwiseStatus {
 
   /// Adds the specified block to the current list of blocks.
   void addBlock(int block) {
-    if (block != null) blocks.Add(block);
+    if (block != null) blocks.add(block);
   }
 
   String toString() {

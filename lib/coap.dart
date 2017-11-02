@@ -11,6 +11,7 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
+import 'dart:collection';
 import 'dart:convert' as convertor;
 import 'package:typed_data/typed_data.dart' as typed;
 import 'package:safe_config/safe_config.dart' as config;
@@ -81,3 +82,5 @@ part 'src/net/coap_ioutbox.dart';
 part 'src/net/coap_exchange.dart';
 
 part 'src/stack/coap_blockwise_status.dart';
+
+part 'src/observe/coap_observe_relation.dart';
