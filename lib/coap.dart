@@ -42,6 +42,10 @@ part 'src/coap_empty_message.dart';
 
 part 'src/coap_request.dart';
 
+part 'src/coap_link_format.dart';
+
+part 'src/coap_web_link.dart';
+
 part 'src/coap_response.dart';
 
 part 'src/coap_message_type.dart';
@@ -67,6 +71,8 @@ part 'src/util/coap_util.dart';
 
 part 'src/util/coap_byte_array_util.dart';
 
+part 'src/util/coap_scanner.dart';
+
 part 'src/specification/coap_ispec.dart';
 
 part 'src/codec/coap_imessage_encoder.dart';
@@ -88,3 +94,5 @@ part 'src/observe/coap_observe_relation.dart';
 part 'src/observe/coap_observing_endpoint.dart';
 
 part 'src/server/resources/coap_iresource.dart';
+
+part 'src/server/resources/coap_resource_attributes.dart';
