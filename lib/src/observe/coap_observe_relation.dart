@@ -10,21 +10,17 @@ part of coap;
 /// Represents a relation between a client endpoint and a resource on this server.
 class CoapObserveRelation {
   /// Constructs a new observe relation.
-  /// The config
   /// The observing endpoint
   /// The observed resource
   /// The exchange that tries to establish the observe relation
-  CoapObserveRelation(CoapICoapConfig config, CoapObservingEndpoint endpoint,
-      CoapIResource resource, CoapExchange exchange) {
-    if (config == null)
-      throw new ArgumentError.notNull("CoapObserveRelation::config");
+  CoapObserveRelation(CoapObservingEndpoint endpoint, CoapIResource resource,
+      CoapExchange exchange) {
     if (endpoint == null)
       throw new ArgumentError.notNull("CoapObserveRelation::endpoint");
     if (resource == null)
       throw new ArgumentError.notNull("CoapObserveRelation::resource");
     if (exchange == null)
       throw new ArgumentError.notNull("CoapObserveRelation::exchange");
-    _config = config;
     _endpoint = endpoint;
     _resource = resource;
     _exchange = exchange;
@@ -46,7 +42,6 @@ class CoapObserveRelation {
   CoapResponse currentControlNotification;
   CoapResponse nextControlNotification;
   String _key;
-
   String get key => _key;
 
   /// A value indicating if this relation has been established
@@ -67,8 +62,8 @@ class CoapObserveRelation {
       _exchange.response.cancel();
     }
     established = false;
-    _resource.RemoveObserveRelation(this);
-    _endpoint.RemoveObserveRelation(this);
+    _resource.removeObserveRelation(this);
+    _endpoint.removeObserveRelation(this);
     _exchange.complete = true;
   }
 
@@ -90,10 +85,11 @@ class CoapObserveRelation {
     check = check ||
         _interestCheckTime
             .add(new Duration(
-            milliseconds: _config.notificationCheckIntervalTime))
+            milliseconds: CoapConfig.inst.notificationCheckIntervalTime))
             .isBefore(now);
     check = check ||
-        (++_interestCheckCounter >= _config.notificationCheckIntervalCount);
+        (++_interestCheckCounter >=
+            CoapConfig.inst.notificationCheckIntervalCount);
     if (check) {
       _interestCheckTime = now;
       _interestCheckCounter = 0;

@@ -84,3 +84,7 @@ part 'src/net/coap_exchange.dart';
 part 'src/stack/coap_blockwise_status.dart';
 
 part 'src/observe/coap_observe_relation.dart';
+
+part 'src/observe/coap_observing_endpoint.dart';
+
+part 'src/server/resources/coap_iresource.dart';
