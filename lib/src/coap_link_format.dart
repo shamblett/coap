@@ -190,7 +190,7 @@ class CoapLinkFormat {
     }
   }
 
-  static bool matches(CoapResource resource, Iterable<CoapOption> query) {
+  static bool matches(CoapIResource resource, Iterable<CoapOption> query) {
     if (resource == null) return false;
     if (query == null) return true;
     for (CoapOption q in query) {
@@ -198,9 +198,7 @@ class CoapLinkFormat {
       final int delim = s.indexOf('=');
       if (delim == -1) {
         // flag attribute
-        if (resource
-            .getAttributes(s)
-            .Count > 0) return true;
+        if (resource.attributes.count > 0) return true;
       } else {
         final String attrName = s.substring(0, delim);
         String expected = s.substring(delim + 1);
@@ -236,5 +234,32 @@ class CoapLinkFormat {
       }
     }
     return false;
+  }
+
+  static bool addAttribute(List<CoapLinkAttribute> attributes,
+      CoapLinkAttribute attrToAdd) {
+    if (isSingle(attrToAdd.Name)) {
+      for (CoapLinkAttribute attr in attributes) {
+        if (attr.name == attrToAdd.name) {
+          _log.debug(
+              "CoapLinkFormat::addAttribute - Found existing singleton attribute: " +
+                  attr.Name);
+          return false;
+        }
+      }
+    }
+    // Special rules
+    if ((attrToAdd.name == contentType) && (attrToAdd.IntValue < 0)) {
+      return false;
+    }
+    if ((attrToAdd.name == maxSizeEstimate) && (attrToAdd.IntValue < 0)) {
+      return false;
+    }
+    attributes.add(attrToAdd);
+    return true;
+  }
+
+  static bool isSingle(String name) {
+    return name == title || name == maxSizeEstimate || name == observable;
   }
 }
