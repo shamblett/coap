@@ -22,21 +22,21 @@ class CoapResourceAttributes {
   Iterable<String> get keys => _attributes.keys;
 
   /// The resource title.
-  String get title => GetValues(CoapLinkFormat.title).first;
+  String get title => getValues(CoapLinkFormat.title).first;
 
-  set title(String value) => Set(CoapLinkFormat.title, value);
+  set title(String value) => set(CoapLinkFormat.title, value);
 
   /// Gets or sets a value indicating if the resource is observable.
-  bool get observable => GetValues(CoapLinkFormat.observable).first.isNotEmpty;
+  bool get observable => getValues(CoapLinkFormat.observable).first.isNotEmpty;
 
-  set observable(bool value) => Set(CoapLinkFormat.observable, "");
+  set observable(bool value) => set(CoapLinkFormat.observable, "");
 
   /// Gets or sets the maximum size estimate string value.
   String get maximumSizeEstimateString =>
-      GetValues(CoapLinkFormat.maxSizeEstimate).first;
+      getValues(CoapLinkFormat.maxSizeEstimate).first;
 
   set maximumSizeEstimateString(String value) =>
-      Set(CoapLinkFormat.maxSizeEstimate, value);
+      set(CoapLinkFormat.maxSizeEstimate, value);
 
   /// Gets or sets the maximum size estimate.
   int get maximumSizeEstimate =>
@@ -77,30 +77,55 @@ class CoapResourceAttributes {
     _attributes[CoapLinkFormat.interfaceDescription] = new List<String>();
   }
 
+  /// Adds a content type specified by an integer.
+  void addContentType(int type) {
+    _attributes[CoapLinkFormat.contentType].add(type.toString());
+  }
+
+  /// Gets all content types.
+  Iterable<String> getContentTypes() {
+    return _attributes[CoapLinkFormat.contentType];
+  }
+
+  /// Clears all content types.
+  void clearContentTypes() {
+    _attributes[CoapLinkFormat.contentType] = new List<String>();
+  }
+
+  /// Returns true if this object contains the specified attribute.
+  bool contains(String name) {
+    return _attributes.containsKey(name);
+  }
+
   /// Adds the specified value to the other values of the specified attribute.
-  void Add(String name, String value) {
+  void add(String name, String value) {
     _attributes[name].add(value);
   }
 
   /// Adds an arbitrary attribute with no value.
-  void AddNoValue(String name) {
-    Add(name, "");
+  void addNoValue(String name) {
+    add(name, "");
   }
 
   /// Gets all values for the specified attribute.
-  Iterable<String> GetValues(String name) {
+  Iterable<String> getValues(String name) {
     return _attributes[name];
   }
 
   /// Replaces the value for the specified attribute with the specified value.
   /// If another value has been set for the attribute name, it will be removed.
-  void Set(String name, String value) {
-    SetOnly(_attributes[name], value);
+  void set(String name, String value) {
+    setOnly(_attributes[name], value);
   }
 
-  static void SetOnly(Iterable<String> values, String value) {
+  static void setOnly(Iterable<String> values, String value) {
     List<String> tmp = new List<String>();
     tmp[0] = value;
     values = tmp;
+  }
+
+  /// Removes all values for the specified attribute.
+  void clear(String name) {
+    _attributes[name] = new List<String>();
   }
 }

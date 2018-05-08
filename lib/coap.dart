@@ -44,6 +44,8 @@ part 'src/coap_request.dart';
 
 part 'src/coap_link_format.dart';
 
+part 'src/coap_link_attribute.dart';
+
 part 'src/coap_web_link.dart';
 
 part 'src/coap_response.dart';
@@ -98,3 +100,7 @@ part 'src/server/resources/coap_iresource.dart';
 part 'src/server/resources/coap_resource_attributes.dart';
 
 part 'src/threading/coap_iexecutor.dart';
+
+part 'src/endpoint/resources/coap_endpoint_resource.dart';
+
+part 'src/endpoint/resources/coap_remote_resource.dart';

@@ -5,7 +5,7 @@
  * Copyright :  S.Hamblett
  */
 
-/// <summary>
+part of coap;
+
 /// Provides methods to execute tasks.
-/// </summary>
 abstract class CoapIExecutor {}

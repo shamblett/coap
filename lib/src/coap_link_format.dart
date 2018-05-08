@@ -78,17 +78,17 @@ class CoapLinkFormat {
             (attr = scanner.find(wordRegex)) != null) {
           if (scanner.find(_equalRegex) == null) {
             // flag attribute without value
-            link.attributes.AddNoValue(attr);
+            link.attributes.addNoValue(attr);
           } else {
             String value = null;
             if ((value = scanner.find(quotedString)) != null) {
               // trim " "
               value = value.substring(1, value.length - 2);
               if (title == attr) {
-                link.attributes.Add(attr, value);
+                link.attributes.add(attr, value);
               } else {
                 for (String part in value.split("\\")) {
-                  link.attributes.Add(attr, part);
+                  link.attributes.add(attr, part);
                 }
               }
             } else if ((value = scanner.find(wordRegex)) != null) {
@@ -132,7 +132,7 @@ class CoapLinkFormat {
     keys.sort();
     for (String name in keys) {
       final List<String> values = attributes.getValues(name);
-      if (values.count == 0) continue;
+      if (values.length == 0) continue;
       sb.write(separator);
       _serializeAttribute(name, values, sb);
     }
