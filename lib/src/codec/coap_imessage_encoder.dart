@@ -10,10 +10,10 @@ part of coap;
 /// Provides methods to serialize outgoing messages to byte arrays.
 abstract class CoapIMessageEncoder {
   /// Encodes a request into a bytes array.
-  typed.Uint8Buffer encodeRequest(Request request);
+  typed.Uint8Buffer encodeRequest(CoapRequest request);
 
   /// Encodes a response into a bytes array.
-  typed.Uint8Buffer encodeResponse(Response response);
+  typed.Uint8Buffer encodeResponse(CoapResponse response);
 
   /// Encodes an empty message into a bytes array.
   typed.Uint8Buffer encodeEmpty(CoapEmptyMessage message);

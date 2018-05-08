@@ -78,17 +78,17 @@ class CoapLinkFormat {
             (attr = scanner.find(wordRegex)) != null) {
           if (scanner.find(_equalRegex) == null) {
             // flag attribute without value
-            link.attributes.add(attr);
+            link.attributes.AddNoValue(attr);
           } else {
             String value = null;
             if ((value = scanner.find(quotedString)) != null) {
               // trim " "
               value = value.substring(1, value.length - 2);
               if (title == attr) {
-                link.attributes.add(attr, value);
+                link.attributes.Add(attr, value);
               } else {
                 for (String part in value.split("\\")) {
-                  link.attributes.add(attr, part);
+                  link.attributes.Add(attr, part);
                 }
               }
             } else if ((value = scanner.find(wordRegex)) != null) {

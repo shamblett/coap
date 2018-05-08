@@ -31,10 +31,10 @@ abstract class CoapIMessageDecoder {
   int get id;
 
   /// Decodes as a Request.
-  Request decodeRequest();
+  CoapRequest decodeRequest();
 
   /// Decodes as a Response.
-  Response decodeResponse();
+  CoapResponse decodeResponse();
 
   /// Decodes as an EmptyMessage.
   CoapEmptyMessage decodeEmptyMessage();
