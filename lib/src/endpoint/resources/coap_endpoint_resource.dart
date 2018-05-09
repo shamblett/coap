@@ -9,7 +9,6 @@ part of coap;
 
 /// This class describes the functionality of a CoAP endpoint resource.
 abstract class CoapEndpointResource {
-
   /// Initialize a resource.
   CoapEndpointResource(this._resourceIdentifier);
 
@@ -154,7 +153,8 @@ abstract class CoapEndpointResource {
     return cleared;
   }
 
-  static Iterable<String> getStringValues(Iterable<CoapLinkAttribute> attributes) {
+  static Iterable<String> getStringValues(
+      Iterable<CoapLinkAttribute> attributes) {
     final List<String> list = new List<String>();
     for (CoapLinkAttribute attr in attributes) {
       list.add(attr.valueAsString);

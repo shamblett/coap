@@ -49,10 +49,11 @@ class CoapLinkFormat {
   static CoapILogger _log = new CoapLogManager("console").logger;
 
   static String serialize(CoapIResource root) {
-    return _serialize(root, null);
+    return _serializeQueries(root, null);
   }
 
-  static String _serialize(CoapIResource root, Iterable<String> queries) {
+  static String _serializeQueries(CoapIResource root,
+      Iterable<String> queries) {
     final StringBuffer linkFormat = new StringBuffer();
 
     for (CoapIResource child in root.children) {
@@ -105,7 +106,7 @@ class CoapLinkFormat {
 
   static void _serializeTree(CoapIResource resource, Iterable<String> queries,
       StringBuffer sb) {
-    if (resource.visible && matches(resource, queries)) {
+    if (resource.visible && _matchesString(resource, queries)) {
       _serializeResource(resource, sb);
       sb.write(",");
     }
@@ -150,6 +151,37 @@ class CoapLinkFormat {
     }
   }
 
+  static String serializeOptions(CoapEndpointResource resource,
+      Iterable<CoapOption> query, bool recursive) {
+    final StringBuffer linkFormat = new StringBuffer();
+
+    // skip hidden and empty root in recursive mode, always skip non-matching resources
+    if ((!resource.hidden && (resource.name.length > 0) || !recursive) &&
+        _matchesOption(resource, query)) {
+      linkFormat.write("<");
+      linkFormat.write(resource.path);
+      linkFormat.write(">");
+
+      for (CoapLinkAttribute attr in resource.attributes) {
+        linkFormat.write(separator);
+        attr.serialize(linkFormat);
+      }
+    }
+
+    if (recursive) {
+      for (CoapEndpointResource sub in resource.getSubResources()) {
+        final String next = serializeOptions(sub, query, true);
+
+        if (next.length > 0) {
+          if (linkFormat.length > 3) linkFormat.write(delimiter);
+          linkFormat.write(next);
+        }
+      }
+    }
+
+    return linkFormat.toString();
+  }
+
   static CoapRemoteResource deserialize(String linkFormat) {
     final CoapRemoteResource root = new CoapRemoteResource("");
     final CoapScanner scanner = new CoapScanner(linkFormat);
@@ -159,7 +191,7 @@ class CoapLinkFormat {
       // Retrieve specified resource, create if necessary
       final CoapRemoteResource resource = new CoapRemoteResource(path);
       CoapLinkAttribute attr = null;
-      while (scanner.find(delimiterRegex, 1) == null &&
+      while (scanner.find(delimiterRegex) == null &&
           (attr = parseAttribute(scanner)) != null) {
         addAttribute(resource.attributes, attr);
       }
@@ -190,7 +222,8 @@ class CoapLinkFormat {
     }
   }
 
-  static bool matches(CoapIResource resource, Iterable<CoapOption> query) {
+  static bool _matchesOption(CoapEndpointResource resource,
+      Iterable<CoapOption> query) {
     if (resource == null) return false;
     if (query == null) return true;
     for (CoapOption q in query) {
@@ -198,7 +231,7 @@ class CoapLinkFormat {
       final int delim = s.indexOf('=');
       if (delim == -1) {
         // flag attribute
-        if (resource.attributes.count > 0) return true;
+        if (resource.attributes.length > 0) return true;
       } else {
         final String attrName = s.substring(0, delim);
         String expected = s.substring(delim + 1);
@@ -211,7 +244,7 @@ class CoapLinkFormat {
         }
 
         for (CoapLinkAttribute attr in resource.getAttributes(attrName)) {
-          String actual = attr.Value.toString();
+          String actual = attr.value.toString();
           // get prefix length according to "*"
           final int prefixLength = expected.indexOf('*');
           if (prefixLength >= 0 && prefixLength < actual.length) {
@@ -236,23 +269,82 @@ class CoapLinkFormat {
     return false;
   }
 
+  static bool _matchesString(CoapIResource resource, Iterable<String> query) {
+    if (resource == null) return false;
+    if (query == null) return true;
+
+    final CoapResourceAttributes attributes = resource.attributes;
+    final String path = resource.path + resource.name;
+    if (query.isEmpty) {
+      return true;
+    }
+    for (String ie in query) {
+      final String s = ie;
+
+      final int delim = s.indexOf('=');
+      if (delim == -1) {
+        // flag attribute
+        if (attributes.contains(s)) {
+          return true;
+        }
+      } else {
+        final String attrName = s.substring(0, delim);
+        String expected = s.substring(delim + 1);
+
+        if (attrName == CoapLinkFormat.link) {
+          if (expected.endsWith("*")) {
+            return path.startsWith(expected.substring(0, expected.length - 1));
+          } else {
+            return path == expected;
+          }
+        } else if (attributes.contains(attrName)) {
+          // lookup attribute value
+          for (String value in attributes.getValues(attrName)) {
+            String actual = value;
+            // get prefix length according to "*"
+            final int prefixLength = expected.indexOf('*');
+            if (prefixLength >= 0 && prefixLength < actual.length) {
+              // reduce to prefixes
+              expected = expected.substring(0, prefixLength);
+              actual = actual.substring(0, prefixLength);
+            }
+
+            // handle case like rt=[Type1 Type2]
+            if (actual.indexOf(' ') > -1) {
+              for (String part in actual.split(' ')) {
+                if (part == expected) {
+                  return true;
+                }
+              }
+            }
+
+            if (expected == actual) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+    return false;
+  }
+
   static bool addAttribute(List<CoapLinkAttribute> attributes,
       CoapLinkAttribute attrToAdd) {
-    if (isSingle(attrToAdd.Name)) {
+    if (isSingle(attrToAdd.name)) {
       for (CoapLinkAttribute attr in attributes) {
         if (attr.name == attrToAdd.name) {
           _log.debug(
               "CoapLinkFormat::addAttribute - Found existing singleton attribute: " +
-                  attr.Name);
+                  attr.name);
           return false;
         }
       }
     }
     // Special rules
-    if ((attrToAdd.name == contentType) && (attrToAdd.IntValue < 0)) {
+    if ((attrToAdd.name == contentType) && (attrToAdd.valueAsInt < 0)) {
       return false;
     }
-    if ((attrToAdd.name == maxSizeEstimate) && (attrToAdd.IntValue < 0)) {
+    if ((attrToAdd.name == maxSizeEstimate) && (attrToAdd.valueAsInt < 0)) {
       return false;
     }
     attributes.add(attrToAdd);

@@ -9,12 +9,12 @@ part of coap;
 
 /// Provides logging to the console
 class CoapConsoleLogger implements CoapILogger {
-
   static final _logger = logging.LoggerFactory.getLogger("ConsoleLogger");
 
   CoapConsoleLogger() {
-    logging.LoggerFactory.config["ConsoleLogger"].appenders =
-    [new logging.ConsoleAppender()];
+    logging.LoggerFactory.config["ConsoleLogger"].appenders = [
+      new logging.ConsoleAppender()
+    ];
   }
 
   /// Is debug enabled

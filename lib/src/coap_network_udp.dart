@@ -8,7 +8,6 @@
 part of coap;
 
 class CoapNetworkUDP extends CoapNetwork {
-
   /// UDP socket
   RawDatagramSocket _socket;
 
@@ -21,5 +20,4 @@ class CoapNetworkUDP extends CoapNetwork {
   Datagram receive() {
     return _socket.receive();
   }
-
 }

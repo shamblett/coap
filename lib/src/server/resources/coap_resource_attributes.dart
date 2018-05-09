@@ -119,7 +119,7 @@ class CoapResourceAttributes {
   }
 
   static void setOnly(Iterable<String> values, String value) {
-    List<String> tmp = new List<String>();
+    final List<String> tmp = new List<String>();
     tmp[0] = value;
     values = tmp;
   }

@@ -9,12 +9,12 @@ part of coap;
 
 /// Provides logging to a file
 class CoapFileLogger implements CoapILogger {
-
   static final _logger = logging.LoggerFactory.getLogger("FileLogger");
 
   CoapFileLogger(String path) {
-    logging.LoggerFactory.config["FileLogger"].appenders =
-    [new logging.FileAppender(path)];
+    logging.LoggerFactory.config["FileLogger"].appenders = [
+      new logging.FileAppender(path)
+    ];
   }
 
   /// Is debug enabled

@@ -9,6 +9,12 @@ part of coap;
 
 /// Class for linkformat attributes.
 class CoapLinkAttribute {
+  /// Initializes an attribute.
+  CoapLinkAttribute(String name, Object value) {
+    _name = name;
+    _value = value;
+  }
+
   static CoapILogger _log = new CoapLogManager("console").logger;
 
   String _name;
@@ -22,12 +28,6 @@ class CoapLinkAttribute {
   int get valueAsInt => _value is int ? _value : -1;
 
   String get valueAsString => _value is String ? _value : null;
-
-  /// Initializes an attribute.
-  CoapLinkAttribute(String name, Object value) {
-    _name = name;
-    _value = value;
-  }
 
   /// Serializes this attribute into its string representation.
   void serialize(StringBuffer builder) {
@@ -71,4 +71,6 @@ class CoapLinkAttribute {
     }
     return false;
   }
+
+  int get hashCode => this.hashCode;
 }
