@@ -11,14 +11,19 @@ part of coap;
 class CoapRemoteResource extends CoapEndpointResource {
   CoapRemoteResource(String resourceIdentifier) : super(resourceIdentifier);
 
+  CoapRemoteResource.hide(String resourceIdentifier, bool hidden)
+      : super.hide(resourceIdentifier, hidden);
+
   static CoapRemoteResource newRoot(String linkFormat) {
     return CoapLinkFormat.deserialize(linkFormat);
   }
 
-  /// Creates a resouce instance with proper subtype.
+  /// Creates a resource instance with proper subtype.
+  @override
   CoapEndpointResource createInstance(String name) {
     return new CoapRemoteResource(name);
   }
 
+  @override
   void doCreateSubResource(CoapRequest request, String newIdentifier) {}
 }

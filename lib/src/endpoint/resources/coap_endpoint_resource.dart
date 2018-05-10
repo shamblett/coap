@@ -44,7 +44,7 @@ abstract class CoapEndpointResource {
   /// Gets the count of sub-resources of this resource.
   int get subResourceCount => null == _subResources ? 0 : _subResources.length;
 
-  bool _hidden;
+  bool _hidden = false;
 
   bool get hidden => _hidden;
 
@@ -213,8 +213,8 @@ abstract class CoapEndpointResource {
     if (path.startsWith("/")) {
       CoapEndpointResource root = this;
       while (root._parent != null) root = root._parent;
-      path = path == "/" ? null : path.substring(1);
-      return root.getResourcePath(path);
+      final String path1 = path == "/" ? null : path.substring(1);
+      return root.getResourcePath(path1);
     }
 
     final int pos = path.indexOf('/');

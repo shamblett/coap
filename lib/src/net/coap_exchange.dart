@@ -81,14 +81,15 @@ class CoapExchange extends Object with events.EventEmitter {
 
   CoapIOutbox _outbox;
 
-  CoapIOutbox get outbox => endpoint == null ? null : endpoint.outbox;
+  CoapIOutbox get outbox =>
+      _outbox ?? (endpoint == null ? null : endpoint.outbox);
 
   set outbox(CoapIOutbox value) => _outbox = value;
 
   CoapIMessageDeliverer _deliverer;
 
   CoapIMessageDeliverer get deliverer =>
-      endpoint == null ? null : endpoint.messageDeliverer;
+      _deliverer ?? (endpoint == null ? null : endpoint.messageDeliverer);
 
   set deliverer(CoapIMessageDeliverer value) => _deliverer = value;
 
