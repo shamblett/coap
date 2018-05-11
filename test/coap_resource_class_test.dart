@@ -28,6 +28,7 @@ void main() {
       expect(res.name, "temp");
       expect(res.contentTypeCode, 41);
       expect(res.resourceType, "TemperatureC");
+      expect(res.observable, isFalse);
     });
     test('Simple test - ct first', () {
       final String input = '</sensors/temp>;ct=42;rt="TemperatureF"';
@@ -37,6 +38,17 @@ void main() {
       expect(res.name, "temp");
       expect(res.contentTypeCode, 42);
       expect(res.resourceType, "TemperatureF");
+      expect(res.observable, isFalse);
+    });
+    test('Simple test - boolean value', () {
+      final String input = '</sensors/temp>;ct=42;rt="TemperatureF";obs"';
+      final CoapRemoteResource root = CoapRemoteResource.newRoot(input);
+      final CoapRemoteResource res = root.getResourcePath("/sensors/temp");
+      expect(res, isNotNull);
+      expect(res.name, "temp");
+      expect(res.contentTypeCode, 42);
+      expect(res.resourceType, "TemperatureF");
+      expect(res.observable, isTrue);
     });
     test('Extended test', () {
       final String input = "</my/Päth>;rt=\"MyName\";if=\"/someRef/path\";ct=42;obs;sz=20";
