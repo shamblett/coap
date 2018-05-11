@@ -191,7 +191,7 @@ class CoapLinkFormat {
       // Retrieve specified resource, create if necessary
       final CoapRemoteResource resource = new CoapRemoteResource(path);
       CoapLinkAttribute attr = null;
-      while (scanner.find(delimiterRegex) == null &&
+      while (scanner.findHorizon(delimiterRegex, 1) == null &&
           (attr = parseAttribute(scanner)) != null) {
         addAttribute(resource.attributes, attr);
       }

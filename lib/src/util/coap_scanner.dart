@@ -41,4 +41,18 @@ class CoapScanner {
     }
     return null;
   }
+
+  String findHorizon(RegExp regex, int horizon) {
+    if (_position < _s.length) {
+      final String tmp = _s.substring(_position);
+      final Match m = regex.firstMatch(tmp);
+      if (m != null) {
+        if (m.start == 0) {
+          _position = _position + 1;
+          return m.group(0);
+        }
+      }
+    }
+    return null;
+  }
 }

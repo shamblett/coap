@@ -122,7 +122,7 @@ abstract class CoapEndpointResource {
       CoapEndpointResource res = _parent;
       while (res != null) {
         final StringBuffer tmp =
-        new StringBuffer("/${res.name}${sb.toString()}");
+        new StringBuffer("${res.name}/${sb.toString()}");
         sb = tmp;
         res = res._parent;
       }
@@ -182,7 +182,7 @@ abstract class CoapEndpointResource {
     }
 
     final List<CoapEndpointResource> resources =
-    new List<CoapEndpointResource>(_subResources.length);
+    new List<CoapEndpointResource>();
     resources.addAll(_subResources.values);
     return resources;
   }

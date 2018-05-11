@@ -6,10 +6,6 @@
  */
 import 'package:coap/coap.dart';
 import 'package:test/test.dart';
-import 'package:typed_data/typed_data.dart' as typed;
-import 'dart:convert';
-import 'dart:math';
-import 'dart:io';
 
 void main() {
   final CoapConfig conf = new CoapConfig("test/config_logging.yaml");
@@ -41,6 +37,44 @@ void main() {
       expect(res.name, "temp");
       expect(res.contentTypeCode, 42);
       expect(res.resourceType, "TemperatureF");
+    });
+    test('Extended test', () {
+      final String input = "</my/Päth>;rt=\"MyName\";if=\"/someRef/path\";ct=42;obs;sz=20";
+      final CoapRemoteResource root = CoapRemoteResource.newRoot(input);
+
+      final CoapRemoteResource my = new CoapRemoteResource("my");
+      my.resourceType = "replacement";
+      root.addSubResource(my);
+
+      CoapRemoteResource res = root.getResourcePath("/my/Päth");
+      expect(res, isNotNull);
+      res = root.getResourcePath("my/Päth");
+      expect(res, isNotNull);
+      res = root.getResourcePath("my");
+      res = res.getResourcePath("Päth");
+      expect(res, isNotNull);
+      res = res.getResourcePath("/my/Päth");
+      expect(res, isNotNull);
+      expect(res.name, "Päth");
+      expect(res.path, "/my/Päth");
+      expect(res.resourceType, "MyName");
+      expect(res.interfaceDescriptions[0], "/someRef/path");
+      expect(res.contentTypeCode, 42);
+      expect(res.maximumSizeEstimate, 20);
+      expect(res.observable, isTrue);
+
+      res = root.getResourcePath("my");
+      expect(res, isNotNull);
+      expect(res.resourceTypes.toList()[0], "replacement");
+    });
+    test('Conversion test', () {
+      final String link1 = "</myUri/something>;ct=42;if=\"/someRef/path\";obs;rt=\"MyName\";sz=10";
+      final String link2 = "</myUri>;rt=\"NonDefault\"";
+      final String link3 = "</a>";
+      final String format = link1 + "," + link2 + "," + link3;
+      final CoapRemoteResource res = CoapRemoteResource.newRoot(format);
+      final String result = CoapLinkFormat.serializeOptions(res, null, true);
+      expect(result, link3 + "," + link2 + "," + link1);
     });
   });
 }

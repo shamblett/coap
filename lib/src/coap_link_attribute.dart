@@ -35,23 +35,20 @@ class CoapLinkAttribute {
     if (_name != null && _value != null) {
       if (_value is bool) {
         // flag attribute
-        if (_value) {
-          builder.write(_name);
+        builder.write(_name);
+      } else {
+        // name-value-pair
+        builder.write(_name);
+        builder.write('=');
+        if (_value is String) {
+          builder.write('"');
+          builder.write(_value);
+          builder.write('"');
+        } else if (_value is int) {
+          builder.write(_value);
         } else {
-          // name-value-pair
-          builder.write(_name);
-          builder.write('=');
-          if (_value is String) {
-            builder.write('"');
-            builder.write(_value);
-            builder.write('"');
-          } else if (_value is int) {
-            builder.write(_value);
-          } else {
-            _log.error(
-                "Serializing attribute of unexpected type: $_name ${(_value
+          _log.error("Serializing attribute of unexpected type: $_name ${(_value
                     .runtimeType)}");
-          }
         }
       }
     }
