@@ -72,5 +72,5 @@ class CoapLinkAttribute {
     return false;
   }
 
-  int get hashCode => this.hashCode;
+  int get hashCode => name.hashCode;
 }

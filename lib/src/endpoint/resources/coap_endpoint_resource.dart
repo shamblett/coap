@@ -16,7 +16,6 @@ abstract class CoapEndpointResource {
   CoapEndpointResource.hide(String resourceIdentifier, bool hidden) {
     this._resourceIdentifier = resourceIdentifier;
     this._hidden = hidden;
-    this._attributes = new HashSet<CoapLinkAttribute>();
   }
 
   static CoapILogger _log = new CoapLogManager("console").logger;
@@ -27,16 +26,17 @@ abstract class CoapEndpointResource {
 
   set name(String value) => _resourceIdentifier = value;
 
-  HashSet<CoapLinkAttribute> _attributes;
+  HashSet<CoapLinkAttribute> _attributes = new HashSet<CoapLinkAttribute>();
 
   Iterable get attributes => _attributes;
 
   CoapEndpointResource _parent;
-  SplayTreeMap<String, CoapEndpointResource> _subResources;
+  SplayTreeMap<String, CoapEndpointResource> _subResources =
+  new SplayTreeMap<String, CoapEndpointResource>();
 
   SplayTreeMap<String, CoapEndpointResource> get subResources => _subResources;
 
-  int _totalSubResourceCount;
+  int _totalSubResourceCount = 0;
 
   /// Gets the total count of sub-resources, including children and children's children...
   int get totalSubResourceCount => _totalSubResourceCount;
@@ -207,7 +207,7 @@ abstract class CoapEndpointResource {
   }
 
   CoapEndpointResource getResource(String path, bool last) {
-    if (path.isEmpty) return this;
+    if (path == null || path.isEmpty) return this;
 
     // find root for absolute path
     if (path.startsWith("/")) {

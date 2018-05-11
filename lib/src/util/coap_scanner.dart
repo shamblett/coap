@@ -17,15 +17,26 @@ class CoapScanner {
   }
 
   String find(RegExp regex) {
-    return _find(regex);
+    if (_position < _s.length) {
+      final String tmp = _s.substring(_position);
+      final Match m = regex.firstMatch(tmp);
+      if (m != null) {
+        _position = _position + (m.end - m.start);
+        return m.group(0);
+      }
+    }
+    return null;
   }
 
-  String _find(RegExp regex) {
+  String findExact(RegExp regex) {
     if (_position < _s.length) {
-      final Match m = regex.matchAsPrefix(_s, _position);
+      final String tmp = _s.substring(_position);
+      final Match m = regex.firstMatch(tmp);
       if (m != null) {
-        _position = m.end;
-        return m.group(0);
+        if (m.start == 1) {
+          _position = _position + (m.end - m.start) + 1;
+          return m.group(0);
+        }
       }
     }
     return null;

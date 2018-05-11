@@ -12,26 +12,35 @@ import 'dart:math';
 import 'dart:io';
 
 void main() {
+  final CoapConfig conf = new CoapConfig("test/config_logging.yaml");
+
   group("Endpoint resource", () {
     test('Construction', () {
       CoapRemoteResource res = new CoapRemoteResource("billy");
       expect(res.name, "billy");
       expect(res.hidden, isFalse);
-      expect(res.attributes, isNull);
       res = new CoapRemoteResource.hide("fred", true);
       expect(res.name, "fred");
       expect(res.hidden, isTrue);
-      expect(res.attributes, isNotNull);
     });
 
-    test('Simple test', () {
-      String input = '</sensors/temp>;ct=41;rt=\"TemperatureC\"';
+    test('Simple test - rt first', () {
+      final String input = '</sensors/temp>;rt="TemperatureC";ct=41';
       final CoapRemoteResource root = CoapRemoteResource.newRoot(input);
       final CoapRemoteResource res = root.getResourcePath("/sensors/temp");
       expect(res, isNotNull);
       expect(res.name, "temp");
       expect(res.contentTypeCode, 41);
       expect(res.resourceType, "TemperatureC");
+    });
+    test('Simple test - ct first', () {
+      final String input = '</sensors/temp>;ct=42;rt="TemperatureF"';
+      final CoapRemoteResource root = CoapRemoteResource.newRoot(input);
+      final CoapRemoteResource res = root.getResourcePath("/sensors/temp");
+      expect(res, isNotNull);
+      expect(res.name, "temp");
+      expect(res.contentTypeCode, 42);
+      expect(res.resourceType, "TemperatureF");
     });
   });
 }

@@ -42,8 +42,8 @@ class CoapLinkFormat {
   static final RegExp separatorRegex = new RegExp("\\s*" + separator + "+\\s*");
   static final RegExp resourceNameRegex = new RegExp("<[^>]*>");
   static final RegExp wordRegex = new RegExp("\\w+");
-  static final RegExp quotedString = new RegExp("\\G\".*?\"");
-  static final RegExp cardinal = new RegExp("\\G\\d+");
+  static final RegExp quotedStringRegex = new RegExp("\".*?\"");
+  static final RegExp cardinalRegex = new RegExp("\\d+");
   static final RegExp _equalRegex = new RegExp("=");
 
   static CoapILogger _log = new CoapLogManager("console").logger;
@@ -82,7 +82,7 @@ class CoapLinkFormat {
             link.attributes.addNoValue(attr);
           } else {
             String value = null;
-            if ((value = scanner.find(quotedString)) != null) {
+            if ((value = scanner.findExact(quotedStringRegex)) != null) {
               // trim " "
               value = value.substring(1, value.length - 2);
               if (title == attr) {
@@ -94,7 +94,7 @@ class CoapLinkFormat {
               }
             } else if ((value = scanner.find(wordRegex)) != null) {
               link.attributes.set(attr, value);
-            } else if ((value = scanner.find(cardinal)) != null) {
+            } else if ((value = scanner.findExact(cardinalRegex)) != null) {
               link.attributes.set(attr, value);
             }
           }
@@ -185,9 +185,9 @@ class CoapLinkFormat {
   static CoapRemoteResource deserialize(String linkFormat) {
     final CoapRemoteResource root = new CoapRemoteResource("");
     final CoapScanner scanner = new CoapScanner(linkFormat);
-    String path = null;
+    String path;
     while ((path = scanner.find(resourceNameRegex)) != null) {
-      path = path.substring(1, path.length - 2);
+      path = path.substring(1, path.length - 1);
       // Retrieve specified resource, create if necessary
       final CoapRemoteResource resource = new CoapRemoteResource(path);
       CoapLinkAttribute attr = null;
@@ -207,15 +207,16 @@ class CoapLinkFormat {
     else {
       Object value;
       // check for name-value-pair
-      if (scanner.find(new RegExp("=")) == null)
+      if (scanner.find(_equalRegex) == null)
         // flag attribute
         value = true;
       else {
         String s = null;
-        if ((s = scanner.find(quotedString)) != null)
+        if ((s = scanner.findExact(quotedStringRegex)) != null)
           // trim " "
-          value = s.substring(1, s.length - 2);
-        else if ((s = scanner.find(cardinal)) != null) value = int.parse(s);
+          value = s.substring(1, s.length - 1);
+        else if ((s = scanner.findExact(cardinalRegex)) != null)
+          value = int.parse(s);
         // TODO what if both pattern failed?
       }
       return new CoapLinkAttribute(name, value);
@@ -328,7 +329,7 @@ class CoapLinkFormat {
     return false;
   }
 
-  static bool addAttribute(List<CoapLinkAttribute> attributes,
+  static bool addAttribute(HashSet<CoapLinkAttribute> attributes,
       CoapLinkAttribute attrToAdd) {
     if (isSingle(attrToAdd.name)) {
       for (CoapLinkAttribute attr in attributes) {
