@@ -16,6 +16,7 @@ class CoapScanner {
     _position = 0;
   }
 
+  /// Find any from position
   String find(RegExp regex) {
     if (_position < _s.length) {
       final String tmp = _s.substring(_position);
@@ -28,7 +29,8 @@ class CoapScanner {
     return null;
   }
 
-  String findExact(RegExp regex) {
+  /// Find first exactly from position
+  String findFirstExact(RegExp regex) {
     if (_position < _s.length) {
       final String tmp = _s.substring(_position);
       final Match m = regex.firstMatch(tmp);
@@ -42,6 +44,7 @@ class CoapScanner {
     return null;
   }
 
+  /// Find with a specified character horizon
   String findHorizon(RegExp regex, int horizon) {
     if (_position < _s.length) {
       final String tmp = _s.substring(_position);

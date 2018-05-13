@@ -82,7 +82,7 @@ class CoapLinkFormat {
             link.attributes.addNoValue(attr);
           } else {
             String value = null;
-            if ((value = scanner.findExact(quotedStringRegex)) != null) {
+            if ((value = scanner.findFirstExact(quotedStringRegex)) != null) {
               // trim " "
               value = value.substring(1, value.length - 2);
               if (title == attr) {
@@ -94,7 +94,8 @@ class CoapLinkFormat {
               }
             } else if ((value = scanner.find(wordRegex)) != null) {
               link.attributes.set(attr, value);
-            } else if ((value = scanner.findExact(cardinalRegex)) != null) {
+            } else if ((value = scanner.findFirstExact(cardinalRegex)) !=
+                null) {
               link.attributes.set(attr, value);
             }
           }
@@ -162,7 +163,13 @@ class CoapLinkFormat {
       linkFormat.write(resource.path);
       linkFormat.write(">");
 
-      for (CoapLinkAttribute attr in resource.attributes) {
+      // Reverse the attribute list to re-create the original
+      final List<CoapLinkAttribute> attrs =
+      resource.attributes
+          .toList()
+          .reversed
+          .toList();
+      for (CoapLinkAttribute attr in attrs) {
         linkFormat.write(separator);
         attr.serialize(linkFormat);
       }
@@ -206,18 +213,18 @@ class CoapLinkFormat {
       return null;
     else {
       Object value;
+      value = true;
       // check for name-value-pair
       if (scanner.find(_equalRegex) == null)
         // flag attribute
         value = true;
       else {
         String s = null;
-        if ((s = scanner.findExact(quotedStringRegex)) != null)
+        if ((s = scanner.findFirstExact(quotedStringRegex)) != null)
           // trim " "
           value = s.substring(1, s.length - 1);
-        else if ((s = scanner.findExact(cardinalRegex)) != null)
+        else if ((s = scanner.findFirstExact(cardinalRegex)) != null)
           value = int.parse(s);
-        // TODO what if both pattern failed?
       }
       return new CoapLinkAttribute(name, value);
     }
