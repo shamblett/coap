@@ -85,6 +85,8 @@ part 'src/codec/coap_imessage_decoder.dart';
 
 part 'src/codec/coap_datagram_reader.dart';
 
+part 'src/codec/coap_datagram_writer.dart';
+
 part 'src/net/coap_iendpoint.dart';
 
 part 'src/net/coap_imessage_deliverer.dart';
