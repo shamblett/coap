@@ -73,6 +73,43 @@ class CoapDraft03 implements CoapISpec {
     }
   }
 
+  static int getOptionType(int optionNumber) {
+    switch (optionNumber) {
+      case 0:
+        return optionTypeReserved;
+      case 1:
+        return optionTypeContentType;
+      case 2:
+        return optionTypeMaxAge;
+      case 3:
+        return optionTypeProxyUri;
+      case 4:
+        return optionTypeETag;
+      case 5:
+        return optionTypeUriHost;
+      case 6:
+        return optionTypeLocationPath;
+      case 7:
+        return optionTypeUriPort;
+      case 8:
+        return optionTypeLocationQuery;
+      case 9:
+        return optionTypeUriPath;
+      case 11:
+        return optionTypeToken;
+      case 15:
+        return optionTypeUriQuery;
+      case 10:
+        return optionTypeObserve;
+      case 13:
+        return optionTypeBlock2;
+      case 14:
+        return optionTypeFencepostDivisor;
+      default:
+        return optionNumber;
+    }
+  }
+
   static int nextFencepost(int optionNumber) {
     return ((optionNumber / fencepostDivisor + 1) * fencepostDivisor).toInt();
   }
@@ -99,5 +136,12 @@ class CoapDraft03 implements CoapISpec {
       default:
         return (code >> 5) * 40 + (code & 0xf);
     }
+  }
+
+  static int mapInCode(int code) {
+    if (code == 80)
+      return CoapCode.content;
+    else
+      return ((code / 40).toInt() << 5) + (code % 40);
   }
 }
