@@ -77,9 +77,13 @@ part 'src/util/coap_scanner.dart';
 
 part 'src/specification/coap_ispec.dart';
 
+part 'src/specification/coap_draft03.dart';
+
 part 'src/codec/coap_imessage_encoder.dart';
 
 part 'src/codec/coap_imessage_decoder.dart';
+
+part 'src/codec/coap_datagram_reader.dart';
 
 part 'src/net/coap_iendpoint.dart';
 
