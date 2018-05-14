@@ -7,7 +7,7 @@
 
 part of coap;
 
-class CoapMessageEncoder03 implements CoapMessageEncoder {
+class CoapMessageEncoder03 extends CoapMessageEncoder {
   static CoapILogger _log = new CoapLogManager("console").logger;
 
   void serialize(CoapDatagramWriter writer, CoapMessage msg, int code) {

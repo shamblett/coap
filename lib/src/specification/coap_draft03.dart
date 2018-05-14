@@ -29,7 +29,11 @@ class CoapDraft03 implements CoapISpec {
   int get defaultPort => 61616;
 
   CoapIMessageEncoder newMessageEncoder() {
-    return new messageEncoder03();
+    return new CoapMessageEncoder03();
+  }
+
+  CoapIMessageDecoder newMessageDecoder(typed.Uint8Buffer data) {
+    return new CoapMessageDecoder03(data);
   }
 
   static int getOptionNumber(int optionType) {

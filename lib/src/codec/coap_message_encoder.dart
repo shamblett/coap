@@ -27,13 +27,13 @@ abstract class CoapMessageEncoder implements CoapIMessageEncoder {
     return writer.toByteArray();
   }
 
-  encode(CoapMessage message) {
+  encodeMessage(CoapMessage message) {
     if (message.isRequest) {
-      return encode(message as CoapRequest);
+      return encodeRequest(message as CoapRequest);
     } else if (message.isResponse) {
-      return encode(message as CoapResponse);
+      return encodeResponse(message as CoapResponse);
     } else if (message is CoapEmptyMessage) {
-      return encode(message as CoapEmptyMessage);
+      return encodeEmpty(message as CoapEmptyMessage);
     } else {
       return null;
     }
