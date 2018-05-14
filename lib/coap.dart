@@ -81,7 +81,11 @@ part 'src/specification/coap_draft03.dart';
 
 part 'src/codec/coap_imessage_encoder.dart';
 
+part 'src/codec/coap_message_encoder.dart';
+
 part 'src/codec/coap_imessage_decoder.dart';
+
+part 'src/codec/coap_message_decoder.dart';
 
 part 'src/codec/coap_datagram_reader.dart';
 

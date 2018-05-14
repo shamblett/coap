@@ -21,5 +21,5 @@ abstract class CoapIMessageEncoder {
   /// Encodes a CoAP message into a bytes array.
   /// Returns the encoded bytes, or null if the message can not be encoded,
   /// i.e. the message is not a Request, a Response or an EmptyMessage.
-  typed.Uint8Buffer encodeCOAP(CoapMessage message);
+  typed.Uint8Buffer encodeMessage(CoapMessage message);
 }
