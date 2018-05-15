@@ -30,42 +30,37 @@ class CoapMessageDecoder03 extends CoapMessageDecoder {
     int currentOption = 0;
     for (int i = 0; i < _optionCount; i++) {
       // Read option delta bits
-      int optionDelta = _reader.read(CoapDraft03.optionDeltaBits);
+      final int optionDelta = _reader.read(CoapDraft03.optionDeltaBits);
 
       currentOption += optionDelta;
-      int currentOptionType = CoapDraft03.getOptionType(currentOption);
+      final int currentOptionType = CoapDraft03.getOptionType(currentOption);
 
       if (CoapDraft03.isFencepost(currentOption)) {
-        // read number of options
-        m_reader.Read(OptionLengthBaseBits);
-      }
-      else {
-        // read option length
-        Int32 length = m_reader.Read(OptionLengthBaseBits);
-        if (length > MaxOptionLengthBase) {
-          // read extended option length
-          length += m_reader.Read(OptionLengthExtendedBits);
+        // Read number of options
+        _reader.read(CoapDraft03.optionLengthBaseBits);
+      } else {
+        // Read option length
+        int length = _reader.read(CoapDraft03.optionLengthBaseBits);
+        if (length > CoapDraft03.maxOptionLengthBase) {
+          // Read extended option length
+          length += _reader.read(CoapDraft03.optionLengthExtendedBits);
         }
-        // read option
-        Option opt = Option.Create(currentOptionType);
-        opt.RawValue = m_reader.ReadBytes(length);
+        // Read option
+        CoapOption opt = CoapOption.create(currentOptionType);
+        opt.valueBytes = _reader.readBytes(length);
 
-        if (opt.Type == OptionType.ContentType) {
-          Int32 ct = opt.IntValue;
-          Int32 ct2 = MapInMediaType(ct);
-          if (ct != ct2)
-            opt = Option.Create(currentOptionType, ct2);
+        if (opt.type == optionTypeContentType) {
+          final int ct = opt.intValue;
+          final int ct2 = CoapDraft03.mapInMediaType(ct);
+          if (ct != ct2) opt = CoapOption.createVal(currentOptionType, ct2);
         }
 
-        msg.AddOption(opt);
+        msg.addOption(opt);
       }
     }
 
-    if (msg.Token == null)
-      msg.Token = CoapConstants.EmptyToken;
+    if (msg.token == null) msg.token = CoapConstants.emptyToken;
 
-    msg.Payload = m_reader.ReadBytesLeft();
+    msg.payload = _reader.readBytesLeft();
   }
-}
-
 }

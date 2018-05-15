@@ -79,7 +79,7 @@ class CoapDatagramReader {
   }
 
   void _readCurrentByte() {
-    int val = _buffer.removeAt(0);
+    final int val = _buffer.removeAt(0);
 
     if (val >= 0) {
       _currentByte.setUint8(0, val);

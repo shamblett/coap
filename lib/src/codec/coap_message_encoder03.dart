@@ -11,11 +11,11 @@ class CoapMessageEncoder03 extends CoapMessageEncoder {
   static CoapILogger _log = new CoapLogManager("console").logger;
 
   void serialize(CoapDatagramWriter writer, CoapMessage msg, int code) {
-    CoapDatagramWriter optWriter = new CoapDatagramWriter();
+    final CoapDatagramWriter optWriter = new CoapDatagramWriter();
     int optionCount = 0;
     int lastOptionNumber = 0;
 
-    List<CoapOption> options = msg.getSortedOptions();
+    final List<CoapOption> options = msg.getSortedOptions();
     if (msg.token != null &&
         msg.token.length > 0 &&
         !msg.hasOption(optionTypeToken)) {
@@ -28,7 +28,7 @@ class CoapMessageEncoder03 extends CoapMessageEncoder {
 
       CoapOption opt2 = opt;
 
-      int optNum = CoapDraft03.getOptionNumber(opt2.type);
+      final int optNum = CoapDraft03.getOptionNumber(opt2.type);
       int optionDelta = optNum - lastOptionNumber;
 
       // ensure that option delta value can be encoded correctly
@@ -36,10 +36,10 @@ class CoapMessageEncoder03 extends CoapMessageEncoder {
         // Option delta is too large to be encoded:
         // add fencepost options in order to reduce the option delta
         // get fencepost option that is next to the last option
-        int fencepostNumber = CoapDraft03.nextFencepost(lastOptionNumber);
+        final int fencepostNumber = CoapDraft03.nextFencepost(lastOptionNumber);
 
         // Calculate fencepost delta
-        int fencepostDelta = fencepostNumber - lastOptionNumber;
+        final int fencepostDelta = fencepostNumber - lastOptionNumber;
         if (fencepostDelta <= 0) {
           _log.warn("Fencepost liveness violated: delta = $fencepostDelta");
         }
@@ -61,13 +61,13 @@ class CoapMessageEncoder03 extends CoapMessageEncoder {
       optWriter.write(optionDelta, CoapDraft03.optionDeltaBits);
 
       if (opt2.type == optionTypeContentType) {
-        int ct = opt2.intValue;
-        int ct2 = CoapDraft03.mapOutMediaType(ct);
+        final int ct = opt2.intValue;
+        final int ct2 = CoapDraft03.mapOutMediaType(ct);
         if (ct != ct2) opt2 = CoapOption.createVal(opt2.type, ct2);
       }
 
       // Write option length
-      int length = opt2.length;
+      final int length = opt2.length;
       if (length <= CoapDraft03.maxOptionLengthBase) {
         // Use option length base field only to encode
         // option lengths less or equal than MAX_OPTIONLENGTH_BASE
@@ -75,10 +75,10 @@ class CoapMessageEncoder03 extends CoapMessageEncoder {
       } else {
         // Use both option length base and extended field
         // to encode option lengths greater than MAX_OPTIONLENGTH_BASE
-        int baseLength = CoapDraft03.maxOptionLengthBase + 1;
+        final int baseLength = CoapDraft03.maxOptionLengthBase + 1;
         optWriter.write(baseLength, CoapDraft03.optionLengthBaseBits);
 
-        int extLength = length - baseLength;
+        final int extLength = length - baseLength;
         optWriter.write(extLength, CoapDraft03.optionLengthExtendedBits);
       }
 

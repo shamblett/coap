@@ -30,7 +30,7 @@ class CoapDatagramWriter {
 
     for (int i = numBits - 1; i >= 0; i--) {
       // Test bit
-      bool bit = (data >> i & 1) != 0;
+      final bool bit = (data >> i & 1) != 0;
       if (bit) {
         // Set bit in current byte
         _currentByte.setUint8(

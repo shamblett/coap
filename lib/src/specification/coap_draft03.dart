@@ -36,6 +36,14 @@ class CoapDraft03 implements CoapISpec {
     return new CoapMessageDecoder03(data);
   }
 
+  typed.Uint8Buffer encode(CoapMessage msg) {
+    return newMessageEncoder().encodeMessage(msg);
+  }
+
+  CoapMessage decode(typed.Uint8Buffer bytes) {
+    return newMessageDecoder(bytes).decodeMessage();
+  }
+
   static int getOptionNumber(int optionType) {
     switch (optionType) {
       case optionTypeReserved:
@@ -114,6 +122,10 @@ class CoapDraft03 implements CoapISpec {
     return ((optionNumber / fencepostDivisor + 1) * fencepostDivisor).toInt();
   }
 
+  static bool isFencepost(int type) {
+    return type % fencepostDivisor == 0;
+  }
+
   static int mapOutMediaType(int mediaType) {
     switch (mediaType) {
       case CoapMediaType.applicationXObixBinary:
@@ -124,6 +136,21 @@ class CoapDraft03 implements CoapISpec {
         return 50;
       case CoapMediaType.applicationJson:
         return 51;
+      default:
+        return mediaType;
+    }
+  }
+
+  static int mapInMediaType(int mediaType) {
+    switch (mediaType) {
+      case 48:
+        return CoapMediaType.applicationXObixBinary;
+      case 49:
+        return CoapMediaType.applicationFastinfoset;
+      case 50:
+        return CoapMediaType.applicationSoapFastinfoset;
+      case 51:
+        return CoapMediaType.applicationJson;
       default:
         return mediaType;
     }
@@ -142,6 +169,6 @@ class CoapDraft03 implements CoapISpec {
     if (code == 80)
       return CoapCode.content;
     else
-      return ((code / 40).toInt() << 5) + (code % 40);
+      return ((code ~/ 40) << 5) + (code % 40);
   }
 }

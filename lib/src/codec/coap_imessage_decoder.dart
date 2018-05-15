@@ -40,5 +40,5 @@ abstract class CoapIMessageDecoder {
   CoapEmptyMessage decodeEmptyMessage();
 
   /// Decodes as a CoAP message.
-  CoapMessage decode();
+  CoapMessage decodeMessage();
 }

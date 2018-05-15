@@ -10,30 +10,30 @@ part of coap;
 /// Base class for message encoders.
 abstract class CoapMessageEncoder implements CoapIMessageEncoder {
   typed.Uint8Buffer encodeRequest(CoapRequest request) {
-    CoapDatagramWriter writer = new CoapDatagramWriter();
+    final CoapDatagramWriter writer = new CoapDatagramWriter();
     serialize(writer, request, request.code);
     return writer.toByteArray();
   }
 
   typed.Uint8Buffer encodeResponse(CoapResponse response) {
-    CoapDatagramWriter writer = new CoapDatagramWriter();
+    final CoapDatagramWriter writer = new CoapDatagramWriter();
     serialize(writer, response, response.code);
     return writer.toByteArray();
   }
 
   typed.Uint8Buffer encodeEmpty(CoapEmptyMessage message) {
-    CoapDatagramWriter writer = new CoapDatagramWriter();
+    final CoapDatagramWriter writer = new CoapDatagramWriter();
     serialize(writer, message, CoapCode.empty);
     return writer.toByteArray();
   }
 
-  encodeMessage(CoapMessage message) {
+  typed.Uint8Buffer encodeMessage(CoapMessage message) {
     if (message.isRequest) {
       return encodeRequest(message as CoapRequest);
     } else if (message.isResponse) {
       return encodeResponse(message as CoapResponse);
     } else if (message is CoapEmptyMessage) {
-      return encodeEmpty(message as CoapEmptyMessage);
+      return encodeEmpty(message);
     } else {
       return null;
     }

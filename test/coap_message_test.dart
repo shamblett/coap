@@ -7,20 +7,17 @@
 import 'package:coap/coap.dart';
 import 'package:test/test.dart';
 import 'package:typed_data/typed_data.dart' as typed;
-import 'package:log4dart/log4dart_vm.dart';
-import 'dart:convert';
-import 'dart:math';
-import 'dart:io';
 
 void main() {
   /// Helper functions
   void testMessage(CoapISpec spec) {
-    CoapMessage msg = new CoapRequest.isConfirmable(CoapCode.methodGET, true);
+    final CoapMessage msg = new CoapRequest.isConfirmable(
+        CoapCode.methodGET, true);
 
     msg.id = 12345;
     msg.payloadString = "payload";
-    typed.Uint8Buffer data = spec.encode(msg);
-    CoapMessage convMsg = spec.decode(data);
+    final typed.Uint8Buffer data = spec.encode(msg);
+    final CoapMessage convMsg = spec.decode(data);
     expect(msg.code, convMsg.code);
     expect(msg.type, convMsg.type);
     expect(msg.id, convMsg.id);
@@ -35,7 +32,7 @@ void main() {
 
   group("COAP All", () {
     test('TestDraft03', () {
-      testMessage(CoAP.Spec.Draft03);
+      testMessage(new CoapDraft03());
     });
 
   });

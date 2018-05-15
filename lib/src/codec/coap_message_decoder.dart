@@ -51,7 +51,7 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
 
   CoapRequest decodeRequest() {
     if (isRequest) {
-      CoapRequest request = new CoapRequest(_code);
+      final CoapRequest request = new CoapRequest(_code);
       request.type = _type;
       request.id = _id;
       parseMessage(request);
@@ -63,7 +63,7 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
 
   CoapResponse decodeResponse() {
     if (isResponse) {
-      CoapResponse response = new CoapResponse(_code);
+      final CoapResponse response = new CoapResponse(_code);
       response.type = _type;
       response.id = _id;
       parseMessage(response);
@@ -75,7 +75,7 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
 
   CoapEmptyMessage decodeEmptyMessage() {
     if ((!isResponse) && (!isRequest)) {
-      CoapEmptyMessage message = new CoapEmptyMessage(_code);
+      final CoapEmptyMessage message = new CoapEmptyMessage(_code);
       message.type = _type;
       message.id = _id;
       parseMessage(message);
@@ -85,7 +85,7 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
     return null;
   }
 
-  CoapMessage decode() {
+  CoapMessage decodeMessage() {
     if (isRequest) {
       return decodeRequest();
     } else if (isResponse) {
