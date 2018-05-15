@@ -32,9 +32,36 @@ void main() {
     expect(leq.equals(msg.payload.toList(), convMsg.payload.toList()), isTrue);
   }
 
+  void testMessageWithOptions(CoapISpec spec) {
+    final CoapMessage msg = new CoapRequest.isConfirmable(
+        CoapCode.methodGET, true);
+
+    msg.id = 12345;
+    msg.payloadString = "payload";
+    msg.addOption(CoapOption.createString(optionTypeContentType, "text/plain"));
+    msg.addOption(CoapOption.createVal(optionTypeMaxAge, 30));
+
+    final typed.Uint8Buffer data = spec.encode(msg);
+    final CoapMessage convMsg = spec.decode(data);
+
+    expect(msg.code, convMsg.code);
+    expect(msg.type, convMsg.type);
+    expect(msg.id, convMsg.id);
+    expect(msg
+        .getSortedOptions()
+        .length, convMsg
+        .getSortedOptions()
+        .length);
+    expect(leq.equals(
+        msg.getSortedOptions().toList(), convMsg.getSortedOptions().toList()),
+        isTrue);
+    expect(leq.equals(msg.payload.toList(), convMsg.payload.toList()), isTrue);
+  }
+
   group("COAP All", () {
     test('TestDraft03', () {
       testMessage(new CoapDraft03());
+      testMessageWithOptions(new CoapDraft03());
     });
   });
 }
