@@ -7,12 +7,15 @@
 import 'package:coap/coap.dart';
 import 'package:test/test.dart';
 import 'package:typed_data/typed_data.dart' as typed;
+import 'package:collection/equality.dart';
 
 void main() {
+  final ListEquality leq = new ListEquality();
+
   /// Helper functions
   void testMessage(CoapISpec spec) {
-    final CoapMessage msg = new CoapRequest.isConfirmable(
-        CoapCode.methodGET, true);
+    final CoapMessage msg =
+    new CoapRequest.isConfirmable(CoapCode.methodGET, true);
 
     msg.id = 12345;
     msg.payloadString = "payload";
@@ -26,14 +29,12 @@ void main() {
         .length, convMsg
         .getSortedOptions()
         .length);
-    expect(msg.payload == convMsg.payload, isTrue);
+    expect(leq.equals(msg.payload.toList(), convMsg.payload.toList()), isTrue);
   }
-
 
   group("COAP All", () {
     test('TestDraft03', () {
       testMessage(new CoapDraft03());
     });
-
   });
 }

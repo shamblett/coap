@@ -232,17 +232,25 @@ class CoapMessage extends Object with events.EventEmitter {
 
   /// Sets the payload of this CoAP message.
   CoapMessage setPayload(String payload) {
-    String temp = payload;
-    if (payload == null) temp = "";
-    _payload = _utfEncoder.convert(temp);
+    if (payload == null) {
+      return this;
+    }
+    if (_payload == null) {
+      _payload = new typed.Uint8Buffer();
+    }
+    _payload.addAll(_utfEncoder.convert(payload));
     return this;
   }
 
   /// Sets the payload of this CoAP message.
   CoapMessage setPayloadMedia(String payload, int mediaType) {
-    String temp = payload;
-    if (payload == null) temp = "";
-    _payload = _utfEncoder.convert(temp);
+    if (payload == null) {
+      return this;
+    }
+    if (_payload == null) {
+      _payload = new typed.Uint8Buffer();
+    }
+    _payload.addAll(_utfEncoder.convert(payload));
     contentType = mediaType;
     return this;
   }

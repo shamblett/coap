@@ -52,7 +52,7 @@ class CoapDatagramReader {
       count = _buffer.length;
     }
 
-    final typed.Uint8Buffer bytes = new typed.Uint8Buffer(count);
+    final typed.Uint8Buffer bytes = new typed.Uint8Buffer();
 
     // Are there bits left to read in buffer?
     if (_currentBitIndex >= 0) {
@@ -60,7 +60,7 @@ class CoapDatagramReader {
         bytes[i] = read(8);
       }
     } else {
-      final List<int> removed = _buffer.getRange(0, bytes.length);
+      final List<int> removed = _buffer.getRange(0, count).toList();
       bytes.insertAll(0, removed);
       _buffer.removeRange(0, bytes.length);
     }
