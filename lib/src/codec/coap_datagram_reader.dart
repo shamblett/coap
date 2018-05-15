@@ -48,8 +48,9 @@ class CoapDatagramReader {
   /// Reads a sequence of bytes from the stream
   typed.Uint8Buffer readBytes(int count) {
     // For negative count values, read all bytes left
+    int bufferCount = 0;
     if (count < 0) {
-      count = _buffer.length;
+      bufferCount = _buffer.length;
     }
 
     final typed.Uint8Buffer bytes = new typed.Uint8Buffer();
@@ -60,7 +61,7 @@ class CoapDatagramReader {
         bytes[i] = read(8);
       }
     } else {
-      final List<int> removed = _buffer.getRange(0, count).toList();
+      final List<int> removed = _buffer.getRange(0, bufferCount).toList();
       bytes.insertAll(0, removed);
       _buffer.removeRange(0, bytes.length);
     }
