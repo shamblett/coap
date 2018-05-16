@@ -119,7 +119,7 @@ class CoapDraft03 implements CoapISpec {
   }
 
   static int nextFencepost(int optionNumber) {
-    return ((optionNumber / fencepostDivisor + 1) * fencepostDivisor).toInt();
+    return (optionNumber / fencepostDivisor + 1).toInt() * fencepostDivisor;
   }
 
   static bool isFencepost(int type) {

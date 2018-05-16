@@ -34,15 +34,8 @@ class CoapOption {
   String get stringValue =>
       new convertor.Utf8Decoder().convert(_valueBytes.toList());
 
-  void _stringEncodeValue(String val) {
-    val.codeUnits.forEach((int unit) {
-      _valueBytes.add(unit);
-    });
-  }
+  set stringValue(String val) => _valueBytes.addAll(val.codeUnits);
 
-  set stringValue(String val) => _stringEncodeValue(val);
-
-  /// Int32 representation of value bytes
   int get intValue {
     if (_valueBytes.length == 1) {
       return _valueBytes[0];
@@ -88,9 +81,6 @@ class CoapOption {
       buff[0] = val;
       _valueBytes.clear();
       _valueBytes.addAll(buff.buffer.asUint8List());
-      while (_valueBytes.last == 0) {
-        _valueBytes.removeLast();
-      }
     }
   }
 
