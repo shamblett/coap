@@ -13,6 +13,7 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'dart:collection';
 import 'dart:convert' as convertor;
+import 'dart:math';
 import 'package:typed_data/typed_data.dart' as typed;
 import 'package:safe_config/safe_config.dart' as config;
 import 'package:log4dart/log4dart_vm.dart' as logging;
@@ -81,6 +82,8 @@ part 'src/specification/coap_draft03.dart';
 
 part 'src/specification/coap_draft08.dart';
 
+part 'src/specification/coap_draft12.dart';
+
 part 'src/codec/coap_imessage_encoder.dart';
 
 part 'src/codec/coap_message_encoder.dart';
@@ -89,9 +92,13 @@ part 'src/codec/coap_message_encoder03.dart';
 
 part 'src/codec/coap_message_encoder08.dart';
 
+part 'src/codec/coap_message_encoder12.dart';
+
 part 'src/codec/coap_message_decoder03.dart';
 
 part 'src/codec/coap_message_decoder08.dart';
+
+part 'src/codec/coap_message_decoder12.dart';
 
 part 'src/codec/coap_imessage_decoder.dart';
 

@@ -884,5 +884,10 @@ void main() {
       testMessageWithOptions(new CoapDraft08(), 1);
       testMessageWithExtendedOption(new CoapDraft08(), 2);
     });
+    test('TestDraft12', () {
+      testMessage(new CoapDraft12(), 0);
+      testMessageWithOptions(new CoapDraft12(), 1);
+      testMessageWithExtendedOption(new CoapDraft12(), 2);
+    });
   });
 }
