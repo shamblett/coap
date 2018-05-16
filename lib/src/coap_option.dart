@@ -44,8 +44,15 @@ class CoapOption {
 
   /// Int32 representation of value bytes
   int get intValue {
-    final Uint32List buff = new Uint32List.view(_valueBytes.buffer);
-    return buff[0];
+    if (_valueBytes.length == 1) {
+      return _valueBytes[0];
+    } else if (_valueBytes.length == 2) {
+      final Uint16List buff = new Uint16List.view(_valueBytes.buffer);
+      return buff[0];
+    } else {
+      final Uint32List buff = new Uint32List.view(_valueBytes.buffer);
+      return buff[0];
+    }
   }
 
   set intValue(int val) {
@@ -56,9 +63,6 @@ class CoapOption {
       buff[0] = val;
       _valueBytes.clear();
       _valueBytes.addAll(buff.buffer.asUint8List());
-      while (_valueBytes.last == 0) {
-        _valueBytes.removeLast();
-      }
     }
   }
 

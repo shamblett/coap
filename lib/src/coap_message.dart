@@ -60,6 +60,7 @@ class CoapMessage extends Object with events.EventEmitter {
       return this;
     }
     _optionMap[option.type] = new List<CoapOption>();
+    _optionMap[option.type].add(option);
     return this;
   }
 
@@ -111,6 +112,9 @@ class CoapMessage extends Object with events.EventEmitter {
   /// Returns the first option of the specified type, or null
   CoapOption getFirstOption(int optionType) {
     final List<CoapOption> list = getOptions(optionType);
+    if (list == null) {
+      return null;
+    }
     return list.length > 0 ? list.first : null;
   }
 

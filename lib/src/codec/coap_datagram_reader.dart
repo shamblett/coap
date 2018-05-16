@@ -48,7 +48,7 @@ class CoapDatagramReader {
   /// Reads a sequence of bytes from the stream
   typed.Uint8Buffer readBytes(int count) {
     // For negative count values, read all bytes left
-    int bufferCount = 0;
+    int bufferCount = count;
     if (count < 0) {
       bufferCount = _buffer.length;
     }
