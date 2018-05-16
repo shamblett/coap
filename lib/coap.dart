@@ -79,13 +79,19 @@ part 'src/specification/coap_ispec.dart';
 
 part 'src/specification/coap_draft03.dart';
 
+part 'src/specification/coap_draft08.dart';
+
 part 'src/codec/coap_imessage_encoder.dart';
 
 part 'src/codec/coap_message_encoder.dart';
 
 part 'src/codec/coap_message_encoder03.dart';
 
+part 'src/codec/coap_message_encoder08.dart';
+
 part 'src/codec/coap_message_decoder03.dart';
+
+part 'src/codec/coap_message_decoder08.dart';
 
 part 'src/codec/coap_imessage_decoder.dart';
 
