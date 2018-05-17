@@ -59,7 +59,9 @@ class CoapMessage extends Object with events.EventEmitter {
       token = option.valueBytes;
       return this;
     }
-    _optionMap[option.type] = new List<CoapOption>();
+    if (!_optionMap.containsKey(option.type)) {
+      _optionMap[option.type] = new List<CoapOption>();
+    }
     _optionMap[option.type].add(option);
     return this;
   }

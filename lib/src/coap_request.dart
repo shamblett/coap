@@ -32,6 +32,7 @@ class CoapReregisteringEvent {
 /// 2. different ways to handle incoming responses: receiveResponse() or Response event
 class CoapRequest extends CoapMessage {
   /// Initializes a request message.
+  /// Defaults to confirmable
   CoapRequest(int code) : this.isConfirmable(code, true);
 
   /// Initializes a request message.

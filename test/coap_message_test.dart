@@ -874,7 +874,8 @@ void main() {
   }
 
   void testRequestParsing(CoapISpec spec, int testNo) {
-    final CoapRequest request = new CoapRequest(CoapCode.methodPOST);
+    final CoapRequest request =
+    new CoapRequest.isConfirmable(CoapCode.methodPOST, false);
     request.id = 7;
     request.token = new typed.Uint8Buffer()
       ..addAll([11, 82, 165, 77, 3]);
@@ -898,6 +899,35 @@ void main() {
         isTrue);
   }
 
+  void testResponseParsing(CoapISpec spec, int testNo) {
+    final CoapResponse response = new CoapResponse(CoapCode.content);
+    response.type = CoapMessageType.non;
+    response.id = 9;
+    response.token = new typed.Uint8Buffer()
+      ..addAll([22, 255, 0, 78, 100, 22]);
+    response.addETag(new typed.Uint8Buffer()..addAll([1, 0, 0, 0, 0, 1]))
+      ..addLocationPath("/one/two/three/four/five/six/seven/eight/nine/ten")
+      ..addOption(CoapOption.createVal(
+          57453, 0x71ca949f)) // C# "Arbitrary".hashCode() 71ca949f 9f94ca71
+      ..addOption(CoapOption.createString(19205, "Arbitrary1"))..addOption(
+        CoapOption.createString(19205, "Arbitrary2"))..addOption(
+        CoapOption.createString(19205, "Arbitrary3"));
+
+    final typed.Uint8Buffer bytes = spec.encode(response);
+    checkData(spec.name, bytes, testNo);
+
+    final CoapIMessageDecoder decoder = spec.newMessageDecoder(bytes);
+    expect(decoder.isResponse, isTrue);
+
+    final CoapResponse result = decoder.decodeResponse();
+    expect(response.id, result.id);
+    expect(leq.equals(response.token.toList(), result.token.toList()), isTrue);
+    expect(
+        leq.equals(response.getSortedOptions().toList(),
+            result.getSortedOptions().toList()),
+        isTrue);
+  }
+
   group("COAP All", () {
     test('TestDraft03', () {
       testMessage(new CoapDraft03(), 0);
@@ -914,6 +944,7 @@ void main() {
       testMessageWithOptions(new CoapDraft12(), 1);
       testMessageWithExtendedOption(new CoapDraft12(), 2);
       testRequestParsing(new CoapDraft12(), 3);
+      testResponseParsing(new CoapDraft12(), 4);
     });
   });
 }
