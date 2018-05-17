@@ -341,7 +341,7 @@ void main() {
       typed.Uint8Buffer toBytes(int szx, bool m, int num) {
         final CoapBlockOption opt =
             new CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m);
-        return opt.valueBytes;
+        return opt.blockValueBytes;
       }
 
       // Original test assumes network byte ordering is needed, hence the reverse
@@ -351,10 +351,10 @@ void main() {
       expect(toBytes(0, false, 16), [0x01, 0x00].reversed);
       expect(toBytes(0, false, 79), [0x04, 0xf0].reversed);
       expect(toBytes(0, false, 113), [0x07, 0x10].reversed);
-      expect(toBytes(0, false, 26387), [0x00, 0x06, 0x71, 0x30].reversed);
-      expect(toBytes(0, false, 1048575), [0x00, 0xff, 0xff, 0xf0].reversed);
-      expect(toBytes(7, false, 1048575), [0x00, 0xff, 0xff, 0xf7].reversed);
-      expect(toBytes(7, true, 1048575), [0x00, 0xff, 0xff, 0xff].reversed);
+      expect(toBytes(0, false, 26387), [0x06, 0x71, 0x30].reversed);
+      expect(toBytes(0, false, 1048575), [0xff, 0xff, 0xf0].reversed);
+      expect(toBytes(7, false, 1048575), [0xff, 0xff, 0xf7].reversed);
+      expect(toBytes(7, true, 1048575), [0xff, 0xff, 0xff].reversed);
     });
 
     test('Combined', () {
