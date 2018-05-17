@@ -25,16 +25,22 @@ void main() {
     test('IntValue', () {
       final int oneByteValue = 255;
       final int twoByteValue = oneByteValue + 1;
+      final int fourByteValue = 65535 + 1;
       final CoapOption opt1 =
           CoapOption.createVal(optionTypeContentType, oneByteValue);
       final CoapOption opt2 =
           CoapOption.createVal(optionTypeContentType, twoByteValue);
+      final CoapOption opt3 =
+      CoapOption.createVal(optionTypeContentType, fourByteValue);
       expect(opt1.length, 1);
       expect(opt2.length, 2);
+      expect(opt3.length, 4);
       expect(opt1.intValue, oneByteValue);
       expect(opt2.intValue, twoByteValue);
+      expect(opt3.intValue, fourByteValue);
       expect(opt1.type, optionTypeContentType);
       expect(opt2.type, optionTypeContentType);
+      expect(opt3.type, optionTypeContentType);
     });
 
     test('LongValue', () {
@@ -44,8 +50,8 @@ void main() {
           CoapOption.createLongVal(optionTypeContentType, fourByteValue);
       final CoapOption opt2 =
           CoapOption.createLongVal(optionTypeContentType, fiveByteValue);
-      expect(opt1.length, 4);
-      expect(opt2.length, 5);
+      expect(opt1.length, 8);
+      expect(opt2.length, 8);
       expect(opt1.longValue, fourByteValue);
       expect(opt2.longValue, fiveByteValue);
       expect(opt1.type, optionTypeContentType);
@@ -345,10 +351,10 @@ void main() {
       expect(toBytes(0, false, 16), [0x01, 0x00].reversed);
       expect(toBytes(0, false, 79), [0x04, 0xf0].reversed);
       expect(toBytes(0, false, 113), [0x07, 0x10].reversed);
-      expect(toBytes(0, false, 26387), [0x06, 0x71, 0x30].reversed);
-      expect(toBytes(0, false, 1048575), [0xff, 0xff, 0xf0].reversed);
-      expect(toBytes(7, false, 1048575), [0xff, 0xff, 0xf7].reversed);
-      expect(toBytes(7, true, 1048575), [0xff, 0xff, 0xff].reversed);
+      expect(toBytes(0, false, 26387), [0x00, 0x06, 0x71, 0x30].reversed);
+      expect(toBytes(0, false, 1048575), [0x00, 0xff, 0xff, 0xf0].reversed);
+      expect(toBytes(7, false, 1048575), [0x00, 0xff, 0xff, 0xf7].reversed);
+      expect(toBytes(7, true, 1048575), [0x00, 0xff, 0xff, 0xff].reversed);
     });
 
     test('Combined', () {

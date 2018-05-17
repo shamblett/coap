@@ -42,13 +42,13 @@ class CoapMessageEncoder12 extends CoapMessageEncoder {
           optWriter.write(0xF1, CoapDraft12.singleOptionJumpBits);
           optionDelta -= 15;
         } else if (optionDelta < 2064) {
-          final int optionJumpValue = (optionDelta / 8).toInt() - 2;
+          final int optionJumpValue = (optionDelta ~/ 8) - 2;
           optionDelta -= (optionJumpValue + 2) * 8;
           optWriter.write(0xF2, CoapDraft12.singleOptionJumpBits);
           optWriter.write(optionJumpValue, CoapDraft12.singleOptionJumpBits);
         } else if (optionDelta < 526359) {
           optionDelta = min(optionDelta, 526344); // Limit to avoid overflow
-          final int optionJumpValue = (optionDelta / 8).toInt() - 258;
+          final int optionJumpValue = (optionDelta ~/ 8) - 258;
           optionDelta -= (optionJumpValue + 258) * 8;
           optWriter.write(0xF3, CoapDraft12.singleOptionJumpBits);
           optWriter.write(

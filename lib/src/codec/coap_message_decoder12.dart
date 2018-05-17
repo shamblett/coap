@@ -63,7 +63,7 @@ class CoapMessageDecoder12 extends CoapMessageDecoder {
       }
 
       currentOption += optionDelta;
-      int currentOptionType = CoapDraft12.getOptionType(currentOption);
+      final int currentOptionType = CoapDraft12.getOptionType(currentOption);
 
       int length = _reader.read(CoapDraft12.optionLengthBaseBits);
       if (length == 15) {

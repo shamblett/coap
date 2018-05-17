@@ -873,6 +873,31 @@ void main() {
     expect(extendOpt.stringValue, "extend option");
   }
 
+  void testRequestParsing(CoapISpec spec, int testNo) {
+    final CoapRequest request = new CoapRequest(CoapCode.methodPOST);
+    request.id = 7;
+    request.token = new typed.Uint8Buffer()
+      ..addAll([11, 82, 165, 77, 3]);
+    request
+        .addIfMatch(new typed.Uint8Buffer()..addAll([34, 239]))
+        .addIfMatch(new typed.Uint8Buffer()..addAll([88, 12, 254, 157, 5]));
+    request.contentType = 40;
+    request.accept = 40;
+
+    final typed.Uint8Buffer bytes = spec.encode(request);
+    checkData(spec.name, bytes, testNo);
+    final CoapIMessageDecoder decoder = spec.newMessageDecoder(bytes);
+    expect(decoder.isRequest, isTrue);
+
+    final CoapRequest result = decoder.decodeRequest();
+    expect(request.id, result.id);
+    expect(leq.equals(request.token.toList(), result.token.toList()), isTrue);
+    expect(
+        leq.equals(request.getSortedOptions().toList(),
+            result.getSortedOptions().toList()),
+        isTrue);
+  }
+
   group("COAP All", () {
     test('TestDraft03', () {
       testMessage(new CoapDraft03(), 0);
@@ -888,6 +913,7 @@ void main() {
       testMessage(new CoapDraft12(), 0);
       testMessageWithOptions(new CoapDraft12(), 1);
       testMessageWithExtendedOption(new CoapDraft12(), 2);
+      testRequestParsing(new CoapDraft12(), 3);
     });
   });
 }

@@ -53,9 +53,9 @@ class CoapOption {
       _valueBytes.add(0);
     } else {
       _valueBytes.clear();
-      if (val >= -127 && val <= 128) {
+      if (val <= 255) {
         _valueBytes.add(val);
-      } else if (val >= -32767 && val <= 32768) {
+      } else if (val <= 65535) {
         final Uint16List buff = new Uint16List(1);
         buff[0] = val;
         _valueBytes.addAll(buff.buffer.asUint8List());
