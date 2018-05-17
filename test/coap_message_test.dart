@@ -907,8 +907,8 @@ void main() {
       ..addAll([22, 255, 0, 78, 100, 22]);
     response.addETag(new typed.Uint8Buffer()..addAll([1, 0, 0, 0, 0, 1]))
       ..addLocationPath("/one/two/three/four/five/six/seven/eight/nine/ten")
-      ..addOption(CoapOption.createVal(
-          57453, 0x71ca949f)) // C# "Arbitrary".hashCode() 71ca949f 9f94ca71
+      ..addOption(
+          CoapOption.createVal(57453, 0x71ca949f)) // C# "Arbitrary".hashCode()
       ..addOption(CoapOption.createString(19205, "Arbitrary1"))..addOption(
         CoapOption.createString(19205, "Arbitrary2"))..addOption(
         CoapOption.createString(19205, "Arbitrary3"));
@@ -923,8 +923,18 @@ void main() {
     expect(response.id, result.id);
     expect(leq.equals(response.token.toList(), result.token.toList()), isTrue);
     expect(
-        leq.equals(response.getSortedOptions().toList(),
-            result.getSortedOptions().toList()),
+        leq.equals(response.getOptions(57453).toList(),
+            result.getOptions(57453).toList()),
+        isTrue);
+    expect(
+        leq.equals(response.getOptions(19205).toList(),
+            result.getOptions(19205).toList()),
+        isTrue);
+    expect(
+        response.etags.toList().toString(), result.etags.toList().toString());
+    expect(
+        leq.equals(
+            response.locationPaths.toList(), result.locationPaths.toList()),
         isTrue);
   }
 

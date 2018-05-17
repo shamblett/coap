@@ -376,8 +376,8 @@ class CoapMessage extends Object with events.EventEmitter {
   }
 
   /// Etags
-  typed.Uint8Buffer get etags =>
-      _selectOptions(optionTypeETag, (CoapOption o) => o.valueBytes);
+  Iterable get etags =>
+      _selectOptions(optionTypeETag, (CoapOption o) => o.valueBytes).toList();
 
   bool containsETag(typed.Uint8Buffer what) =>
       CoapUtil.contains(
