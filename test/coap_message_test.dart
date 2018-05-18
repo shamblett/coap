@@ -963,5 +963,12 @@ void main() {
       testRequestParsing(new CoapDraft13(), 3);
       testResponseParsing(new CoapDraft13(), 4);
     });
+    test('TestDraft18', () {
+      testMessage(new CoapDraft18(), 0);
+      testMessageWithOptions(new CoapDraft18(), 1);
+      testMessageWithExtendedOption(new CoapDraft18(), 2);
+      testRequestParsing(new CoapDraft18(), 3);
+      testResponseParsing(new CoapDraft18(), 4);
+    });
   });
 }

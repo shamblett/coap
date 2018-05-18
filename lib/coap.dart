@@ -85,17 +85,21 @@ part 'src/specification/drafts/coap_draft12.dart';
 
 part 'src/specification/drafts/coap_draft13.dart';
 
+part 'src/specification/drafts/coap_draft18.dart';
+
 part 'src/codec/coap_imessage_encoder.dart';
 
-part 'package:coap/src/codec/encoders/coap_message_encoder.dart';
+part 'src/codec/encoders/coap_message_encoder.dart';
 
-part 'package:coap/src/codec/encoders/coap_message_encoder03.dart';
+part 'src/codec/encoders/coap_message_encoder03.dart';
 
-part 'package:coap/src/codec/encoders/coap_message_encoder08.dart';
+part 'src/codec/encoders/coap_message_encoder08.dart';
 
-part 'package:coap/src/codec/encoders/coap_message_encoder12.dart';
+part 'src/codec/encoders/coap_message_encoder12.dart';
 
-part 'package:coap/src/codec/encoders/coap_message_encoder13.dart';
+part 'src/codec/encoders/coap_message_encoder13.dart';
+
+part 'src/codec/encoders/coap_message_encoder18.dart';
 
 part 'src/codec/decoders/coap_message_decoder03.dart';
 
@@ -104,6 +108,8 @@ part 'src/codec/decoders/coap_message_decoder08.dart';
 part 'src/codec/decoders/coap_message_decoder12.dart';
 
 part 'src/codec/decoders/coap_message_decoder13.dart';
+
+part 'src/codec/decoders/coap_message_decoder18.dart';
 
 part 'src/codec/coap_imessage_decoder.dart';
 
