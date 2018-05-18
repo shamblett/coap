@@ -23,7 +23,8 @@ class CoapMessageEncoder13 extends CoapMessageEncoder {
     writer.writeBytes(msg.token);
 
     int lastOptionNumber = 0;
-    final Iterable<CoapOption> options = msg.getSortedOptions();
+    final List<CoapOption> options = msg.getSortedOptions();
+    CoapUtil.insertionSort(options, (a, b) => a.type.compareTo(b.type));
 
     for (CoapOption opt in options) {
       if (opt.type == optionTypeToken) {
