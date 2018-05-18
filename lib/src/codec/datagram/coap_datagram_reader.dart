@@ -58,7 +58,7 @@ class CoapDatagramReader {
     // Are there bits left to read in buffer?
     if (_currentBitIndex >= 0) {
       for (int i = 0; i < count; i++) {
-        bytes[i] = read(8);
+        bytes.add(read(8));
       }
     } else {
       final List<int> removed = _buffer.getRange(0, bufferCount).toList();
