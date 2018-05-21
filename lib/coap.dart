@@ -69,7 +69,11 @@ part 'src/log/coap_log_manager.dart';
 
 part 'src/deduplication/coap_ideduplicator.dart';
 
-part 'src/deduplication/coap_noopdeduplicator.dart';
+part 'src/deduplication/coap_noop_deduplicator.dart';
+
+part 'src/deduplication/coap_crop_rotation_deduplicator.dart';
+
+part 'src/deduplication/coap_sweep_deduplicator.dart';
 
 part 'src/deduplication/coap_deduplicator_factory.dart';
 

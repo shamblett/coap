@@ -19,7 +19,7 @@ class CoapDeduplicatorFactory {
     if (type == markAndSweepDeduplicator) {
       return new CoapSweepDeduplicator(config);
     } else if (type == cropRotationDeduplicator) {
-      return new CoapCropRotation(config);
+      return new CoapCropRotationDeduplicator(config);
     } else if (type == noopDeduplicator) {
       _log.warn("Unknown deduplicator type: " + type);
     }
