@@ -78,7 +78,7 @@ class CoapConfig extends config.ConfigurationItem {
   @config.optionalConfiguration
   int notificationReregistrationBackoff = 2000; // ms
 
-  //TODO string deduplicator = CoAP.Deduplication.DeduplicatorFactory.MarkAndSweepDeduplicator;
+  String deduplicator = CoapDeduplicatorFactory.markAndSweepDeduplicator;
   @config.optionalConfiguration
   int cropRotationPeriod = 2000; // ms
   @config.optionalConfiguration

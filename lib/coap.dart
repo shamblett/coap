@@ -69,6 +69,10 @@ part 'src/log/coap_log_manager.dart';
 
 part 'src/deduplication/coap_ideduplicator.dart';
 
+part 'src/deduplication/coap_noopdeduplicator.dart';
+
+part 'src/deduplication/coap_deduplicator_factory.dart';
+
 part 'src/util/coap_util.dart';
 
 part 'src/util/coap_byte_array_util.dart';
@@ -120,6 +124,10 @@ part 'src/codec/datagram/coap_datagram_reader.dart';
 part 'src/codec/datagram/coap_datagram_writer.dart';
 
 part 'src/net/coap_iendpoint.dart';
+
+part 'src/net/coap_imatcher.dart';
+
+part 'src/net/coap_matcher.dart';
 
 part 'src/net/coap_imessage_deliverer.dart';
 

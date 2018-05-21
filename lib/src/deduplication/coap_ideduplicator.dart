@@ -19,10 +19,9 @@ abstract class CoapIDeduplicator {
   /// Clears the state of this deduplicator.
   void clear();
 
-/// Checks if the specified key is already associated with a previous
-/// exchange and otherwise associates the key with the exchange specified.
-/// Returns>the previous exchange associated with the specified key,
-/// or null if there was no mapping for the key.
-//Exchange FindPrevious(Exchange.KeyID key, Exchange exchange);
-//Exchange Find(Exchange.KeyID key);
+  /// Checks if the specified key is already associated with a previous
+  /// exchange and otherwise associates the key with the exchange specified.
+  CoapExchange findPrevious(CoapKeyId key, CoapExchange exchange);
+
+  CoapExchange find(CoapKeyId key);
 }
