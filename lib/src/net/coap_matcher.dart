@@ -243,8 +243,7 @@ class CoapMatcher extends Object
       if (response.type == CoapMessageType.ack &&
           exchange.currentRequest.id != response.id) {
         // The token matches but not the MID. This is a response for an older exchange
-        _log.warn(
-            "Possible MID reuse before lifetime end: ${response
+        _log.warn("Possible MID reuse before lifetime end: ${response
                 .tokenString} expected MID ${exchange.currentRequest
                 .id} but received ${response.id}");
       }
@@ -261,8 +260,7 @@ class CoapMatcher extends Object
           return prev;
         }
       } else {
-        _log.info(
-            "Ignoring unmatchable piggy-backed response from ${response
+        _log.info("Ignoring unmatchable piggy-backed response from ${response
                 .source} : $response");
       }
       // Ignore response
@@ -279,14 +277,51 @@ class CoapMatcher extends Object
       _exchangesById.remove(keyId);
       return exchange;
     } else {
-      _log.info(
-          "Ignoring unmatchable empty message from ${message
+      _log.info("Ignoring unmatchable empty message from ${message
               .source} : $message");
       return null;
     }
   }
 
-  void onExchangeCompleted(events.Event<CoapCompletedEvent> event) {}
+  void onExchangeCompleted(events.Event<CoapCompletedEvent> event) {
+    final CoapExchange exchange = event.data.exchange;
+
+    if (exchange.origin == CoapOrigin.local) {
+      // This endpoint created the Exchange by issuing a request
+      final CoapKeyId keyId = new CoapKeyId(exchange.currentRequest.id, null);
+      final CoapKeyToken keyToken =
+      new CoapKeyToken(exchange.currentRequest.token);
+      _log.debug("Exchange completed: Cleaning up $keyToken");
+
+      _exchangesByToken.remove(keyToken);
+      // In case an empty ACK was lost
+      _exchangesById.remove(keyId);
+    } else // Origin.Remote
+        {
+      // This endpoint created the Exchange to respond a request
+      final CoapResponse response = exchange.currentResponse;
+      if (response != null && response.type != CoapMessageType.ack) {
+        // Only response MIDs are stored for ACK and RST, no reponse Tokens
+        final CoapKeyId midKey = new CoapKeyId(response.id, null);
+        _exchangesById.remove(midKey);
+      }
+
+      final CoapRequest request = exchange.currentRequest;
+      if (request != null &&
+          (request.hasOption(optionTypeBlock1) ||
+              response.hasOption(optionTypeBlock2))) {
+        final CoapKeyUri uriKey = new CoapKeyUri(request.uri, request.source);
+        _log.debug("Remote ongoing completed, cleaning up $uriKey");
+        _ongoingExchanges.remove(uriKey);
+      }
+
+      // Remove all remaining NON-notifications if this exchange is an observe relation
+      final CoapObserveRelation relation = exchange.relation;
+      if (relation != null) {
+        _removeNotificatoinsOf(relation);
+      }
+    }
+  }
 
   void _removeNotificatoinsOf(CoapObserveRelation relation) {
     _log.debug("Remove all remaining NON-notifications of observe relation");

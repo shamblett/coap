@@ -8,7 +8,11 @@
 part of coap;
 
 /// Events
-class CoapCompletedEvent {}
+class CoapCompletedEvent {
+  CoapCompletedEvent(this.exchange);
+
+  CoapExchange exchange;
+}
 
 /// The origin of an exchange.
 enum CoapOrigin { local, remote }
@@ -75,7 +79,7 @@ class CoapExchange extends Object with events.EventEmitter {
   set complete(bool value) {
     _complete = value;
     if (value) {
-      emitEvent(new CoapCompletedEvent());
+      emitEvent(new CoapCompletedEvent(this));
     }
   }
 
