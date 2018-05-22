@@ -24,10 +24,6 @@ import 'package:hex/hex.dart' as hex;
 
 part 'src/coap.dart';
 
-part 'src/coap_network.dart';
-
-part 'src/coap_network_udp.dart';
-
 part 'src/coap_option_type.dart';
 
 part 'src/coap_option.dart';
@@ -156,3 +152,11 @@ part 'src/threading/coap_iexecutor.dart';
 part 'src/endpoint/resources/coap_endpoint_resource.dart';
 
 part 'src/endpoint/resources/coap_remote_resource.dart';
+
+part 'src/channel/coap_ichannel.dart';
+
+part 'src/channel/coap_udp_channel.dart';
+
+part 'src/channel/coap_network.dart';
+
+part 'src/channel/coap_network_udp.dart';

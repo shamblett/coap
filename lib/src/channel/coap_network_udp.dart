@@ -11,6 +11,8 @@ class CoapNetworkUDP extends CoapNetwork {
   /// UDP socket
   RawDatagramSocket _socket;
 
+  RawDatagramSocket get socket => _socket;
+
   /// Send, returns the number of bytes sent or 0
   int send(Datagram data) {
     return _socket.send(data.data, data.address, data.port);
