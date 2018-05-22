@@ -135,6 +135,8 @@ part 'src/net/coap_matcher.dart';
 
 part 'src/net/coap_imessage_deliverer.dart';
 
+part 'src/net/coap_client_message_deliverer.dart';
+
 part 'src/net/coap_ioutbox.dart';
 
 part 'src/net/coap_exchange.dart';
