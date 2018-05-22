@@ -142,4 +142,16 @@ class CoapUtil {
   static Future asyncSleep(int milliseconds) {
     return new Future.delayed(new Duration(milliseconds: milliseconds));
   }
+
+  /// Puts a value associated with a key into a Map,
+  /// and returns the old value, or null if not exists.
+  static TValue put<TKey, TValue>(Map<TKey, TValue> dic, TKey key,
+      TValue value) {
+    TValue old;
+    if (dic.containsKey(key)) {
+      old = dic[key];
+    }
+    dic[key] = value;
+    return old;
+  }
 }
