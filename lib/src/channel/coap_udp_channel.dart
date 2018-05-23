@@ -7,16 +7,8 @@
 
 part of coap;
 
-class CoapRawData {
-  typed.Uint8Buffer data;
-  InternetAddress endPoint;
-}
-
 /// Channel via UDP protocol.
-class CoapUDPChannel implements CoapIChannel {
-  /// Default size of buffer for receiving packet.
-  static const int defaultReceivePacketSize = 4096;
-
+class CoapUDPChannel extends CoapIChannel {
   /// Initializes a UDP channel with a random port.
   CoapUDPChannel() {
     _port = 0;
@@ -28,19 +20,32 @@ class CoapUDPChannel implements CoapIChannel {
   /// Initializes a UDP channel with the specific endpoint.
   CoapUDPChannel.withEndpoint(this._localEp);
 
-  int receiveBufferSize;
-  int sendBufferSize;
-  int receivePacketSize = defaultReceivePacketSize;
   int _port;
   InternetAddress _localEp;
 
   InternetAddress get localEp =>
       _localEp == null ? InternetAddress.ANY_IP_V6 : _socket.socket.address;
   CoapNetworkUDP _socket;
-  CoapNetworkUDP _socketBackup;
-  int _running;
-  int _writing;
-  Queue<CoapRawData> _sendingQueue = new Queue<CoapRawData>();
 
-  void dataReceived(events.Event event) {}
+  InternetAddress get localEndPoint => localEp;
+
+  set localEndPoint(InternetAddress address) => _localEp = address;
+
+  void start() {
+    _socket.port = _port;
+    _socket.address = localEp;
+    _socket.bind();
+  }
+
+  void stop() {
+    _socket.close();
+  }
+
+  void send(typed.Uint8Buffer data) {
+    _socket.send(data);
+  }
+
+  typed.Uint8Buffer receive() {
+    return _socket.receive();
+  }
 }

@@ -13,13 +13,30 @@ class CoapNetworkUDP extends CoapNetwork {
 
   RawDatagramSocket get socket => _socket;
 
-  /// Send, returns the number of bytes sent or 0
-  int send(Datagram data) {
-    return _socket.send(data.data, data.address, data.port);
+  int send(typed.Uint8Buffer data) {
+    return _socket.send(data.toList(), address, port);
   }
 
-  /// Receive, if nothing is received null is returned.
-  Datagram receive() {
-    return _socket.receive();
+  typed.Uint8Buffer receive() {
+    final Datagram rec = _socket.receive();
+    if (rec == null) {
+      return null;
+    }
+    if (rec.data.length == 0) {
+      return null;
+    }
+    return new typed.Uint8Buffer()
+      ..addAll(rec.data);
+  }
+
+  void bind() {
+    RawDatagramSocket.bind(address.host, port)
+      ..then((socket) {
+        _socket = socket;
+      });
+  }
+
+  void close() {
+    _socket.close();
   }
 }
