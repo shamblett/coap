@@ -137,8 +137,12 @@ class CoapExchange extends Object with events.EventEmitter {
   }
 
   T set<T>(Object key, Object value) {
+    Object oldValue;
+    if (_attributes.containsKey(key)) {
+      oldValue = _attributes[key];
+    }
     _attributes[key] = value;
-    return value;
+    return oldValue;
   }
 
   Object remove(Object key) {

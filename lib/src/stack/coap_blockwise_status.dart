@@ -35,12 +35,12 @@ class CoapBlockwiseStatus {
   int get contentFormat => _contentFormat;
   bool complete;
   int observe = noObserve;
-  List<int> blocks = new List<int>();
+  List<typed.Uint8Buffer> blocks = new List<typed.Uint8Buffer>();
 
   int get blockCount => blocks.length;
 
   /// Adds the specified block to the current list of blocks.
-  void addBlock(int block) {
+  void addBlock(typed.Uint8Buffer block) {
     if (block != null) blocks.add(block);
   }
 

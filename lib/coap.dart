@@ -125,6 +125,8 @@ part 'src/codec/datagram/coap_datagram_writer.dart';
 
 part 'src/net/coap_iendpoint.dart';
 
+part 'src/net/coap_endpoint.dart';
+
 part 'src/net/coap_imatcher.dart';
 
 part 'src/net/coap_matcher.dart';
@@ -138,6 +140,14 @@ part 'src/net/coap_ioutbox.dart';
 part 'src/net/coap_exchange.dart';
 
 part 'src/stack/coap_blockwise_status.dart';
+
+part 'src/stack/coap_ilayer.dart';
+
+part 'src/stack/coap_abstract_layer.dart';
+
+part 'src/stack/coap_blockwise_layer.dart';
+
+part 'src/stack/coap_ientry.dart';
 
 part 'src/observe/coap_observe_relation.dart';
 

@@ -10,9 +10,7 @@ part of coap;
 /// Channel via UDP protocol.
 class CoapUDPChannel extends CoapIChannel {
   /// Initializes a UDP channel with a random port.
-  CoapUDPChannel() {
-    _port = 0;
-  }
+  CoapUDPChannel() : this.withPort(0);
 
   /// Initializes a UDP channel with the given port, both on IPv4 and IPv6.
   CoapUDPChannel.withPort(this._port);
