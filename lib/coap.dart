@@ -149,6 +149,8 @@ part 'src/stack/coap_blockwise_layer.dart';
 
 part 'src/stack/coap_ientry.dart';
 
+part 'src/stack/coap_chain.dart';
+
 part 'src/observe/coap_observe_relation.dart';
 
 part 'src/observe/coap_observing_endpoint.dart';
