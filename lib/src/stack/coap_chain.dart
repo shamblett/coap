@@ -7,6 +7,12 @@
 
 part of coap;
 
+typedef bool TEqualsFunc<TFilter>(TFilter a, TFilter b);
+typedef CoapEntry TEntryFactoryFunc<TChain, TFilter>(TChain a, CoapEntry b,
+    CoapEntry c, String d, TFilter e);
+typedef TNextFilter TNextFilterFactory<TNextFilter, TFilter>(TFilter);
+typedef TFilter TFilterFactory<TFilter>();
+
 /// Represents a chain of filters.
 abstract class CoapIChain<TFilter, TNextFilter> {
   /// Gets the <see cref="IEntry&lt;TFilter, TNextFilter&gt;"/> with the specified <paramref name="name"/> in this chain.
@@ -76,13 +82,108 @@ abstract class CoapIChain<TFilter, TNextFilter> {
 }
 
 /// Represents an entry of filter in the chain.
-class CoapEntry implements CoapIEntry<TFilter, TNextFilter> {}
+class CoapEntry<TFilter, TNextFilter>
+    implements CoapIEntry<TFilter, TNextFilter> {
+  /// Instantiates.
+  CoapEntry(CoapChain chain, CoapEntry prevEntry, CoapEntry nextEntry,
+      String name, TFilter filter, TNextFilterFactory nextFilterFactory) {
+    if (filter == null) throw new ArgumentError.notNull("filter");
+    if (name == null) throw new ArgumentError.notNull("name");
 
-typedef bool TEqualsFunc<TFilter>(TFilter a, TFilter b);
-typedef CoapEntry TEntryFactoryFunc<TChain, TFilter>(
-    TChain a, CoapEntry b, CoapEntry c, String d, TFilter e);
-typedef TNextFilter TNextFilterFactory<TNextFilter, TFilter>(TFilter);
-typedef TFilter TFilterFactory<TFilter>();
+    _chain = chain;
+    _prevEntry = prevEntry;
+    _nextEntry = nextEntry;
+    _name = name;
+    _filter = filter;
+    _nextFilter = nextFilterFactory(this);
+  }
+
+  CoapChain _chain;
+
+  CoapChain get chain => _chain;
+  String _name;
+
+  String get name => _name;
+
+  set name(String name) => _name = name;
+  CoapEntry _prevEntry;
+
+  CoapEntry get prevEntry => _prevEntry;
+  CoapEntry _nextEntry;
+
+  CoapEntry get nextEntry => _nextEntry;
+  TFilter _filter;
+
+  TFilter get filter => _filter;
+
+  set filter(TFilter value) {
+    if (value == null) {
+      throw new ArgumentError.notNull("value");
+    }
+    _filter = value;
+  }
+
+  TNextFilter _nextFilter;
+
+  TNextFilter get nextFilter => _nextFilter;
+
+  set nextFilter(TNextFilter filter) => _nextFilter = filter;
+
+  void addBefore(String name, TFilter filter) {
+    _chain.addBefore(_name, name, filter);
+  }
+
+  void addAfter(String name, TFilter filter) {
+    _chain.addAfter(_name, name, filter);
+  }
+
+  void replace(TFilter newFilter) {
+    _chain.replace(_name, newFilter);
+  }
+
+  void remove() {
+    _chain.remove(_name);
+  }
+
+  @override
+  String toString() {
+    StringBuffer sb = new StringBuffer();
+
+    // Add the current filter
+    sb.write("('");
+    sb.write(name);
+    sb.write('\'');
+
+    // Add the previous filter
+    sb.write(", prev: '");
+
+    if (_prevEntry != null) {
+      sb.write(_prevEntry.name);
+      sb.write(':');
+      sb.write(_prevEntry.filter
+          .getType()
+          .name);
+    } else {
+      sb.write("null");
+    }
+
+    // Add the next filter
+    sb.write("', next: '");
+
+    if (_nextEntry != null) {
+      sb.write(_nextEntry.name);
+      sb.write(':');
+      sb.write(_nextEntry.filter
+          .getType()
+          .name);
+    } else {
+      sb.write("null");
+    }
+
+    sb.write("')");
+    return sb.toString();
+  }
+}
 
 /// Implementation of <see cref="IChain&lt;TFilter, TNextFilter&gt;"/>
 class CoapChain<TChain, TFilter, TNextFilter>
@@ -98,9 +199,15 @@ class CoapChain<TChain, TFilter, TNextFilter>
   }
 
   /// Instantiates.
-  //CoapChain.NoEquals(TNextFilterFactory nextFilterFactory, TFilterFactory headFilterFactory, TFilterFactory tailFilterFactory)
-  //  : this((chain, prev, next, name, filter) => new CoapEntry(chain, prev, next, name, filter, nextFilterFactory),
-  //headFilterFactory, tailFilterFactory);
+  CoapChain.NoEquals(TNextFilterFactory nextFilterFactory,
+      TFilterFactory headFilterFactory, TFilterFactory tailFilterFactory)
+      : this(
+          (chain, prev, next, name, filter) =>
+      new CoapEntry(
+          chain, prev, next, name, filter, nextFilterFactory),
+      headFilterFactory,
+      tailFilterFactory,
+          (t1, t2) => t1 == t2);
 
   /// Instantiates.
   //CoapChain(TNextFilterFactory nextFilterFactory, TFilterFactory headFilterFactory, TFilterFactory tailFilterFactory)
