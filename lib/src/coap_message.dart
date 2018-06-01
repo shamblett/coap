@@ -16,6 +16,8 @@ class CoapTimedOutEvent {}
 
 class CoapCancelledEvent {}
 
+typedef void HookFunction();
+
 /// The class Message models the base class of all CoAP messages.
 /// CoAP messages are of type Request, Response or EmptyMessage,
 /// each of which has a MessageType, a message identifier,
@@ -163,6 +165,8 @@ class CoapMessage extends Object with events.EventEmitter {
     emitEvent(new CoapAcknowledgedEvent());
   }
 
+  HookFunction acknowledgedHook;
+
   /// Indicates whether this message has been rejected.
   bool _rejected;
 
@@ -183,6 +187,8 @@ class CoapMessage extends Object with events.EventEmitter {
     emitEvent(new CoapTimedOutEvent());
   }
 
+  HookFunction timedOutHook;
+
   /// Indicates whether this message has been cancelled.
   bool _cancelled;
 
@@ -192,6 +198,8 @@ class CoapMessage extends Object with events.EventEmitter {
     _cancelled = value;
     emitEvent(new CoapCancelledEvent());
   }
+
+  HookFunction retransmittingHook;
 
   /// Indicates whether this message is a duplicate.
   bool duplicate;
@@ -790,5 +798,11 @@ class CoapMessage extends Object with events.EventEmitter {
 
   void setBlock2(int szx, bool m, int num) {
     setOption(new CoapBlockOption.fromParts(optionTypeBlock2, num, szx, m));
+  }
+
+  void copyEventHandler(CoapMessage msg) {
+    acknowledgedHook = msg.acknowledgedHook;
+    retransmittingHook = msg.retransmittingHook;
+    timedOutHook = msg.timedOutHook;
   }
 }
