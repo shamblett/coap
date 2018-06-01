@@ -24,7 +24,7 @@ cropRotationPeriod: 15
 exchangeLifetime: 16
 markAndSweepInterval: 17
 channelReceivePacketSize: 18
-#TODO deduplicator:""
+deduplicator: "MarkAndSweep"
 
 # Logging section
 

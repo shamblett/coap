@@ -8,7 +8,7 @@ import 'package:coap/coap.dart';
 import 'package:test/test.dart';
 
 void main() {
-  final CoapConfig conf = new CoapConfig("test/config_logging.yaml");
+  final CoapConfig conf = new CoapConfig("test/config_all.yaml");
   print("Configuration version is " + conf.version);
 
   group("Endpoint resource", () {

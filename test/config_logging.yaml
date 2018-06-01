@@ -4,6 +4,7 @@
 # Protocol section
 
 version: "RFC7252"
+deduplicator: "MarkAndSweep"
 
 
 # Logging section
