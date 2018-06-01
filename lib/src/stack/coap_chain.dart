@@ -204,7 +204,13 @@ class CoapChain<TChain, TFilter, TNextFilter>
   }
 
   /// Instantiates.
-  CoapChain.objectEquals(TNextFilterFactory nextFilterFactory,
+  CoapChain.entryFactory(TEntryFactoryFunc entryFactory,
+      TFilterFactory headFilterFactory, TFilterFactory tailFilterFactory)
+      : this(entryFactory, headFilterFactory, tailFilterFactory,
+          (t1, t2) => t1 == t2);
+
+  /// Instantiates.
+  CoapChain.filterFactory(TNextFilterFactory nextFilterFactory,
       TFilterFactory headFilterFactory, TFilterFactory tailFilterFactory)
       : this(
           (chain, prev, next, name, filter) =>
@@ -213,17 +219,6 @@ class CoapChain<TChain, TFilter, TNextFilter>
       headFilterFactory,
       tailFilterFactory,
           (t1, t2) => t1 == t2);
-
-  /// Instantiates.
-  CoapChain.noEquals(TNextFilterFactory nextFilterFactory,
-      TFilterFactory headFilterFactory, TFilterFactory tailFilterFactory)
-      : this(
-          (chain, prev, next, name, filter) =>
-      new CoapEntry(
-          chain, prev, next, name, filter, nextFilterFactory),
-      headFilterFactory,
-      tailFilterFactory,
-      null);
 
   Map<String, CoapIEntry<TFilter, TNextFilter>> _name2entry =
   new Map<String, CoapIEntry<TFilter, TNextFilter>>();
