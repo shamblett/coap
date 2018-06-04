@@ -49,6 +49,7 @@ class CoapReregistrationContext {
       refresh.copyEventHandler(request);
       _log.debug("Re-registering for $request");
       request.fireReregistering(refresh);
+      _reregister(refresh);
     } else {
       _log.debug("Dropping re-registration for canceled $request");
     }
@@ -76,8 +77,7 @@ class CoapObserveLayer extends CoapAbstractLayer {
           exchange.request.type == CoapMessageType.non) {
         // Transmit errors as CON
         if (!CoapCode.isSuccess(response.code)) {
-          _log.debug(
-              "Response has error code ${response
+          _log.debug("Response has error code ${response
                   .code} and must be sent as CON");
           response.type = CoapMessageType.con;
           relation.cancel();
@@ -146,8 +146,8 @@ class CoapObserveLayer extends CoapAbstractLayer {
         sendEmptyMessage(nextLayer, exchange, rst);
         // Matcher sets exchange as complete when RST is sent
       } else {
-        _prepareReregistration(exchange, response,
-                () => sendRequest(nextLayer, exchange, exchange.request));
+        _prepareReregistration(
+            exchange, response, (msg) => sendRequest(nextLayer, exchange, msg));
         super.receiveResponse(nextLayer, exchange, response);
       }
     } else {
@@ -163,7 +163,7 @@ class CoapObserveLayer extends CoapAbstractLayer {
     if (message.type == CoapMessageType.rst &&
         exchange.origin == CoapOrigin.remote) {
       // The response has been rejected
-      CoapObserveRelation relation = exchange.relation;
+      final CoapObserveRelation relation = exchange.relation;
       if (relation != null) {
         relation.cancel();
       } // Else there was no observe relation ship and this layer ignores the rst

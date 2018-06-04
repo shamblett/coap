@@ -8,7 +8,7 @@
 part of coap;
 
 typedef void Action();
-typedef void ActionGeneric<T>();
+typedef void ActionGeneric<T>(T v);
 
 /// Provides methods to execute tasks.
 abstract class CoapIExecutor {

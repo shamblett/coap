@@ -160,12 +160,16 @@ class CoapMessage extends Object with events.EventEmitter {
 
   bool get isAcknowledged => _acknowledged;
 
+  HookFunction acknowledgedHook;
+
   set isAcknowledged(bool value) {
     _acknowledged = value;
-    emitEvent(new CoapAcknowledgedEvent());
+    if (acknowledgedHook == null) {
+      emitEvent(new CoapAcknowledgedEvent());
+    } else {
+      acknowledgedHook;
+    }
   }
-
-  HookFunction acknowledgedHook;
 
   /// Indicates whether this message has been rejected.
   bool _rejected;
@@ -182,12 +186,22 @@ class CoapMessage extends Object with events.EventEmitter {
 
   bool get isTimedOut => _timedOut;
 
+  HookFunction timedOutHook;
+
   set isTimedOut(bool value) {
     _timedOut = value;
-    emitEvent(new CoapTimedOutEvent());
+    if (timedOutHook == null) {
+      emitEvent(new CoapTimedOutEvent());
+    } else {
+      timedOutHook;
+    }
   }
 
-  HookFunction timedOutHook;
+  HookFunction retransmittingHook;
+
+  void fireRetransmitting() {
+    this?.retransmittingHook;
+  }
 
   /// Indicates whether this message has been cancelled.
   bool _cancelled;
@@ -198,8 +212,6 @@ class CoapMessage extends Object with events.EventEmitter {
     _cancelled = value;
     emitEvent(new CoapCancelledEvent());
   }
-
-  HookFunction retransmittingHook;
 
   /// Indicates whether this message is a duplicate.
   bool duplicate;
