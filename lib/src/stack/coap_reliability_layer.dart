@@ -125,54 +125,141 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
   @override
   void sendResponse(CoapINextLayer nextLayer, CoapExchange exchange,
       CoapResponse response) {
-    MessageType mt = response.Type;
-    if (mt == MessageType.Unknown) {
-      MessageType reqType = exchange.CurrentRequest.Type;
-      if (reqType == MessageType.CON) {
-        if (exchange.CurrentRequest.IsAcknowledged) {
-          // send separate response
-          response.Type = MessageType.CON;
-        }
-        else {
-          exchange.CurrentRequest.IsAcknowledged = true;
+    final int mt = response.type;
+    if (mt == CoapMessageType.unknown) {
+      final int reqType = exchange.currentRequest.type;
+      if (reqType == CoapMessageType.con) {
+        if (exchange.currentRequest.isAcknowledged) {
+          // Send separate response
+          response.type = CoapMessageType.con;
+        } else {
+          exchange.currentRequest.isAcknowledged = true;
           // send piggy-backed response
-          response.Type = MessageType.ACK;
-          response.ID = exchange.CurrentRequest.ID;
+          response.type = CoapMessageType.ack;
+          response.id = exchange.currentRequest.id;
         }
-      }
-      else {
+      } else {
         // send NON response
-        response.Type = MessageType.NON;
+        response.type = CoapMessageType.non;
       }
-    }
-    else if (mt == MessageType.ACK || mt == MessageType.RST) {
-      response.ID = exchange.CurrentRequest.ID;
-    }
-
-    if (response.Type == MessageType.CON) {
-      if (log.IsDebugEnabled)
-        log.Debug("Scheduling retransmission for " + response);
-      PrepareRetransmission(
-          exchange, response, ctx => SendResponse(nextLayer, exchange,
-          response));
+    } else if (mt == CoapMessageType.ack || mt == CoapMessageType.rst) {
+      response.id = exchange.currentRequest.id;
     }
 
-    base
-        .
-    SendResponse
-    (
-    nextLayer
-    ,
-    exchange
-    ,
-    response
-    );
+    if (response.type == CoapMessageType.con) {
+      _log.debug("Scheduling retransmission for $response");
+      _prepareRetransmission(exchange, response,
+              (ctx) => sendResponse(nextLayer, exchange, response));
+    }
+
+    super.sendResponse(nextLayer, exchange, response);
+  }
+
+  /// When we receive a duplicate of a request, we stop it here and do not
+  /// forward it to the upper layer. If the server has already sent a response,
+  /// we send it again. If the request has only been acknowledged (but the ACK
+  /// has gone lost or not reached the client yet), we resent the ACK. If the
+  /// request has neither been responded, acknowledged or rejected yet, the
+  /// server has not yet decided what to do with the request and we cannot do
+  /// anything.
+  @override
+  void receiveRequest(CoapINextLayer nextLayer, CoapExchange exchange,
+      CoapRequest request) {
+    if (request.duplicate) {
+      // Request is a duplicate, so resend ACK, RST or response
+      if (exchange.currentResponse != null) {
+        _log.debug(
+            "Respond with the current response to the duplicate request");
+        super.sendResponse(nextLayer, exchange, exchange.currentResponse);
+      } else if (exchange.currentRequest != null) {
+        if (exchange.currentRequest.isAcknowledged) {
+          _log.debug(
+              "The duplicate request was acknowledged but no response computed yet. Retransmit ACK.");
+          final CoapEmptyMessage ack = CoapEmptyMessage.newACK(request);
+          sendEmptyMessage(nextLayer, exchange, ack);
+        } else if (exchange.currentRequest.isRejected) {
+          _log.debug("The duplicate request was rejected. Reject again.");
+          final CoapEmptyMessage rst = CoapEmptyMessage.newRST(request);
+          sendEmptyMessage(nextLayer, exchange, rst);
+        } else {
+          _log.debug(
+              "The server has not yet decided what to do with the request. We ignore the duplicate.");
+          // The server has not yet decided, whether to acknowledge or
+          // reject the request. We know for sure that the server has
+          // received the request though and can drop this duplicate here.
+        }
+      } else {
+        // Lost the current request. The server has not yet decided what to do.
+      }
+    } else {
+      // Request is not a duplicate
+      exchange.currentRequest = request;
+      super.receiveRequest(nextLayer, exchange, request);
+    }
+  }
+
+  /// When we receive a Confirmable response, we acknowledge it and it also
+  /// counts as acknowledgment for the request. If the response is a duplicate,
+  /// we stop it here and do not forward it to the upper layer.
+  @override
+  void receiveResponse(CoapINextLayer nextLayer, CoapExchange exchange,
+      CoapResponse response) {
+    final CoapTransmissionContext ctx =
+    exchange.remove(transmissionContextKey) as CoapTransmissionContext;
+    if (ctx != null) {
+      exchange.currentRequest.isAcknowledged = true;
+      ctx.cancel();
+    }
+
+    if (response.type == CoapMessageType.con && !exchange.request.isCancelled) {
+      _log.debug("Response is confirmable, send ACK.");
+      final CoapEmptyMessage ack = CoapEmptyMessage.newACK(response);
+      sendEmptyMessage(nextLayer, exchange, ack);
+    }
+
+    if (response.duplicate) {
+      _log.debug("Response is duplicate, ignore it.");
+    } else {
+      super.receiveResponse(nextLayer, exchange, response);
+    }
+  }
+
+  /// If we receive an ACK or RST, we mark the outgoing request or response
+  /// as acknowledged or rejected respectively and cancel its retransmission.
+  @override
+  void receiveEmptyMessage(CoapINextLayer nextLayer, CoapExchange exchange,
+      CoapEmptyMessage message) {
+    switch (message.type) {
+      case CoapMessageType.ack:
+        if (exchange.origin == CoapOrigin.local) {
+          exchange.currentRequest.isAcknowledged = true;
+        } else {
+          exchange.currentResponse.isAcknowledged = true;
+        }
+        break;
+      case CoapMessageType.rst:
+        if (exchange.origin == CoapOrigin.local) {
+          exchange.currentRequest.isRejected = true;
+        } else {
+          exchange.currentResponse.isRejected = true;
+        }
+        break;
+      default:
+        _log.warn("Empty messgae was not ACK nor RST: $message");
+        break;
+    }
+
+    final CoapTransmissionContext ctx =
+    exchange.remove(transmissionContextKey) as CoapTransmissionContext;
+    if (ctx != null) ctx.cancel();
+
+    super.receiveEmptyMessage(nextLayer, exchange, message);
   }
 
   void _prepareRetransmission(CoapExchange exchange, CoapMessage msg,
       ActionGeneric<CoapTransmissionContext> retransmit) {
-    CoapTransmissionContext ctx = exchange.getOrAdd<CoapTransmissionContext>(
-        transmissionContextKey,
+    final CoapTransmissionContext ctx = exchange.getOrAdd<
+        CoapTransmissionContext>(transmissionContextKey,
             () =>
         new CoapTransmissionContext(_config, exchange, msg, retransmit));
 
