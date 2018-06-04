@@ -155,6 +155,8 @@ part 'src/stack/coap_layer_stack.dart';
 
 part 'src/stack/coap_observe_layer.dart';
 
+part 'src/stack/coap_reliability_layer.dart';
+
 part 'src/observe/coap_observe_relation.dart';
 
 part 'src/observe/coap_observing_endpoint.dart';
