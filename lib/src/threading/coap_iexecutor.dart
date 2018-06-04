@@ -13,9 +13,7 @@ typedef void ActionGeneric<T>(T v);
 /// Provides methods to execute tasks.
 abstract class CoapIExecutor {
 
-  /// Starts a task without parameter.
+  /// Starts a task.
   void start(Action task);
 
-  /// Starts a task with a parameter.
-  void Start(ActionGeneric<Object> task, Object obj);
 }

@@ -19,6 +19,7 @@ import 'package:log4dart/log4dart_vm.dart' as logging;
 import 'package:eventable/eventable.dart' as events;
 import 'package:collection/collection.dart' as collection;
 import 'package:hex/hex.dart' as hex;
+import 'package:executor/executor.dart' as tasking;
 
 /// The Coap package exported interface
 
@@ -170,6 +171,8 @@ part 'src/server/resources/coap_iresource.dart';
 part 'src/server/resources/coap_resource_attributes.dart';
 
 part 'src/threading/coap_iexecutor.dart';
+
+part 'src/threading/coap_executor.dart';
 
 part 'src/endpoint/resources/coap_endpoint_resource.dart';
 

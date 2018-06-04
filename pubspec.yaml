@@ -14,6 +14,7 @@ dependencies:
  eventable: '^5.2.1'
  collection: "<=1.15.0"
  hex: 'any'
+ executor: "^1.0.1"
 
 dev_dependencies:
   test: '^0.12.0'
