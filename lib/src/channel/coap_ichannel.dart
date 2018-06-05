@@ -7,8 +7,14 @@
 
 part of coap;
 
+class CoapDataReceivedEvent {
+  CoapDataReceivedEvent(this.data);
+
+  typed.Uint8Buffer data;
+}
+
 /// Represents a channel where bytes data can flow through.
-abstract class CoapIChannel {
+abstract class CoapIChannel extends Object with events.EventEmitter {
   /// Gets the local endpoint of this channel.
   InternetAddress localEndPoint;
 
@@ -23,4 +29,5 @@ abstract class CoapIChannel {
 
   /// Receives data, returns null if none
   typed.Uint8Buffer receive();
+
 }

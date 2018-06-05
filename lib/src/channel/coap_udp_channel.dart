@@ -44,6 +44,9 @@ class CoapUDPChannel extends CoapIChannel {
   }
 
   typed.Uint8Buffer receive() {
-    return _socket.receive();
+    final typed.Uint8Buffer buff = _socket.receive();
+    CoapDataReceivedEvent rxEvent = new CoapDataReceivedEvent(buff);
+    emitEvent(rxEvent);
+    return buff;
   }
 }
