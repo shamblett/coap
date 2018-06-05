@@ -39,13 +39,22 @@ class CoapUDPChannel extends CoapIChannel {
     _socket.close();
   }
 
-  void send(typed.Uint8Buffer data) {
-    _socket.send(data);
+  void send(typed.Uint8Buffer data, [InternetAddress ep]) {
+    if (ep != null) {
+      CoapNetworkUDP socket;
+      socket.port = _port;
+      socket.address = ep;
+      socket.bind();
+      socket.send(data);
+    }
+    else {
+      _socket.send(data);
+    }
   }
 
   typed.Uint8Buffer receive() {
     final typed.Uint8Buffer buff = _socket.receive();
-    CoapDataReceivedEvent rxEvent = new CoapDataReceivedEvent(buff);
+    CoapDataReceivedEvent rxEvent = new CoapDataReceivedEvent(buff, _localEp);
     emitEvent(rxEvent);
     return buff;
   }
