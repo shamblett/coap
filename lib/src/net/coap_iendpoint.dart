@@ -57,13 +57,10 @@ abstract class CoapIEndPoint extends Object with events.EventEmitter {
   CoapConfig get config;
 
   /// Gets the local internetAddress this endpoint is associated with.
-  InternetAddress get localEndPoint;
-
-  /// Checks if the endpoint has started.
-  bool get running;
+  InternetAddress get localEP;
 
   /// Gets or sets the message deliverer.
-  CoapIMessageDeliverer messageDeliverer;
+  CoapIMessageDeliverer deliverer;
 
   /// Gets the outbox.
   CoapIOutbox get outbox;
@@ -78,11 +75,11 @@ abstract class CoapIEndPoint extends Object with events.EventEmitter {
   void clear();
 
   /// Sends the specified request.
-  void sendRequest(CoapRequest request);
+  void sendEpRequest(CoapRequest request);
 
   /// Sends the specified response.
-  void sendResponse(CoapExchange exchange, CoapResponse response);
+  void sendEpResponse(CoapExchange exchange, CoapResponse response);
 
   /// Sends the specified empty message.
-  void sendEmptyMessage(CoapExchange exchange, CoapEmptyMessage message);
+  void sendEpEmptyMessage(CoapExchange exchange, CoapEmptyMessage message);
 }

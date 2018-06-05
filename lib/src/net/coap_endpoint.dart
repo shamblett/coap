@@ -9,7 +9,7 @@ part of coap;
 
 /// EndPoint encapsulates the stack that executes the CoAP protocol.
 class CoapEndPoint extends Object
-    with events.EventDetector
+    with events.EventEmitter, events.EventDetector
     implements CoapIEndPoint, CoapIOutbox {
   /// Instantiates a new endpoint with the
   /// specified channel and configuration.
@@ -48,6 +48,8 @@ class CoapEndPoint extends Object
   InternetAddress get localEP => _localEP;
   CoapIExecutor executor = new CoapExecutor();
 
+  CoapIOutbox get outbox => this;
+
   void start() {
     _localEP = _channel.localEndPoint;
     try {
@@ -73,15 +75,15 @@ class CoapEndPoint extends Object
     _matcher.clear();
   }
 
-  void sendRequest(CoapRequest request) {
+  void sendEpRequest(CoapRequest request) {
     executor.start(() => _coapStack.sendRequest(request));
   }
 
-  void sendResponse(CoapExchange exchange, CoapResponse response) {
+  void sendEpResponse(CoapExchange exchange, CoapResponse response) {
     executor.start(() => _coapStack.sendResponse(exchange, response));
   }
 
-  void sendEmptyMessage(CoapExchange exchange, CoapEmptyMessage message) {
+  void sendEpEmptyMessage(CoapExchange exchange, CoapEmptyMessage message) {
     executor.start(() => _coapStack.sendEmptyMessage(exchange, message));
   }
 
@@ -102,7 +104,7 @@ class CoapEndPoint extends Object
           rst.destination = e.endPoint;
           rst.id = decoder.id;
           emitEvent(new CoapSendingEmptyMessageEvent(rst));
-          _channel.send(_serialize(rst), rst.destination);
+          _channel.send(_serializeEmpty(rst), rst.destination);
           _log.warn(
               "Message format error caused by ${e.endPoint} and reseted.");
         }
@@ -165,16 +167,61 @@ class CoapEndPoint extends Object
     }
   }
 
+  void sendRequest(CoapExchange exchange, CoapRequest request) {
+    _matcher.sendRequest(exchange, request);
+    emitEvent(new CoapSendingRequestEvent(request));
+
+    if (!request.isCancelled) {
+      _channel.send(_serializeRequest(request), request.destination);
+    }
+  }
+
+  void sendResponse(CoapExchange exchange, CoapResponse response) {
+    _matcher.sendResponse(exchange, response);
+    emitEvent(new CoapSendingResponseEvent(response));
+
+    if (!response.isCancelled) {
+      _channel.send(_serializeResponse(response), response.destination);
+    }
+  }
+
+  void sendEmptyMessage(CoapExchange exchange, CoapEmptyMessage message) {
+    _matcher.sendEmptyMessage(exchange, message);
+    emitEvent(new CoapSendingEmptyMessageEvent(message));
+
+    if (!message.isCancelled) {
+      _channel.send(_serializeEmpty(message), message.destination);
+    }
+  }
+
   void _reject(CoapMessage message) {
     final CoapEmptyMessage rst = CoapEmptyMessage.newRST(message);
     emitEvent(new CoapSendingEmptyMessageEvent(rst));
 
     if (!rst.isCancelled) {
-      _channel.send(_serialize(rst), rst.destination);
+      _channel.send(_serializeEmpty(rst), rst.destination);
     }
   }
 
-  typed.Uint8Buffer _serialize(CoapEmptyMessage message) {
+  typed.Uint8Buffer _serializeEmpty(CoapEmptyMessage message) {
+    typed.Uint8Buffer bytes = message.bytes;
+    if (bytes == null) {
+      bytes = _config.spec.newMessageEncoder().encodeMessage(message);
+      message.bytes = bytes;
+    }
+    return bytes;
+  }
+
+  typed.Uint8Buffer _serializeRequest(CoapMessage message) {
+    typed.Uint8Buffer bytes = message.bytes;
+    if (bytes == null) {
+      bytes = _config.spec.newMessageEncoder().encodeMessage(message);
+      message.bytes = bytes;
+    }
+    return bytes;
+  }
+
+  typed.Uint8Buffer _serializeResponse(CoapMessage message) {
     typed.Uint8Buffer bytes = message.bytes;
     if (bytes == null) {
       bytes = _config.spec.newMessageEncoder().encodeMessage(message);

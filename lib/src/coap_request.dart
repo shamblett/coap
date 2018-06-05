@@ -155,7 +155,7 @@ class CoapRequest extends CoapMessage {
   /// Sends this message.
   CoapRequest send() {
     _validateBeforeSending();
-    endPoint.sendRequest(this);
+    endPoint.sendEpRequest(this);
     // Clear the internal response stream
     _responseStream.stream.drain();
     return this;

@@ -23,7 +23,7 @@ class CoapStack extends CoapLayerStack {
 
   CoapIExecutor get executor => _executor;
 
-  set(CoapIExecutor value) {
+  set executor(CoapIExecutor value) {
     for (CoapEntry entry in this.getAll()) {
       entry.filter.executor = value;
     }

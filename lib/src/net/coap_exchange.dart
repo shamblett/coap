@@ -93,7 +93,7 @@ class CoapExchange extends Object with events.EventEmitter {
   CoapIMessageDeliverer _deliverer;
 
   CoapIMessageDeliverer get deliverer =>
-      _deliverer ?? (endpoint == null ? null : endpoint.messageDeliverer);
+      _deliverer ?? (endpoint == null ? null : endpoint.deliverer);
 
   set deliverer(CoapIMessageDeliverer value) => _deliverer = value;
 
@@ -103,7 +103,7 @@ class CoapExchange extends Object with events.EventEmitter {
     assert(_origin == CoapOrigin.remote);
     request.isRejected = true;
     final CoapEmptyMessage rst = CoapEmptyMessage.newRST(request);
-    endpoint.sendEmptyMessage(this, rst);
+    endpoint.sendEpEmptyMessage(this, rst);
   }
 
   /// Accept this exchange and therefore the request. Only if the request's
@@ -114,7 +114,7 @@ class CoapExchange extends Object with events.EventEmitter {
     if (request.type == CoapMessageType.con && !request.isAcknowledged) {
       request.isAcknowledged = true;
       final CoapEmptyMessage ack = CoapEmptyMessage.newACK(request);
-      endpoint.sendEmptyMessage(this, ack);
+      endpoint.sendEpEmptyMessage(this, ack);
     }
   }
 
@@ -123,7 +123,7 @@ class CoapExchange extends Object with events.EventEmitter {
   void sendResponse(CoapResponse resp) {
     resp.destination = request.source;
     response = resp;
-    endpoint.sendResponse(this, response);
+    endpoint.sendEpResponse(this, response);
   }
 
   /// Attributes
