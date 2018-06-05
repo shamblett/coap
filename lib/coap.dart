@@ -25,6 +25,8 @@ import 'package:executor/executor.dart' as tasking;
 
 part 'src/coap.dart';
 
+part 'src/coap_client.dart';
+
 part 'src/coap_option_type.dart';
 
 part 'src/coap_option.dart';
