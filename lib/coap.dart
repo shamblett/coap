@@ -128,6 +128,8 @@ part 'src/net/coap_iendpoint.dart';
 
 part 'src/net/coap_endpoint.dart';
 
+part 'src/net/coap_endpoint_manager.dart';
+
 part 'src/net/coap_imatcher.dart';
 
 part 'src/net/coap_matcher.dart';
