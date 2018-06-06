@@ -152,6 +152,12 @@ class CoapClient {
     return _observe(CoapRequest.newGet().markObserve(), notify, error);
   }
 
+  CoapObserveClientRelation observeWitAccept(int acceptVal,
+      [ActionGeneric<CoapResponse> notify = null,
+        ActionGeneric<FailReason> error = null]) {
+    return _observe(
+        accept(CoapRequest.newGet().markObserve(), acceptVal), notify, error);
+  }
 
   static CoapRequest accept(CoapRequest request, int accept) {
     request.accept = accept;
