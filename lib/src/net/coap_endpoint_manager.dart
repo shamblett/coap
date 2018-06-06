@@ -8,7 +8,7 @@
 part of coap;
 
 class CoapEndpointManager {
-  static CoapIEndPoint getDefaultEndPoint() {
+  static CoapIEndPoint getDefaultEndpoint() {
     final CoapConfig config = CoapConfig.inst;
     if (config.spec == null) {
       config.spec = new CoapDraft18();

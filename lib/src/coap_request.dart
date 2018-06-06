@@ -161,6 +161,14 @@ class CoapRequest extends CoapMessage {
     return this;
   }
 
+  /// Sends the request over the specified endpoint.
+  CoapRequest sendWithEndpoint(CoapIEndPoint endpointIn) {
+    _validateBeforeSending();
+    endPoint = endpointIn;
+    endPoint.sendEpRequest(this);
+    return this;
+  }
+
   void _validateBeforeSending() {
     if (destination == null)
       throw new StateError(

@@ -433,8 +433,8 @@ class CoapMessage extends Object with events.EventEmitter {
   /// IfNoneMatch
   bool get ifNoneMatch => hasOption(optionTypeIfNoneMatch);
 
-  set ifNonematch(int value) {
-    if (value != null) {
+  set ifNoneMatch(bool value) {
+    if (value) {
       CoapOption.create(optionTypeIfNoneMatch);
     } else {
       removeOptions(optionTypeIfNoneMatch);

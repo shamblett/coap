@@ -52,6 +52,9 @@ part 'src/coap_response.dart';
 part 'src/coap_message_type.dart';
 
 part 'src/coap_config.dart';
+
+part 'src/coap_observe_client_relation.dart';
+
 part 'src/coap_media_type.dart';
 
 part 'src/coap_constants.dart';
@@ -169,6 +172,8 @@ part 'src/stack/coap_stack.dart';
 part 'src/observe/coap_observe_relation.dart';
 
 part 'src/observe/coap_observing_endpoint.dart';
+
+part 'src/observe/coap_observe_notification_orderer.dart';
 
 part 'src/server/resources/coap_iresource.dart';
 

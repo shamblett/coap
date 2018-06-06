@@ -10,7 +10,7 @@ part of coap;
 typedef bool TEqualsFunc<TFilter>(TFilter a, TFilter b);
 typedef CoapEntry TEntryFactoryFunc<TChain, TFilter>(TChain a, CoapEntry b,
     CoapEntry c, String d, TFilter e);
-typedef TNextFilter TNextFilterFactory<TNextFilter, TFilter>(TFilter);
+typedef TNextFilter TNextFilterFactory<TNextFilter, TFilter>(TFilter v);
 typedef TFilter TFilterFactory<TFilter>();
 
 /// Represents a chain of filters.
