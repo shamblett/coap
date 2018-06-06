@@ -26,6 +26,7 @@ class CoapConfig extends config.ConfigurationItem {
   String version = "RFC7252";
 
   // The spec we are using
+  @config.optionalConfiguration
   CoapISpec spec;
 
   /// The default CoAP port for normal CoAP communication (not secure).
