@@ -29,11 +29,14 @@ class CoapNetworkUDP extends CoapNetwork {
       ..addAll(rec.data);
   }
 
-  void bind() {
+  FutureOr bind() async {
+    final Completer completer = new Completer();
     RawDatagramSocket.bind(address.host, port)
       ..then((socket) {
         _socket = socket;
+        completer.complete;
       });
+    return completer.future;
   }
 
   void close() {

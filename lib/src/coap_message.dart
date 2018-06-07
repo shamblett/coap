@@ -217,7 +217,7 @@ class CoapMessage extends Object with events.EventEmitter {
   }
 
   /// Indicates whether this message is a duplicate.
-  bool duplicate;
+  bool duplicate = false;
 
   /// The serialized message as byte array, or null if not serialized yet.
   typed.Uint8Buffer bytes;
@@ -230,12 +230,12 @@ class CoapMessage extends Object with events.EventEmitter {
   /// A value of 0 means that the CoapConstants.maxRetransmit time
   /// shoud be taken into account, while a negative means NO retransmission.
   /// The default value is 0.
-  int maxRetransmit;
+  int maxRetransmit = 0;
 
   /// the amount of time in milliseconds after which this message will time out.
   /// A value of 0 indicates that the time should be decided automatically,
   /// while a negative that never time out. The default value is 0.
-  int ackTimeout;
+  int ackTimeout = 0;
 
   /// UTF8 decoder and encoder helpers
   final convertor.Utf8Decoder _utfDecoder = new convertor.Utf8Decoder();
@@ -361,7 +361,7 @@ class CoapMessage extends Object with events.EventEmitter {
   }
 
   /// If-Matches.
-  typed.Uint8Buffer get ifMatches =>
+  Iterable get ifMatches =>
       _selectOptions(optionTypeIfMatch, (CoapOption o) => o.valueBytes);
 
   bool isIfMatch(typed.Uint8Buffer what) {

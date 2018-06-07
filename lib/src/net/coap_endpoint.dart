@@ -76,7 +76,8 @@ class CoapEndPoint extends Object
   }
 
   void sendEpRequest(CoapRequest request) {
-    executor.start(() => _coapStack.sendRequest(request));
+    //TODO SJH fix this executor.start(() => _coapStack.sendRequest(request));
+    _coapStack.sendRequest(request);
   }
 
   void sendEpResponse(CoapExchange exchange, CoapResponse response) {

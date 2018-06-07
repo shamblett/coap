@@ -21,15 +21,17 @@ class CoapTransmissionContext {
   CoapConfig _config;
   CoapExchange _exchange;
   CoapMessage _message;
-  int _currentTimeout;
-  int _failedTransmissionCount;
+  int _currentTimeout = 0;
+
+  int get currentTimeout => _currentTimeout;
+
+  set currentTimeout(int value) => _currentTimeout = value;
+  int failedTransmissionCount = 0;
   Timer _timer;
   ActionGeneric<CoapTransmissionContext> _retransmit;
-  int failedTransmissionCount;
-  int currentTimeout;
 
   void start() {
-    _timer.cancel();
+    _timer?.cancel();
 
     if (_currentTimeout > 0) {
       _timer = new Timer(
@@ -53,7 +55,7 @@ class CoapTransmissionContext {
     // rejected, canceled or already been retransmitted for the maximum
     // number of times.
 
-    final int failedCount = ++_failedTransmissionCount;
+    final int failedCount = ++failedTransmissionCount;
 
     if (_message.isAcknowledged) {
       _log.debug(
@@ -258,9 +260,8 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
 
   void _prepareRetransmission(CoapExchange exchange, CoapMessage msg,
       ActionGeneric<CoapTransmissionContext> retransmit) {
-    final CoapTransmissionContext ctx = exchange.getOrAdd<
-        CoapTransmissionContext>(transmissionContextKey,
-            () =>
+    final CoapTransmissionContext ctx =
+    exchange.getOrAdd<CoapTransmissionContext>(transmissionContextKey,
         new CoapTransmissionContext(_config, exchange, msg, retransmit));
 
     if (ctx.failedTransmissionCount > 0) {
