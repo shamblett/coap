@@ -23,7 +23,7 @@ class CoapUDPChannel extends CoapIChannel {
 
   InternetAddress get localEp =>
       _localEp == null ? InternetAddress.ANY_IP_V6 : _socket.socket.address;
-  CoapNetworkUDP _socket;
+  CoapNetworkUDP _socket = new CoapNetworkUDP();
 
   InternetAddress get localEndPoint => localEp;
 

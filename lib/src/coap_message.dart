@@ -51,6 +51,9 @@ class CoapMessage extends Object with events.EventEmitter {
 
   Map<int, List<CoapOption>> get optionMap => _optionMap;
 
+  /// Host name to resolve
+  String resolveHost = "localhost";
+
   /// Adds an option to the list of options of this CoAP message.
   CoapMessage addOption(CoapOption option) {
     if (option == null) {
@@ -129,7 +132,7 @@ class CoapMessage extends Object with events.EventEmitter {
   }
 
   /// The 0-8 byte token.
-  typed.Uint8Buffer _token;
+  typed.Uint8Buffer _token = new typed.Uint8Buffer();
 
   typed.Uint8Buffer get token => _token;
 
@@ -156,7 +159,7 @@ class CoapMessage extends Object with events.EventEmitter {
   InternetAddress source;
 
   /// Indicates whether this message has been acknowledged.
-  bool _acknowledged;
+  bool _acknowledged = false;
 
   bool get isAcknowledged => _acknowledged;
 
@@ -172,7 +175,7 @@ class CoapMessage extends Object with events.EventEmitter {
   }
 
   /// Indicates whether this message has been rejected.
-  bool _rejected;
+  bool _rejected = false;
 
   bool get isRejected => _rejected;
 
@@ -182,7 +185,7 @@ class CoapMessage extends Object with events.EventEmitter {
   }
 
   /// Indicates whether this message has been timed out.
-  bool _timedOut;
+  bool _timedOut = false;
 
   bool get isTimedOut => _timedOut;
 
@@ -204,7 +207,7 @@ class CoapMessage extends Object with events.EventEmitter {
   }
 
   /// Indicates whether this message has been cancelled.
-  bool _cancelled;
+  bool _cancelled = false;
 
   bool get isCancelled => _cancelled;
 

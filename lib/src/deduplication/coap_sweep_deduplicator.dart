@@ -20,12 +20,15 @@ class CoapSweepDeduplicator implements CoapIDeduplicator {
   CoapConfig _config;
 
   void start() {
-    _timer = new Timer.periodic(
-        new Duration(milliseconds: _config.markAndSweepInterval), _sweep);
+    if (_timer == null) {
+      _timer = new Timer.periodic(
+          new Duration(milliseconds: _config.markAndSweepInterval), _sweep);
+    }
   }
 
   void stop() {
     _timer.cancel();
+    _timer = null;
   }
 
   void clear() {

@@ -4,6 +4,8 @@
  * Date   : 06/06/2018
  * Copyright :  S.Hamblett
  */
+
+import 'dart:io';
 import 'dart:async';
 import 'package:coap/coap.dart';
 import 'package:typed_data/typed_data.dart' as typed;
@@ -26,28 +28,43 @@ Future main(List<String> args) async {
     }
   }
 
+  // Config
+  final CoapConfig conf = new CoapConfig("test/config_default.yaml");
+
   // Build the request
   final CoapRequest request = newRequest("DISCOVER");
-  final Uri uri = new Uri(host: "localhost", path: "/.well-known/core");
+  final String host = "localhost";
+  final String path = "/.well-known/core";
+  final Uri uri = new Uri(scheme: "coap", host: host, path: path);
   request.uri = uri;
+  await request.resolveDestination();
+  request.endPoint = CoapEndpointManager.getDefaultEndpoint();
   final typed.Uint8Buffer payload = new typed.Uint8Buffer();
   request.setPayloadMediaRaw(payload, CoapMediaType.textPlain);
+  print(
+      "Simple client, sending request to $host with path $path, waiting for response....");
   request.send();
 
   // Get the response
-
   CoapResponse response;
   response = await request.waitForResponse(10000);
-  if (response.contentType == CoapMediaType.applicationLinkFormat) {
-    final Iterable<CoapWebLink> links =
-        CoapLinkFormat.parse(response.payloadString);
-    if (links == null) {
-      print("Failed parsing link format");
-    } else {
-      print("Discovered resources:");
-      for (CoapWebLink link in links) {
-        print(link);
+  if (response != null) {
+    if (response.contentType == CoapMediaType.applicationLinkFormat) {
+      final Iterable<CoapWebLink> links =
+      CoapLinkFormat.parse(response.payloadString);
+      if (links == null) {
+        print("Failed parsing link format");
+      } else {
+        print("Discovered resources:");
+        for (CoapWebLink link in links) {
+          print(link);
+        }
       }
     }
+    exit(0);
+  } else {
+    print("No response received, closing client");
+    request.cancel();
+    exit(-1);
   }
 }

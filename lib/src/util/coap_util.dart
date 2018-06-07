@@ -154,4 +154,17 @@ class CoapUtil {
     dic[key] = value;
     return old;
   }
+
+  static Future<InternetAddress> lookupHost(String host) async {
+    final Completer completer = new Completer();
+    InternetAddress.lookup(host, type: InternetAddressType.IP_V6)
+      ..then((List<InternetAddress> addresses) {
+        if (addresses != null && addresses.length >= 1) {
+          completer.complete(addresses[0]);
+        } else {
+          completer.complete(null);
+        }
+      });
+    return completer.future;
+  }
 }

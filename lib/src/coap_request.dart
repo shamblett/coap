@@ -77,7 +77,7 @@ class CoapRequest extends CoapMessage {
         (host != "localhost")) {
       uriHost = host;
     }
-    if (port < 0) {
+    if (port <= 0) {
       if ((value.scheme.isNotEmpty) ||
           (value.scheme == CoapConstants.uriScheme)) {
         port = CoapConstants.defaultPort;
@@ -94,11 +94,8 @@ class CoapRequest extends CoapMessage {
     }
     uriPath = value.path;
     uriQuery = value.query;
-    InternetAddress.lookup(host)
-      ..then((List<InternetAddress> addresses) {
-        destination = addresses.isNotEmpty ? addresses[0] : null;
-        _uri = value;
-      });
+    resolveHost = host;
+    _uri = value;
   }
 
   /// The response to this request.
@@ -123,6 +120,11 @@ class CoapRequest extends CoapMessage {
       tmp = "coap://" + value;
     uri = new Uri.dataFromString(tmp);
     return this;
+  }
+
+  /// Resolves the destination internet address
+  Future resolveDestination() async {
+    destination = await CoapUtil.lookupHost(resolveHost);
   }
 
   /// Sets CoAP's observe option. If the target resource of this request
@@ -177,7 +179,7 @@ class CoapRequest extends CoapMessage {
 
   /// Response stream, used by waitForResponse
   StreamController<CoapResponse> _responseStream =
-  new StreamController<CoapResponse>();
+  new StreamController<CoapResponse>.broadcast();
 
   /// Wait for a response.
   /// Returns the response, or null if timeout occured.
