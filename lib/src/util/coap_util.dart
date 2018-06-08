@@ -9,6 +9,9 @@ part of coap;
 
 /// Utility methods
 class CoapUtil {
+
+  static CoapILogger _log = new CoapLogManager("console").logger;
+
   /// Insertion sort, to make the options list stably ordered.
   static void insertionSort<T>(List<T> list, Comparator<T> comparison) {
     collection.insertionSort(list, compare: comparison);
@@ -159,6 +162,7 @@ class CoapUtil {
     final Completer completer = new Completer();
     InternetAddress.lookup(host, type: InternetAddressType.IP_V6)
       ..then((List<InternetAddress> addresses) {
+        logResolvedAddresses(addresses);
         if (addresses != null && addresses.length >= 1) {
           completer.complete(addresses[0]);
         } else {
@@ -166,5 +170,15 @@ class CoapUtil {
         }
       });
     return completer.future;
+  }
+
+  static void logResolvedAddresses(List<InternetAddress> addresses) {
+    if (addresses == null) {
+      print("No resolved addresses");
+      return;
+    }
+    for (InternetAddress address in addresses) {
+      print("Resolved address : $address");
+    }
   }
 }

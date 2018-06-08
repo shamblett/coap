@@ -34,10 +34,9 @@ Future main(List<String> args) async {
   // Build the request
   final CoapRequest request = newRequest("DISCOVER");
   final String host = "localhost";
-  final String path = "oc/core";
+  final String path = ".well-known/core";
   final String query = "rt=alpha.light";
-  final Uri uri = new Uri(scheme: "coap", host: host, path: path,
-      query: query);
+  final Uri uri = new Uri(scheme: "coap", host: host, path: path);
   request.uri = uri;
   await request.resolveDestination();
   request.endPoint = CoapEndpointManager.getDefaultEndpoint();
