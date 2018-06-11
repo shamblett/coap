@@ -310,9 +310,10 @@ class CoapMessage extends Object with events.EventEmitter {
       if (payload.length != len + 2)
         payload += "... " + payloadSize.toString() + " bytes";
     }
-    return "${type.toString()}-${codeString} ID=${id
-        .toString()}, Token=${tokenString}, Options=[${CoapUtil.optionsToString(
-        this)}], ${payload}";
+    return "\n${type.toString()}-${codeString} ID=${id
+        .toString()}, Token=${tokenString}, \nOptions=[${CoapUtil
+        .optionsToString(
+        this)}], \nPayload : ${payload}";
   }
 
   /// Equals.

@@ -273,7 +273,7 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
     }
 
     _log.debug(
-        "Send request, failed transmissions: $ctx.failedTransmissionCount");
+        "Send request, failed transmissions: ${ctx.failedTransmissionCount}");
 
     ctx.start();
   }

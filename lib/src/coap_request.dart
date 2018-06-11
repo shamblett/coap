@@ -89,7 +89,7 @@ class CoapRequest extends CoapMessage {
       if (port != CoapConstants.defaultPort) {
         uriPort = port;
       } else {
-        uriPort = 0;
+        uriPort = CoapConstants.defaultPort;
       }
     }
     uriPath = value.path;

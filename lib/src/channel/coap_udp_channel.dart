@@ -18,6 +18,9 @@ class CoapUDPChannel extends CoapIChannel {
   /// Initializes a UDP channel with the specific endpoint.
   CoapUDPChannel.withEndpoint(this._localEp);
 
+  /// Intialize with a specific endpoint and port
+  CoapUDPChannel.full(this._localEp, this._port);
+
   int _port;
   InternetAddress _localEp;
 
@@ -42,7 +45,7 @@ class CoapUDPChannel extends CoapIChannel {
   Future send(typed.Uint8Buffer data, [InternetAddress ep]) async {
     if (ep != null) {
       final CoapNetworkUDP socket = new CoapNetworkUDP();
-      socket.port = _port;
+      socket.port = 5683; // TODO big fix needed here _port;
       socket.address = ep;
       await socket.bind();
       socket.send(data);

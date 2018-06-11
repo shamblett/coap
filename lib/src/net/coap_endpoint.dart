@@ -29,6 +29,10 @@ class CoapEndPoint extends Object
   CoapEndPoint.withPort(int port, CoapConfig config)
       : this(newUDPChannelPort(port), config);
 
+  /// Instantiates a new endpoint with full internet address with port and configuration
+  CoapEndPoint.full(InternetAddress localEP, int port, CoapConfig config) :
+        this(newUDPChannelFull(localEP, port), config);
+
   static CoapILogger _log = new CoapLogManager("console").logger;
 
   CoapConfig _config;
@@ -238,6 +242,11 @@ class CoapEndPoint extends Object
 
   static CoapIChannel newUDPChannelPort(int port) {
     final CoapIChannel channel = new CoapUDPChannel.withPort(port);
+    return channel;
+  }
+
+  static CoapIChannel newUDPChannelFull(InternetAddress localEP, int port) {
+    final CoapIChannel channel = new CoapUDPChannel.full(localEP, port);
     return channel;
   }
 }

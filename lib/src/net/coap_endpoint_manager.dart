@@ -8,6 +8,13 @@
 part of coap;
 
 class CoapEndpointManager {
+  static getDefaultSpec() {
+    final CoapConfig config = CoapConfig.inst;
+    if (config.spec == null) {
+      config.spec = new CoapDraft18();
+    }
+  }
+
   static CoapIEndPoint getDefaultEndpoint() {
     final CoapConfig config = CoapConfig.inst;
     if (config.spec == null) {
@@ -15,8 +22,9 @@ class CoapEndpointManager {
     }
     config.defaultPort = config.spec.defaultPort;
     final CoapEndPoint ep =
-        new CoapEndPoint.withPort(config.defaultPort, config);
+    new CoapEndPoint.withPort(config.defaultPort, config);
     ep.start();
     return ep;
   }
+
 }

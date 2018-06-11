@@ -39,7 +39,8 @@ Future main(List<String> args) async {
   final Uri uri = new Uri(scheme: "coap", host: host, path: path);
   request.uri = uri;
   await request.resolveDestination();
-  request.endPoint = CoapEndpointManager.getDefaultEndpoint();
+  CoapEndpointManager.getDefaultSpec();
+  request.endPoint = new CoapEndPoint.withChannel(request.destination, conf);
   final typed.Uint8Buffer payload = new typed.Uint8Buffer();
   request.setPayloadMediaRaw(payload, CoapMediaType.textPlain);
   print(

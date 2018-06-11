@@ -174,7 +174,7 @@ class CoapKeyId {
   }
 
   String toString() {
-    return "KeyID[$_id for $_endpoint]";
+    return "KeyID[$_id for endpoint: $_endpoint]";
   }
 }
 
