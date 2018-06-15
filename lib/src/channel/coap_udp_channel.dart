@@ -20,7 +20,7 @@ class CoapUDPChannel extends CoapIChannel {
   InternetAddress _address;
 
   InternetAddress get address =>
-      _address == null ? InternetAddress.ANY_IP_V6 : _socket.socket.address;
+      _address == null ? InternetAddress.ANY_IP_V6 : _address;
   CoapNetworkUDP _socket;
 
   void start() {
