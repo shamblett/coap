@@ -21,17 +21,10 @@ class CoapEndPoint extends Object
     listen(_channel, CoapDataReceivedEvent, _receiveData);
   }
 
-  /// Instantiates a new endpoint with the specified channel endpoint and configuration.
-  CoapEndPoint.withChannel(InternetAddress localEP, CoapConfig config)
-      : this(newUDPChannelEndpoint(localEP), config);
-
-  /// Instantiates a new endpoint with the specified port and configuration.
-  CoapEndPoint.withPort(int port, CoapConfig config)
-      : this(newUDPChannelPort(port), config);
-
-  /// Instantiates a new endpoint with full internet address with port and configuration
-  CoapEndPoint.full(InternetAddress localEP, int port, CoapConfig config) :
-        this(newUDPChannelFull(localEP, port), config);
+  /// Instantiates a new endpoint with internet address, port and configuration
+  CoapEndPoint.address(InternetAddress localEndpoint, int port,
+      CoapConfig config)
+      : this(newUDPChannel(localEndpoint, port), config);
 
   static CoapILogger _log = new CoapLogManager("console").logger;
 
@@ -47,29 +40,29 @@ class CoapEndPoint extends Object
   CoapIMessageDeliverer get deliverer =>
       _deliverer != null ? _deliverer : new CoapClientMessageDeliverer();
   CoapIMatcher _matcher;
-  InternetAddress _localEP;
+  InternetAddress _localEndpoint;
 
-  InternetAddress get localEP => _localEP;
+  InternetAddress get localEndpoint => _localEndpoint;
   CoapIExecutor executor = new CoapExecutor();
 
   CoapIOutbox get outbox => this;
 
   void start() {
-    _localEP = _channel.localEndPoint;
+    _localEndpoint = _channel.address;
     try {
       _matcher.start();
       _channel.start();
-      _localEP = _channel.localEndPoint;
+      _localEndpoint = _channel.address;
     } catch (e) {
-      _log.error("Cannot start endpoint at $_localEP, exception is $e");
+      _log.error("Cannot start endpoint at $_localEndpoint, exception is $e");
       stop();
       throw e;
     }
-    _log.debug("Starting endpoint bound to $_localEP");
+    _log.debug("Starting endpoint bound to $_localEndpoint");
   }
 
   void stop() {
-    _log.debug("Stopping endpoint bound to $_localEP");
+    _log.debug("Stopping endpoint bound to $_localEndpoint");
     _channel.stop();
     _matcher.stop();
     _matcher.clear();
@@ -116,7 +109,7 @@ class CoapEndPoint extends Object
         return;
       }
 
-      request.source = event.data.endpoint;
+      request.source = event.data.address;
       emitEvent(new CoapReceivingRequestEvent(request));
 
       if (!request.isCancelled) {
@@ -128,7 +121,7 @@ class CoapEndPoint extends Object
       }
     } else if (decoder.isResponse) {
       final CoapResponse response = decoder.decodeResponse();
-      response.source = event.data.endpoint;
+      response.source = event.data.address;
 
       emitEvent(new CoapReceivingResponseEvent(response));
 
@@ -142,13 +135,13 @@ class CoapEndPoint extends Object
           _coapStack.receiveResponse(exchange, response);
         } else if (response.type != CoapMessageType.ack) {
           _log.debug(
-              "Rejecting unmatchable response from ${event.data.endpoint}");
+              "Rejecting unmatchable response from ${event.data.address}");
           _reject(response);
         }
       }
     } else if (decoder.isEmpty) {
       final CoapEmptyMessage message = decoder.decodeEmptyMessage();
-      message.source = event.data.endpoint;
+      message.source = event.data.address;
 
       emitEvent(new CoapReceivingEmptyMessageEvent(message));
 
@@ -156,7 +149,7 @@ class CoapEndPoint extends Object
         // CoAP Ping
         if (message.type == CoapMessageType.con ||
             message.type == CoapMessageType.non) {
-          _log.debug("Responding to ping by ${event.data.endpoint}");
+          _log.debug("Responding to ping by ${event.data.address}");
           _reject(message);
         } else {
           final CoapExchange exchange = _matcher.receiveEmptyMessage(message);
@@ -168,7 +161,7 @@ class CoapEndPoint extends Object
       }
     } else {
       _log.debug(
-          "Silently ignoring non-CoAP message from ${event.data.endpoint}");
+          "Silently ignoring non-CoAP message from ${event.data.address}");
     }
   }
 
@@ -235,18 +228,8 @@ class CoapEndPoint extends Object
     return bytes;
   }
 
-  static CoapIChannel newUDPChannelEndpoint(InternetAddress localEP) {
-    final CoapIChannel channel = new CoapUDPChannel.withEndpoint(localEP);
-    return channel;
-  }
-
-  static CoapIChannel newUDPChannelPort(int port) {
-    final CoapIChannel channel = new CoapUDPChannel.withPort(port);
-    return channel;
-  }
-
-  static CoapIChannel newUDPChannelFull(InternetAddress localEP, int port) {
-    final CoapIChannel channel = new CoapUDPChannel.full(localEP, port);
+  static CoapIChannel newUDPChannel(InternetAddress localEndpoint, int port) {
+    final CoapIChannel channel = new CoapUDPChannel(localEndpoint, port);
     return channel;
   }
 }

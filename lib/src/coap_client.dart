@@ -216,7 +216,7 @@ class CoapClient {
     if (endpoint != null) {
       return endpoint;
     } else {
-      return CoapEndpointManager.getDefaultEndpoint();
+      return CoapEndpointManager.getDefaultEndpoint(request.endPoint);
     }
   }
 

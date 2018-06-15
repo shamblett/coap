@@ -9,32 +9,23 @@ part of coap;
 
 /// Channel via UDP protocol.
 class CoapUDPChannel extends CoapIChannel {
-  /// Initializes a UDP channel with a random port.
-  CoapUDPChannel() : this.withPort(0);
-
-  /// Initializes a UDP channel with the given port, both on IPv4 and IPv6.
-  CoapUDPChannel.withPort(this._port);
-
-  /// Initializes a UDP channel with the specific endpoint.
-  CoapUDPChannel.withEndpoint(this._localEp);
-
-  /// Intialize with a specific endpoint and port
-  CoapUDPChannel.full(this._localEp, this._port);
+  /// Intialize with a specific address and port
+  CoapUDPChannel(this._address, this._port) {
+    _socket = new CoapNetworkUDP(address, port);
+  }
 
   int _port;
-  InternetAddress _localEp;
 
-  InternetAddress get localEp =>
-      _localEp == null ? InternetAddress.ANY_IP_V6 : _socket.socket.address;
-  CoapNetworkUDP _socket = new CoapNetworkUDP();
+  int get port => _port;
+  InternetAddress _address;
 
-  InternetAddress get localEndPoint => localEp;
-
-  set localEndPoint(InternetAddress address) => _localEp = address;
+  InternetAddress get address =>
+      _address == null ? InternetAddress.ANY_IP_V6 : _socket.socket.address;
+  CoapNetworkUDP _socket;
 
   void start() {
     _socket.port = _port;
-    _socket.address = localEp;
+    _socket.address = _address;
     _socket.bind();
   }
 
@@ -42,23 +33,20 @@ class CoapUDPChannel extends CoapIChannel {
     _socket.close();
   }
 
-  Future send(typed.Uint8Buffer data, [InternetAddress ep]) async {
-    if (ep != null) {
-      final CoapNetworkUDP socket = new CoapNetworkUDP();
-      socket.port = 5683; // TODO big fix needed here _port;
-      socket.address = ep;
+  Future send(typed.Uint8Buffer data, [InternetAddress sendAddress]) async {
+    if (sendAddress != null) {
+      final CoapNetworkUDP socket = new CoapNetworkUDP(sendAddress, _port);
       await socket.bind();
       socket.send(data);
-    }
-    else {
+    } else {
       _socket.send(data);
     }
   }
 
   typed.Uint8Buffer receive() {
     final typed.Uint8Buffer buff = _socket.receive();
-    final CoapDataReceivedEvent rxEvent = new CoapDataReceivedEvent(
-        buff, _localEp);
+    final CoapDataReceivedEvent rxEvent =
+    new CoapDataReceivedEvent(buff, _address);
     emitEvent(rxEvent);
     return buff;
   }

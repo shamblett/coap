@@ -8,6 +8,17 @@
 part of coap;
 
 class CoapNetworkUDP extends CoapNetwork {
+  /// Initialize with an address and a port
+  CoapNetworkUDP(this._address, this._port);
+
+  InternetAddress _address;
+
+  InternetAddress get address => _address;
+
+  int _port = 0;
+
+  int get port => _port;
+
   /// UDP socket
   RawDatagramSocket _socket;
 

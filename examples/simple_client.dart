@@ -35,12 +35,14 @@ Future main(List<String> args) async {
   final CoapRequest request = newRequest("DISCOVER");
   final String host = "localhost";
   final String path = ".well-known/core";
-  final String query = "rt=alpha.light";
+  //final String query = "rt=alpha.light";
   final Uri uri = new Uri(scheme: "coap", host: host, path: path);
   request.uri = uri;
   await request.resolveDestination();
   CoapEndpointManager.getDefaultSpec();
-  request.endPoint = new CoapEndPoint.withChannel(request.destination, conf);
+  final CoapIChannel channel = new CoapUDPChannel(
+      request.destination, uri.port);
+  request.endPoint = new CoapEndPoint(channel, conf);
   final typed.Uint8Buffer payload = new typed.Uint8Buffer();
   request.setPayloadMediaRaw(payload, CoapMediaType.textPlain);
   print(
