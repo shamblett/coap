@@ -65,10 +65,8 @@ Future main(List<String> args) async {
         }
       }
     }
-    exit(0);
   } else {
     print("No response received, closing client");
     request.cancel();
-    exit(-1);
   }
 }
