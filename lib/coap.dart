@@ -194,3 +194,5 @@ part 'src/channel/coap_udp_channel.dart';
 part 'src/channel/coap_network.dart';
 
 part 'src/channel/coap_network_udp.dart';
+
+part 'src/channel/coap_network_manager.dart';
