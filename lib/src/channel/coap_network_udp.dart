@@ -25,7 +25,7 @@ class CoapNetworkUDP extends CoapNetwork {
   RawDatagramSocket get socket => _socket;
 
   int send(typed.Uint8Buffer data) {
-    return _socket.send(data.toList(), address, port);
+    return _socket?.send(data.toList(), address, port);
   }
 
   typed.Uint8Buffer receive() {
@@ -43,9 +43,12 @@ class CoapNetworkUDP extends CoapNetwork {
   Future bind() async {
     final Completer completer = new Completer();
     RawDatagramSocket.bind(address.host, port)
-      ..then((socket) {
+      ..then((RawDatagramSocket socket) {
         _socket = socket;
-        completer.complete;
+        socket.listen((RawSocketEvent e) {
+          receive();
+          completer.complete;
+        });
       });
     return completer.future;
   }

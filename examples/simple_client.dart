@@ -36,7 +36,8 @@ Future main(List<String> args) async {
   final String host = "localhost";
   final String path = ".well-known/core";
   //final String query = "rt=alpha.light";
-  final Uri uri = new Uri(scheme: "coap", host: host, path: path);
+  final Uri uri = new Uri(
+      scheme: "coap", host: host, port: conf.defaultPort, path: path);
   request.uri = uri;
   await request.resolveDestination();
   CoapEndpointManager.getDefaultSpec();
@@ -51,7 +52,7 @@ Future main(List<String> args) async {
 
   // Get the response
   CoapResponse response;
-  response = await request.waitForResponse(10000);
+  response = await request.waitForResponse(30000);
   if (response != null) {
     if (response.contentType == CoapMediaType.applicationLinkFormat) {
       final Iterable<CoapWebLink> links =
