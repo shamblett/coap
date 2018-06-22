@@ -35,11 +35,15 @@ class CoapUDPChannel extends CoapIChannel {
 
   void send(typed.Uint8Buffer data, [InternetAddress sendAddress]) {
     if (sendAddress != null) {
-      final CoapNetworkUDP socket =
-      CoapNetworkManagement.getNetwork(sendAddress, _port);
-      socket.send(data);
+      final CoapNetworkUDP socket = CoapNetworkManagement.getNetwork(
+          sendAddress, _port);
+      if (socket?.socket != null) {
+        socket.send(data);
+      }
     } else {
-      _socket.send(data);
+      if (_socket?.socket != null) {
+        _socket.send(data);
+      }
     }
   }
 

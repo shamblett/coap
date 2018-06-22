@@ -36,7 +36,7 @@ class CoapConstants {
   ///
   /// The initial time (ms) for a CoAP message
   ///
-  static const int ackTimeout = 2000;
+  static const int ackTimeout = 3000;
 
   ///
   /// The initial timeout is set
@@ -48,7 +48,7 @@ class CoapConstants {
   ///
   /// The max time that a message would be retransmitted
   ///
-  static const int maxRetransmit = 4;
+  static const int maxRetransmit = 8;
 
   ///
   /// Default block size used for block-wise transfers

@@ -34,6 +34,7 @@ class CoapTransmissionContext {
     _timer?.cancel();
 
     if (_currentTimeout > 0) {
+      _log.debug("Retransmission timeout is $_currentTimeout ms");
       _timer = new Timer(
           new Duration(milliseconds: _currentTimeout), () => _timerElapsed());
     }
@@ -54,7 +55,7 @@ class CoapTransmissionContext {
     // Do not retransmit a message if it has been acknowledged,
     // rejected, canceled or already been retransmitted for the maximum
     // number of times.
-
+    _log.debug("Retransmission timeout elapsed");
     final int failedCount = ++failedTransmissionCount;
 
     if (_message.isAcknowledged) {

@@ -21,7 +21,6 @@ class CoapNetworkManagement {
     }
     network.bind();
     _networks.add(network);
-    return network;
   }
 
   /// Removes a network

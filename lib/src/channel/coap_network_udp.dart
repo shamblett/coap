@@ -19,13 +19,18 @@ class CoapNetworkUDP extends CoapNetwork {
 
   int get port => _port;
 
+  // Indicates if the socket is/being bound
+  bool _bound = false;
+  int _binding = 0;
+
   /// UDP socket
   RawDatagramSocket _socket;
 
   RawDatagramSocket get socket => _socket;
 
   int send(typed.Uint8Buffer data) {
-    return _socket?.send(data.toList(), address, port);
+    int bytesSent = _socket?.send(data.toList(), address, port);
+    return bytesSent;
   }
 
   typed.Uint8Buffer receive() {
@@ -41,15 +46,24 @@ class CoapNetworkUDP extends CoapNetwork {
   }
 
   Future bind() async {
+
     final Completer completer = new Completer();
-    RawDatagramSocket.bind(address.host, port)
-      ..then((RawDatagramSocket socket) {
-        _socket = socket;
-        socket.listen((RawSocketEvent e) {
-          receive();
-          completer.complete;
+    if (_binding > 0) {
+      return null;
+    }
+    if (!_bound && _binding == 0) {
+      _binding++;
+      RawDatagramSocket.bind(address.host, port)
+        ..then((RawDatagramSocket socket) {
+          _socket = socket;
+          socket.listen((RawSocketEvent e) {
+            receive();
+            _bound = true;
+            _binding = 0;
+            completer.complete;
+          });
         });
-      });
+    }
     return completer.future;
   }
 
