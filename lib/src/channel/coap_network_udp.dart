@@ -48,7 +48,6 @@ class CoapNetworkUDP extends CoapNetwork {
   }
 
   Future bind() async {
-
     final Completer completer = new Completer();
     if (_binding > 0) {
       return null;
@@ -60,7 +59,9 @@ class CoapNetworkUDP extends CoapNetwork {
         ..then((RawDatagramSocket socket) {
           _socket = socket;
           socket.listen((RawSocketEvent e) {
-            receive();
+            if (e == RawSocketEvent.READ) {
+              receive();
+            }
             _bound = true;
             _binding = 0;
             completer.complete;
