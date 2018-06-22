@@ -40,6 +40,10 @@ Future main(List<String> args) async {
       scheme: "coap", host: host, port: conf.defaultPort, path: path);
   request.uri = uri;
   await request.resolveDestination();
+  print("SJH - isLinkLocal - ${request.destination.isLinkLocal}");
+  print("SJH - isLoopback - ${request.destination.isLoopback}");
+  print("SJH - isLinkMulticast - ${request.destination.isMulticast}");
+  print("SJH - type - ${request.destination.type}");
   CoapEndpointManager.getDefaultSpec();
   final CoapIChannel channel = new CoapUDPChannel(
       request.destination, uri.port);
