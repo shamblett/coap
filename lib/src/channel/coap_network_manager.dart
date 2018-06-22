@@ -17,10 +17,13 @@ class CoapNetworkManagement {
   static CoapNetwork getNetwork(InternetAddress address, int port) {
     final CoapNetwork network = new CoapNetworkUDP(address, port);
     if (_networks.contains(network)) {
+      print("SJH - NM - same network");
       return _networks.where((e) => e == network).toList()[0];
     }
+    print("SJH - NM  - creating network");
     network.bind();
     _networks.add(network);
+    return network;
   }
 
   /// Removes a network

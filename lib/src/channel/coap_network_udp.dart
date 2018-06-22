@@ -29,11 +29,13 @@ class CoapNetworkUDP extends CoapNetwork {
   RawDatagramSocket get socket => _socket;
 
   int send(typed.Uint8Buffer data) {
+    print("SJH - UDP - sending");
     int bytesSent = _socket?.send(data.toList(), address, port);
     return bytesSent;
   }
 
   typed.Uint8Buffer receive() {
+    print("SJH - UDP - receiving");
     final Datagram rec = _socket.receive();
     if (rec == null) {
       return null;
@@ -53,6 +55,7 @@ class CoapNetworkUDP extends CoapNetwork {
     }
     if (!_bound && _binding == 0) {
       _binding++;
+      print("SJH - UDP - binding");
       RawDatagramSocket.bind(address.host, port)
         ..then((RawDatagramSocket socket) {
           _socket = socket;
