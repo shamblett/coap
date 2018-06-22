@@ -39,11 +39,14 @@ class CoapNetworkUDP extends CoapNetwork {
     print("SJH - UDP - receiving");
     final Datagram rec = _socket.receive();
     if (rec == null) {
+      print("SJH - UDP - null recieve");
       return null;
     }
     if (rec.data.length == 0) {
+      print("SJH - UDP - null length");
       return null;
     }
+    print("SJH - UDP - received ${rec.data}");
     return new typed.Uint8Buffer()
       ..addAll(rec.data);
   }
