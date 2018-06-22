@@ -29,7 +29,7 @@ class CoapNetworkUDP extends CoapNetwork {
   RawDatagramSocket get socket => _socket;
 
   int send(typed.Uint8Buffer data) {
-    print("SJH - UDP - sending");
+    print("SJH - UDP - sending ${data.length} bytes");
     final int bytesSent = _socket?.send(data.toList(), address, port);
     print("SJH - UDP - sending - sent $bytesSent bytes");
     return bytesSent;
