@@ -52,7 +52,7 @@ Future main(List<String> args) async {
 
   // Get the response
   CoapResponse response;
-  response = await request.waitForResponse(30000);
+  response = await request.waitForResponse(60000);
   if (response != null) {
     if (response.contentType == CoapMediaType.applicationLinkFormat) {
       final Iterable<CoapWebLink> links =
