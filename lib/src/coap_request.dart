@@ -123,8 +123,9 @@ class CoapRequest extends CoapMessage {
   }
 
   /// Resolves the destination internet address
-  Future resolveDestination() async {
+  Future<InternetAddress> resolveDestination() async {
     destination = await CoapUtil.lookupHost(resolveHost);
+    return destination;
   }
 
   /// Sets CoAP's observe option. If the target resource of this request
@@ -183,8 +184,8 @@ class CoapRequest extends CoapMessage {
 
   /// Wait for a response.
   /// Returns the response, or null if timeout occured.
-  FutureOr<CoapResponse> waitForResponse(int millisecondsTimeout) {
-    final Completer<CoapResponse> completer = new Completer<CoapResponse>();
+  FutureOr<dynamic> waitForResponse(int millisecondsTimeout) {
+    final Completer<dynamic> completer = new Completer<dynamic>();
     if ((_currentResponse == null) &&
         (!isCancelled) &&
         (!isTimedOut) &&
@@ -192,8 +193,8 @@ class CoapRequest extends CoapMessage {
       final sleepFuture = CoapUtil.asyncSleep(millisecondsTimeout);
       final responseFuture =
           _responseStream.stream.listen((CoapResponse resp) {});
-      Future.any<CoapResponse>([sleepFuture, responseFuture.asFuture()])
-        ..then((CoapResponse resp) {
+      Future.any<dynamic>([sleepFuture, responseFuture.asFuture()])
+        ..then((dynamic resp) {
           _currentResponse = response;
           responseFuture.cancel();
           return completer.complete(response);

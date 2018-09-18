@@ -50,20 +50,22 @@ class CoapMatcher implements CoapIMatcher {
   }
 
   void sendRequest(CoapExchange exchange, CoapRequest request) {
-    if (request.id == CoapMessage.none) request.id = _currentId % (1 << 16);
+    if (request.id == CoapMessage.none) {
+      request.id = _currentId == null ? (1 << 16) : _currentId;
 
-    // The request is a CON or NON and must be prepared for these responses
-    // - CON => ACK / RST / ACK+response / CON+response / NON+response
-    // - NON => RST / CON+response / NON+response
-    // If this request goes lost, we do not get anything back.
+      // The request is a CON or NON and must be prepared for these responses
+      // - CON => ACK / RST / ACK+response / CON+response / NON+response
+      // - NON => RST / CON+response / NON+response
+      // If this request goes lost, we do not get anything back.
 
-    // The MID is from the local namespace -- use blank address
-    final CoapKeyId keyId = new CoapKeyId(request.id, null);
-    final CoapKeyToken keyToken = new CoapKeyToken(request.token);
-    _log.debug("Stored open request by $keyId + $keyToken");
+      // The MID is from the local namespace -- use blank address
+      final CoapKeyId keyId = new CoapKeyId(request.id, null);
+      final CoapKeyToken keyToken = new CoapKeyToken(request.token);
+      _log.debug("Stored open request by $keyId + $keyToken");
 
-    _exchangesById[keyId] = exchange;
-    _exchangesByToken[keyToken] = exchange;
+      _exchangesById[keyId] = exchange;
+      _exchangesByToken[keyToken] = exchange;
+    }
   }
 
   void sendResponse(CoapExchange exchange, CoapResponse response) {

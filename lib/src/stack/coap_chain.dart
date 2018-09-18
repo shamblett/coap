@@ -215,8 +215,8 @@ class CoapChain<TChain, TFilter, TNextFilter>
             tailFilterFactory,
             (t1, t2) => t1 == t2);
 
-  Map<String, CoapIEntry<TFilter, TNextFilter>> _name2entry =
-      new Map<String, CoapIEntry<TFilter, TNextFilter>>();
+  Map<String, CoapIEntry<dynamic, dynamic>> _name2entry =
+  new Map<String, CoapIEntry<dynamic, dynamic>>();
   CoapEntry _head;
 
   CoapEntry get head => _head;
@@ -382,7 +382,7 @@ class CoapChain<TChain, TFilter, TNextFilter>
     onPreAdd(newEntry);
     prevEntry.nextEntry.prevEntry = newEntry;
     prevEntry.nextEntry = newEntry;
-    _name2entry[name] = newEntry as CoapIEntry<TFilter, TNextFilter>;
+    _name2entry[name] = newEntry;
     onPostAdd(newEntry);
   }
 

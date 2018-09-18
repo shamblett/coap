@@ -158,7 +158,8 @@ class CoapUtil {
   }
 
   static Future<InternetAddress> lookupHost(String host) async {
-    final Completer completer = new Completer();
+    final Completer<InternetAddress> completer = new Completer<
+        InternetAddress>();
     InternetAddress.lookup(host, type: InternetAddressType.IPv6)
       ..then((List<InternetAddress> addresses) {
         logResolvedAddresses(addresses);

@@ -29,7 +29,8 @@ Future main(List<String> args) async {
   }
 
   // Config
-  final CoapConfig conf = new CoapConfig(File("test/config_default.yaml"));
+  final CoapConfig conf = new CoapConfig(
+      File("test/config_default_example.yaml"));
 
   // Build the request
   final CoapRequest request = newRequest("DISCOVER");
@@ -55,8 +56,7 @@ Future main(List<String> args) async {
   request.send();
 
   // Get the response
-  CoapResponse response;
-  response = await request.waitForResponse(60000);
+  final CoapResponse response = await request.waitForResponse(60000);
   if (response != null) {
     if (response.contentType == CoapMediaType.applicationLinkFormat) {
       final Iterable<CoapWebLink> links =

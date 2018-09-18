@@ -610,7 +610,7 @@ class CoapMessage {
     setOptions(CoapOption.split(optionTypeLocationQuery, tmp, "&"));
   }
 
-  Iterable<String> get locationQueries =>
+  Iterable<dynamic> get locationQueries =>
       _selectOptions(optionTypeLocationQuery, (CoapOption o) => o.toString());
 
   CoapMessage addLocationQuery(String query) {
