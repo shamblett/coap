@@ -98,11 +98,6 @@ class CoapConfig extends config.Configuration {
   @config.optionalConfiguration
   String logTarget = "none";
 
-  /// If logging to a file the file name, with path
-  /// if needed.
-  @config.optionalConfiguration
-  String logFile = "coaplog.txt";
-
   /// Log level options
   @config.optionalConfiguration
   bool logError = true;

@@ -561,7 +561,7 @@ class CoapMessage {
   set locationPath(String value) =>
       setOptions(CoapOption.split(optionTypeLocationPath, value, "/"));
 
-  Iterable<String> get locationPaths =>
+  dynamic get locationPaths =>
       _selectOptions(optionTypeLocationPath, (CoapOption o) => o.toString());
 
   String get location {

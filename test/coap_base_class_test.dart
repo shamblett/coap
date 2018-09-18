@@ -99,7 +99,6 @@ void main() {
       expect(conf.channelReceivePacketSize, 18);
       //TODO expect(conf.deduplicator,"");
       expect(conf.logTarget, "console");
-      expect(conf.logFile, "coap_test.log");
       expect(conf.logError, false);
       expect(conf.logInfo, true);
       expect(conf.logWarn, true);
@@ -132,7 +131,6 @@ void main() {
       expect(conf.channelReceivePacketSize, 2048);
       //TODO expect(conf.deduplicator,"");
       expect(conf.logTarget, "none");
-      expect(conf.logFile, "coaplog.txt");
       expect(conf.logError, true);
       expect(conf.logInfo, false);
       expect(conf.logWarn, false);
@@ -179,26 +177,5 @@ void main() {
       expect(logger.lastMessage, "DEBUG ConsoleLogger: Debug message");
     });
 
-    test('File', () {
-      final CoapConfig conf = new CoapConfig(File("test/config_logging.yaml"));
-      final CoapLogManager logmanager = new CoapLogManager('file');
-      final logFile = new File(conf.logFile);
-      if (logFile.existsSync()) {
-        logFile.deleteSync();
-      }
-      final CoapILogger logger = logmanager.logger;
-      expect(logger.isDebugEnabled(), isTrue);
-      expect(logger.isErrorEnabled(), isTrue);
-      expect(logger.isInfoEnabled(), isTrue);
-      expect(logger.isWarnEnabled(), isTrue);
-      logger.warn("Warning message");
-      sleep(const Duration(seconds: 1));
-      logger.info("Information message");
-      sleep(const Duration(seconds: 1));
-      logger.error("Error message");
-      sleep(const Duration(seconds: 1));
-      logger.debug("Debug message");
-      expect(logFile.lengthSync() > 0, isTrue);
-    });
   });
 }
