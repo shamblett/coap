@@ -12,6 +12,11 @@ class CoapNullLogger implements CoapILogger {
   logging.Logger get root => null;
   set root(logging.Logger root) {}
 
+  /// Last message
+  String get lastMessage => null;
+
+  set lastMessage(String message) {}
+
   /// Is debug enabled
   bool isDebugEnabled() {
     return false;

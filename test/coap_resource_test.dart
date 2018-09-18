@@ -4,11 +4,12 @@
  * Date   : 09/05/2018
  * Copyright :  S.Hamblett
  */
+import 'dart:io';
 import 'package:coap/coap.dart';
 import 'package:test/test.dart';
 
 void main() {
-  final CoapConfig conf = new CoapConfig("test/config_all.yaml");
+  final CoapConfig conf = new CoapConfig(File("test/config_all.yaml"));
   print("Configuration version is " + conf.version);
 
   group("Endpoint resource", () {

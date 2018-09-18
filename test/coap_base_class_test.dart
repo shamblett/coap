@@ -107,7 +107,7 @@ void main() {
     });
 
     test('Default', () {
-      final CoapConfig conf = new CoapConfig("test/config_default.yaml");
+      final CoapConfig conf = new CoapConfig(File("test/config_default.yaml"));
       conf.spec = new CoapDraft18();
       expect(conf.version, "RFC7252");
       expect(conf.defaultPort, 5683);
@@ -140,7 +140,7 @@ void main() {
     });
 
     test('Instance', () {
-      final CoapConfig conf = new CoapConfig("test/config_default.yaml");
+      final CoapConfig conf = new CoapConfig(File("test/config_default.yaml"));
       expect(conf == CoapConfig.inst, isTrue);
     });
   });
@@ -160,39 +160,27 @@ void main() {
     });
 
     test('Console', () {
-      final CoapConfig conf = new CoapConfig("test/config_logging.yaml");
+      final CoapConfig conf = new CoapConfig(File("test/config_logging.yaml"));
       expect(conf.logTarget, "console");
       final CoapLogManager logmanager = new CoapLogManager('console');
       final CoapILogger logger = logmanager.logger;
       // Add a string appender to test correct log strings
-      LoggerFactory.config["ConsoleLogger"].appenders.add(new StringAppender());
-      final StringAppender appender =
-          LoggerFactory.config["ConsoleLogger"].appenders.last;
       expect(logger.isDebugEnabled(), isTrue);
       expect(logger.isErrorEnabled(), isTrue);
       expect(logger.isInfoEnabled(), isTrue);
       expect(logger.isWarnEnabled(), isTrue);
       logger.warn("Warning message");
-      expect(appender.content.contains("WARN ConsoleLogger: Warning message"),
-          isTrue);
-      appender.clear();
+      expect(logger.lastMessage, "WARN ConsoleLogger: Warning message");
       logger.info("Information message");
-      expect(
-          appender.content.contains("INFO ConsoleLogger: Information message"),
-          isTrue);
-      appender.clear();
+      expect(logger.lastMessage, "INFO ConsoleLogger: Information message");
       logger.error("Error message");
-      expect(appender.content.contains("ERROR ConsoleLogger: Error message"),
-          isTrue);
-      appender.clear();
+      expect(logger.lastMessage, "ERROR ConsoleLogger: Error message");
       logger.debug("Debug message");
-      expect(appender.content.contains("DEBUG ConsoleLogger: Debug message"),
-          isTrue);
-      appender.clear();
+      expect(logger.lastMessage, "DEBUG ConsoleLogger: Debug message");
     });
 
     test('File', () {
-      final CoapConfig conf = new CoapConfig("test/config_logging.yaml");
+      final CoapConfig conf = new CoapConfig(File("test/config_logging.yaml"));
       final CoapLogManager logmanager = new CoapLogManager('file');
       final logFile = new File(conf.logFile);
       if (logFile.existsSync()) {

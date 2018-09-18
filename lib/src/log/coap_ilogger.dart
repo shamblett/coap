@@ -35,4 +35,7 @@ abstract class CoapILogger {
 
   /// Logs a warning message.
   void warn(String message);
+
+  /// The last log message logged, fully formatted
+  String lastMessage;
 }

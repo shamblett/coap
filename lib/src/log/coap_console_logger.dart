@@ -19,6 +19,13 @@ class CoapConsoleLogger implements CoapILogger {
   logging.Logger get root => logging.Logger.root;
   set root(logging.Logger root) {}
 
+  /// Last message
+  String _lastMessage;
+
+  String get lastMessage => _lastMessage;
+
+  set lastMessage(String message) {}
+
   /// Is debug enabled
   bool isDebugEnabled() {
     return _logger.level == logging.Level.SEVERE;
@@ -63,6 +70,7 @@ class CoapConsoleLogger implements CoapILogger {
   String _formatter(String message) {
     final DateTime now = new DateTime.now();
     final String level = _logger.level.toString();
-    return now.toString() + "  " + level + " >> ";
+    _lastMessage = now.toString() + "  " + level + " >> ";
+    return _lastMessage;
   }
 }

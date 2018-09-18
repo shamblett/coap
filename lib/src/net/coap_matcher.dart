@@ -13,6 +13,7 @@ class CoapMatcher implements CoapIMatcher {
     if (config.useRandomIDStart) {
       _currentId = new Random().nextInt(1 << 16);
     }
+    clientEventBus.on<CoapCompletedEvent>().listen(onExchangeCompleted);
   }
 
   static CoapILogger _log = new CoapLogManager("console").logger;
@@ -59,7 +60,6 @@ class CoapMatcher implements CoapIMatcher {
     // The MID is from the local namespace -- use blank address
     final CoapKeyId keyId = new CoapKeyId(request.id, null);
     final CoapKeyToken keyToken = new CoapKeyToken(request.token);
-    addEventAction(CoapCompletedEvent, onExchangeCompleted);
     _log.debug("Stored open request by $keyId + $keyToken");
 
     _exchangesById[keyId] = exchange;
@@ -153,7 +153,6 @@ class CoapMatcher implements CoapIMatcher {
           new CoapExchange(request, CoapOrigin.remote);
       final CoapExchange previous = _deduplicator.findPrevious(keyId, exchange);
       if (previous == null) {
-        addEventAction(CoapCompletedEvent, onExchangeCompleted);
         return exchange;
       } else {
         _log.info("Duplicate request: $request");
@@ -195,7 +194,6 @@ class CoapMatcher implements CoapIMatcher {
             _deduplicator.findPrevious(keyId, exchange);
         if (previous == null) {
           _log.debug("New ongoing request, storing $keyUri for $request");
-          addEventAction(CoapCompletedEvent, onExchangeCompleted);
           _ongoingExchanges[keyUri] = exchange;
           return exchange;
         } else {
