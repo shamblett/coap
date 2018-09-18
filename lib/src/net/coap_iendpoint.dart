@@ -52,7 +52,7 @@ class CoapReceivingEmptyMessageEvent {
 
 /// Represents a communication endpoint multiplexing CoAP message exchanges
 /// between (potentially multiple) clients and servers.
-abstract class CoapIEndPoint extends Object with events.EventEmitter {
+abstract class CoapIEndPoint {
   /// Gets this endpoint's configuration.
   CoapConfig get config;
 

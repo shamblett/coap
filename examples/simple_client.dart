@@ -29,7 +29,7 @@ Future main(List<String> args) async {
   }
 
   // Config
-  final CoapConfig conf = new CoapConfig("test/config_default.yaml");
+  final CoapConfig conf = new CoapConfig(File("test/config_default.yaml"));
 
   // Build the request
   final CoapRequest request = newRequest("DISCOVER");

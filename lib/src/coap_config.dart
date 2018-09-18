@@ -11,8 +11,8 @@ part of coap;
 /// file. The configuration items below are marked as optional to allow
 /// the config file to contain only those entries that override the defaults.
 /// The file can't be empty, so version must as a minimum be present.
-class CoapConfig extends config.ConfigurationItem {
-  CoapConfig(String filename) : super.fromFile(filename) {
+class CoapConfig extends config.Configuration {
+  CoapConfig(File file) : super.fromFile(file) {
     _config = this;
   }
 

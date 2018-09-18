@@ -79,8 +79,7 @@ class CoapBlockOption extends CoapOption {
   typed.Uint8Buffer _compressValueBytes() {
     if (_valueBytes.length == 4) {
       if (_valueBytes[3] == 0) {
-        return new typed.Uint8Buffer()
-          ..addAll(_valueBytes.take(3).toList());
+        return new typed.Uint8Buffer()..addAll(_valueBytes.take(3).toList());
       }
     }
     return _valueBytes;

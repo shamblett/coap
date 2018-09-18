@@ -8,6 +8,4 @@
 part of coap;
 
 /// The Coap package API
-class Coap {
-
-}
+class Coap {}

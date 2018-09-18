@@ -47,8 +47,8 @@ class CoapNextLayer implements CoapINextLayer {
 
 class CoapStackTopLayer extends CoapAbstractLayer {
   @override
-  void sendRequest(CoapINextLayer nextLayer, CoapExchange exchange,
-      CoapRequest request) {
+  void sendRequest(
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
     CoapExchange nexchange = exchange;
     if (exchange == null) {
       nexchange = new CoapExchange(request, CoapOrigin.local);
@@ -60,15 +60,15 @@ class CoapStackTopLayer extends CoapAbstractLayer {
   }
 
   @override
-  void sendResponse(CoapINextLayer nextLayer, CoapExchange exchange,
-      CoapResponse response) {
+  void sendResponse(
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
     exchange.response = response;
     super.sendResponse(nextLayer, exchange, response);
   }
 
   @override
-  void receiveRequest(CoapINextLayer nextLayer, CoapExchange exchange,
-      CoapRequest request) {
+  void receiveRequest(
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
     // If there is no BlockwiseLayer we still have to set it
     if (exchange.request == null) {
       exchange.request = request;
@@ -79,8 +79,8 @@ class CoapStackTopLayer extends CoapAbstractLayer {
   }
 
   @override
-  void receiveResponse(CoapINextLayer nextLayer, CoapExchange exchange,
-      CoapResponse response) {
+  void receiveResponse(
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
     if (!response.hasOption(optionTypeObserve)) {
       exchange.complete = true;
     }
@@ -99,14 +99,14 @@ class CoapStackTopLayer extends CoapAbstractLayer {
 
 class CoapStackBottomLayer extends CoapAbstractLayer {
   @override
-  void sendRequest(CoapINextLayer nextLayer, CoapExchange exchange,
-      CoapRequest request) {
+  void sendRequest(
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
     exchange.outbox.sendRequest(exchange, request);
   }
 
   @override
-  void sendResponse(CoapINextLayer nextLayer, CoapExchange exchange,
-      CoapResponse response) {
+  void sendResponse(
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
     exchange.outbox.sendResponse(exchange, response);
   }
 
@@ -123,7 +123,7 @@ class CoapLayerStack
   /// Instantiates.
   CoapLayerStack()
       : super.filterFactory((e) => new CoapNextLayer(e),
-          () => new CoapStackTopLayer(), () => new CoapStackBottomLayer());
+            () => new CoapStackTopLayer(), () => new CoapStackBottomLayer());
 
   /// Sends a request into the layer stack.
   void sendRequest(CoapRequest request) {

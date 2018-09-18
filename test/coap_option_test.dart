@@ -31,7 +31,7 @@ void main() {
       final CoapOption opt2 =
           CoapOption.createVal(optionTypeContentType, twoByteValue);
       final CoapOption opt3 =
-      CoapOption.createVal(optionTypeContentType, fourByteValue);
+          CoapOption.createVal(optionTypeContentType, fourByteValue);
       expect(opt1.length, 1);
       expect(opt2.length, 2);
       expect(opt3.length, 4);

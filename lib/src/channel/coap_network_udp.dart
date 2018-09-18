@@ -47,8 +47,7 @@ class CoapNetworkUDP extends CoapNetwork {
       return null;
     }
     print("SJH - UDP - received ${rec.data}");
-    return new typed.Uint8Buffer()
-      ..addAll(rec.data);
+    return new typed.Uint8Buffer()..addAll(rec.data);
   }
 
   Future bind() async {
@@ -63,7 +62,7 @@ class CoapNetworkUDP extends CoapNetwork {
         ..then((RawDatagramSocket socket) {
           _socket = socket;
           socket.listen((RawSocketEvent e) {
-            if (e == RawSocketEvent.READ) {
+            if (e == RawSocketEvent.read) {
               receive();
             }
             _bound = true;

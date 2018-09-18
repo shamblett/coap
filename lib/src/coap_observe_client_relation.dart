@@ -10,14 +10,14 @@ part of coap;
 /// Represents a CoAP observe relation between a CoAP client and a resource on a server.
 /// Provides a simple API to check whether a relation has successfully established and
 /// to cancel or refresh the relation.
-class CoapObserveClientRelation extends Object with events.EventDetector {
-  CoapObserveClientRelation(CoapRequest request, CoapIEndPoint endpoint,
-      CoapConfig config) {
+class CoapObserveClientRelation {
+  CoapObserveClientRelation(
+      CoapRequest request, CoapIEndPoint endpoint, CoapConfig config) {
     _config = config;
     _request = request;
     _endpoint = endpoint;
     _orderer = new CoapObserveNotificationOrderer(config);
-    listen(_request, CoapReregisteringEvent, _onReregister);
+    clientEventBus.on<CoapReregisteringEvent>().listen(_onReregister);
   }
 
   CoapConfig _config;
@@ -54,7 +54,7 @@ class CoapObserveClientRelation extends Object with events.EventDetector {
     cancelled = true;
   }
 
-  void _onReregister(events.Event e) {
+  void _onReregister(CoapReregisteringEvent e) {
     // Reset orderer to accept any sequence number since server might have rebooted
     _orderer = new CoapObserveNotificationOrderer(_config);
   }

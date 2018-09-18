@@ -9,51 +9,60 @@ part of coap;
 
 /// Provides logging to the console
 class CoapConsoleLogger implements CoapILogger {
-  static final _logger = logging.LoggerFactory.getLogger("ConsoleLogger");
+  static final logging.Logger _logger = new logging.Logger('ConsoleLogger');
 
   CoapConsoleLogger() {
-    logging.LoggerFactory.config["ConsoleLogger"].appenders = [
-      new logging.ConsoleAppender()
-    ];
+    logging.Logger.root.level = logging.Level.ALL;
   }
+
+  /// Root
+  logging.Logger get root => logging.Logger.root;
+  set root(logging.Logger root) {}
 
   /// Is debug enabled
   bool isDebugEnabled() {
-    return logging.LoggerFactory.config["ConsoleLogger"].debugEnabled;
+    return _logger.level == logging.Level.SEVERE;
   }
 
   /// Is error enabled
   bool isErrorEnabled() {
-    return logging.LoggerFactory.config["ConsoleLogger"].errorEnabled;
+    return _logger.level == logging.Level.SHOUT;
   }
 
   /// Is info enabled
   bool isInfoEnabled() {
-    return logging.LoggerFactory.config["ConsoleLogger"].infoEnabled;
+    return _logger.level == logging.Level.INFO;
   }
 
   /// Is warning enabled
   bool isWarnEnabled() {
-    return logging.LoggerFactory.config["ConsoleLogger"].warnEnabled;
+    return _logger.level == logging.Level.WARNING;
   }
 
   /// Logs a debug message.
   void debug(String message) {
-    _logger.debug(message);
+    _logger.severe(_formatter(message));
   }
 
   /// Logs an error message.
   void error(String message) {
-    _logger.error(message);
+    _logger.shout(_formatter(message));
   }
 
   /// Logs an info message.
   void info(String message) {
-    _logger.info(message);
+    _logger.info(_formatter(message));
   }
 
   /// Logs a warning message.
   void warn(String message) {
-    _logger.warn(message);
+    _logger.warning(_formatter(message));
+  }
+
+  /// Formatter
+  String _formatter(String message) {
+    final DateTime now = new DateTime.now();
+    final String level = _logger.level.toString();
+    return now.toString() + "  " + level + " >> ";
   }
 }

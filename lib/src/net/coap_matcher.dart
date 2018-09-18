@@ -7,9 +7,7 @@
 
 part of coap;
 
-class CoapMatcher extends Object
-    with events.EventEmitter
-    implements CoapIMatcher {
+class CoapMatcher implements CoapIMatcher {
   CoapMatcher(CoapConfig config) {
     _deduplicator = CoapDeduplicatorFactory.createDeduplicator(config);
     if (config.useRandomIDStart) {
@@ -92,7 +90,7 @@ class CoapMatcher extends Object
     if (response.hasOption(optionTypeBlock2)) {
       final CoapRequest request = exchange.currentRequest;
       final CoapKeyUri keyUri =
-      new CoapKeyUri(request.uri, response.destination);
+          new CoapKeyUri(request.uri, response.destination);
       // Observe notifications only send the first block, hence do not store them as ongoing
       if (exchange.responseBlockStatus != null &&
           !response.hasOption(optionTypeObserve)) {
@@ -152,7 +150,7 @@ class CoapMatcher extends Object
     if (!request.hasOption(optionTypeBlock1) &&
         !request.hasOption(optionTypeBlock2)) {
       final CoapExchange exchange =
-      new CoapExchange(request, CoapOrigin.remote);
+          new CoapExchange(request, CoapOrigin.remote);
       final CoapExchange previous = _deduplicator.findPrevious(keyId, exchange);
       if (previous == null) {
         addEventAction(CoapCompletedEvent, onExchangeCompleted);
@@ -192,9 +190,9 @@ class CoapMatcher extends Object
         // which exchange they store!
 
         final CoapExchange exchange =
-        new CoapExchange(request, CoapOrigin.remote);
+            new CoapExchange(request, CoapOrigin.remote);
         final CoapExchange previous =
-        _deduplicator.findPrevious(keyId, exchange);
+            _deduplicator.findPrevious(keyId, exchange);
         if (previous == null) {
           _log.debug("New ongoing request, storing $keyUri for $request");
           addEventAction(CoapCompletedEvent, onExchangeCompleted);
@@ -243,9 +241,8 @@ class CoapMatcher extends Object
       if (response.type == CoapMessageType.ack &&
           exchange.currentRequest.id != response.id) {
         // The token matches but not the MID. This is a response for an older exchange
-        _log.warn("Possible MID reuse before lifetime end: ${response
-                .tokenString} expected MID ${exchange.currentRequest
-                .id} but received ${response.id}");
+        _log.warn(
+            "Possible MID reuse before lifetime end: ${response.tokenString} expected MID ${exchange.currentRequest.id} but received ${response.id}");
       }
 
       return exchange;
@@ -260,8 +257,8 @@ class CoapMatcher extends Object
           return prev;
         }
       } else {
-        _log.info("Ignoring unmatchable piggy-backed response from ${response
-                .source} : $response");
+        _log.info(
+            "Ignoring unmatchable piggy-backed response from ${response.source} : $response");
       }
       // Ignore response
       return null;
@@ -277,27 +274,27 @@ class CoapMatcher extends Object
       _exchangesById.remove(keyId);
       return exchange;
     } else {
-      _log.info("Ignoring unmatchable empty message from ${message
-              .source} : $message");
+      _log.info(
+          "Ignoring unmatchable empty message from ${message.source} : $message");
       return null;
     }
   }
 
-  void onExchangeCompleted(events.Event<CoapCompletedEvent> event) {
-    final CoapExchange exchange = event.data.exchange;
+  void onExchangeCompleted(CoapCompletedEvent event) {
+    final CoapExchange exchange = event.exchange;
 
     if (exchange.origin == CoapOrigin.local) {
       // This endpoint created the Exchange by issuing a request
       final CoapKeyId keyId = new CoapKeyId(exchange.currentRequest.id, null);
       final CoapKeyToken keyToken =
-      new CoapKeyToken(exchange.currentRequest.token);
+          new CoapKeyToken(exchange.currentRequest.token);
       _log.debug("Exchange completed: Cleaning up $keyToken");
 
       _exchangesByToken.remove(keyToken);
       // In case an empty ACK was lost
       _exchangesById.remove(keyId);
     } else // Origin.Remote
-        {
+    {
       // This endpoint created the Exchange to respond a request
       final CoapResponse response = exchange.currentResponse;
       if (response != null && response.type != CoapMessageType.ack) {

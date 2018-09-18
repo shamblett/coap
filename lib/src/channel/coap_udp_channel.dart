@@ -20,7 +20,7 @@ class CoapUDPChannel extends CoapIChannel {
   InternetAddress _address;
 
   InternetAddress get address =>
-      _address == null ? InternetAddress.ANY_IP_V6 : _address;
+      _address == null ? InternetAddress.anyIPv6 : _address;
   CoapNetworkUDP _socket;
 
   void start() {
@@ -35,8 +35,8 @@ class CoapUDPChannel extends CoapIChannel {
 
   void send(typed.Uint8Buffer data, [InternetAddress sendAddress]) {
     if (sendAddress != null) {
-      final CoapNetworkUDP socket = CoapNetworkManagement.getNetwork(
-          sendAddress, _port);
+      final CoapNetworkUDP socket =
+          CoapNetworkManagement.getNetwork(sendAddress, _port);
       if (socket?.socket != null) {
         socket.send(data);
       }
@@ -50,8 +50,8 @@ class CoapUDPChannel extends CoapIChannel {
   typed.Uint8Buffer receive() {
     final typed.Uint8Buffer buff = _socket.receive();
     final CoapDataReceivedEvent rxEvent =
-    new CoapDataReceivedEvent(buff, _address);
-    emitEvent(rxEvent);
+        new CoapDataReceivedEvent(buff, _address);
+    clientEventBus.fire(rxEvent);
     return buff;
   }
 }

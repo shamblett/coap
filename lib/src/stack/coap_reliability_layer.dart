@@ -106,8 +106,8 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
 
   /// Schedules a retransmission for confirmable messages.
   /// @override
-  void sendRequest(CoapINextLayer nextLayer, CoapExchange exchange,
-      CoapRequest request) {
+  void sendRequest(
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
     if (request.type == CoapMessageType.unknown) {
       request.type = CoapMessageType.con;
     }
@@ -115,7 +115,7 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
     if (request.type == CoapMessageType.con) {
       _log.debug("Scheduling retransmission for $request");
       _prepareRetransmission(exchange, request,
-              (ctx) => sendRequest(nextLayer, exchange, request));
+          (ctx) => sendRequest(nextLayer, exchange, request));
     }
 
     super.sendRequest(nextLayer, exchange, request);
@@ -126,8 +126,8 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
   /// with a piggy-backed response or, if an empty ACK has already be sent, a
   /// CON or NON with a separate response.
   @override
-  void sendResponse(CoapINextLayer nextLayer, CoapExchange exchange,
-      CoapResponse response) {
+  void sendResponse(
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
     final int mt = response.type;
     if (mt == CoapMessageType.unknown) {
       final int reqType = exchange.currentRequest.type;
@@ -152,7 +152,7 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
     if (response.type == CoapMessageType.con) {
       _log.debug("Scheduling retransmission for $response");
       _prepareRetransmission(exchange, response,
-              (ctx) => sendResponse(nextLayer, exchange, response));
+          (ctx) => sendResponse(nextLayer, exchange, response));
     }
 
     super.sendResponse(nextLayer, exchange, response);
@@ -166,8 +166,8 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
   /// server has not yet decided what to do with the request and we cannot do
   /// anything.
   @override
-  void receiveRequest(CoapINextLayer nextLayer, CoapExchange exchange,
-      CoapRequest request) {
+  void receiveRequest(
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
     if (request.duplicate) {
       // Request is a duplicate, so resend ACK, RST or response
       if (exchange.currentResponse != null) {
@@ -205,10 +205,10 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
   /// counts as acknowledgment for the request. If the response is a duplicate,
   /// we stop it here and do not forward it to the upper layer.
   @override
-  void receiveResponse(CoapINextLayer nextLayer, CoapExchange exchange,
-      CoapResponse response) {
+  void receiveResponse(
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
     final CoapTransmissionContext ctx =
-    exchange.remove(transmissionContextKey) as CoapTransmissionContext;
+        exchange.remove(transmissionContextKey) as CoapTransmissionContext;
     if (ctx != null) {
       exchange.currentRequest.isAcknowledged = true;
       ctx.cancel();
@@ -253,7 +253,7 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
     }
 
     final CoapTransmissionContext ctx =
-    exchange.remove(transmissionContextKey) as CoapTransmissionContext;
+        exchange.remove(transmissionContextKey) as CoapTransmissionContext;
     if (ctx != null) ctx.cancel();
 
     super.receiveEmptyMessage(nextLayer, exchange, message);
@@ -262,8 +262,8 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
   void _prepareRetransmission(CoapExchange exchange, CoapMessage msg,
       ActionGeneric<CoapTransmissionContext> retransmit) {
     final CoapTransmissionContext ctx =
-    exchange.getOrAdd<CoapTransmissionContext>(transmissionContextKey,
-        new CoapTransmissionContext(_config, exchange, msg, retransmit));
+        exchange.getOrAdd<CoapTransmissionContext>(transmissionContextKey,
+            new CoapTransmissionContext(_config, exchange, msg, retransmit));
 
     if (ctx.failedTransmissionCount > 0) {
       ctx.currentTimeout =
@@ -281,7 +281,7 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
 
   int _initialTimeout(int initialTimeout, double factor) {
     return (initialTimeout +
-        initialTimeout * (factor - 1.0) * _rand.nextDouble())
+            initialTimeout * (factor - 1.0) * _rand.nextDouble())
         .toInt();
   }
 }

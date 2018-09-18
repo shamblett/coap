@@ -15,7 +15,7 @@ class CoapDataReceivedEvent {
 }
 
 /// Represents a channel where bytes data can flow through.
-abstract class CoapIChannel extends Object with events.EventEmitter {
+abstract class CoapIChannel {
   /// Gets the address of this channel.
   InternetAddress address;
 

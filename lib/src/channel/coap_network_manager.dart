@@ -10,7 +10,6 @@ part of coap;
 /// A network management/caching class, allows already
 /// bound endpoints to be reused without instantiating them again.
 class CoapNetworkManagement {
-
   static List<CoapNetwork> _networks = new List<CoapNetwork>();
 
   /// Gets a new network, otherwise tries to find a cached network and returns that.

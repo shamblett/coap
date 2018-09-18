@@ -9,7 +9,6 @@ part of coap;
 
 /// Utility methods
 class CoapUtil {
-
   static CoapILogger _log = new CoapLogManager("console").logger;
 
   /// Insertion sort, to make the options list stably ordered.
@@ -21,7 +20,7 @@ class CoapUtil {
   static bool areSequenceEqualTo<T>(Iterable<T> first, Iterable<T> second,
       [collection.Equality<T> equality = const collection.DefaultEquality()]) {
     final collection.IterableEquality ie =
-    new collection.IterableEquality(equality);
+        new collection.IterableEquality(equality);
     return ie.equals(first, second);
   }
 
@@ -148,8 +147,8 @@ class CoapUtil {
 
   /// Puts a value associated with a key into a Map,
   /// and returns the old value, or null if not exists.
-  static TValue put<TKey, TValue>(Map<TKey, TValue> dic, TKey key,
-      TValue value) {
+  static TValue put<TKey, TValue>(
+      Map<TKey, TValue> dic, TKey key, TValue value) {
     TValue old;
     if (dic.containsKey(key)) {
       old = dic[key];
@@ -160,7 +159,7 @@ class CoapUtil {
 
   static Future<InternetAddress> lookupHost(String host) async {
     final Completer completer = new Completer();
-    InternetAddress.lookup(host, type: InternetAddressType.IP_V6)
+    InternetAddress.lookup(host, type: InternetAddressType.IPv6)
       ..then((List<InternetAddress> addresses) {
         logResolvedAddresses(addresses);
         if (addresses != null && addresses.length >= 1) {

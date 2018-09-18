@@ -12,8 +12,7 @@ class CoapDatagramWriter {
   /// Initializes a new DatagramWriter object
   CoapDatagramWriter() {
     _buffer = new typed.Uint8Buffer();
-    _currentByte = new ByteData(1)
-      ..setUint8(0, 0);
+    _currentByte = new ByteData(1)..setUint8(0, 0);
     _currentBitIndex = 7;
   }
 

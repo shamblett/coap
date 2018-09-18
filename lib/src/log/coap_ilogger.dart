@@ -9,6 +9,9 @@ part of coap;
 
 /// Provides methods to log messages.
 abstract class CoapILogger {
+  /// The root logger
+  logging.Logger root;
+
   /// Is debug enabled
   bool isDebugEnabled();
 

@@ -55,8 +55,7 @@ class CoapObserveRelation {
   /// Cancel this observe relation.
   void cancel() {
     log.debug(
-        "CoapObserveRelation::Cancel observe relation from $_key with ${_resource
-            .path}");
+        "CoapObserveRelation::Cancel observe relation from $_key with ${_resource.path}");
     // Stop ongoing retransmissions
     if (_exchange.response != null) {
       _exchange.response.cancel();
@@ -85,7 +84,7 @@ class CoapObserveRelation {
     check = check ||
         _interestCheckTime
             .add(new Duration(
-            milliseconds: CoapConfig.inst.notificationCheckIntervalTime))
+                milliseconds: CoapConfig.inst.notificationCheckIntervalTime))
             .isBefore(now);
     check = check ||
         (++_interestCheckCounter >=

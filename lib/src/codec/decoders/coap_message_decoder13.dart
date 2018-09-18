@@ -51,7 +51,7 @@ class CoapMessageDecoder13 extends CoapMessageDecoder {
         // The second 4 bits represent the option length
         final int optionLengthNibble = (0x0F & nextByte);
         final int optionLength =
-        CoapDraft13.getValueFromOptionNibble(optionLengthNibble, _reader);
+            CoapDraft13.getValueFromOptionNibble(optionLengthNibble, _reader);
 
         // Read option
         final int currentOptionType = CoapDraft13.getOptionType(currentOption);

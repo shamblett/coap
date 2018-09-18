@@ -23,13 +23,13 @@ class CoapReregistrationContext {
 
   void start() {
     _timer =
-    new Timer(new Duration(milliseconds: _timeout), () => _timerElapsed());
+        new Timer(new Duration(milliseconds: _timeout), () => _timerElapsed());
   }
 
   void restart() {
     cancel();
     _timer =
-    new Timer(new Duration(milliseconds: _timeout), () => _timerElapsed());
+        new Timer(new Duration(milliseconds: _timeout), () => _timerElapsed());
   }
 
   void cancel() {
@@ -69,16 +69,16 @@ class CoapObserveLayer extends CoapAbstractLayer {
   int _backoff;
 
   @override
-  void sendResponse(CoapINextLayer nextLayer, CoapExchange exchange,
-      CoapResponse response) {
+  void sendResponse(
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
     final CoapObserveRelation relation = exchange.relation;
     if (relation != null && relation.established) {
       if (exchange.request.isAcknowledged ||
           exchange.request.type == CoapMessageType.non) {
         // Transmit errors as CON
         if (!CoapCode.isSuccess(response.code)) {
-          _log.debug("Response has error code ${response
-                  .code} and must be sent as CON");
+          _log.debug(
+              "Response has error code ${response.code} and must be sent as CON");
           response.type = CoapMessageType.con;
           relation.cancel();
         } else {
@@ -136,8 +136,8 @@ class CoapObserveLayer extends CoapAbstractLayer {
   }
 
   @override
-  void receiveResponse(CoapINextLayer nextLayer, CoapExchange exchange,
-      CoapResponse response) {
+  void receiveResponse(
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
     if (response.hasOption(optionTypeObserve)) {
       if (exchange.request.isCancelled) {
         // The request was canceled and we no longer want notifications
@@ -179,8 +179,8 @@ class CoapObserveLayer extends CoapAbstractLayer {
     return result;
   }
 
-  void _prepareSelfReplacement(CoapINextLayer nextLayer, CoapExchange exchange,
-      CoapResponse response) {
+  void _prepareSelfReplacement(
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
     response.acknowledgedHook = () {
       final CoapObserveRelation relation = exchange.relation;
       final CoapResponse next = relation.nextControlNotification;
@@ -219,9 +219,8 @@ class CoapObserveLayer extends CoapAbstractLayer {
 
     response.timedOutHook = () {
       final CoapObserveRelation relation = exchange.relation;
-      _log.debug("Notification ${relation.exchange.request
-          .tokenString} timed out. Cancel all relations with source ${relation
-          .source}");
+      _log.debug(
+          "Notification ${relation.exchange.request.tokenString} timed out. Cancel all relations with source ${relation.source}");
       relation.cancelAll();
     };
   }
@@ -230,8 +229,8 @@ class CoapObserveLayer extends CoapAbstractLayer {
       ActionGeneric<CoapRequest> reregister) {
     final int timeout = response.maxAge * 1000 + _backoff;
     final CoapReregistrationContext ctx =
-    exchange.getOrAdd<CoapReregistrationContext>(reregistrationContextKey,
-        new CoapReregistrationContext(exchange, timeout, reregister));
+        exchange.getOrAdd<CoapReregistrationContext>(reregistrationContextKey,
+            new CoapReregistrationContext(exchange, timeout, reregister));
 
     _log.debug(
         "Scheduling re-registration in $timeout ms for ${exchange.request}");

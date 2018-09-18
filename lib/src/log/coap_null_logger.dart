@@ -9,6 +9,9 @@ part of coap;
 
 /// Provides logging to null
 class CoapNullLogger implements CoapILogger {
+  logging.Logger get root => null;
+  set root(logging.Logger root) {}
+
   /// Is debug enabled
   bool isDebugEnabled() {
     return false;

@@ -20,8 +20,8 @@ class CoapTokenLayer extends CoapAbstractLayer {
   int _counter;
 
   @override
-  void sendRequest(CoapINextLayer nextLayer, CoapExchange exchange,
-      CoapRequest request) {
+  void sendRequest(
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
     if (request.token == null) {
       request.token = _newToken();
     }
@@ -29,8 +29,8 @@ class CoapTokenLayer extends CoapAbstractLayer {
   }
 
   @override
-  void sendResponse(CoapINextLayer nextLayer, CoapExchange exchange,
-      CoapResponse response) {
+  void sendResponse(
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
     // A response must have the same token as the request it belongs to. If
     // the token is empty, we must use a byte array of length 0.
     if (response.token == null) {
@@ -40,8 +40,8 @@ class CoapTokenLayer extends CoapAbstractLayer {
   }
 
   @override
-  void receiveRequest(CoapINextLayer nextLayer, CoapExchange exchange,
-      CoapRequest request) {
+  void receiveRequest(
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
     if (exchange.currentRequest.token == null) {
       throw new StateError(
           "Received requests's token cannot be null, use byte[0] for empty tokens");
@@ -50,8 +50,8 @@ class CoapTokenLayer extends CoapAbstractLayer {
   }
 
   @override
-  void receiveResponse(CoapINextLayer nextLayer, CoapExchange exchange,
-      CoapResponse response) {
+  void receiveResponse(
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
     if (response.token == null) {
       throw new StateError(
           "Received response's token cannot be null, use byte[0] for empty tokens");

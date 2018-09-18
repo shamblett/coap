@@ -52,8 +52,8 @@ class CoapLinkFormat {
     return _serializeQueries(root, null);
   }
 
-  static String _serializeQueries(CoapIResource root,
-      Iterable<String> queries) {
+  static String _serializeQueries(
+      CoapIResource root, Iterable<String> queries) {
     final StringBuffer linkFormat = new StringBuffer();
 
     for (CoapIResource child in root.children) {
@@ -105,8 +105,8 @@ class CoapLinkFormat {
     }
   }
 
-  static void _serializeTree(CoapIResource resource, Iterable<String> queries,
-      StringBuffer sb) {
+  static void _serializeTree(
+      CoapIResource resource, Iterable<String> queries, StringBuffer sb) {
     if (resource.visible && _matchesString(resource, queries)) {
       _serializeResource(resource, sb);
       sb.write(",");
@@ -114,7 +114,7 @@ class CoapLinkFormat {
     // sort by resource name
     final List<CoapIResource> children = resource.children;
     children.sort(
-            (CoapIResource r1, CoapIResource r2) => r1.name.compareTo(r2.name));
+        (CoapIResource r1, CoapIResource r2) => r1.name.compareTo(r2.name));
     for (CoapIResource child in children) {
       _serializeTree(child, queries, sb);
     }
@@ -128,8 +128,8 @@ class CoapLinkFormat {
     _serializeAttributes(resource.attributes, sb);
   }
 
-  static void _serializeAttributes(CoapResourceAttributes attributes,
-      StringBuffer sb) {
+  static void _serializeAttributes(
+      CoapResourceAttributes attributes, StringBuffer sb) {
     final List<String> keys = attributes.keys;
     keys.sort();
     for (String name in keys) {
@@ -140,8 +140,8 @@ class CoapLinkFormat {
     }
   }
 
-  static void _serializeAttribute(String name, Iterable<String> values,
-      StringBuffer sb) {
+  static void _serializeAttribute(
+      String name, Iterable<String> values, StringBuffer sb) {
     final String delimiter = "=";
     sb.write(name);
     for (String value in values) {
@@ -165,10 +165,7 @@ class CoapLinkFormat {
 
       // Reverse the attribute list to re-create the original
       final List<CoapLinkAttribute> attrs =
-      resource.attributes
-          .toList()
-          .reversed
-          .toList();
+          resource.attributes.toList().reversed.toList();
       for (CoapLinkAttribute attr in attrs) {
         linkFormat.write(separator);
         attr.serialize(linkFormat);
@@ -230,8 +227,8 @@ class CoapLinkFormat {
     }
   }
 
-  static bool _matchesOption(CoapEndpointResource resource,
-      Iterable<CoapOption> query) {
+  static bool _matchesOption(
+      CoapEndpointResource resource, Iterable<CoapOption> query) {
     if (resource == null) return false;
     if (query == null) return true;
     for (CoapOption q in query) {
@@ -336,8 +333,8 @@ class CoapLinkFormat {
     return false;
   }
 
-  static bool addAttribute(HashSet<CoapLinkAttribute> attributes,
-      CoapLinkAttribute attrToAdd) {
+  static bool addAttribute(
+      HashSet<CoapLinkAttribute> attributes, CoapLinkAttribute attrToAdd) {
     if (isSingle(attrToAdd.name)) {
       for (CoapLinkAttribute attr in attributes) {
         if (attr.name == attrToAdd.name) {

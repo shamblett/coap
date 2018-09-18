@@ -6,11 +6,9 @@
  */
 import 'package:coap/coap.dart';
 import 'package:test/test.dart';
-import 'package:log4dart/log4dart_vm.dart';
 import 'dart:io';
 
 void main() {
-
   group('Media types', () {
     test('Properties', () {
       final int type = CoapMediaType.applicationJson;
@@ -76,7 +74,7 @@ void main() {
 
   group('Configuration', () {
     test('All', () {
-      final CoapConfig conf = new CoapConfig("test/config_all.yaml");
+      final CoapConfig conf = new CoapConfig(File("test/config_all.yaml"));
       conf.spec = new CoapDraft18();
       expect(conf.version, "RFC7252");
       expect(conf.defaultPort, 1);

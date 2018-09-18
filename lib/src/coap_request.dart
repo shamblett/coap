@@ -39,7 +39,7 @@ class CoapRequest extends CoapMessage {
   /// True if the request is Confirmable
   CoapRequest.isConfirmable(int code, bool confirmable)
       : super.withCode(
-      confirmable ? CoapMessageType.con : CoapMessageType.non, code) {
+            confirmable ? CoapMessageType.con : CoapMessageType.non, code) {
     _method = code;
   }
 
@@ -105,7 +105,7 @@ class CoapRequest extends CoapMessage {
 
   set response(CoapResponse value) {
     _currentResponse = value;
-    emitEvent(new CoapRespondEvent(value));
+    clientEventBus.fire(new CoapRespondEvent(value));
     // Add to the internal response stream
     _responseStream.add(value);
   }
@@ -179,7 +179,7 @@ class CoapRequest extends CoapMessage {
 
   /// Response stream, used by waitForResponse
   StreamController<CoapResponse> _responseStream =
-  new StreamController<CoapResponse>.broadcast();
+      new StreamController<CoapResponse>.broadcast();
 
   /// Wait for a response.
   /// Returns the response, or null if timeout occured.
@@ -191,7 +191,7 @@ class CoapRequest extends CoapMessage {
         (!isRejected)) {
       final sleepFuture = CoapUtil.asyncSleep(millisecondsTimeout);
       final responseFuture =
-      _responseStream.stream.listen((CoapResponse resp) {});
+          _responseStream.stream.listen((CoapResponse resp) {});
       Future.any<CoapResponse>([sleepFuture, responseFuture.asFuture()])
         ..then((CoapResponse resp) {
           _currentResponse = response;
@@ -205,17 +205,17 @@ class CoapRequest extends CoapMessage {
 
   /// Fire the respond event
   void fireRespond(CoapResponse response) {
-    emitEvent(new CoapRespondEvent(response));
+    clientEventBus.fire(new CoapRespondEvent(response));
   }
 
   /// Fire the responding event
   void fireResponding(CoapResponse response) {
-    emitEvent(new CoapRespondingEvent(response));
+    clientEventBus.fire(new CoapRespondingEvent(response));
   }
 
   /// Fire the reregistering event
   void fireReregistering(CoapRequest request) {
-    emitEvent(new CoapReregisteringEvent(request));
+    clientEventBus.fire(new CoapReregisteringEvent(request));
   }
 
   /// Construct a GET request.

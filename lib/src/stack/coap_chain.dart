@@ -8,8 +8,8 @@
 part of coap;
 
 typedef bool TEqualsFunc<TFilter>(TFilter a, TFilter b);
-typedef CoapEntry TEntryFactoryFunc<TChain, TFilter>(TChain a, CoapEntry b,
-    CoapEntry c, String d, TFilter e);
+typedef CoapEntry TEntryFactoryFunc<TChain, TFilter>(
+    TChain a, CoapEntry b, CoapEntry c, String d, TFilter e);
 typedef TNextFilter TNextFilterFactory<TNextFilter, TFilter>(TFilter v);
 typedef TFilter TFilterFactory<TFilter>();
 
@@ -165,9 +165,7 @@ class CoapEntry<TFilter, TNextFilter>
     if (_prevEntry != null) {
       sb.write(_prevEntry.name);
       sb.write(':');
-      sb.write(_prevEntry.filter
-          .getType()
-          .name);
+      sb.write(_prevEntry.filter.getType().name);
     } else {
       sb.write("null");
     }
@@ -178,9 +176,7 @@ class CoapEntry<TFilter, TNextFilter>
     if (_nextEntry != null) {
       sb.write(_nextEntry.name);
       sb.write(':');
-      sb.write(_nextEntry.filter
-          .getType()
-          .name);
+      sb.write(_nextEntry.filter.getType().name);
     } else {
       sb.write("null");
     }
@@ -207,21 +203,20 @@ class CoapChain<TChain, TFilter, TNextFilter>
   CoapChain.entryFactory(TEntryFactoryFunc entryFactory,
       TFilterFactory headFilterFactory, TFilterFactory tailFilterFactory)
       : this(entryFactory, headFilterFactory, tailFilterFactory,
-          (t1, t2) => t1 == t2);
+            (t1, t2) => t1 == t2);
 
   /// Instantiates.
   CoapChain.filterFactory(TNextFilterFactory nextFilterFactory,
       TFilterFactory headFilterFactory, TFilterFactory tailFilterFactory)
       : this(
-          (chain, prev, next, name, filter) =>
-      new CoapEntry(
-          chain, prev, next, name, filter, nextFilterFactory),
-      headFilterFactory,
-      tailFilterFactory,
-          (t1, t2) => t1 == t2);
+            (chain, prev, next, name, filter) => new CoapEntry(
+                chain, prev, next, name, filter, nextFilterFactory),
+            headFilterFactory,
+            tailFilterFactory,
+            (t1, t2) => t1 == t2);
 
   Map<String, CoapIEntry<TFilter, TNextFilter>> _name2entry =
-  new Map<String, CoapIEntry<TFilter, TNextFilter>>();
+      new Map<String, CoapIEntry<TFilter, TNextFilter>>();
   CoapEntry _head;
 
   CoapEntry get head => _head;
@@ -253,7 +248,7 @@ class CoapChain<TChain, TFilter, TNextFilter>
 
   CoapIEntry<TFilter, TNextFilter> getEntryByType(Object filterType) {
     CoapIEntry<TFilter, TNextFilter> e =
-    _head.nextEntry as CoapIEntry<TFilter, TNextFilter>;
+        _head.nextEntry as CoapIEntry<TFilter, TNextFilter>;
     while (e != _tail as CoapIEntry<TFilter, TNextFilter>) {
       if (filterType is TFilter) {
         return e;
@@ -382,7 +377,7 @@ class CoapChain<TChain, TFilter, TNextFilter>
 
   void _register(CoapEntry prevEntry, String name, TFilter filter) {
     final CoapEntry newEntry =
-    _entryFactory(this, prevEntry, prevEntry.nextEntry, name, filter);
+        _entryFactory(this, prevEntry, prevEntry.nextEntry, name, filter);
 
     onPreAdd(newEntry);
     prevEntry.nextEntry.prevEntry = newEntry;

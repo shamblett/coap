@@ -155,8 +155,8 @@ class CoapMediaType {
     }
   }
 
-  static int negotiationContent(int defaultContentType, List<int> supported,
-      List<CoapOption> accepted) {
+  static int negotiationContent(
+      int defaultContentType, List<int> supported, List<CoapOption> accepted) {
     if (accepted == null) return defaultContentType;
     bool hasAccept = false;
     for (CoapOption opt in accepted) {

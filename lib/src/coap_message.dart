@@ -22,7 +22,7 @@ typedef void HookFunction();
 /// CoAP messages are of type Request, Response or EmptyMessage,
 /// each of which has a MessageType, a message identifier,
 /// a token (0-8 bytes), a collection of Options and a payload.
-class CoapMessage extends Object with events.EventEmitter {
+class CoapMessage {
   /// Instantiates a message with the given type.
   CoapMessage(this.type);
 
@@ -168,7 +168,7 @@ class CoapMessage extends Object with events.EventEmitter {
   set isAcknowledged(bool value) {
     _acknowledged = value;
     if (acknowledgedHook == null) {
-      emitEvent(new CoapAcknowledgedEvent());
+      clientEventBus.fire(new CoapAcknowledgedEvent());
     } else {
       acknowledgedHook;
     }
@@ -181,7 +181,7 @@ class CoapMessage extends Object with events.EventEmitter {
 
   set isRejected(bool value) {
     _rejected = value;
-    emitEvent(new CoapRejectedEvent());
+    clientEventBus.fire(new CoapRejectedEvent());
   }
 
   /// Indicates whether this message has been timed out.
@@ -194,7 +194,7 @@ class CoapMessage extends Object with events.EventEmitter {
   set isTimedOut(bool value) {
     _timedOut = value;
     if (timedOutHook == null) {
-      emitEvent(new CoapTimedOutEvent());
+      clientEventBus.fire(new CoapTimedOutEvent());
     } else {
       timedOutHook;
     }
@@ -213,7 +213,7 @@ class CoapMessage extends Object with events.EventEmitter {
 
   set isCancelled(bool value) {
     _cancelled = value;
-    emitEvent(new CoapCancelledEvent());
+    clientEventBus.fire(new CoapCancelledEvent());
   }
 
   /// Indicates whether this message is a duplicate.
@@ -310,10 +310,7 @@ class CoapMessage extends Object with events.EventEmitter {
       if (payload.length != len + 2)
         payload += "... " + payloadSize.toString() + " bytes";
     }
-    return "\n${type.toString()}-${codeString} ID=${id
-        .toString()}, Token=${tokenString}, \nOptions=[${CoapUtil
-        .optionsToString(
-        this)}], \nPayload : ${payload}";
+    return "\n${type.toString()}-${codeString} ID=${id.toString()}, Token=${tokenString}, \nOptions=[${CoapUtil.optionsToString(this)}], \nPayload : ${payload}";
   }
 
   /// Equals.
@@ -387,8 +384,7 @@ class CoapMessage extends Object with events.EventEmitter {
     final List<CoapOption> list = getOptions(optionTypeIfMatch);
     if (list != null) {
       final CoapOption opt = CoapUtil.firstOrDefault(list,
-              (CoapOption o) =>
-              CoapUtil.areSequenceEqualTo(opaque, o.valueBytes));
+          (CoapOption o) => CoapUtil.areSequenceEqualTo(opaque, o.valueBytes));
       if (opt != null) list.remove(opt);
     }
     return this;
@@ -403,11 +399,9 @@ class CoapMessage extends Object with events.EventEmitter {
   Iterable get etags =>
       _selectOptions(optionTypeETag, (CoapOption o) => o.valueBytes).toList();
 
-  bool containsETag(typed.Uint8Buffer what) =>
-      CoapUtil.contains(
-          getOptions(optionTypeETag),
-              (CoapOption o) =>
-              CoapUtil.areSequenceEqualTo(what, o.valueBytes));
+  bool containsETag(typed.Uint8Buffer what) => CoapUtil.contains(
+      getOptions(optionTypeETag),
+      (CoapOption o) => CoapUtil.areSequenceEqualTo(what, o.valueBytes));
 
   CoapMessage addETag(typed.Uint8Buffer opaque) {
     if (opaque == null) {
@@ -420,8 +414,7 @@ class CoapMessage extends Object with events.EventEmitter {
     final List<CoapOption> list = getOptions(optionTypeETag);
     if (list != null) {
       final CoapOption opt = CoapUtil.firstOrDefault(list,
-              (CoapOption o) =>
-              CoapUtil.areSequenceEqualTo(opaque, o.valueBytes));
+          (CoapOption o) => CoapUtil.areSequenceEqualTo(opaque, o.valueBytes));
       if (opt != null) {
         list.remove(opt);
       }
@@ -492,7 +485,7 @@ class CoapMessage extends Object with events.EventEmitter {
     final List<CoapOption> list = getOptions(optionTypeUriPath);
     if (list != null) {
       final CoapOption opt =
-      CoapUtil.firstOrDefault(list, (CoapOption o) => path == o.toString());
+          CoapUtil.firstOrDefault(list, (CoapOption o) => path == o.toString());
       if (opt != null) list.remove(opt);
     }
     return this;
@@ -595,7 +588,7 @@ class CoapMessage extends Object with events.EventEmitter {
     final List<CoapOption> list = getOptions(optionTypeLocationPath);
     if (list != null) {
       final CoapOption opt =
-      CoapUtil.firstOrDefault(list, (CoapOption o) => path == o.toString());
+          CoapUtil.firstOrDefault(list, (CoapOption o) => path == o.toString());
       if (opt != null) list.remove(opt);
     }
     return this;
@@ -746,11 +739,8 @@ class CoapMessage extends Object with events.EventEmitter {
     if (value == null) {
       removeOptions(optionTypeObserve);
     } else if (value < 0 || ((1 << 24) - 1) < value) {
-      throw new ArgumentError.value(
-          value,
-          "Message::observe",
-          "Observe option must be between 0 and ${((1 << 24) -
-              1)} (3 bytes) inclusive");
+      throw new ArgumentError.value(value, "Message::observe",
+          "Observe option must be between 0 and ${((1 << 24) - 1)} (3 bytes) inclusive");
     } else {
       setOption(CoapOption.createVal(optionTypeObserve, value));
     }

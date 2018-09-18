@@ -23,7 +23,7 @@ enum CoapOrigin { local, remote }
 /// when a request or response has been rejected from the remote endpoint,
 /// when the request has been canceled, or when a request or response timed out,
 /// i.e., has reached the retransmission limit without being acknowledged.
-class CoapExchange extends Object with events.EventEmitter {
+class CoapExchange {
   CoapExchange(CoapRequest request, CoapOrigin origin) {
     _origin = origin;
     currentRequest = request;
@@ -79,7 +79,7 @@ class CoapExchange extends Object with events.EventEmitter {
   set complete(bool value) {
     _complete = value;
     if (value) {
-      emitEvent(new CoapCompletedEvent(this));
+      clientEventBus.fire(new CoapCompletedEvent(this));
     }
   }
 

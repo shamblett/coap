@@ -15,11 +15,11 @@ import 'dart:collection';
 import 'dart:convert' as convertor;
 import 'package:typed_data/typed_data.dart' as typed;
 import 'package:safe_config/safe_config.dart' as config;
-import 'package:log4dart/log4dart_vm.dart' as logging;
-import 'package:eventable/eventable.dart' as events;
+import 'package:logging/logging.dart' as logging;
 import 'package:collection/collection.dart' as collection;
 import 'package:hex/hex.dart' as hex;
 import 'package:executor/executor.dart' as tasking;
+import 'package:event_bus/event_bus.dart' as events;
 
 /// The Coap package exported interface
 
@@ -64,8 +64,6 @@ part 'src/log/coap_ilogger.dart';
 part 'src/log/coap_null_logger.dart';
 
 part 'src/log/coap_console_logger.dart';
-
-part 'src/log/coap_file_logger.dart';
 
 part 'src/log/coap_log_manager.dart';
 
@@ -196,3 +194,6 @@ part 'src/channel/coap_network.dart';
 part 'src/channel/coap_network_udp.dart';
 
 part 'src/channel/coap_network_manager.dart';
+
+/// The global event bus
+events.EventBus clientEventBus = events.EventBus();

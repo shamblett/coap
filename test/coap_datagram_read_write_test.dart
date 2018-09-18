@@ -19,7 +19,7 @@ void main() {
     writer.write(intIn, 32);
 
     final CoapDatagramReader reader =
-    new CoapDatagramReader(writer.toByteArray());
+        new CoapDatagramReader(writer.toByteArray());
     final int intOut = reader.read(32);
 
     expect(intIn, intOut);
@@ -31,7 +31,7 @@ void main() {
     writer.write(intIn, 32);
 
     final CoapDatagramReader reader =
-    new CoapDatagramReader(writer.toByteArray());
+        new CoapDatagramReader(writer.toByteArray());
     final int intOut = reader.read(32);
 
     expect(intIn, intOut);
@@ -43,7 +43,7 @@ void main() {
     writer.write(intIn, 32);
 
     final CoapDatagramReader reader =
-    new CoapDatagramReader(writer.toByteArray());
+        new CoapDatagramReader(writer.toByteArray());
     final int intOut = reader.read(32);
 
     expect(intIn, intOut);
@@ -55,7 +55,7 @@ void main() {
     writer.write(intIn, 16);
 
     final CoapDatagramReader reader =
-    new CoapDatagramReader(writer.toByteArray());
+        new CoapDatagramReader(writer.toByteArray());
     final int intOut = reader.read(16);
 
     expect(intIn, intOut);
@@ -67,7 +67,7 @@ void main() {
     writer.write(intIn, 8);
 
     final CoapDatagramReader reader =
-    new CoapDatagramReader(writer.toByteArray());
+        new CoapDatagramReader(writer.toByteArray());
     final int intOut = reader.read(8);
 
     expect(intIn, intOut);
@@ -80,7 +80,7 @@ void main() {
     writer.write(intIn, 4);
 
     final CoapDatagramReader reader =
-    new CoapDatagramReader(writer.toByteArray());
+        new CoapDatagramReader(writer.toByteArray());
     final int intOut = reader.read(4);
 
     expect(intIn, intOut);
@@ -92,7 +92,7 @@ void main() {
     writer.write(intIn, 2);
 
     final CoapDatagramReader reader =
-    new CoapDatagramReader(writer.toByteArray());
+        new CoapDatagramReader(writer.toByteArray());
     final int intOut = reader.read(2);
 
     expect(intIn, intOut);
@@ -104,7 +104,7 @@ void main() {
     writer.write(intIn, 1);
 
     final CoapDatagramReader reader =
-    new CoapDatagramReader(writer.toByteArray());
+        new CoapDatagramReader(writer.toByteArray());
     final int intOut = reader.read(1);
 
     expect(intIn, intOut);
@@ -117,7 +117,7 @@ void main() {
     writer.writeBytes(bytesIn);
 
     final CoapDatagramReader reader =
-    new CoapDatagramReader(writer.toByteArray());
+        new CoapDatagramReader(writer.toByteArray());
     final typed.Uint8Buffer bytesOut = reader.readBytesLeft();
 
     expect(leq.equals(bytesIn.toList(), bytesOut.toList()), isTrue);
@@ -133,7 +133,7 @@ void main() {
     writer.writeBytes(bytesIn);
 
     final CoapDatagramReader reader =
-    new CoapDatagramReader(writer.toByteArray());
+        new CoapDatagramReader(writer.toByteArray());
     final int bitsOut = reader.read(bitCount);
     final typed.Uint8Buffer bytesOut = reader.readBytes(bytesIn.length);
 
@@ -151,7 +151,7 @@ void main() {
     writer.writeBytes(bytesIn);
 
     final CoapDatagramReader reader =
-    new CoapDatagramReader(writer.toByteArray());
+        new CoapDatagramReader(writer.toByteArray());
     final int bitsOut = reader.read(bitCount);
     final typed.Uint8Buffer bytesOut = reader.readBytes(bytesIn.length);
 
@@ -169,7 +169,7 @@ void main() {
     writer.writeBytes(bytesIn);
 
     final CoapDatagramReader reader =
-    new CoapDatagramReader(writer.toByteArray());
+        new CoapDatagramReader(writer.toByteArray());
     final int bitsOut = reader.read(bitCount);
     final typed.Uint8Buffer bytesOut = reader.readBytes(bytesIn.length);
 
@@ -187,7 +187,7 @@ void main() {
     writer.writeBytes(bytesIn);
 
     final CoapDatagramReader reader =
-    new CoapDatagramReader(writer.toByteArray());
+        new CoapDatagramReader(writer.toByteArray());
     final int bitsOut = reader.read(bitCount);
     final typed.Uint8Buffer bytesOut = reader.readBytes(bytesIn.length);
 
@@ -205,7 +205,7 @@ void main() {
     writer.writeBytes(bytesIn);
 
     final CoapDatagramReader reader =
-    new CoapDatagramReader(writer.toByteArray());
+        new CoapDatagramReader(writer.toByteArray());
     final int bitsOut = reader.read(bitCount);
     final typed.Uint8Buffer bytesOut = reader.readBytes(bytesIn.length);
 

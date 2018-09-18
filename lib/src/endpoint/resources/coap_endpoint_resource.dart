@@ -32,7 +32,7 @@ abstract class CoapEndpointResource {
 
   CoapEndpointResource _parent;
   SplayTreeMap<String, CoapEndpointResource> _subResources =
-  new SplayTreeMap<String, CoapEndpointResource>();
+      new SplayTreeMap<String, CoapEndpointResource>();
 
   SplayTreeMap<String, CoapEndpointResource> get subResources => _subResources;
 
@@ -58,10 +58,9 @@ abstract class CoapEndpointResource {
   set resourceType(String value) =>
       setAttribute(new CoapLinkAttribute(CoapLinkFormat.resourceType, value));
 
-  String get title =>
-      getAttributes(CoapLinkFormat.title).length == 0
-          ? null
-          : getAttributes(CoapLinkFormat.title)[0].valueAsString;
+  String get title => getAttributes(CoapLinkFormat.title).length == 0
+      ? null
+      : getAttributes(CoapLinkFormat.title)[0].valueAsString;
 
   set title(String value) {
     clearAttribute(CoapLinkFormat.title);
@@ -76,9 +75,8 @@ abstract class CoapEndpointResource {
           ? null
           : getAttributes(CoapLinkFormat.interfaceDescription)[0].valueAsString;
 
-  set interfaceDescription(String value) =>
-      setAttribute(
-          new CoapLinkAttribute(CoapLinkFormat.interfaceDescription, value));
+  set interfaceDescription(String value) => setAttribute(
+      new CoapLinkAttribute(CoapLinkFormat.interfaceDescription, value));
 
   List<int> get contentTypeCodes =>
       getIntValues(getAttributes(CoapLinkFormat.contentType));
@@ -96,9 +94,8 @@ abstract class CoapEndpointResource {
           ? null
           : getAttributes(CoapLinkFormat.maxSizeEstimate)[0].valueAsInt;
 
-  set maximumSizeEstimate(int value) =>
-      setAttribute(
-          new CoapLinkAttribute(CoapLinkFormat.maxSizeEstimate, value));
+  set maximumSizeEstimate(int value) => setAttribute(
+      new CoapLinkAttribute(CoapLinkFormat.maxSizeEstimate, value));
 
   bool get observable => getAttributes(CoapLinkFormat.observable).length > 0;
 
@@ -122,7 +119,7 @@ abstract class CoapEndpointResource {
       CoapEndpointResource res = _parent;
       while (res != null) {
         final StringBuffer tmp =
-        new StringBuffer("${res.name}/${sb.toString()}");
+            new StringBuffer("${res.name}/${sb.toString()}");
         sb = tmp;
         res = res._parent;
       }
@@ -182,7 +179,7 @@ abstract class CoapEndpointResource {
     }
 
     final List<CoapEndpointResource> resources =
-    new List<CoapEndpointResource>();
+        new List<CoapEndpointResource>();
     resources.addAll(_subResources.values);
     return resources;
   }
@@ -218,8 +215,7 @@ abstract class CoapEndpointResource {
     }
 
     final int pos = path.indexOf('/');
-    String head = null,
-        tail = null;
+    String head = null, tail = null;
 
     // note: "some/resource/" addresses a resource "" under "resource"
     if (pos == -1) {

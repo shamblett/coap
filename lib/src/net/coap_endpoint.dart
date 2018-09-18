@@ -8,9 +8,7 @@
 part of coap;
 
 /// EndPoint encapsulates the stack that executes the CoAP protocol.
-class CoapEndPoint extends Object
-    with events.EventEmitter, events.EventDetector
-    implements CoapIEndPoint, CoapIOutbox {
+class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   /// Instantiates a new endpoint with the
   /// specified channel and configuration.
   CoapEndPoint(CoapIChannel channel, CoapConfig config) {
@@ -18,12 +16,12 @@ class CoapEndPoint extends Object
     _channel = channel;
     _matcher = new CoapMatcher(config);
     _coapStack = new CoapStack(config);
-    listen(_channel, CoapDataReceivedEvent, _receiveData);
+    clientEventBus.on<CoapDataReceivedEvent>().listen(_receiveData);
   }
 
   /// Instantiates a new endpoint with internet address, port and configuration
-  CoapEndPoint.address(InternetAddress localEndpoint, int port,
-      CoapConfig config)
+  CoapEndPoint.address(
+      InternetAddress localEndpoint, int port, CoapConfig config)
       : this(newUDPChannel(localEndpoint, port), config);
 
   static CoapILogger _log = new CoapLogManager("console").logger;
@@ -85,9 +83,9 @@ class CoapEndPoint extends Object
     executor.start(() => _coapStack.sendEmptyMessage(exchange, message));
   }
 
-  void _receiveData(events.Event<CoapDataReceivedEvent> event) {
+  void _receiveData(CoapDataReceivedEvent event) {
     final CoapIMessageDecoder decoder =
-    config.spec.newMessageDecoder(event.data.data);
+        config.spec.newMessageDecoder(event.data);
     if (decoder.isRequest) {
       CoapRequest request;
       try {
@@ -98,10 +96,10 @@ class CoapEndPoint extends Object
         } else {
           // Manually build RST from raw information
           final CoapEmptyMessage rst =
-          new CoapEmptyMessage(CoapMessageType.rst);
+              new CoapEmptyMessage(CoapMessageType.rst);
           rst.destination = e.endPoint;
           rst.id = decoder.id;
-          emitEvent(new CoapSendingEmptyMessageEvent(rst));
+          clientEventBus.fire(new CoapSendingEmptyMessageEvent(rst));
           _channel.send(_serializeEmpty(rst), rst.destination);
           _log.warn(
               "Message format error caused by ${e.endPoint} and reseted.");
@@ -109,8 +107,8 @@ class CoapEndPoint extends Object
         return;
       }
 
-      request.source = event.data.address;
-      emitEvent(new CoapReceivingRequestEvent(request));
+      request.source = event.address;
+      clientEventBus.fire(new CoapReceivingRequestEvent(request));
 
       if (!request.isCancelled) {
         final CoapExchange exchange = _matcher.receiveRequest(request);
@@ -121,35 +119,34 @@ class CoapEndPoint extends Object
       }
     } else if (decoder.isResponse) {
       final CoapResponse response = decoder.decodeResponse();
-      response.source = event.data.address;
+      response.source = event.address;
 
-      emitEvent(new CoapReceivingResponseEvent(response));
+      clientEventBus.fire(new CoapReceivingResponseEvent(response));
 
       if (!response.isCancelled) {
         final CoapExchange exchange = _matcher.receiveResponse(response);
         if (exchange != null) {
           response.rtt = ((new DateTime.now().difference(exchange.timestamp))
-              .inMilliseconds)
+                  .inMilliseconds)
               .toDouble();
           exchange.endpoint = this;
           _coapStack.receiveResponse(exchange, response);
         } else if (response.type != CoapMessageType.ack) {
-          _log.debug(
-              "Rejecting unmatchable response from ${event.data.address}");
+          _log.debug("Rejecting unmatchable response from ${event.address}");
           _reject(response);
         }
       }
     } else if (decoder.isEmpty) {
       final CoapEmptyMessage message = decoder.decodeEmptyMessage();
-      message.source = event.data.address;
+      message.source = event.address;
 
-      emitEvent(new CoapReceivingEmptyMessageEvent(message));
+      clientEventBus.fire(new CoapReceivingEmptyMessageEvent(message));
 
       if (!message.isCancelled) {
         // CoAP Ping
         if (message.type == CoapMessageType.con ||
             message.type == CoapMessageType.non) {
-          _log.debug("Responding to ping by ${event.data.address}");
+          _log.debug("Responding to ping by ${event.address}");
           _reject(message);
         } else {
           final CoapExchange exchange = _matcher.receiveEmptyMessage(message);
@@ -160,14 +157,13 @@ class CoapEndPoint extends Object
         }
       }
     } else {
-      _log.debug(
-          "Silently ignoring non-CoAP message from ${event.data.address}");
+      _log.debug("Silently ignoring non-CoAP message from ${event.address}");
     }
   }
 
   void sendRequest(CoapExchange exchange, CoapRequest request) {
     _matcher.sendRequest(exchange, request);
-    emitEvent(new CoapSendingRequestEvent(request));
+    clientEventBus.fire(new CoapSendingRequestEvent(request));
 
     if (!request.isCancelled) {
       _channel.send(_serializeRequest(request), request.destination);
@@ -176,7 +172,7 @@ class CoapEndPoint extends Object
 
   void sendResponse(CoapExchange exchange, CoapResponse response) {
     _matcher.sendResponse(exchange, response);
-    emitEvent(new CoapSendingResponseEvent(response));
+    clientEventBus.fire(new CoapSendingResponseEvent(response));
 
     if (!response.isCancelled) {
       _channel.send(_serializeResponse(response), response.destination);
@@ -185,7 +181,7 @@ class CoapEndPoint extends Object
 
   void sendEmptyMessage(CoapExchange exchange, CoapEmptyMessage message) {
     _matcher.sendEmptyMessage(exchange, message);
-    emitEvent(new CoapSendingEmptyMessageEvent(message));
+    clientEventBus.fire(new CoapSendingEmptyMessageEvent(message));
 
     if (!message.isCancelled) {
       _channel.send(_serializeEmpty(message), message.destination);
@@ -194,7 +190,7 @@ class CoapEndPoint extends Object
 
   void _reject(CoapMessage message) {
     final CoapEmptyMessage rst = CoapEmptyMessage.newRST(message);
-    emitEvent(new CoapSendingEmptyMessageEvent(rst));
+    clientEventBus.fire(new CoapSendingEmptyMessageEvent(rst));
 
     if (!rst.isCancelled) {
       _channel.send(_serializeEmpty(rst), rst.destination);

@@ -15,8 +15,6 @@ class CoapLogManager {
     bool setCommon = true;
     if (type == "console") {
       _logger = new CoapConsoleLogger();
-    } else if (type == "file") {
-      _logger = new CoapFileLogger(CoapConfig.inst.logFile);
     } else {
       _logger = new CoapNullLogger();
       setCommon = false;
@@ -24,13 +22,18 @@ class CoapLogManager {
 
     // Logging common configuration
     if (setCommon) {
-      logging.LoggerFactory.config[".*"].debugEnabled =
-          CoapConfig.inst.logDebug;
-      logging.LoggerFactory.config[".*"].errorEnabled =
-          CoapConfig.inst.logError;
-      logging.LoggerFactory.config[".*"].warnEnabled = CoapConfig.inst.logWarn;
-      logging.LoggerFactory.config[".*"].infoEnabled = CoapConfig.inst.logInfo;
-      logging.LoggerFactory.config[".*"].logFormat = "[%d] %c: %m";
+      if (CoapConfig.inst.logDebug) {
+        _logger.root.level = logging.Level.SEVERE;
+      }
+      if (CoapConfig.inst.logError) {
+        _logger.root.level = logging.Level.SHOUT;
+      }
+      if (CoapConfig.inst.logWarn) {
+        _logger.root.level = logging.Level.WARNING;
+      }
+      if (CoapConfig.inst.logInfo) {
+        _logger.root.level = logging.Level.INFO;
+      }
     }
   }
 
