@@ -7,7 +7,7 @@
 import 'package:coap/coap.dart';
 import 'package:test/test.dart';
 import 'package:typed_data/typed_data.dart' as typed;
-import 'package:collection/equality.dart';
+import 'package:collection/collection.dart';
 
 void main() {
   final ListEquality leq = new ListEquality();
