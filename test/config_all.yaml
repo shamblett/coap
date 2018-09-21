@@ -32,7 +32,7 @@ deduplicator: "MarkAndSweep"
 # Target is none, console or file
 logTarget: "console"
 # Log levels
-logError: "false"
-logDebug: "true"
-logWarn: "true"
-logInfo: "true"
+logError: false
+logDebug: true
+logWarn: true
+logInfo: true

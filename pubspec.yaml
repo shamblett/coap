@@ -9,7 +9,7 @@ environment:
 
 dependencies:
  typed_data: '^1.1.6'
- safe_config: '^2.0.0'
+ safe_config: '^2.0.1'
  collection: '^1.14.11'
  hex: '^0.1.2'
  executor: '^2.1.0'
