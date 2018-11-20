@@ -7,16 +7,19 @@
 
 part of coap;
 
+/// UDP network
 class CoapNetworkUDP extends CoapNetwork {
   /// Initialize with an address and a port
   CoapNetworkUDP(this._address, this._port);
 
   InternetAddress _address;
 
+  @override
   InternetAddress get address => _address;
 
   int _port = 0;
 
+  @override
   int get port => _port;
 
   // Indicates if the socket is/being bound
@@ -26,40 +29,45 @@ class CoapNetworkUDP extends CoapNetwork {
   /// UDP socket
   RawDatagramSocket _socket;
 
+  /// Socket
   RawDatagramSocket get socket => _socket;
 
+  @override
   int send(typed.Uint8Buffer data) {
-    print("SJH - UDP - sending ${data.length} bytes");
+    print('SJH - UDP - sending ${data.length} bytes');
     final int bytesSent = _socket?.send(data.toList(), address, port);
-    print("SJH - UDP - sending - sent $bytesSent bytes");
+    print('SJH - UDP - sending - sent $bytesSent bytes');
     return bytesSent;
   }
 
+  @override
   typed.Uint8Buffer receive() {
-    print("SJH - UDP - receiving");
+    print('SJH - UDP - receiving');
     final Datagram rec = _socket.receive();
     if (rec == null) {
-      print("SJH - UDP - null recieve");
+      print('SJH - UDP - null recieve');
       return null;
     }
-    if (rec.data.length == 0) {
-      print("SJH - UDP - null length");
+    if (rec.data.isEmpty) {
+      print('SJH - UDP - null length');
       return null;
     }
-    print("SJH - UDP - received ${rec.data}");
-    return new typed.Uint8Buffer()..addAll(rec.data);
+    print('SJH - UDP - received ${rec.data}');
+    return typed.Uint8Buffer()
+      ..addAll(rec.data);
   }
 
-  Future bind() async {
-    final Completer completer = new Completer();
+  @override
+  Future<dynamic> bind() async {
+    final Completer<dynamic> completer = Completer<dynamic>();
     if (_binding > 0) {
       return null;
     }
     if (!_bound && _binding == 0) {
       _binding++;
-      print("SJH - UDP - binding");
+      print('SJH - UDP - binding');
       RawDatagramSocket.bind(address.host, port)
-        ..then((RawDatagramSocket socket) {
+          .then((RawDatagramSocket socket) {
           _socket = socket;
           socket.listen((RawSocketEvent e) {
             if (e == RawSocketEvent.read) {

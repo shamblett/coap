@@ -23,7 +23,7 @@ abstract class CoapNetwork {
   typed.Uint8Buffer receive();
 
   /// Bind the socket
-  Future bind();
+  Future<dynamic> bind();
 
   /// Close the socket
   void close();

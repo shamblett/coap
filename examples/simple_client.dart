@@ -5,23 +5,23 @@
  * Copyright :  S.Hamblett
  */
 
-import 'dart:io';
 import 'dart:async';
+import 'dart:io';
 import 'package:coap/coap.dart';
 import 'package:typed_data/typed_data.dart' as typed;
 
-Future main(List<String> args) async {
+FutureOr<void> main(List<String> args) async {
   CoapRequest newRequest(String method) {
     switch (method) {
-      case "POST":
+      case 'POST':
         return CoapRequest.newPost();
-      case "PUT":
+      case 'PUT':
         return CoapRequest.newPut();
-      case "DELETE":
+      case 'DELETE':
         return CoapRequest.newDelete();
-      case "GET":
-      case "DISCOVER":
-      case "OBSERVE":
+      case 'GET':
+      case 'DISCOVER':
+      case 'OBSERVE':
         return CoapRequest.newGet();
       default:
         return null;
@@ -29,30 +29,30 @@ Future main(List<String> args) async {
   }
 
   // Config
-  final CoapConfig conf = new CoapConfig(
-      File("test/config_default.yaml"));
+  final CoapConfig conf = CoapConfig(
+      File('test/config_default.yaml'));
 
   // Build the request
-  final CoapRequest request = newRequest("DISCOVER");
-  final String host = "localhost";
-  final String path = ".well-known/core";
-  //final String query = "rt=alpha.light";
-  final Uri uri = new Uri(
-      scheme: "coap", host: host, port: conf.defaultPort, path: path);
+  final CoapRequest request = newRequest('DISCOVER');
+  const String host = 'localhost';
+  const String path = '.well-known/core';
+  //final String query = 'rt=alpha.light';
+  final Uri uri = Uri(
+      scheme: 'coap', host: host, port: conf.defaultPort, path: path);
   request.uri = uri;
   await request.resolveDestination();
-  print("SJH - isLinkLocal - ${request.destination.isLinkLocal}");
-  print("SJH - isLoopback - ${request.destination.isLoopback}");
-  print("SJH - isLinkMulticast - ${request.destination.isMulticast}");
-  print("SJH - type - ${request.destination.type}");
+  print('SJH - isLinkLocal - ${request.destination.isLinkLocal}');
+  print('SJH - isLoopback - ${request.destination.isLoopback}');
+  print('SJH - isLinkMulticast - ${request.destination.isMulticast}');
+  print('SJH - type - ${request.destination.type}');
   CoapEndpointManager.getDefaultSpec();
-  final CoapIChannel channel = new CoapUDPChannel(
+  final CoapIChannel channel = CoapUDPChannel(
       request.destination, uri.port);
-  request.endPoint = new CoapEndPoint(channel, conf);
-  final typed.Uint8Buffer payload = new typed.Uint8Buffer();
+  request.endPoint = CoapEndPoint(channel, conf);
+  final typed.Uint8Buffer payload = typed.Uint8Buffer();
   request.setPayloadMediaRaw(payload, CoapMediaType.textPlain);
   print(
-      "Simple client, sending request to $host with path $path, waiting for response....");
+      'Simple client, sending request to $host with path $path, waiting for response....');
   request.send();
 
   // Get the response
@@ -62,16 +62,14 @@ Future main(List<String> args) async {
       final Iterable<CoapWebLink> links =
       CoapLinkFormat.parse(response.payloadString);
       if (links == null) {
-        print("Failed parsing link format");
+        print('Failed parsing link format');
       } else {
-        print("Discovered resources:");
-        for (CoapWebLink link in links) {
-          print(link);
-        }
+        print('Discovered resources:');
+        links.forEach(print);
       }
     }
   } else {
-    print("No response received, closing client");
+    print('No response received, closing client');
     request.cancel();
   }
 }

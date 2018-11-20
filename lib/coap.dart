@@ -7,12 +7,12 @@
 
 library coap;
 
-import 'dart:io';
 import 'dart:async';
-import 'dart:math';
-import 'dart:typed_data';
 import 'dart:collection';
 import 'dart:convert' as convertor;
+import 'dart:io';
+import 'dart:math';
+import 'dart:typed_data';
 import 'package:typed_data/typed_data.dart' as typed;
 import 'package:safe_config/safe_config.dart' as config;
 import 'package:logging/logging.dart' as logging;

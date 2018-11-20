@@ -7,10 +7,15 @@
 
 part of coap;
 
+/// Data received Event
 class CoapDataReceivedEvent {
+  /// Construction
   CoapDataReceivedEvent(this.data, this.address);
 
+  /// The data
   typed.Uint8Buffer data;
+
+  /// The address
   InternetAddress address;
 }
 
