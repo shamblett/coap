@@ -16,7 +16,7 @@ class CoapEmptyMessage extends CoapMessage {
   /// Create a new acknowledgment for the specified message.
   /// Returns the acknowledgment.
   static CoapEmptyMessage newACK(CoapMessage message) {
-    final CoapEmptyMessage ack = new CoapEmptyMessage(CoapMessageType.ack);
+    final CoapEmptyMessage ack = CoapEmptyMessage(CoapMessageType.ack);
     ack.id = message.id;
     ack.token = CoapConstants.emptyToken;
     ack.destination = message.source;
@@ -26,7 +26,7 @@ class CoapEmptyMessage extends CoapMessage {
   /// Create a new reset message for the specified message.
   /// Return the reset.
   static CoapEmptyMessage newRST(CoapMessage message) {
-    final CoapEmptyMessage rst = new CoapEmptyMessage(CoapMessageType.rst);
+    final CoapEmptyMessage rst = CoapEmptyMessage(CoapMessageType.rst);
     rst.id = message.id;
     rst.token = CoapConstants.emptyToken;
     rst.destination = message.source;

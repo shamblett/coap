@@ -84,100 +84,102 @@ class CoapClient {
   CoapResponse getWithAccept(int acceptVal) =>
       send(accept(CoapRequest.newGet(), acceptVal));
 
+  /// Sends a POST request and blocks until the response is available.
   CoapResponse post(String payload, [int format = CoapMediaType.textPlain]) =>
       send(CoapRequest.newPost().setPayloadMedia(payload, format));
 
-  CoapResponse postWithAccept(String payload, int format, int acceptVal) {
-    return send(accept(
-        CoapRequest.newPost().setPayloadMedia(payload, format), acceptVal));
-  }
+  /// Sends a POST request with the specified Accept option and blocks
+  /// until the response is available.
+  CoapResponse postWithAccept(String payload, int format, int acceptVal) =>
+      send(accept(
+          CoapRequest.newPost().setPayloadMedia(payload, format), acceptVal));
 
-  CoapResponse postBytePayload(typed.Uint8Buffer payload, int format) {
-    return send(CoapRequest.newPost().setPayloadMediaRaw(payload, format));
-  }
+  /// Sends a POST request with the specified byte payload and blocks
+  /// until the response is available.
+  CoapResponse postBytePayload(typed.Uint8Buffer payload, int format) =>
+      send(CoapRequest.newPost().setPayloadMediaRaw(payload, format));
 
-  CoapResponse postBytePayloadWithAccept(
-      typed.Uint8Buffer payload, int format, int acceptVal) {
-    return send(accept(
-        CoapRequest.newPost().setPayloadMediaRaw(payload, format), acceptVal));
-  }
+  /// Sends a POST request with the specified Accept option and byte payload.
+  /// Blocks until the response is available.
+  CoapResponse postBytePayloadWithAccept(typed.Uint8Buffer payload, int format,
+      int acceptVal) =>
+      send(accept(CoapRequest.newPost().setPayloadMediaRaw(payload, format),
+          acceptVal));
 
-  CoapResponse put(String payload, [int format = CoapMediaType.textPlain]) {
-    return send(CoapRequest.newPut().setPayloadMedia(payload, format));
-  }
+  /// Sends a PUT request and blocks until the response is available.
+  CoapResponse put(String payload, [int format = CoapMediaType.textPlain]) =>
+      send(CoapRequest.newPut().setPayloadMedia(payload, format));
 
-  CoapResponse putBytePayloadWithAccept(
-      typed.Uint8Buffer payload, int format, int acceptVal) {
-    return send(accept(
-        CoapRequest.newPut().setPayloadMediaRaw(payload, format), acceptVal));
-  }
+  /// Sends a PUT request with the specified Accept option and blocks
+  /// until the response is available.
+  CoapResponse putBytePayloadWithAccept(typed.Uint8Buffer payload, int format,
+      int acceptVal) =>
+      send(accept(
+          CoapRequest.newPut().setPayloadMediaRaw(payload, format), acceptVal));
 
-  CoapResponse putIfMatch(
-      String payload, int format, List<typed.Uint8Buffer> etags) {
-    return send(
-        ifMatch(CoapRequest.newPut().setPayloadMedia(payload, format), etags));
-  }
+  /// If match
+  CoapResponse putIfMatch(String payload, int format,
+      List<typed.Uint8Buffer> etags) =>
+      send(ifMatch(
+          CoapRequest.newPut().setPayloadMedia(payload, format), etags));
 
-  CoapResponse putIfMatchBytePayload(
-      typed.Uint8Buffer payload, int format, List<typed.Uint8Buffer> etags) {
-    return send(ifMatch(
-        CoapRequest.newPut().setPayloadMediaRaw(payload, format), etags));
-  }
+  /// If match byte payload
+  CoapResponse putIfMatchBytePayload(typed.Uint8Buffer payload, int format,
+      List<typed.Uint8Buffer> etags) =>
+      send(ifMatch(
+          CoapRequest.newPut().setPayloadMediaRaw(payload, format), etags));
 
-  CoapResponse putIfNoneMatch(String payload, int format) {
-    return send(
-        ifNoneMatch(CoapRequest.newPut().setPayloadMedia(payload, format)));
-  }
+  /// If none match
+  CoapResponse putIfNoneMatch(String payload, int format) =>
+      send(ifNoneMatch(CoapRequest.newPut().setPayloadMedia(payload, format)));
 
-  CoapResponse putIfNoneMatchBytePayload(
-      typed.Uint8Buffer payload, int format) {
-    return send(
-        ifNoneMatch(CoapRequest.newPut().setPayloadMediaRaw(payload, format)));
-  }
+  /// If none match byte payload
+  CoapResponse putIfNoneMatchBytePayload(typed.Uint8Buffer payload,
+      int format) =>
+      send(ifNoneMatch(
+          CoapRequest.newPut().setPayloadMediaRaw(payload, format)));
 
-  CoapResponse delete() {
-    return send(CoapRequest.newDelete());
-  }
+  /// Delete
+  CoapResponse delete() => send(CoapRequest.newDelete());
 
-  CoapResponse validate(List<typed.Uint8Buffer> etags) {
-    return send(eTags(CoapRequest.newGet(), etags));
-  }
+  /// Validate
+  CoapResponse validate(List<typed.Uint8Buffer> etags) =>
+      send(eTags(CoapRequest.newGet(), etags));
 
-  CoapObserveClientRelation observe(
-      [ActionGeneric<CoapResponse> notify = null,
-      ActionGeneric<FailReason> error = null]) {
-    return _observe(CoapRequest.newGet().markObserve(), notify, error);
-  }
+  /// Observe
+  CoapObserveClientRelation observe([ActionGeneric<CoapResponse> notify,
+    ActionGeneric<FailReason> error]) =>
+      _observe(CoapRequest.newGet().markObserve(), notify, error);
 
+  /// Observe with accept
   CoapObserveClientRelation observeWitAccept(int acceptVal,
-      [ActionGeneric<CoapResponse> notify = null,
-      ActionGeneric<FailReason> error = null]) {
-    return _observe(
-        accept(CoapRequest.newGet().markObserve(), acceptVal), notify, error);
-  }
+      [ActionGeneric<CoapResponse> notify,
+        ActionGeneric<FailReason> error]) =>
+      _observe(
+          accept(CoapRequest.newGet().markObserve(), acceptVal), notify, error);
 
+  /// Accept
   static CoapRequest accept(CoapRequest request, int accept) {
     request.accept = accept;
     return request;
   }
 
+  /// If match
   static CoapRequest ifMatch(
       CoapRequest request, List<typed.Uint8Buffer> etags) {
-    for (typed.Uint8Buffer etag in etags) {
-      request.addIfMatch(etag);
-    }
+    etags.forEach(request.addIfMatch);
     return request;
   }
 
+  /// If none match
   static CoapRequest ifNoneMatch(CoapRequest request) {
     request.ifNoneMatch = true;
     return request;
   }
 
+  /// Etags
   CoapRequest eTags(CoapRequest request, List<typed.Uint8Buffer> etags) {
-    for (typed.Uint8Buffer etag in etags) {
-      request.addETag(etag);
-    }
+    etags.forEach(request.addETag);
     return request;
   }
 
@@ -195,17 +197,18 @@ class CoapClient {
       return null;
     } else if (links.contentFormat != CoapMediaType.applicationLinkFormat) {
       return _emptyLinks;
-    } else
+    } else {
       return CoapLinkFormat.parse(links.payloadString);
+    }
   }
 
-  CoapResponse send(CoapRequest request) {
-    return prepare(request).send().waitForResponse(timeout);
-  }
+  /// Send
+  CoapResponse send(CoapRequest request) =>
+      prepare(request).send().waitForResponse(timeout);
 
-  CoapRequest prepare(CoapRequest request) {
-    return _doPrepare(request, _getEffectiveEndpoint(request));
-  }
+  /// Prepare
+  CoapRequest prepare(CoapRequest request) =>
+      _doPrepare(request, _getEffectiveEndpoint(request));
 
   /// Gets the effective endpoint that the specified request
   /// is supposed to be sent over.
@@ -248,7 +251,7 @@ class CoapClient {
       ActionGeneric<CoapResponse> notify, ActionGeneric<FailReason> error) {
     final CoapIEndPoint endpoint = _getEffectiveEndpoint(request);
     final CoapObserveClientRelation relation =
-        new CoapObserveClientRelation(request, endpoint, _config);
+    CoapObserveClientRelation(request, endpoint, _config);
     _doPrepare(request, endpoint).send();
     return relation;
   }

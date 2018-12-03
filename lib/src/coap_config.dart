@@ -12,20 +12,21 @@ part of coap;
 /// the config file to contain only those entries that override the defaults.
 /// The file can't be empty, so version must as a minimum be present.
 class CoapConfig extends config.Configuration {
+  /// Construction
   CoapConfig(File file) : super.fromFile(file) {
     _config = this;
   }
 
   static CoapConfig _config;
 
+  /// Instance
   static CoapConfig get inst => _config;
 
   /// Protocol options
 
   /// The version of the CoAP protocol.
-  String version = "RFC7252";
+  String version = 'RFC7252';
 
-  // The spec we are using
   @config.optionalConfiguration
   CoapISpec spec;
 
@@ -96,7 +97,7 @@ class CoapConfig extends config.Configuration {
 
   /// Log to null, console or file
   @config.optionalConfiguration
-  String logTarget = "none";
+  String logTarget = 'none';
 
   /// Log level options
   @config.optionalConfiguration

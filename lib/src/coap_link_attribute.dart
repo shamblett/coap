@@ -15,18 +15,22 @@ class CoapLinkAttribute {
     _value = value;
   }
 
-  static CoapILogger _log = new CoapLogManager("console").logger;
+  static CoapILogger _log = CoapLogManager('console').logger;
 
   String _name;
 
+  /// Name
   String get name => _name;
 
   Object _value;
 
+  /// Value
   Object get value => _value;
 
+  /// Value as integer
   int get valueAsInt => _value is int ? _value : -1;
 
+  /// Value as String
   String get valueAsString => _value is String ? _value : null;
 
   /// Serializes this attribute into its string representation.
@@ -48,16 +52,17 @@ class CoapLinkAttribute {
           builder.write(_value);
         } else {
           _log.error(
-              "Serializing attribute of unexpected type: $_name ${(_value.runtimeType)}");
+              'Serializing attribute of unexpected type: $_name ${_value
+                  .runtimeType}');
         }
       }
     }
   }
 
-  String toString() {
-    return "name: $_name  value: $_value";
-  }
+  @override
+  String toString() => 'name: $_name  value: $_value';
 
+  @override
   bool operator ==(Object other) {
     if (other is CoapLinkAttribute) {
       if (_name == other.name) {
@@ -69,5 +74,6 @@ class CoapLinkAttribute {
     return false;
   }
 
+  @override
   int get hashCode => name.hashCode;
 }

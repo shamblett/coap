@@ -7,6 +7,7 @@
 
 part of coap;
 
+/// Package wide constants
 class CoapConstants {
   ///
   /// RFC 7252 CoAP version.
@@ -16,12 +17,12 @@ class CoapConstants {
   ///
   /// The CoAP URI scheme.
   ///
-  static const String uriScheme = "coap";
+  static const String uriScheme = 'coap';
 
   ///
   /// The CoAPS URI scheme.
   ///
-  static const String secureUriScheme = "coaps";
+  static const String secureUriScheme = 'coaps';
 
   ///
   /// The default CoAP port for normal CoAP communication (not secure).
@@ -54,15 +55,35 @@ class CoapConstants {
   /// Default block size used for block-wise transfers
   ///
   static const int defaultBlockSize = 512;
+
+  ///
+  /// Message cache size
+  ///
   static const int messageCacheSize = 32;
+
+  ///
+  /// Receive bufefr size
+  /// ///
   static const int receiveBufferSize = 4096;
+
+  ///
+  /// Overall request timeout
+  ///
   static const int defaultOverallTimeout = 100000;
 
   ///
-  /// Default URI for wellknown resource
+  /// Default URI for well known resource
   ///
-  static const String defaultWellKnownURI = "/.well-known/core";
+  static const String defaultWellKnownURI = '/.well-known/core';
+
+  ///
+  /// Token length
+  ///
   static const int tokenLength = 8;
+
+  ///
+  /// Max age
+  ///
   static const int defaultMaxAge = 60;
 
   ///
@@ -70,7 +91,10 @@ class CoapConstants {
   ///
   static const int observingRefreshInterval = 10;
 
-  static typed.Uint8Buffer emptyToken = new typed.Uint8Buffer(1);
+  ///
+  /// Empty token
+  ///
+  static typed.Uint8Buffer emptyToken = typed.Uint8Buffer(1);
 
   ///
   /// The lowest value of a request code.
