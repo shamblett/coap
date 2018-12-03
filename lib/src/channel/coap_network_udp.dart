@@ -66,22 +66,25 @@ class CoapNetworkUDP extends CoapNetwork {
     if (!_bound && _binding == 0) {
       _binding++;
       print('SJH - UDP - binding');
-      RawDatagramSocket.bind(address.host, port)
-          .then((RawDatagramSocket socket) {
-          _socket = socket;
-          socket.listen((RawSocketEvent e) {
-            if (e == RawSocketEvent.read) {
-              receive();
-            }
-            _bound = true;
-            _binding = 0;
-            completer.complete;
-          });
+      try {
+        _socket = await RawDatagramSocket.bind(address.host, port);
+        _socket.listen((RawSocketEvent e) {
+          if (e == RawSocketEvent.read) {
+            receive();
+          }
         });
+        _bound = true;
+        _binding = 0;
+        completer.complete();
+      } on Exception catch (e) {
+        print('Not bound - exception raised $e');
+        completer.completeError(e);
+      }
     }
     return completer.future;
   }
 
+  @override
   void close() {
     _socket.close();
   }

@@ -82,7 +82,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           final CoapResponse error = CoapResponse.createResponse(
               request, CoapCode.requestEntityIncomplete);
           error.addOption(new CoapBlockOption.fromParts(
-              optionTypeBlock1, block1.num, block1.szx, block1.m));
+              optionTypeBlock1, block1.num, block1.szx, m: block1.m));
           error.setPayload("Changed Content-Format");
 
           exchange.currentResponse = error;
@@ -97,7 +97,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           final CoapResponse piggybacked =
               CoapResponse.createResponse(request, CoapCode.continues);
           piggybacked.addOption(new CoapBlockOption.fromParts(
-              optionTypeBlock1, block1.num, block1.szx, true));
+              optionTypeBlock1, block1.num, block1.szx, m: true));
           piggybacked.last = false;
 
           exchange.currentResponse = piggybacked;
@@ -127,7 +127,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
         final CoapResponse error = CoapResponse.createResponse(
             request, CoapCode.requestEntityIncomplete);
         error.addOption(new CoapBlockOption.fromParts(
-            optionTypeBlock1, block1.num, block1.szx, block1.m));
+            optionTypeBlock1, block1.num, block1.szx, m: block1.m));
         error.setPayload("Wrong block number");
         exchange.currentResponse = error;
         super.sendResponse(nextLayer, exchange, error);
@@ -295,7 +295,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           block.destination = request.destination;
           block.setOptions(request.getSortedOptions());
           block.setOption(
-              new CoapBlockOption.fromParts(optionTypeBlock2, num, szx, m));
+              new CoapBlockOption.fromParts(optionTypeBlock2, num, szx, m: m));
           // We use the same token to ease traceability (GET without Observe no longer cancels relations)
           block.token = response.token;
           // Make sure not to use Observe for block retrieval
@@ -390,7 +390,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
 
     final bool m = to < request.payloadSize;
     block.addOption(
-        new CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m));
+        new CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m: m));
 
     status.complete = !m;
     return block;
@@ -480,7 +480,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       status.complete = !m;
     } else {
       block.addOption(
-          new CoapBlockOption.fromParts(optionTypeBlock2, num, szx, false));
+          new CoapBlockOption.fromParts(optionTypeBlock2, num, szx, m: false));
       block.last = true;
       status.complete = true;
     }

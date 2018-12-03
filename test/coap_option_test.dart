@@ -340,7 +340,7 @@ void main() {
       /// and serializes them to a byte array.
       typed.Uint8Buffer toBytes(int szx, bool m, int num) {
         final CoapBlockOption opt =
-            new CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m);
+        new CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m: m);
         return opt.blockValueBytes;
       }
 
@@ -362,7 +362,7 @@ void main() {
       /// back and checks that the result is the same as the original.
       void testCombined(int szx, bool m, int num) {
         final CoapBlockOption block =
-            new CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m);
+        new CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m: m);
         final CoapBlockOption copy = new CoapBlockOption(optionTypeBlock1);
         copy.valueBytes = block.valueBytes;
         expect(block.szx, copy.szx);

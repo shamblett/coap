@@ -7,6 +7,7 @@
 
 part of coap;
 
+/// Request fail reason
 enum FailReason {
   /// The request has been rejected.
   rejected,
@@ -18,18 +19,21 @@ enum FailReason {
 /// Provides convenient methods for accessing CoAP resources.
 class CoapClient {
   /// Instantiates.
-  CoapClient(Uri inuri, CoapConfig config) {
-    uri = inuri;
-    _config = config;
-  }
+  CoapClient(this.uri, this._config);
 
-  static CoapILogger _log = new CoapLogManager("console").logger;
-  static Iterable<CoapWebLink> _emptyLinks = [new CoapWebLink("")];
+  static CoapILogger _log = CoapLogManager('console').logger;
+  static Iterable<CoapWebLink> _emptyLinks = <CoapWebLink>[CoapWebLink('')];
+
+  /// The URI
   Uri uri;
   CoapConfig _config;
+
+  /// The endpoint
   CoapIEndPoint endpoint;
   int _type = CoapMessageType.con;
   int _blockwise;
+
+  /// Timeout
   int timeout = 32767;
 
   /// Let the client use Confirmable requests.
@@ -53,43 +57,35 @@ class CoapClient {
   }
 
   /// Performs a CoAP ping.
-  bool ping() {
-    return doPing(timeout);
-  }
+  bool ping() => doPing(timeout);
 
   /// Performs a CoAP ping and gives up after the given number of milliseconds.
   bool doPing(int timeout) {
     try {
-      final CoapRequest request = new CoapRequest(CoapCode.empty);
+      final CoapRequest request = CoapRequest(CoapCode.empty);
       request.token = CoapConstants.emptyToken;
       request.uri = uri;
       request.send().waitForResponse(timeout);
       return request.isRejected;
-    } catch (e) {
-      _log.warn("Exception raise pinging: $e");
+    } on Exception catch (e) {
+      _log.warn('Exception raise pinging: $e');
     }
     return false;
   }
 
   /// Discovers remote resources.
-  Iterable<CoapWebLink> discover() {
-    return doDiscover(null);
-  }
+  Iterable<CoapWebLink> discover() => doDiscover(null);
 
   /// Sends a GET request and blocks until the response is available.
-  CoapResponse get() {
-    return send(CoapRequest.newGet());
-  }
+  CoapResponse get() => send(CoapRequest.newGet());
 
   /// Sends a GET request with the specified Accept option and blocks
   /// until the response is available.
-  CoapResponse getWithAccept(int acceptVal) {
-    return send(accept(CoapRequest.newGet(), acceptVal));
-  }
+  CoapResponse getWithAccept(int acceptVal) =>
+      send(accept(CoapRequest.newGet(), acceptVal));
 
-  CoapResponse post(String payload, [int format = CoapMediaType.textPlain]) {
-    return send(CoapRequest.newPost().setPayloadMedia(payload, format));
-  }
+  CoapResponse post(String payload, [int format = CoapMediaType.textPlain]) =>
+      send(CoapRequest.newPost().setPayloadMedia(payload, format));
 
   CoapResponse postWithAccept(String payload, int format, int acceptVal) {
     return send(accept(

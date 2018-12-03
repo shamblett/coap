@@ -787,7 +787,7 @@ class CoapMessage {
   }
 
   void setBlock1(int szx, bool m, int num) {
-    setOption(new CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m));
+    setOption(new CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m: m));
   }
 
   /// Block 2
@@ -803,7 +803,7 @@ class CoapMessage {
   }
 
   void setBlock2(int szx, bool m, int num) {
-    setOption(new CoapBlockOption.fromParts(optionTypeBlock2, num, szx, m));
+    setOption(new CoapBlockOption.fromParts(optionTypeBlock2, num, szx, m: m));
   }
 
   void copyEventHandler(CoapMessage msg) {

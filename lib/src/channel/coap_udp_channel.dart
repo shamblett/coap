@@ -9,34 +9,39 @@ part of coap;
 
 /// Channel via UDP protocol.
 class CoapUDPChannel extends CoapIChannel {
-  /// Intialize with a specific address and port
+  /// Initialise with a specific address and port
   CoapUDPChannel(this._address, this._port) {
-    _socket = new CoapNetworkUDP(address, port);
+    _socket = CoapNetworkUDP(address, port);
   }
 
   int _port;
 
+  @override
   int get port => _port;
   InternetAddress _address;
 
+  @override
   InternetAddress get address =>
       _address == null ? InternetAddress.anyIPv6 : _address;
   CoapNetworkUDP _socket;
 
+  @override
   void start() {
     _socket.port = _port;
     _socket.address = _address;
     _socket.bind();
   }
 
+  @override
   void stop() {
     _socket.close();
   }
 
-  void send(typed.Uint8Buffer data, [InternetAddress sendAddress]) {
-    if (sendAddress != null) {
+  @override
+  void send(typed.Uint8Buffer data, [InternetAddress address]) {
+    if (address != null) {
       final CoapNetworkUDP socket =
-          CoapNetworkManagement.getNetwork(sendAddress, _port);
+      CoapNetworkManagement.getNetwork(address, _port);
       if (socket?.socket != null) {
         socket.send(data);
       }
@@ -47,10 +52,11 @@ class CoapUDPChannel extends CoapIChannel {
     }
   }
 
+  @override
   typed.Uint8Buffer receive() {
     final typed.Uint8Buffer buff = _socket.receive();
     final CoapDataReceivedEvent rxEvent =
-        new CoapDataReceivedEvent(buff, _address);
+    CoapDataReceivedEvent(buff, _address);
     clientEventBus.fire(rxEvent);
     return buff;
   }
