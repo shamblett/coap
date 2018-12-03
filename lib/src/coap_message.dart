@@ -10,13 +10,16 @@ part of coap;
 /// Event classes
 class CoapAcknowledgedEvent {}
 
+/// Rejected event
 class CoapRejectedEvent {}
 
+/// Timed out event
 class CoapTimedOutEvent {}
 
+/// Cancelled event
 class CoapCancelledEvent {}
 
-typedef void HookFunction();
+typedef HookFunction = void Function();
 
 /// The class Message models the base class of all CoAP messages.
 /// CoAP messages are of type Request, Response or EmptyMessage,
@@ -41,23 +44,24 @@ class CoapMessage {
   /// The code of this CoAP message.
   int code;
 
+  /// The codestring
   String get codeString => CoapCode.codeToString(code);
 
   /// The ID of this CoAP message.
   int id = none;
 
-  /// Option map
-  Map<int, List<CoapOption>> _optionMap = new Map<int, List<CoapOption>>();
+  Map<int, List<CoapOption>> _optionMap = Map<int, List<CoapOption>>();
 
+  /// Option map
   Map<int, List<CoapOption>> get optionMap => _optionMap;
 
   /// Host name to resolve
-  String resolveHost = "localhost";
+  String resolveHost = 'localhost';
 
   /// Adds an option to the list of options of this CoAP message.
   CoapMessage addOption(CoapOption option) {
     if (option == null) {
-      throw new ArgumentError.notNull("Message::addOption - option is null");
+      throw ArgumentError.notNull('Message::addOption - option is null');
     }
     if (option.type == optionTypeToken) {
       // be compatible with draft 13-
@@ -65,7 +69,7 @@ class CoapMessage {
       return this;
     }
     if (!_optionMap.containsKey(option.type)) {
-      _optionMap[option.type] = new List<CoapOption>();
+      _optionMap[option.type] = List<CoapOption>();
     }
     _optionMap[option.type].add(option);
     return this;
@@ -73,9 +77,7 @@ class CoapMessage {
 
   /// Adds all option to the list of options of this CoAP message.
   void addOptions(Iterable<CoapOption> options) {
-    for (CoapOption opt in options) {
-      addOption(opt);
-    }
+    options.forEach(addOption);
   }
 
   /// Removes all options of the given type from this CoAP message.
@@ -85,15 +87,16 @@ class CoapMessage {
   }
 
   /// Gets all options of the given type.
-  Iterable<CoapOption> getOptions(int optionType) {
-    return optionMap.containsKey(optionType) ? optionMap[optionType] : null;
-  }
+  Iterable<CoapOption> getOptions(int optionType) =>
+      optionMap.containsKey(optionType) ? optionMap[optionType] : null;
 
   /// Gets a list of all options.
   Iterable<CoapOption> getSortedOptions() {
-    final List<CoapOption> list = new List<CoapOption>();
+    final List<CoapOption> list = List<CoapOption>();
     for (Iterable<CoapOption> opts in _optionMap.values) {
-      if (opts.length > 0) list.addAll(opts);
+      if (opts.isNotEmpty) {
+        list.addAll(opts);
+      }
     }
     return list;
   }
@@ -108,7 +111,9 @@ class CoapMessage {
 
   /// Sets all options with the specified option type.
   void setOptions(Iterable<CoapOption> options) {
-    if (options == null) return;
+    if (options == null) {
+      return;
+    }
     for (CoapOption opt in options) {
       removeOptions(opt.type);
     }
@@ -122,26 +127,25 @@ class CoapMessage {
     if (list == null) {
       return null;
     }
-    return list.length > 0 ? list.first : null;
+    return list.isNotEmpty ? list.first : null;
   }
 
   /// Checks if this CoAP message has options of the specified option type.
   /// Returns true if options of the specified type exists.
-  bool hasOption(int type) {
-    return getFirstOption(type) != null;
-  }
+  bool hasOption(int type) => getFirstOption(type) != null;
+
+  typed.Uint8Buffer _token = typed.Uint8Buffer();
 
   /// The 0-8 byte token.
-  typed.Uint8Buffer _token = new typed.Uint8Buffer();
-
   typed.Uint8Buffer get token => _token;
 
+  /// As a string
   String get tokenString => CoapByteArrayUtil.toHexString(_token);
 
   set token(typed.Uint8Buffer value) {
     if (value != null && value.length > 8) {
-      throw new ArgumentError.value(value, "Message::token",
-          "Token length must be between 0 and 8 inclusive.");
+      throw ArgumentError.value(value, 'Message::token',
+          'Token length must be between 0 and 8 inclusive.');
     }
     _token = value;
   }
@@ -158,62 +162,66 @@ class CoapMessage {
   /// The source endpoint.
   InternetAddress source;
 
-  /// Indicates whether this message has been acknowledged.
   bool _acknowledged = false;
 
+  /// Indicates whether this message has been acknowledged.
   bool get isAcknowledged => _acknowledged;
 
+  /// Acknowledged hook
   HookFunction acknowledgedHook;
 
   set isAcknowledged(bool value) {
     _acknowledged = value;
     if (acknowledgedHook == null) {
-      clientEventBus.fire(new CoapAcknowledgedEvent());
+      clientEventBus.fire(CoapAcknowledgedEvent());
     } else {
-      acknowledgedHook;
+      acknowledgedHook();
     }
   }
 
-  /// Indicates whether this message has been rejected.
   bool _rejected = false;
 
+  /// Indicates whether this message has been rejected.
   bool get isRejected => _rejected;
 
   set isRejected(bool value) {
     _rejected = value;
-    clientEventBus.fire(new CoapRejectedEvent());
+    clientEventBus.fire(CoapRejectedEvent());
   }
 
-  /// Indicates whether this message has been timed out.
   bool _timedOut = false;
 
+  /// Indicates whether this message has been timed out.
   bool get isTimedOut => _timedOut;
 
+  /// Timed out hook function
   HookFunction timedOutHook;
 
   set isTimedOut(bool value) {
     _timedOut = value;
     if (timedOutHook == null) {
-      clientEventBus.fire(new CoapTimedOutEvent());
+      clientEventBus.fire(CoapTimedOutEvent());
     } else {
-      timedOutHook;
+      timedOutHook();
     }
   }
 
+  /// Retransmit hook function
   HookFunction retransmittingHook;
 
+  /// Fire retransmitting event
   void fireRetransmitting() {
-    this?.retransmittingHook;
+    this?.retransmittingHook();
   }
 
-  /// Indicates whether this message has been cancelled.
   bool _cancelled = false;
 
+  /// Indicates whether this message has been cancelled.
   bool get isCancelled => _cancelled;
 
   set isCancelled(bool value) {
     _cancelled = value;
-    clientEventBus.fire(new CoapCancelledEvent());
+    clientEventBus.fire(CoapCancelledEvent());
   }
 
   /// Indicates whether this message is a duplicate.
@@ -238,23 +246,17 @@ class CoapMessage {
   int ackTimeout = 0;
 
   /// UTF8 decoder and encoder helpers
-  final convertor.Utf8Decoder _utfDecoder = new convertor.Utf8Decoder();
-  final convertor.Utf8Encoder _utfEncoder = new convertor.Utf8Encoder();
+  final convertor.Utf8Decoder _utfDecoder = const convertor.Utf8Decoder();
+  final convertor.Utf8Encoder _utfEncoder = const convertor.Utf8Encoder();
 
   /// The payload of this CoAP message.
-  typed.Uint8Buffer _payload;
-
-  typed.Uint8Buffer get payload => _payload;
-
-  set payload(typed.Uint8Buffer value) {
-    _payload = value;
-  }
+  typed.Uint8Buffer payload;
 
   /// The size of the payload of this CoAP message.
-  int get payloadSize => null == _payload ? 0 : _payload.length;
+  int get payloadSize => null == payload ? 0 : payload.length;
 
   /// The payload of this CoAP message in string representation.
-  String get payloadString => _utfDecoder.convert(_payload);
+  String get payloadString => _utfDecoder.convert(payload);
 
   set payloadString(String value) =>
       setPayloadMedia(value, CoapMediaType.textPlain);
@@ -264,10 +266,8 @@ class CoapMessage {
     if (payload == null) {
       return this;
     }
-    if (_payload == null) {
-      _payload = new typed.Uint8Buffer();
-    }
-    _payload.addAll(_utfEncoder.convert(payload));
+    this.payload ??= typed.Uint8Buffer();
+    this.payload.addAll(_utfEncoder.convert(payload));
     return this;
   }
 
@@ -276,17 +276,15 @@ class CoapMessage {
     if (payload == null) {
       return this;
     }
-    if (_payload == null) {
-      _payload = new typed.Uint8Buffer();
-    }
-    _payload.addAll(_utfEncoder.convert(payload));
+    this.payload ??= typed.Uint8Buffer();
+    this.payload.addAll(_utfEncoder.convert(payload));
     contentType = mediaType;
     return this;
   }
 
   /// Sets the payload of this CoAP message.
   CoapMessage setPayloadMediaRaw(typed.Uint8Buffer payload, int mediaType) {
-    _payload = payload;
+    this.payload = payload;
     contentType = mediaType;
     return this;
   }
@@ -296,60 +294,66 @@ class CoapMessage {
     isCancelled = true;
   }
 
-  /// To string.
+  @override
   String toString() {
     String payload = payloadString;
     if (payload == null) {
-      payload = "[no payload]";
+      payload = '[no payload]';
     } else {
       final int len = payloadSize;
       final int nl = payload.indexOf('\n');
-      if (nl >= 0) payload = payload.substring(0, nl);
-      if (len > 24) payload = payload.substring(0, 24);
-      payload = "\"" + payload + "\"";
-      if (payload.length != len + 2)
-        payload += "... " + payloadSize.toString() + " bytes";
+      if (nl >= 0) {
+        payload = payload.substring(0, nl);
+      }
+      if (len > 24) {
+        payload = payload.substring(0, 24);
+      }
+      payload = '\'$payload\'';
+      if (payload.length != len + 2) {
+        payload += '... $payloadSize bytes';
+      }
     }
-    return "\n${type.toString()}-${codeString} ID=${id.toString()}, Token=${tokenString}, \nOptions=[${CoapUtil.optionsToString(this)}], \nPayload : ${payload}";
+    return '\n${type.toString()}-$codeString ID=${id
+        .toString()}, Token=$tokenString, \nOptions=[${CoapUtil.optionsToString(
+        this)}], \nPayload : $payload';
   }
 
-  /// Equals.
-  bool operator ==(Object obj) {
-    if (obj == null) {
-      return false;
-    }
-    if (identical(this, obj)) {
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
       return true;
     }
-    if ((obj is CoapMessage) && (type != obj.type)) {
+    if ((other is CoapMessage) && (type != other.type)) {
       return false;
     }
-    if ((obj is CoapMessage) && (code != obj.code)) {
+    if ((other is CoapMessage) && (code != other.code)) {
       return false;
     }
-    if ((obj is CoapMessage) && (id != obj.id)) {
+    if ((other is CoapMessage) && (id != other.id)) {
       return false;
     }
     if (optionMap == null) {
-      if ((obj is CoapMessage) && (obj.optionMap != null)) return false;
-    } else if ((obj is CoapMessage) && (optionMap != obj.optionMap)) {
+      if ((other is CoapMessage) && (other.optionMap != null)) {
+        return false;
+      }
+    } else if ((other is CoapMessage) && (optionMap != other.optionMap)) {
       return false;
     }
-    CoapMessage other;
-    if (obj is CoapMessage) {
-      other = obj;
-    }
-    if (!CoapUtil.areSequenceEqualTo(payload, other.payload)) {
-      return false;
+    if (other == CoapMessage) {
+      final CoapMessage message = other;
+      if (!CoapUtil.areSequenceEqualTo(payload, message.payload)) {
+        return false;
+      }
     }
     return true;
   }
 
-  /// Hash code.
+  @override
   int get hashCode => super.hashCode;
 
   /// Select options helper
-  Iterable _selectOptions(int optionType, func(CoapOption option)) sync* {
+  Iterable<CoapOption> _selectOptions(int optionType,
+      func(CoapOption option)) sync* {
     final Iterable<CoapOption> opts = getOptions(optionType);
     if (opts != null) {
       for (CoapOption opt in opts) {
@@ -359,9 +363,10 @@ class CoapMessage {
   }
 
   /// If-Matches.
-  Iterable get ifMatches =>
+  Iterable<CoapOption> get ifMatches =>
       _selectOptions(optionTypeIfMatch, (CoapOption o) => o.valueBytes);
 
+  /// If match
   bool isIfMatch(typed.Uint8Buffer what) {
     if (CoapUtil.areSequenceEqualTo(what, ifMatches)) {
       return true;
@@ -369,47 +374,55 @@ class CoapMessage {
     return false;
   }
 
+  /// Add an if match
   CoapMessage addIfMatch(typed.Uint8Buffer opaque) {
     if (opaque == null) {
-      throw new ArgumentError.notNull("Message::addIfMatch");
+      throw ArgumentError.notNull('Message::addIfMatch');
     }
     if (opaque.length > 8) {
-      throw new ArgumentError.value(opaque.length, "Message::addIfMatch",
-          "Content of If-Match option is too large");
+      throw ArgumentError.value(opaque.length, 'Message::addIfMatch',
+          'Content of If-Match option is too large');
     }
     return addOption(CoapOption.createRaw(optionTypeIfMatch, opaque));
   }
 
+  /// Remove an if match
   CoapMessage removeIfMatch(typed.Uint8Buffer opaque) {
     final List<CoapOption> list = getOptions(optionTypeIfMatch);
     if (list != null) {
       final CoapOption opt = CoapUtil.firstOrDefault(list,
           (CoapOption o) => CoapUtil.areSequenceEqualTo(opaque, o.valueBytes));
-      if (opt != null) list.remove(opt);
+      if (opt != null) {
+        list.remove(opt);
+      }
     }
     return this;
   }
 
+  /// Clear the if matches
   CoapMessage clearIfMatches() {
     removeOptions(optionTypeIfMatch);
     return this;
   }
 
   /// Etags
-  Iterable get etags =>
+  Iterable<CoapOption> get etags =>
       _selectOptions(optionTypeETag, (CoapOption o) => o.valueBytes).toList();
 
+  /// Contains an E-tag
   bool containsETag(typed.Uint8Buffer what) => CoapUtil.contains(
       getOptions(optionTypeETag),
       (CoapOption o) => CoapUtil.areSequenceEqualTo(what, o.valueBytes));
 
+  /// Add an ETag
   CoapMessage addETag(typed.Uint8Buffer opaque) {
     if (opaque == null) {
-      throw new ArgumentError.notNull("Message::addETag");
+      throw ArgumentError.notNull('Message::addETag');
     }
     return addOption(CoapOption.createRaw(optionTypeETag, opaque));
   }
 
+  /// Remove an E tag
   CoapMessage removeETag(typed.Uint8Buffer opaque) {
     final List<CoapOption> list = getOptions(optionTypeETag);
     if (list != null) {
@@ -422,6 +435,7 @@ class CoapMessage {
     return this;
   }
 
+  /// Clear the E tags
   CoapMessage clearETags() {
     removeOptions(optionTypeETag);
     return this;
@@ -446,21 +460,25 @@ class CoapMessage {
 
   set uriHost(String value) {
     if (value == null) {
-      throw new ArgumentError.notNull("Message::uriHost");
+      throw ArgumentError.notNull('Message::uriHost');
     }
-    if (value.length < 1 || value.length > 255) {
-      throw new ArgumentError.value(value.length, "Message::uriHost",
-          "URI-Host option's length must be between 1 and 255 inclusive");
+    if (value.isEmpty || value.length > 255) {
+      throw ArgumentError.value(value.length, 'Message::uriHost',
+          'URI-Host option\'s length must be between 1 and 255 inclusive');
     }
     setOption(CoapOption.createString(optionTypeUriHost, value));
   }
 
-  String get uriPath =>
-      "/" + CoapOption.join(getOptions(optionTypeUriPath), "/");
+  /// URI path
+  String get uriPath {
+    String join = CoapOption.join(getOptions(optionTypeUriPath), '/');
+    return join += '/';
+  }
 
   set uriPath(String value) =>
-      setOptions(CoapOption.split(optionTypeUriPath, value, "/"));
+      setOptions(CoapOption.split(optionTypeUriPath, value, '/'));
 
+  /// URI paths
   Iterable<String> get uriPaths sync* {
     final Iterable<CoapOption> opts = getOptions(optionTypeUriPath);
     if (opts != null) {
@@ -470,42 +488,49 @@ class CoapMessage {
     }
   }
 
+  /// Add a URI path
   CoapMessage addUriPath(String path) {
     if (path == null) {
-      throw new ArgumentError.notNull("Message::addUriPath");
+      throw ArgumentError.notNull('Message::addUriPath');
     }
     if (path.length > 255) {
-      throw new ArgumentError.value(path.length, "Message::addUriPath",
-          "Uri Path option's length must be between 0 and 255 inclusive");
+      throw ArgumentError.value(path.length, 'Message::addUriPath',
+          'Uri Path option\'s length must be between 0 and 255 inclusive');
     }
     return addOption(CoapOption.createString(optionTypeUriPath, path));
   }
 
+  /// Remove a URI path
   CoapMessage removeUriPath(String path) {
     final List<CoapOption> list = getOptions(optionTypeUriPath);
     if (list != null) {
       final CoapOption opt =
           CoapUtil.firstOrDefault(list, (CoapOption o) => path == o.toString());
-      if (opt != null) list.remove(opt);
+      if (opt != null) {
+        list.remove(opt);
+      }
     }
     return this;
   }
 
+  /// Clear URI paths
   CoapMessage clearUriPath() {
     removeOptions(optionTypeUriPath);
     return this;
   }
 
-  String get uriQuery => CoapOption.join(getOptions(optionTypeUriQuery), "&");
+  /// URI query
+  String get uriQuery => CoapOption.join(getOptions(optionTypeUriQuery), '&');
 
   set uriQuery(String value) {
     String tmp = value;
-    if (value.isNotEmpty && value.startsWith("?")) {
+    if (value.isNotEmpty && value.startsWith('?')) {
       tmp = value.substring(1);
     }
-    setOptions(CoapOption.split(optionTypeUriQuery, tmp, "&"));
+    setOptions(CoapOption.split(optionTypeUriQuery, tmp, '&'));
   }
 
+  /// URI queries
   Iterable<String> get uriQueries sync* {
     final Iterable<CoapOption> opts = getOptions(optionTypeUriQuery);
     if (opts != null) {
@@ -515,27 +540,32 @@ class CoapMessage {
     }
   }
 
+  /// Add a URI query
   CoapMessage addUriQuery(String query) {
     if (query == null) {
-      throw new ArgumentError.notNull("Message::addUriQuery");
+      throw ArgumentError.notNull('Message::addUriQuery');
     }
     if (query.length > 255) {
-      throw new ArgumentError.value(query.length, "Message::addUriQuery",
-          "Uri Query option's length must be between 0 and 255 inclusive");
+      throw ArgumentError.value(query.length, 'Message::addUriQuery',
+          'Uri Query option\'s length must be between 0 and 255 inclusive');
     }
     return addOption(CoapOption.createString(optionTypeUriQuery, query));
   }
 
+  /// Remove a URI query
   CoapMessage removeUriQuery(String query) {
     final List<CoapOption> list = getOptions(optionTypeUriQuery);
     if (list != null) {
       final CoapOption opt = CoapUtil.firstOrDefault(
           list, (CoapOption o) => query == o.toString());
-      if (opt != null) list.remove(opt);
+      if (opt != null) {
+        list.remove(opt);
+      }
     }
     return this;
   }
 
+  /// Clear URI queries
   CoapMessage clearUriQuery() {
     removeOptions(optionTypeUriQuery);
     return this;
@@ -548,92 +578,107 @@ class CoapMessage {
   }
 
   set uriPort(int value) {
-    if (value == 0)
+    if (value == 0) {
       removeOptions(optionTypeUriPort);
-    else
+    } else {
       setOption(CoapOption.createVal(optionTypeUriPort, value));
+    }
   }
 
   /// Location
   String get locationPath =>
-      CoapOption.join(getOptions(optionTypeLocationPath), "/");
+      CoapOption.join(getOptions(optionTypeLocationPath), '/');
 
   set locationPath(String value) =>
-      setOptions(CoapOption.split(optionTypeLocationPath, value, "/"));
+      setOptions(CoapOption.split(optionTypeLocationPath, value, '/'));
 
+  /// Location paths
   dynamic get locationPaths =>
       _selectOptions(optionTypeLocationPath, (CoapOption o) => o.toString());
 
+  /// Location
   String get location {
-    String path = "/" + locationPath;
+    String path = '/$locationPath';
     final String query = locationQuery;
     if (query.isNotEmpty) {
-      path += "?" + query;
+      path += '?$query';
     }
     return path;
   }
 
+  /// Add a location path
   CoapMessage addLocationPath(String path) {
     if (path == null) {
-      throw new ArgumentError.notNull("Message::addLocationPath");
+      throw ArgumentError.notNull('Message::addLocationPath');
     }
     if (path.length > 255) {
-      throw new ArgumentError.value(path.length, "Message::addLocationPath",
-          "Location Path option's length must be between 0 and 255 inclusive");
+      throw ArgumentError.value(path.length, 'Message::addLocationPath',
+          'Location Path option\'s length must be between 0 and 255 inclusive');
     }
     return addOption(CoapOption.createString(optionTypeLocationPath, path));
   }
 
+  /// Remove a location path
   CoapMessage removelocationPath(String path) {
     final List<CoapOption> list = getOptions(optionTypeLocationPath);
     if (list != null) {
       final CoapOption opt =
           CoapUtil.firstOrDefault(list, (CoapOption o) => path == o.toString());
-      if (opt != null) list.remove(opt);
+      if (opt != null) {
+        list.remove(opt);
+      }
     }
     return this;
   }
 
+  /// Clear location path
   CoapMessage clearLocationPath() {
     removeOptions(optionTypeLocationPath);
     return this;
   }
 
+  /// Location query
   String get locationQuery =>
-      CoapOption.join(getOptions(optionTypeLocationQuery), "&");
+      CoapOption.join(getOptions(optionTypeLocationQuery), '&');
 
   set locationQuery(String value) {
     String tmp = value;
-    if (value.isNotEmpty && value.startsWith("?")) {
+    if (value.isNotEmpty && value.startsWith('?')) {
       tmp = value.substring(1);
     }
-    setOptions(CoapOption.split(optionTypeLocationQuery, tmp, "&"));
+    setOptions(CoapOption.split(optionTypeLocationQuery, tmp, '&'));
   }
 
+  /// Location queries
   Iterable<dynamic> get locationQueries =>
       _selectOptions(optionTypeLocationQuery, (CoapOption o) => o.toString());
 
+  /// Add a location query
   CoapMessage addLocationQuery(String query) {
     if (query == null) {
-      throw new ArgumentError.notNull("Message::addLocationQuery");
+      throw ArgumentError.notNull('Message::addLocationQuery');
     }
     if (query.length > 255) {
-      throw new ArgumentError.value(query.length, "Message::addLocationQuery",
-          "Location Query option's length must be between 0 and 255 inclusive");
+      throw ArgumentError.value(query.length, 'Message::addLocationQuery',
+          'Location Query option\'s length must be between 0 and 255 inclusive');
     }
     return addOption(CoapOption.createString(optionTypeLocationQuery, query));
   }
 
+  /// Remove a location query
   CoapMessage removeLocationQuery(String query) {
     final List<CoapOption> list = getOptions(optionTypeLocationQuery);
     if (list != null) {
       final CoapOption opt = CoapUtil.firstOrDefault(
           list, (CoapOption o) => query == o.toString());
-      if (opt != null) list.remove(opt);
+      if (opt != null) {
+        list.remove(opt);
+      }
     }
     return this;
   }
 
+  /// Clear location queries
   CoapMessage clearLocationQuery() {
     removeOptions(optionTypeLocationQuery);
     return this;
@@ -667,8 +712,8 @@ class CoapMessage {
 
   set maxAge(int value) {
     if (value < 0 || value > 4294967295) {
-      throw new ArgumentError.value(value, "Message::maxAge",
-          "Max-Age option must be between 0 and 4294967295 (4 bytes) inclusive");
+      throw ArgumentError.value(value, 'Message::maxAge',
+          'Max-Age option must be between 0 and 4294967295 (4 bytes) inclusive');
     }
     setOption(CoapOption.createVal(optionTypeMaxAge, value));
   }
@@ -694,13 +739,13 @@ class CoapMessage {
       return null;
     }
     String proxyUriString = opt.toString();
-    if (!proxyUriString.startsWith("coap://") &&
-        !proxyUriString.startsWith("coaps://") &&
-        !proxyUriString.startsWith("http://") &&
-        !proxyUriString.startsWith("https://")) {
-      proxyUriString = "coap://" + proxyUriString;
+    if (!proxyUriString.startsWith('coap://') &&
+        !proxyUriString.startsWith('coaps://') &&
+        !proxyUriString.startsWith('http://') &&
+        !proxyUriString.startsWith('https://')) {
+      proxyUriString = 'coap://$proxyUriString';
     }
-    return new Uri.dataFromString(proxyUriString);
+    return Uri.dataFromString(proxyUriString);
   }
 
   set proxyUri(Uri value) {
@@ -739,8 +784,9 @@ class CoapMessage {
     if (value == null) {
       removeOptions(optionTypeObserve);
     } else if (value < 0 || ((1 << 24) - 1) < value) {
-      throw new ArgumentError.value(value, "Message::observe",
-          "Observe option must be between 0 and ${((1 << 24) - 1)} (3 bytes) inclusive");
+      throw ArgumentError.value(value, 'Message::observe',
+          'Observe option must be between 0 and ${(1 << 24) -
+              1} (3 bytes) inclusive');
     } else {
       setOption(CoapOption.createVal(optionTypeObserve, value));
     }
@@ -775,8 +821,7 @@ class CoapMessage {
   }
 
   /// Block 1
-  CoapBlockOption get block1 =>
-      getFirstOption(optionTypeBlock1) as CoapBlockOption;
+  CoapBlockOption get block1 => getFirstOption(optionTypeBlock1);
 
   set block1(CoapBlockOption value) {
     if (value == null) {
@@ -786,13 +831,13 @@ class CoapMessage {
     }
   }
 
-  void setBlock1(int szx, bool m, int num) {
-    setOption(new CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m: m));
+  /// Block 1
+  void setBlock1(int szx, int num, {bool m}) {
+    setOption(CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m: m));
   }
 
   /// Block 2
-  CoapBlockOption get block2 =>
-      getFirstOption(optionTypeBlock2) as CoapBlockOption;
+  CoapBlockOption get block2 => getFirstOption(optionTypeBlock2);
 
   set block2(CoapBlockOption value) {
     if (value == null) {
@@ -802,10 +847,12 @@ class CoapMessage {
     }
   }
 
-  void setBlock2(int szx, bool m, int num) {
-    setOption(new CoapBlockOption.fromParts(optionTypeBlock2, num, szx, m: m));
+  /// Block 2
+  void setBlock2(int szx, int num, {bool m}) {
+    setOption(CoapBlockOption.fromParts(optionTypeBlock2, num, szx, m: m));
   }
 
+  /// Copy an event handler
   void copyEventHandler(CoapMessage msg) {
     acknowledgedHook = msg.acknowledgedHook;
     retransmittingHook = msg.retransmittingHook;

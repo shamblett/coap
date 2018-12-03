@@ -11,29 +11,30 @@ part of coap;
 /// RFC 7252, Section 12.3.
 class CoapMediaType {
   /// Media registry
-  static final Map<int, List<String>> _registry = {
-    textPlain: ["text/plain", "txt"],
-    textXml: ["text/xml", "xml"],
-    textCsv: ["text/csv", "csv"],
-    textHtml: ["text/html", "html"],
-    imageGif: ["image/gif", "gif"],
-    imageJpeg: ["image/jpeg", "jpg"],
-    imagePng: ["image/png", "png"],
-    imageTiff: ["image/tiff", "tif"],
-    audioRaw: ["audio/raw", "raw"],
-    videoRaw: ["video/raw", "raw"],
-    applicationLinkFormat: ["application/link-format", "wlnk"],
-    applicationXml: ["application/xml", "xml"],
-    applicationOctetStream: ["application/octet-stream", "bin"],
-    applicationRdfXml: ["application/rdf+xml", "rdf"],
-    applicationSoapXml: ["application/soap+xml", "soap"],
-    applicationAtomXml: ["application/atom+xml", "atom"],
-    applicationXmppXml: ["application/xmpp+xml", "xmpp"],
-    applicationFastinfoset: ["application/fastinfoset", "finf"],
-    applicationSoapFastinfoset: ["application/soap+fastinfoset", "soap.finf"],
-    applicationXObixBinary: ["application/x-obix-binary", "obix"],
-    applicationExi: ["application/exi", "exi"],
-    applicationJson: ["application/json", "json"]
+  static final Map<int, List<String>> _registry = <int, List<String>>{
+    textPlain: <String>['text/plain', 'txt'],
+    textXml: <String>['text/xml', 'xml'],
+    textCsv: <String>['text/csv', 'csv'],
+    textHtml: <String>['text/html', 'html'],
+    imageGif: <String>['image/gif', 'gif'],
+    imageJpeg: <String>['image/jpeg', 'jpg'],
+    imagePng: <String>['image/png', 'png'],
+    imageTiff: <String>['image/tiff', 'tif'],
+    audioRaw: <String>['audio/raw', 'raw'],
+    videoRaw: <String>['video/raw', 'raw'],
+    applicationLinkFormat: <String>['application/link-format', 'wlnk'],
+    applicationXml: <String>['application/xml', 'xml'],
+    applicationOctetStream: <String>['application/octet-stream', 'bin'],
+    applicationRdfXml: <String>['application/rdf+xml', 'rdf'],
+    applicationSoapXml: <String>['application/soap+xml', 'soap'],
+    applicationAtomXml: <String>['application/atom+xml', 'atom'],
+    applicationXmppXml: <String>['application/xmpp+xml', 'xmpp'],
+    applicationFastinfoset: <String>['application/fastinfoset', 'finf'],
+    applicationSoapFastinfoset: <String>[
+      'application/soap+fastinfoset', 'soap.finf'],
+    applicationXObixBinary: <String>['application/x-obix-binary', 'obix'],
+    applicationExi: <String>['application/exi', 'exi'],
+    applicationJson: <String>['application/json', 'json']
   };
 
   /// undefined
@@ -110,9 +111,8 @@ class CoapMediaType {
 
   /// Checks whether the given media type is a type of image.
   /// True iff the media type is a type of image.
-  static bool isImage(int mediaType) {
-    return mediaType >= imageGif && mediaType <= imageTiff;
-  }
+  static bool isImage(int mediaType) =>
+      mediaType >= imageGif && mediaType <= imageTiff;
 
   /// Is the media type printable
   static bool isPrintable(int mediaType) {
@@ -142,7 +142,7 @@ class CoapMediaType {
     if (_registry.containsKey(mediaType)) {
       return _registry[mediaType][0];
     } else {
-      return "unknown/" + mediaType.toString();
+      return 'unknown$mediaType';
     }
   }
 
@@ -151,13 +151,16 @@ class CoapMediaType {
     if (_registry.containsKey(mediaType)) {
       return _registry[mediaType][1];
     } else {
-      return "unknown/" + mediaType.toString();
+      return 'unknown/$mediaType';
     }
   }
 
+  /// Negotiation content
   static int negotiationContent(
       int defaultContentType, List<int> supported, List<CoapOption> accepted) {
-    if (accepted == null) return defaultContentType;
+    if (accepted == null) {
+      return defaultContentType;
+    }
     bool hasAccept = false;
     for (CoapOption opt in accepted) {
       for (int ct in supported) {
@@ -170,8 +173,11 @@ class CoapMediaType {
     return hasAccept ? CoapMediaType.undefined : defaultContentType;
   }
 
+  /// Parse
   static int parse(String type) {
-    if (type == null) return CoapMediaType.undefined;
+    if (type == null) {
+      return CoapMediaType.undefined;
+    }
     int keyRet;
     _registry.forEach((int key, List<String> value) {
       if (value[0].toLowerCase() == type.toLowerCase()) {
@@ -185,12 +191,16 @@ class CoapMediaType {
     }
   }
 
+  /// Wildcard parse
   static List<int> parseWildcard(String regex) {
-    if (regex == null) return null;
-    final List<int> res = new List<int>();
-    final String regex1 =
-        regex.trim().substring(0, regex.indexOf('*')).trim() + ".*";
-    final RegExp r = new RegExp(regex1);
+    if (regex == null) {
+      return null;
+    }
+    final List<int> res = List<int>();
+    String regex1 =
+    regex.trim().substring(0, regex.indexOf('*')).trim();
+    regex1 += '.*';
+    final RegExp r = RegExp(regex1);
     _registry.forEach((int key, List<String> value) {
       final String mime = value[0];
       if (r.hasMatch(mime)) {

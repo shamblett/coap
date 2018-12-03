@@ -468,7 +468,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       final int length = to - from;
       final typed.Uint8Buffer blockPayload = new typed.Uint8Buffer();
       final bool m = to < response.payloadSize;
-      block.setBlock2(szx, m, num);
+      block.setBlock2(szx, num, m: m);
 
       // Crop payload -- do after calculation of m in case block==response
       blockPayload.addAll(response.payload.getRange(from, from + length));

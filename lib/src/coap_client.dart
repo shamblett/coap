@@ -225,7 +225,7 @@ class CoapClient {
     request.uri = uri;
 
     if (_blockwise != 0) {
-      request.setBlock2(CoapBlockOption.encodeSZX(_blockwise), false, 0);
+      request.setBlock2(CoapBlockOption.encodeSZX(_blockwise), 0, m: false);
     }
 
     if (endpoint != null) {
