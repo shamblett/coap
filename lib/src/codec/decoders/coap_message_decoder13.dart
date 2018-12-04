@@ -7,13 +7,17 @@
 
 part of coap;
 
+/// Message decoder 013
 class CoapMessageDecoder13 extends CoapMessageDecoder {
+  /// Construction
   CoapMessageDecoder13(typed.Uint8Buffer data) : super(data) {
     readProtocol();
   }
 
+  @override
   bool get isWellFormed => _version == CoapDraft13.version;
 
+  @override
   void readProtocol() {
     // Read headers
     _version = _reader.read(CoapDraft13.versionBits);
@@ -23,25 +27,28 @@ class CoapMessageDecoder13 extends CoapMessageDecoder {
     _id = _reader.read(CoapDraft13.idBits);
   }
 
-  void parseMessage(CoapMessage msg) {
+  @override
+  void parseMessage(CoapMessage message) {
     // Read token
-    if (_tokenLength > 0)
-      msg.token = _reader.readBytes(_tokenLength);
-    else
-      msg.token = CoapConstants.emptyToken;
+    if (_tokenLength > 0) {
+      message.token = _reader.readBytes(_tokenLength);
+    } else {
+      message.token = CoapConstants.emptyToken;
+    }
 
     // Read options
     int currentOption = 0;
     while (_reader.bytesAvailable) {
       final int nextByte = _reader.readNextByte();
       if (nextByte == CoapDraft13.payloadMarker) {
-        if (!_reader.bytesAvailable)
+        if (!_reader.bytesAvailable) {
           // The presence of a marker followed by a zero-length payload
           // must be processed as a message format error
-          throw new StateError(
-              "Decoder13 - Marker followed by 0 length payload");
+          throw StateError(
+              'Decoder13 - Marker followed by 0 length payload');
+        }
 
-        msg.payload = _reader.readBytesLeft();
+        message.payload = _reader.readBytesLeft();
       } else {
         // The first 4 bits of the byte represent the option delta
         final int optionDeltaNibble = (0xF0 & nextByte) >> 4;
@@ -49,7 +56,7 @@ class CoapMessageDecoder13 extends CoapMessageDecoder {
             CoapDraft13.getValueFromOptionNibble(optionDeltaNibble, _reader);
 
         // The second 4 bits represent the option length
-        final int optionLengthNibble = (0x0F & nextByte);
+        final int optionLengthNibble = 0x0F & nextByte;
         final int optionLength =
             CoapDraft13.getValueFromOptionNibble(optionLengthNibble, _reader);
 
@@ -57,7 +64,7 @@ class CoapMessageDecoder13 extends CoapMessageDecoder {
         final int currentOptionType = CoapDraft13.getOptionType(currentOption);
         final CoapOption opt = CoapOption.create(currentOptionType);
         opt.valueBytes = _reader.readBytes(optionLength);
-        msg.addOption(opt);
+        message.addOption(opt);
       }
     }
   }

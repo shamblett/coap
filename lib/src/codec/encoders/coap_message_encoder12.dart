@@ -7,25 +7,29 @@
 
 part of coap;
 
+/// Message encoder 12
 class CoapMessageEncoder12 extends CoapMessageEncoder {
-  static CoapILogger _log = new CoapLogManager("console").logger;
+  static CoapILogger _log = CoapLogManager('console').logger;
 
-  void serialize(CoapDatagramWriter writer, CoapMessage msg, int code) {
-    final CoapDatagramWriter optWriter = new CoapDatagramWriter();
+  @override
+  void serialize(CoapDatagramWriter writer, CoapMessage message, int code) {
+    final CoapDatagramWriter optWriter = CoapDatagramWriter();
     int optionCount = 0;
     int lastOptionNumber = 0;
 
-    final List<CoapOption> options = msg.getSortedOptions();
-    if (msg.token != null &&
-        msg.token.length > 0 &&
-        !msg.hasOption(optionTypeToken)) {
-      options.add(CoapOption.createRaw(optionTypeToken, msg.token));
+    final List<CoapOption> options = message.getSortedOptions();
+    if (message.token != null &&
+        message.token.isNotEmpty &&
+        !message.hasOption(optionTypeToken)) {
+      options.add(CoapOption.createRaw(optionTypeToken, message.token));
     }
-    CoapUtil.insertionSort(options, (a, b) => a.type.compareTo(b.type));
+    CoapUtil.insertionSort(
+        options, (dynamic a, dynamic b) => a.type.compareTo(b.type));
 
     for (CoapOption opt in options) {
-      if (opt.isDefault()) continue;
-
+      if (opt.isDefault()) {
+        continue;
+      }
       final CoapOption opt2 = opt;
 
       final int optNum = CoapDraft12.getOptionNumber(opt2.type);
@@ -54,7 +58,7 @@ class CoapMessageEncoder12 extends CoapMessageEncoder {
           optWriter.write(
               optionJumpValue, 2 * CoapDraft12.singleOptionJumpBits);
         } else {
-          _log.error("Option delta too large. Actual delta: $optionDelta");
+          _log.error('Option delta too large. Actual delta: $optionDelta');
         }
       }
 
@@ -73,19 +77,19 @@ class CoapMessageEncoder12 extends CoapMessageEncoder {
         // allowing option value lengths of 15-270 bytes. For option
         // lengths beyond 270 bytes, we reserve the value 255 of an
         // extension byte to mean
-        // "add 255, read another extension byte". Options that are
+        // 'add 255, read another extension byte'. Options that are
         // longer than 1034 bytes MUST NOT be sent
         optWriter.write(15, CoapDraft12.optionLengthBaseBits);
 
-        final int rounds = ((length - 15) ~/ 255);
+        final int rounds = (length - 15) ~/ 255;
         for (int i = 0; i < rounds; i++) {
           optWriter.write(255, CoapDraft12.optionLengthExtendedBits);
         }
-        final remainingLength = length - ((rounds * 255) + 15);
+        final int remainingLength = length - ((rounds * 255) + 15);
         optWriter.write(remainingLength, CoapDraft12.optionLengthExtendedBits);
       } else {
         _log.error(
-            "Option length larger than allowed 1034. Actual length: $length");
+            'Option length larger than allowed 1034. Actual length: $length');
       }
 
       // Write option value
@@ -99,19 +103,19 @@ class CoapMessageEncoder12 extends CoapMessageEncoder {
 
     // Write fixed-size CoAP headers
     writer.write(CoapDraft12.version, CoapDraft12.versionBits);
-    writer.write(msg.type, CoapDraft12.typeBits);
+    writer.write(message.type, CoapDraft12.typeBits);
     if (optionCount < 15) {
       writer.write(optionCount, CoapDraft12.optionCountBits);
     } else {
       writer.write(15, CoapDraft12.optionCountBits);
     }
     writer.write(code, CoapDraft12.codeBits);
-    writer.write(msg.id, CoapDraft12.idBits);
+    writer.write(message.id, CoapDraft12.idBits);
 
     // Write options
     writer.writeBytes(optWriter.toByteArray());
 
     //Write payload
-    writer.writeBytes(msg.payload);
+    writer.writeBytes(message.payload);
   }
 }

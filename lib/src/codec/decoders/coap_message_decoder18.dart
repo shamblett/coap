@@ -7,13 +7,17 @@
 
 part of coap;
 
+/// Message decoder 18
 class CoapMessageDecoder18 extends CoapMessageDecoder {
+  /// Construction
   CoapMessageDecoder18(typed.Uint8Buffer data) : super(data) {
     readProtocol();
   }
 
+  @override
   bool get isWellFormed => _version == CoapDraft18.version;
 
+  @override
   void readProtocol() {
     // Read headers
     _version = _reader.read(CoapDraft18.versionBits);
@@ -23,25 +27,27 @@ class CoapMessageDecoder18 extends CoapMessageDecoder {
     _id = _reader.read(CoapDraft18.idBits);
   }
 
-  void parseMessage(CoapMessage msg) {
+  @override
+  void parseMessage(CoapMessage message) {
     // Read token
-    if (_tokenLength > 0)
-      msg.token = _reader.readBytes(_tokenLength);
-    else
-      msg.token = CoapConstants.emptyToken;
-
+    if (_tokenLength > 0) {
+      message.token = _reader.readBytes(_tokenLength);
+    } else {
+      message.token = CoapConstants.emptyToken;
+    }
     // Read options
     int currentOption = 0;
     while (_reader.bytesAvailable) {
       final int nextByte = _reader.readNextByte();
       if (nextByte == CoapDraft18.payloadMarker) {
-        if (!_reader.bytesAvailable)
+        if (!_reader.bytesAvailable) {
           // The presence of a marker followed by a zero-length payload
           // must be processed as a message format error
-          throw new StateError(
-              "Decoder18 - Marker followed by 0 length payload");
+          throw StateError(
+              'Decoder18 - Marker followed by 0 length payload');
+        }
 
-        msg.payload = _reader.readBytesLeft();
+        message.payload = _reader.readBytesLeft();
       } else {
         // The first 4 bits of the byte represent the option delta
         final int optionDeltaNibble = (0xF0 & nextByte) >> 4;
@@ -49,14 +55,14 @@ class CoapMessageDecoder18 extends CoapMessageDecoder {
             CoapDraft18.getValueFromOptionNibble(optionDeltaNibble, _reader);
 
         // The second 4 bits represent the option length
-        final int optionLengthNibble = (0x0F & nextByte);
+        final int optionLengthNibble = 0x0F & nextByte;
         final int optionLength =
             CoapDraft18.getValueFromOptionNibble(optionLengthNibble, _reader);
 
         // Read option
         final CoapOption opt = CoapOption.create(currentOption);
         opt.valueBytes = _reader.readBytes(optionLength);
-        msg.addOption(opt);
+        message.addOption(opt);
       }
     }
   }

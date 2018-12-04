@@ -7,15 +7,19 @@
 
 part of coap;
 
+/// Message decoder 012
 class CoapMessageDecoder12 extends CoapMessageDecoder {
+  /// Construction
   CoapMessageDecoder12(typed.Uint8Buffer data) : super(data) {
     readProtocol();
   }
 
   int _optionCount;
 
+  @override
   bool get isWellFormed => _version == CoapDraft12.version;
 
+  @override
   void readProtocol() {
     // Read headers
     _version = _reader.read(CoapDraft12.versionBits);
@@ -25,7 +29,8 @@ class CoapMessageDecoder12 extends CoapMessageDecoder {
     _id = _reader.read(CoapDraft12.idBits);
   }
 
-  void parseMessage(CoapMessage msg) {
+  @override
+  void parseMessage(CoapMessage message) {
     // Read options
     int currentOption = 0;
     bool hasMoreOptions = _optionCount == 15;
@@ -84,11 +89,11 @@ class CoapMessageDecoder12 extends CoapMessageDecoder {
       final CoapOption opt = CoapOption.create(currentOptionType);
       opt.valueBytes = _reader.readBytes(length);
 
-      msg.addOption(opt);
+      message.addOption(opt);
     }
 
-    if (msg.token == null) msg.token = CoapConstants.emptyToken;
+    message.token ??= CoapConstants.emptyToken;
 
-    msg.payload = _reader.readBytesLeft();
+    message.payload = _reader.readBytesLeft();
   }
 }

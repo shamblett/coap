@@ -11,12 +11,13 @@ part of coap;
 class CoapDatagramWriter {
   /// Initializes a new DatagramWriter object
   CoapDatagramWriter() {
-    _buffer = new typed.Uint8Buffer();
-    _currentByte = new ByteData(1)..setUint8(0, 0);
+    _buffer = typed.Uint8Buffer();
+    _currentByte = ByteData(1)
+      ..setUint8(0, 0);
     _currentBitIndex = 7;
   }
 
-  static CoapILogger _log = new CoapLogManager("console").logger;
+  static CoapILogger _log = CoapLogManager('console').logger;
 
   typed.Uint8Buffer _buffer;
   ByteData _currentByte;
@@ -25,7 +26,7 @@ class CoapDatagramWriter {
   /// Writes a sequence of bits to the stream
   void write(int data, int numBits) {
     if (numBits < 32 && data >= (1 << numBits)) {
-      _log.warn("Truncating value {$data} to {$numBits}-bit integer");
+      _log.warn('Truncating value {$data} to {$numBits}-bit integer');
     }
 
     for (int i = numBits - 1; i >= 0; i--) {
@@ -68,7 +69,8 @@ class CoapDatagramWriter {
 
   /// Writes one byte to the stream.
   void writeByte(int b) {
-    final typed.Uint8Buffer buff = new typed.Uint8Buffer()..add(b);
+    final typed.Uint8Buffer buff = typed.Uint8Buffer()
+      ..add(b);
     writeBytes(buff);
   }
 

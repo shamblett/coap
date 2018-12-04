@@ -7,25 +7,29 @@
 
 part of coap;
 
+/// Message encoder 8
 class CoapMessageEncoder08 extends CoapMessageEncoder {
-  static CoapILogger _log = new CoapLogManager("console").logger;
+  static CoapILogger _log = CoapLogManager('console').logger;
 
-  void serialize(CoapDatagramWriter writer, CoapMessage msg, int code) {
-    final CoapDatagramWriter optWriter = new CoapDatagramWriter();
+  @override
+  void serialize(CoapDatagramWriter writer, CoapMessage message, int code) {
+    final CoapDatagramWriter optWriter = CoapDatagramWriter();
     int optionCount = 0;
     int lastOptionNumber = 0;
 
-    final List<CoapOption> options = msg.getSortedOptions();
-    if (msg.token != null &&
-        msg.token.length > 0 &&
-        !msg.hasOption(optionTypeToken)) {
-      options.add(CoapOption.createRaw(optionTypeToken, msg.token));
+    final List<CoapOption> options = message.getSortedOptions();
+    if (message.token != null &&
+        message.token.isNotEmpty &&
+        !message.hasOption(optionTypeToken)) {
+      options.add(CoapOption.createRaw(optionTypeToken, message.token));
     }
-    CoapUtil.insertionSort(options, (a, b) => a.type.compareTo(b.type));
+    CoapUtil.insertionSort(
+        options, (dynamic a, dynamic b) => a.type.compareTo(b.type));
 
     for (CoapOption opt in options) {
-      if (opt.isDefault()) continue;
-
+      if (opt.isDefault()) {
+        continue;
+      }
       final CoapOption opt2 = opt;
 
       final int optNum = CoapDraft08.getOptionNumber(opt2.type);
@@ -41,10 +45,10 @@ class CoapMessageEncoder08 extends CoapMessageEncoder {
         // Calculate fencepost delta
         final int fencepostDelta = fencepostNumber - lastOptionNumber;
         if (fencepostDelta <= 0) {
-          _log.warn("Fencepost liveness violated: delta = $fencepostDelta");
+          _log.warn('Fencepost liveness violated: delta = $fencepostDelta');
         }
         if (fencepostDelta > CoapDraft08.maxOptionDelta) {
-          _log.warn("Fencepost safety violated: delta = $fencepostDelta");
+          _log.warn('Fencepost safety violated: delta = $fencepostDelta');
         }
 
         // Write fencepost option delta
@@ -69,7 +73,7 @@ class CoapMessageEncoder08 extends CoapMessageEncoder {
       } else {
         // Use both option length base and extended field
         // to encode option lengths greater than MAX_OPTIONLENGTH_BASE
-        final int baseLength = CoapDraft08.maxOptionLengthBase + 1;
+        const int baseLength = CoapDraft08.maxOptionLengthBase + 1;
         optWriter.write(baseLength, CoapDraft08.optionLengthBaseBits);
 
         final int extLength = length - baseLength;
@@ -85,15 +89,15 @@ class CoapMessageEncoder08 extends CoapMessageEncoder {
 
     // Write fixed-size CoAP headers
     writer.write(CoapDraft08.version, CoapDraft08.versionBits);
-    writer.write(msg.type, CoapDraft08.typeBits);
+    writer.write(message.type, CoapDraft08.typeBits);
     writer.write(optionCount, CoapDraft08.optionCountBits);
     writer.write(code, CoapDraft08.codeBits);
-    writer.write(msg.id, CoapDraft08.idBits);
+    writer.write(message.id, CoapDraft08.idBits);
 
     // Write options
     writer.writeBytes(optWriter.toByteArray());
 
     //Write payload
-    writer.writeBytes(msg.payload);
+    writer.writeBytes(message.payload);
   }
 }

@@ -11,7 +11,7 @@ part of coap;
 abstract class CoapMessageDecoder implements CoapIMessageDecoder {
   /// Instantiates.
   CoapMessageDecoder(typed.Uint8Buffer data) {
-    _reader = new CoapDatagramReader(data);
+    _reader = CoapDatagramReader(data);
   }
 
   /// The bytes reader
@@ -20,6 +20,7 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
   /// The version of the decoding message
   int _version;
 
+  @override
   int get version => _version;
 
   /// The type of the decoding message
@@ -34,24 +35,30 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
   /// The id of the decoding message
   int _id;
 
+  @override
   int get id => _id;
 
+  @override
   bool get isReply =>
       _type == CoapMessageType.ack || _type == CoapMessageType.rst;
 
+  @override
   bool get isRequest =>
       _code >= CoapConstants.requestCodeLowerBound &&
-      _code <= CoapConstants.requestCodeUpperBound;
+          _code <= CoapConstants.requestCodeUpperBound;
 
+  @override
   bool get isResponse =>
       _code >= CoapConstants.responseCodeLowerBound &&
-      _code <= CoapConstants.responseCodeUpperBound;
+          _code <= CoapConstants.responseCodeUpperBound;
 
+  @override
   bool get isEmpty => _code == CoapCode.empty;
 
+  @override
   CoapRequest decodeRequest() {
     if (isRequest) {
-      final CoapRequest request = new CoapRequest(_code);
+      final CoapRequest request = CoapRequest(_code);
       request.type = _type;
       request.id = _id;
       parseMessage(request);
@@ -61,9 +68,10 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
     return null;
   }
 
+  @override
   CoapResponse decodeResponse() {
     if (isResponse) {
-      final CoapResponse response = new CoapResponse(_code);
+      final CoapResponse response = CoapResponse(_code);
       response.type = _type;
       response.id = _id;
       parseMessage(response);
@@ -73,9 +81,10 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
     return null;
   }
 
+  @override
   CoapEmptyMessage decodeEmptyMessage() {
     if ((!isResponse) && (!isRequest)) {
-      final CoapEmptyMessage message = new CoapEmptyMessage(_code);
+      final CoapEmptyMessage message = CoapEmptyMessage(_code);
       message.type = _type;
       message.id = _id;
       parseMessage(message);
@@ -85,6 +94,7 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
     return null;
   }
 
+  @override
   CoapMessage decodeMessage() {
     if (isRequest) {
       return decodeRequest();

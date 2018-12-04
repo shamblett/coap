@@ -7,24 +7,27 @@
 
 part of coap;
 
+/// Message encoder 18
 class CoapMessageEncoder18 extends CoapMessageEncoder {
-  static CoapILogger _log = new CoapLogManager("console").logger;
+  static CoapILogger _log = CoapLogManager('console').logger;
 
-  void serialize(CoapDatagramWriter writer, CoapMessage msg, int code) {
+  @override
+  void serialize(CoapDatagramWriter writer, CoapMessage message, int code) {
     // Write fixed-size CoAP headers
     writer.write(CoapDraft18.version, CoapDraft18.versionBits);
-    writer.write(msg.type, CoapDraft18.typeBits);
-    writer.write(
-        msg.token == null ? 0 : msg.token.length, CoapDraft18.tokenLengthBits);
+    writer.write(message.type, CoapDraft18.typeBits);
+    writer.write(message.token == null ? 0 : message.token.length,
+        CoapDraft18.tokenLengthBits);
     writer.write(code, CoapDraft18.codeBits);
-    writer.write(msg.id, CoapDraft18.idBits);
+    writer.write(message.id, CoapDraft18.idBits);
 
     // Write token, which may be 0 to 8 bytes, given by token length field
-    writer.writeBytes(msg.token);
+    writer.writeBytes(message.token);
 
     int lastOptionNumber = 0;
-    final List<CoapOption> options = msg.getSortedOptions();
-    CoapUtil.insertionSort(options, (a, b) => a.type.compareTo(b.type));
+    final List<CoapOption> options = message.getSortedOptions();
+    CoapUtil.insertionSort(
+        options, (dynamic a, dynamic b) => a.type.compareTo(b.type));
 
     for (CoapOption opt in options) {
       if (opt.type == optionTypeToken) {
@@ -62,13 +65,13 @@ class CoapMessageEncoder18 extends CoapMessageEncoder {
       lastOptionNumber = optNum;
     }
 
-    if (msg.payload != null && msg.payload.length > 0) {
+    if (message.payload != null && message.payload.isNotEmpty) {
       // If payload is present and of non-zero length, it is prefixed by
       // an one-byte Payload Marker (0xFF) which indicates the end of
       // options and the start of the payload
       writer.writeByte(CoapDraft18.payloadMarker);
     }
     // Write payload
-    writer.writeBytes(msg.payload);
+    writer.writeBytes(message.payload);
   }
 }
