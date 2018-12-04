@@ -17,7 +17,7 @@ void main() {
       CoapRemoteResource res = new CoapRemoteResource("billy");
       expect(res.name, "billy");
       expect(res.hidden, isFalse);
-      res = new CoapRemoteResource.hide("fred", true);
+      res = new CoapRemoteResource.hide("fred", hidden: true);
       expect(res.name, "fred");
       expect(res.hidden, isTrue);
     });

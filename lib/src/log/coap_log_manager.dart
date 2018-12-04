@@ -9,35 +9,33 @@ part of coap;
 
 /// Allows selection and management of logging for the coap library.
 class CoapLogManager {
-  static CoapILogger _logger;
-
+  /// Construction
   CoapLogManager(String type) {
     bool setCommon = true;
-    if (type == "console") {
-      _logger = new CoapConsoleLogger();
+    if (type == 'console') {
+      logger = CoapConsoleLogger();
     } else {
-      _logger = new CoapNullLogger();
+      logger = CoapNullLogger();
       setCommon = false;
     }
 
     // Logging common configuration
     if (setCommon) {
       if (CoapConfig.inst.logDebug) {
-        _logger.root.level = logging.Level.SEVERE;
+        logger.root.level = logging.Level.SEVERE;
       }
       if (CoapConfig.inst.logError) {
-        _logger.root.level = logging.Level.SHOUT;
+        logger.root.level = logging.Level.SHOUT;
       }
       if (CoapConfig.inst.logWarn) {
-        _logger.root.level = logging.Level.WARNING;
+        logger.root.level = logging.Level.WARNING;
       }
       if (CoapConfig.inst.logInfo) {
-        _logger.root.level = logging.Level.INFO;
+        logger.root.level = logging.Level.INFO;
       }
     }
   }
 
-  CoapILogger get logger => _logger;
-
-  set logger(CoapILogger logger) => _logger = logger;
+  /// The logger
+  CoapILogger logger;
 }

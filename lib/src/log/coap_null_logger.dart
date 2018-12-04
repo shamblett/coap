@@ -9,43 +9,39 @@ part of coap;
 
 /// Provides logging to null
 class CoapNullLogger implements CoapILogger {
+  @override
   logging.Logger get root => null;
+
+  @override
   set root(logging.Logger root) {}
 
-  /// Last message
+  @override
   String get lastMessage => null;
 
+  @override
   set lastMessage(String message) {}
 
-  /// Is debug enabled
-  bool isDebugEnabled() {
-    return false;
-  }
+  @override
+  bool isDebugEnabled() => false;
 
-  /// Is error enabled
-  bool isErrorEnabled() {
-    return false;
-  }
+  @override
+  bool isErrorEnabled() => false;
 
-  /// Is info enabled
-  bool isInfoEnabled() {
-    return false;
-  }
+  @override
+  bool isInfoEnabled() => false;
 
-  /// Is warning enabled
-  bool isWarnEnabled() {
-    return false;
-  }
+  @override
+  bool isWarnEnabled() => false;
 
-  /// Logs a debug message.
+  @override
   void debug(String message) {}
 
-  /// Logs an error message.
+  @override
   void error(String message) {}
 
-  /// Logs an info message.
+  @override
   void info(String message) {}
 
-  /// Logs a warning message.
+  @override
   void warn(String message) {}
 }

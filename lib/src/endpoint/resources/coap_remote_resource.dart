@@ -9,20 +9,20 @@ part of coap;
 
 /// This class describes the functionality of a CoAP remote resource.
 class CoapRemoteResource extends CoapEndpointResource {
+  /// Construction
   CoapRemoteResource(String resourceIdentifier) : super(resourceIdentifier);
 
-  CoapRemoteResource.hide(String resourceIdentifier, bool hidden)
+  /// Hidden
+  CoapRemoteResource.hide(String resourceIdentifier, {bool hidden})
       : super.hide(resourceIdentifier, hidden: hidden);
 
-  static CoapRemoteResource newRoot(String linkFormat) {
-    return CoapLinkFormat.deserialize(linkFormat);
-  }
+  /// New root
+  static CoapRemoteResource newRoot(String linkFormat) =>
+      CoapLinkFormat.deserialize(linkFormat);
 
   /// Creates a resource instance with proper subtype.
   @override
-  CoapEndpointResource createInstance(String name) {
-    return new CoapRemoteResource(name);
-  }
+  CoapEndpointResource createInstance(String name) => CoapRemoteResource(name);
 
   @override
   void doCreateSubResource(CoapRequest request, String newIdentifier) {}

@@ -14,8 +14,8 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   CoapEndPoint(CoapIChannel channel, CoapConfig config) {
     _config = config;
     _channel = channel;
-    _matcher = new CoapMatcher(config);
-    _coapStack = new CoapStack(config);
+    _matcher = CoapMatcher(config);
+    _coapStack = CoapStack(config);
     clientEventBus.on<CoapDataReceivedEvent>().listen(_receiveData);
   }
 
@@ -24,61 +24,74 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
       InternetAddress localEndpoint, int port, CoapConfig config)
       : this(newUDPChannel(localEndpoint, port), config);
 
-  static CoapILogger _log = new CoapLogManager("console").logger;
+  static CoapILogger _log = CoapLogManager('console').logger;
 
   CoapConfig _config;
 
+  @override
   CoapConfig get config => _config;
   CoapIChannel _channel;
   CoapStack _coapStack;
   CoapIMessageDeliverer _deliverer;
 
+  @override
   set deliverer(CoapIMessageDeliverer value) => _deliverer = value;
 
+  @override
   CoapIMessageDeliverer get deliverer =>
-      _deliverer != null ? _deliverer : new CoapClientMessageDeliverer();
+      _deliverer != null ? _deliverer : CoapClientMessageDeliverer();
   CoapIMatcher _matcher;
   InternetAddress _localEndpoint;
 
+  @override
   InternetAddress get localEndpoint => _localEndpoint;
-  CoapIExecutor executor = new CoapExecutor();
 
+  /// Executor
+  CoapIExecutor executor = CoapExecutor();
+
+  @override
   CoapIOutbox get outbox => this;
 
+  @override
   void start() {
     _localEndpoint = _channel.address;
     try {
       _matcher.start();
       _channel.start();
       _localEndpoint = _channel.address;
-    } catch (e) {
-      _log.error("Cannot start endpoint at $_localEndpoint, exception is $e");
+    } on Exception catch (e) {
+      _log.error('Cannot start endpoint at $_localEndpoint, exception is $e');
       stop();
-      throw e;
+      rethrow;
     }
-    _log.debug("Starting endpoint bound to $_localEndpoint");
+    _log.debug('Starting endpoint bound to $_localEndpoint');
   }
 
+  @override
   void stop() {
-    _log.debug("Stopping endpoint bound to $_localEndpoint");
+    _log.debug('Stopping endpoint bound to $_localEndpoint');
     _channel.stop();
     _matcher.stop();
     _matcher.clear();
   }
 
+  @override
   void clear() {
     _matcher.clear();
   }
 
+  @override
   void sendEpRequest(CoapRequest request) {
     //TODO SJH fix this executor.start(() => _coapStack.sendRequest(request));
     _coapStack.sendRequest(request);
   }
 
+  @override
   void sendEpResponse(CoapExchange exchange, CoapResponse response) {
     executor.start(() => _coapStack.sendResponse(exchange, response));
   }
 
+  @override
   void sendEpEmptyMessage(CoapExchange exchange, CoapEmptyMessage message) {
     executor.start(() => _coapStack.sendEmptyMessage(exchange, message));
   }
@@ -90,9 +103,9 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
       CoapRequest request;
       try {
         request = decoder.decodeRequest();
-      } catch (e) {
+      } on Exception catch (e) {
         if (decoder.isReply) {
-          _log.warn("Message format error caused by ${e.endPoint}");
+          _log.warn('Message format error caused by $e');
         } else {
           // Manually build RST from raw information
           final CoapEmptyMessage rst =
@@ -102,7 +115,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
           clientEventBus.fire(new CoapSendingEmptyMessageEvent(rst));
           _channel.send(_serializeEmpty(rst), rst.destination);
           _log.warn(
-              "Message format error caused by ${e.endPoint} and reseted.");
+              'Message format error caused by $e and reset.');
         }
         return;
       }
@@ -132,7 +145,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
           exchange.endpoint = this;
           _coapStack.receiveResponse(exchange, response);
         } else if (response.type != CoapMessageType.ack) {
-          _log.debug("Rejecting unmatchable response from ${event.address}");
+          _log.debug('Rejecting unmatchable response from ${event.address}');
           _reject(response);
         }
       }
@@ -146,7 +159,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
         // CoAP Ping
         if (message.type == CoapMessageType.con ||
             message.type == CoapMessageType.non) {
-          _log.debug("Responding to ping by ${event.address}");
+          _log.debug('Responding to ping by ${event.address}');
           _reject(message);
         } else {
           final CoapExchange exchange = _matcher.receiveEmptyMessage(message);
@@ -157,7 +170,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
         }
       }
     } else {
-      _log.debug("Silently ignoring non-CoAP message from ${event.address}");
+      _log.debug('Silently ignoring non-CoAP message from ${event.address}');
     }
   }
 
