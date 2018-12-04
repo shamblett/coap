@@ -7,12 +7,14 @@
 
 part of coap;
 
+/// Crop rotation deduplicator
 class CoapCropRotationDeduplicator implements CoapIDeduplicator {
+  /// Construction
   CoapCropRotationDeduplicator(CoapConfig config) {
-    _maps = new List<Map<CoapKeyId, CoapExchange>>(3);
-    _maps[0] = new Map<CoapKeyId, CoapExchange>();
-    _maps[1] = new Map<CoapKeyId, CoapExchange>();
-    _maps[2] = new Map<CoapKeyId, CoapExchange>();
+    _maps = List<Map<CoapKeyId, CoapExchange>>(3);
+    _maps[0] = Map<CoapKeyId, CoapExchange>();
+    _maps[1] = Map<CoapKeyId, CoapExchange>();
+    _maps[2] = Map<CoapKeyId, CoapExchange>();
     _first = 0;
     _second = 1;
     _config = config;
@@ -24,20 +26,24 @@ class CoapCropRotationDeduplicator implements CoapIDeduplicator {
   Timer _timer;
   CoapConfig _config;
 
+  @override
   void start() {
-    _timer = new Timer.periodic(
-        new Duration(milliseconds: _config.cropRotationPeriod), _rotation);
+    _timer = Timer.periodic(
+        Duration(milliseconds: _config.cropRotationPeriod), _rotation);
   }
 
+  @override
   void stop() {
     _timer.cancel();
   }
 
+  @override
   void clear() {
     stop();
     _maps.clear();
   }
 
+  @override
   CoapExchange findPrevious(CoapKeyId key, CoapExchange exchange) {
     CoapExchange prev;
     if (_maps[_first].containsKey(key)) {
@@ -54,6 +60,7 @@ class CoapCropRotationDeduplicator implements CoapIDeduplicator {
     return prev;
   }
 
+  @override
   CoapExchange find(CoapKeyId key) {
     if ((_maps[_first].containsKey(key)) || (_first == _second)) {
       return _maps[_first][key];

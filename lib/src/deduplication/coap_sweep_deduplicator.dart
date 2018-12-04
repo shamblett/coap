@@ -7,35 +7,39 @@
 
 part of coap;
 
+/// Sweep deduplicator
 class CoapSweepDeduplicator implements CoapIDeduplicator {
-  static CoapILogger _log = new CoapLogManager("console").logger;
-
+  /// Construction
   CoapSweepDeduplicator(CoapConfig config) {
     _config = config;
   }
 
+  static CoapILogger _log = CoapLogManager('console').logger;
+
   Map<CoapKeyId, CoapExchange> _incomingMessages =
-      new Map<CoapKeyId, CoapExchange>();
+  Map<CoapKeyId, CoapExchange>();
   Timer _timer;
   CoapConfig _config;
 
+  @override
   void start() {
-    if (_timer == null) {
-      _timer = new Timer.periodic(
-          new Duration(milliseconds: _config.markAndSweepInterval), _sweep);
-    }
+    _timer ??= Timer.periodic(
+        Duration(milliseconds: _config.markAndSweepInterval), _sweep);
   }
 
+  @override
   void stop() {
     _timer.cancel();
     _timer = null;
   }
 
+  @override
   void clear() {
     stop();
     _incomingMessages.clear();
   }
 
+  @override
   CoapExchange findPrevious(CoapKeyId key, CoapExchange exchange) {
     CoapExchange prev;
     if (_incomingMessages.containsKey(key)) {
@@ -45,6 +49,7 @@ class CoapSweepDeduplicator implements CoapIDeduplicator {
     return prev;
   }
 
+  @override
   CoapExchange find(CoapKeyId key) {
     if (_incomingMessages.containsKey(key)) {
       return _incomingMessages[key];
@@ -53,19 +58,17 @@ class CoapSweepDeduplicator implements CoapIDeduplicator {
   }
 
   void _sweep(Timer timer) {
-    _log.debug("Start Mark-And-Sweep with ${_incomingMessages.length} entries");
+    _log.debug('Start Mark-And-Sweep with ${_incomingMessages.length} entries');
 
-    final DateTime oldestAllowed = new DateTime.now()
-      ..add(new Duration(milliseconds: _config.exchangeLifetime));
-    final List<CoapKeyId> keysToRemove = new List<CoapKeyId>();
+    final DateTime oldestAllowed = DateTime.now()
+      ..add(Duration(milliseconds: _config.exchangeLifetime));
+    final List<CoapKeyId> keysToRemove = List<CoapKeyId>();
     _incomingMessages.forEach((CoapKeyId key, CoapExchange value) {
       if (value.timestamp.isBefore(oldestAllowed)) {
-        _log.debug("Mark-And-Sweep removes $key");
+        _log.debug('Mark-And-Sweep removes $key');
         keysToRemove.add(key);
       }
     });
-    for (CoapKeyId key in keysToRemove) {
-      _incomingMessages.remove(key);
-    }
+    keysToRemove.forEach(_incomingMessages.remove);
   }
 }

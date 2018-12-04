@@ -9,23 +9,24 @@ part of coap;
 
 /// A dummy implementation that does no deduplication.
 class CoapNoopDeduplicator implements CoapIDeduplicator {
+  @override
   void start() {
     // Do nothing
   }
 
+  @override
   void stop() {
     // Do nothing
   }
 
+  @override
   void clear() {
     // Do nothing
   }
 
-  CoapExchange findPrevious(CoapKeyId key, CoapExchange exchange) {
-    return null;
-  }
+  @override
+  CoapExchange findPrevious(CoapKeyId key, CoapExchange exchange) => null;
 
-  CoapExchange find(CoapKeyId key) {
-    return null;
-  }
+  @override
+  CoapExchange find(CoapKeyId key) => null;
 }

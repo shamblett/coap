@@ -23,5 +23,6 @@ abstract class CoapIDeduplicator {
   /// exchange and otherwise associates the key with the exchange specified.
   CoapExchange findPrevious(CoapKeyId key, CoapExchange exchange);
 
+  /// Finds the exchange associated with the supplied key
   CoapExchange find(CoapKeyId key);
 }

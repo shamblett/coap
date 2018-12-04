@@ -7,22 +7,29 @@
 
 part of coap;
 
+/// Deduplicator factory
 class CoapDeduplicatorFactory {
-  static CoapILogger _log = new CoapLogManager("console").logger;
+  static CoapILogger _log = CoapLogManager('console').logger;
 
-  static const String markAndSweepDeduplicator = "MarkAndSweep";
-  static const String cropRotationDeduplicator = "CropRotation";
-  static const String noopDeduplicator = "Noop";
+  /// Mark and sweep
+  static const String markAndSweepDeduplicator = 'MarkAndSweep';
 
+  /// Crop rotation
+  static const String cropRotationDeduplicator = 'CropRotation';
+
+  /// Null(noop) deduplicator
+  static const String noopDeduplicator = 'Noop';
+
+  /// Create
   static CoapIDeduplicator createDeduplicator(CoapConfig config) {
     final String type = config.deduplicator;
     if (type == markAndSweepDeduplicator) {
-      return new CoapSweepDeduplicator(config);
+      return CoapSweepDeduplicator(config);
     } else if (type == cropRotationDeduplicator) {
-      return new CoapCropRotationDeduplicator(config);
+      return CoapCropRotationDeduplicator(config);
     } else if (type == noopDeduplicator) {
-      _log.warn("Unknown deduplicator type: " + type);
+      _log.warn('Unknown deduplicator type: $type');
     }
-    return new CoapNoopDeduplicator();
+    return CoapNoopDeduplicator();
   }
 }
