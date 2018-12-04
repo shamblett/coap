@@ -7,6 +7,7 @@ analyzer:
   exclude:
     - test/issues/**
     - lib/src/coap_config.dart
+    - lib/src/coap_option_type.dart
 
 linter:
   rules:

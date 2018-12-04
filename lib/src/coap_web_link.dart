@@ -8,7 +8,7 @@
 part of coap;
 
 /// This class can be used to programmatically browse a remote CoAP endoint.
-class CoapWebLink extends Comparable {
+class CoapWebLink extends Comparable<CoapWebLink> {
   /// Instantiates.
   CoapWebLink(String uri) {
     _uri = uri;
@@ -16,51 +16,55 @@ class CoapWebLink extends Comparable {
 
   String _uri;
 
+  /// The URI
   String get uri => _uri;
-  CoapResourceAttributes _attributes = new CoapResourceAttributes();
+  CoapResourceAttributes _attributes = CoapResourceAttributes();
 
+  /// Attributes
   CoapResourceAttributes get attributes => _attributes;
 
+  @override
   int compareTo(dynamic other) {
     if (other == null) {
-      throw new ArgumentError.notNull("CoapWebLink::other");
+      throw ArgumentError.notNull('CoapWebLink::other');
     }
-    return _uri.compareTo((other as CoapWebLink)._uri);
+    return _uri.compareTo(other._uri);
   }
 
+  @override
   String toString() {
-    final StringBuffer sb = new StringBuffer();
+    final StringBuffer sb = StringBuffer();
     sb.write('<');
     sb.write(_uri);
     sb.write('>');
     sb.write(' ');
     sb.write(_attributes.title);
     if (_attributes.contains(CoapLinkFormat.resourceType)) {
-      sb.write("\n\t");
+      sb.write('\n\t');
       sb.write(CoapLinkFormat.resourceType);
-      sb.write(":\t");
+      sb.write(':\t');
       sb.write(_attributes.getResourceTypes());
     }
     if (_attributes.contains(CoapLinkFormat.interfaceDescription)) {
-      sb.write("\n\t");
+      sb.write('\n\t');
       sb.write(CoapLinkFormat.interfaceDescription);
-      sb.write(":\t");
+      sb.write(':\t');
       sb.write(_attributes.getInterfaceDescriptions());
     }
     if (_attributes.contains(CoapLinkFormat.contentType)) {
-      sb.write("\n\t");
+      sb.write('\n\t');
       sb.write(CoapLinkFormat.contentType);
-      sb.write(":\t");
+      sb.write(':\t');
       sb.write(_attributes.getContentTypes());
     }
     if (_attributes.contains(CoapLinkFormat.maxSizeEstimate)) {
-      sb.write("\n\t");
+      sb.write('\n\t');
       sb.write(CoapLinkFormat.maxSizeEstimate);
-      sb.write(":\t");
+      sb.write(':\t');
       sb.write(_attributes.maximumSizeEstimate);
     }
     if (_attributes.observable) {
-      sb.write("\n\t");
+      sb.write('\n\t');
       sb.write(CoapLinkFormat.observable);
     }
     return sb.toString();

@@ -769,7 +769,7 @@ void main() {
 
     void testMessage(CoapISpec spec, int testNo) {
       final CoapMessage msg =
-          new CoapRequest.isConfirmable(CoapCode.methodGET, true);
+      new CoapRequest.isConfirmable(CoapCode.methodGET, confirmable: true);
 
       msg.id = 12345;
       msg.payload = new typed.Uint8Buffer()..addAll("payload".codeUnits);
@@ -787,7 +787,7 @@ void main() {
 
     void testMessageWithOptions(CoapISpec spec, int testNo) {
       final CoapMessage msg =
-          new CoapRequest.isConfirmable(CoapCode.methodGET, true);
+      new CoapRequest.isConfirmable(CoapCode.methodGET, confirmable: true);
 
       msg.id = 12345;
       msg.payload = new typed.Uint8Buffer()..addAll("payload".codeUnits);
@@ -818,7 +818,7 @@ void main() {
 
     void testMessageWithExtendedOption(CoapISpec spec, int testNo) {
       final CoapMessage msg =
-          new CoapRequest.isConfirmable(CoapCode.methodGET, true);
+      new CoapRequest.isConfirmable(CoapCode.methodGET, confirmable: true);
 
       msg.id = 12345;
       msg.addOption(CoapOption.createString(12, "a"));
@@ -850,7 +850,7 @@ void main() {
 
     void testRequestParsing(CoapISpec spec, int testNo) {
       final CoapRequest request =
-          new CoapRequest.isConfirmable(CoapCode.methodPOST, false);
+      new CoapRequest.isConfirmable(CoapCode.methodPOST, confirmable: false);
       request.id = 7;
       request.token = new typed.Uint8Buffer()..addAll([11, 82, 165, 77, 3]);
       request

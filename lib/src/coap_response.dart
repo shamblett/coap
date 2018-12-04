@@ -17,9 +17,9 @@ class CoapResponse extends CoapMessage {
     _statusCode = code;
   }
 
-  /// The response status code.
   int _statusCode;
 
+  /// The response status code.
   int get statusCode => _statusCode;
 
   /// The Round-Trip Time of this response.
@@ -36,7 +36,7 @@ class CoapResponse extends CoapMessage {
   /// The response has the same token as the request.
   /// Type and ID are usually set automatically by the ReliabilityLayer>.
   static CoapResponse createResponse(CoapRequest request, int statusCode) {
-    final CoapResponse response = new CoapResponse(statusCode);
+    final CoapResponse response = CoapResponse(statusCode);
     response.destination = request.source;
     response.token = request.token;
     return response;

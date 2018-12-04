@@ -12,13 +12,14 @@ class CoapDatagramReader {
   /// Initializes a new DatagramReader object
   CoapDatagramReader(typed.Uint8Buffer buffer) {
     _buffer = buffer;
-    _currentByte = new ByteData(1);
+    _currentByte = ByteData(1);
     _currentBitIndex = -1;
   }
 
   typed.Uint8Buffer _buffer;
 
-  bool get bytesAvailable => _buffer.length > 0;
+  /// Bytes available
+  bool get bytesAvailable => _buffer.isNotEmpty;
 
   ByteData _currentByte;
   int _currentBitIndex;
@@ -36,7 +37,7 @@ class CoapDatagramReader {
       final bool bit = (_currentByte.getUint8(0) >> _currentBitIndex & 1) != 0;
       if (bit) {
         // Set the bit at i-th position
-        bits |= (1 << i);
+        bits |= 1 << i;
       }
 
       // decrease current bit index
@@ -53,7 +54,7 @@ class CoapDatagramReader {
       bufferCount = _buffer.length;
     }
 
-    final typed.Uint8Buffer bytes = new typed.Uint8Buffer();
+    final typed.Uint8Buffer bytes = typed.Uint8Buffer();
 
     // Are there bits left to read in buffer?
     if (_currentBitIndex >= 0) {
@@ -70,14 +71,10 @@ class CoapDatagramReader {
   }
 
   /// Reads the next byte from the stream.
-  int readNextByte() {
-    return readBytes(1)[0];
-  }
+  int readNextByte() => readBytes(1)[0];
 
   /// Reads the complete sequence of bytes left in the stream
-  typed.Uint8Buffer readBytesLeft() {
-    return readBytes(-1);
-  }
+  typed.Uint8Buffer readBytesLeft() => readBytes(-1);
 
   void _readCurrentByte() {
     final int val = _buffer.removeAt(0);

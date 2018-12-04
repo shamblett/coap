@@ -79,12 +79,12 @@ class CoapBlockOption extends CoapOption {
 
   /// Strips leading zeros for 32 bit integers
   typed.Uint8Buffer _compressValueBytes() {
-    if (_valueBytes.length == 4) {
-      if (_valueBytes[3] == 0) {
+    if (valueBytes.length == 4) {
+      if (valueBytes[3] == 0) {
         return typed.Uint8Buffer()
-          ..addAll(_valueBytes.take(3).toList());
+          ..addAll(valueBytes.take(3).toList());
       }
     }
-    return _valueBytes;
+    return valueBytes;
   }
 }

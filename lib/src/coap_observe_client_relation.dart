@@ -11,31 +11,40 @@ part of coap;
 /// Provides a simple API to check whether a relation has successfully established and
 /// to cancel or refresh the relation.
 class CoapObserveClientRelation {
+  /// Construction
   CoapObserveClientRelation(
       CoapRequest request, CoapIEndPoint endpoint, CoapConfig config) {
     _config = config;
     _request = request;
     _endpoint = endpoint;
-    _orderer = new CoapObserveNotificationOrderer(config);
+    _orderer = CoapObserveNotificationOrderer(config);
     clientEventBus.on<CoapReregisteringEvent>().listen(_onReregister);
   }
 
   CoapConfig _config;
   CoapRequest _request;
 
+  /// Request
   CoapRequest get request => _request;
   CoapIEndPoint _endpoint;
+
+  /// Cancelled
   bool cancelled;
+
+  /// Current response
   CoapResponse current;
   CoapObserveNotificationOrderer _orderer;
 
+  /// Orderer
   CoapObserveNotificationOrderer get orderer => _orderer;
 
+  /// Cancel after the fact
   void reactiveCancel() {
     _request.isCancelled = true;
     cancelled = true;
   }
 
+  /// Cancel
   void proactiveCancel() {
     final CoapRequest cancel = CoapRequest.newGet();
     // Copy options, but set Observe to cancel
@@ -56,6 +65,6 @@ class CoapObserveClientRelation {
 
   void _onReregister(CoapReregisteringEvent e) {
     // Reset orderer to accept any sequence number since server might have rebooted
-    _orderer = new CoapObserveNotificationOrderer(_config);
+    _orderer = CoapObserveNotificationOrderer(_config);
   }
 }
