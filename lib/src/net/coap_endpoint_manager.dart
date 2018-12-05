@@ -7,23 +7,22 @@
 
 part of coap;
 
+/// Endpoint manager
 class CoapEndpointManager {
+  /// Default spec
   static void getDefaultSpec() {
     final CoapConfig config = CoapConfig.inst;
-    if (config.spec == null) {
-      config.spec = new CoapDraft18();
-    }
+    config.spec ??= CoapDraft18();
   }
 
+  /// Default endpoint
   static CoapIEndPoint getDefaultEndpoint(CoapIEndPoint endpoint) {
     final CoapConfig config = CoapConfig.inst;
-    if (config.spec == null) {
-      config.spec = new CoapDraft18();
-    }
+    config.spec ??= CoapDraft18();
     config.defaultPort = config.spec.defaultPort;
     final CoapIChannel channel =
-        new CoapUDPChannel(endpoint.localEndpoint, config.defaultPort);
-    final CoapEndPoint ep = new CoapEndPoint(channel, config);
+    CoapUDPChannel(endpoint.localEndpoint, config.defaultPort);
+    final CoapEndPoint ep = CoapEndPoint(channel, config);
     ep.start();
     return ep;
   }

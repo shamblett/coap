@@ -8,14 +8,24 @@
 part of coap;
 
 /// Events
+
+/// Completed event
 class CoapCompletedEvent {
+  /// Construction
   CoapCompletedEvent(this.exchange);
 
+  /// The exchange
   CoapExchange exchange;
 }
 
 /// The origin of an exchange.
-enum CoapOrigin { local, remote }
+enum CoapOrigin {
+  /// Local
+  local,
+
+  /// Remote
+  remote
+}
 
 /// Represents the complete state of an exchange of one request
 /// and one or more responses. The lifecycle of an exchange ends
@@ -24,20 +34,27 @@ enum CoapOrigin { local, remote }
 /// when the request has been canceled, or when a request or response timed out,
 /// i.e., has reached the retransmission limit without being acknowledged.
 class CoapExchange {
-  CoapExchange(CoapRequest request, CoapOrigin origin) {
-    _origin = origin;
-    currentRequest = request;
-    _timestamp = new DateTime.now();
+  /// Construction
+  CoapExchange(this.request, this._origin) {
+    _timestamp = DateTime.now();
   }
 
-  Map<Object, Object> _attributes = new Map<Object, Object>();
+  Map<Object, Object> _attributes = Map<Object, Object>();
   CoapOrigin _origin;
 
+  /// The origin
   CoapOrigin get origin => _origin;
 
+  /// The request
   CoapRequest request;
+
+  /// The current request
   CoapRequest currentRequest;
+
+  /// The response
   CoapResponse response;
+
+  /// The current response
   CoapResponse currentResponse;
 
   /// The endpoint which has created and processed this exchange.
@@ -45,6 +62,7 @@ class CoapExchange {
 
   DateTime _timestamp;
 
+  /// Time
   DateTime get timestamp => _timestamp;
 
   /// the status of the blockwise transfer of the response,
@@ -59,10 +77,12 @@ class CoapExchange {
   /// When the server sends the response, this block option has to be acknowledged.
   CoapBlockOption block1ToAck;
 
+  /// Observe relation
   CoapObserveRelation relation;
 
   bool _timedOut;
 
+  /// Timed out
   bool get timedOut => _timedOut;
 
   set timedOut(bool value) {
@@ -74,17 +94,19 @@ class CoapExchange {
 
   bool _complete;
 
+  /// Complete
   bool get complete => _complete;
 
   set complete(bool value) {
     _complete = value;
     if (value) {
-      clientEventBus.fire(new CoapCompletedEvent(this));
+      clientEventBus.fire(CoapCompletedEvent(this));
     }
   }
 
   CoapIOutbox _outbox;
 
+  /// Outbox
   CoapIOutbox get outbox =>
       _outbox ?? (endpoint == null ? null : endpoint.outbox);
 
@@ -92,6 +114,7 @@ class CoapExchange {
 
   CoapIMessageDeliverer _deliverer;
 
+  /// Deliverer
   CoapIMessageDeliverer get deliverer =>
       _deliverer ?? (endpoint == null ? null : endpoint.deliverer);
 
@@ -127,15 +150,15 @@ class CoapExchange {
   }
 
   /// Attributes
-  T get<T>(Object key) {
-    return _attributes[key];
-  }
+  T get<T>(Object key) => _attributes[key];
 
+  /// Get or add an attribute
   T getOrAdd<T>(Object key, Object value) {
     _attributes[key] = value;
     return _attributes[key];
   }
 
+  /// Set an attribute
   T set<T>(Object key, Object value) {
     Object oldValue;
     if (_attributes.containsKey(key)) {
@@ -145,42 +168,43 @@ class CoapExchange {
     return oldValue;
   }
 
-  Object remove(Object key) {
-    return _attributes.remove(key);
-  }
+  /// Remove
+  Object remove(Object key) => _attributes.remove(key);
 }
 
+/// Key identifier
 class CoapKeyId {
-  CoapKeyId(int id, InternetAddress ep) {
-    _id = id;
-    _endpoint = ep;
-    _hash = id * 31 + (ep == null ? 0 : ep.hashCode);
+  /// Construction
+  CoapKeyId(this._id, this._endpoint) {
+    _hash = _id * 31 + (_endpoint == null ? 0 : _endpoint.hashCode);
   }
 
   int _id;
   InternetAddress _endpoint;
   int _hash;
 
-  int get getHashCode => _hash;
-
-  /// Dart style
+  @override
   int get hashCode => _hash;
 
-  bool operator ==(Object obj) {
-    if ((obj != null) && (obj is CoapKeyId)) {
-      return (_id == obj._id) && (_endpoint == obj._endpoint);
+  @override
+  bool operator ==(Object other) {
+    if (other is CoapKeyId) {
+      return (_id == other._id) && (_endpoint == other._endpoint);
     }
     return false;
   }
 
-  String toString() {
-    return "KeyID[$_id for endpoint: $_endpoint]";
-  }
+  @override
+  String toString() => 'KeyID[$_id for endpoint: $_endpoint]';
 }
 
+/// Key token
 class CoapKeyToken {
+  /// Construction
   CoapKeyToken(typed.Uint8Buffer token) {
-    if (token == null) throw new ArgumentError.notNull("CoapKeyToken::token");
+    if (token == null) {
+      throw ArgumentError.notNull('CoapKeyToken::token');
+    }
     _token = token;
     _hash = CoapByteArrayUtil.computeHash(_token);
   }
@@ -188,47 +212,43 @@ class CoapKeyToken {
   typed.Uint8Buffer _token;
   int _hash;
 
-  int get getHashCode => _hash;
-
-  /// Dart style
+  @override
   int get hashCode => _hash;
 
-  bool operator ==(Object obj) {
-    if ((obj != null) && (obj is CoapKeyToken)) {
-      return _hash == obj.hashCode;
+  @override
+  bool operator ==(Object other) {
+    if (other is CoapKeyToken) {
+      return _hash == other.hashCode;
     }
     return false;
   }
 
-  String toString() {
-    return "KeyToken[${CoapByteArrayUtil.toHexString(_token)}]";
-  }
+  @override
+  String toString() => 'KeyToken[${CoapByteArrayUtil.toHexString(_token)}]';
 }
 
+/// Key URI
 class CoapKeyUri {
-  CoapKeyUri(Uri uri, InternetAddress ep) {
-    _uri = uri;
-    _endpoint = ep;
-    _hash = uri.hashCode * 31 + (ep == null ? 0 : ep.hashCode);
+  /// Construction
+  CoapKeyUri(this._uri, this._endpoint) {
+    _hash = _uri.hashCode * 31 + (_endpoint == null ? 0 : _endpoint.hashCode);
   }
 
   Uri _uri;
   InternetAddress _endpoint;
   int _hash;
 
-  int get getHashCode => _hash;
-
-  /// Dart style
+  @override
   int get hashCode => _hash;
 
-  bool operator ==(Object obj) {
-    if ((obj != null) && (obj is CoapKeyUri)) {
-      return (_uri == obj._uri) && (_endpoint == obj._endpoint);
+  @override
+  bool operator ==(Object other) {
+    if (other is CoapKeyUri) {
+      return (_uri == other._uri) && (_endpoint == other._endpoint);
     }
     return false;
   }
 
-  String toString() {
-    return "KeyUri[$_uri for $_endpoint]";
-  }
+  @override
+  String toString() => 'KeyUri[$_uri for $_endpoint]';
 }
