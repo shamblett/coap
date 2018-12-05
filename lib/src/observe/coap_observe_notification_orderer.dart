@@ -10,6 +10,7 @@ part of coap;
 /// This class holds the state of an observe relation such
 /// as the timeout of the last notification and the current number.
 class CoapObserveNotificationOrderer {
+  /// Construction
   CoapObserveNotificationOrderer(CoapConfig config) {
     _config = config;
   }
@@ -17,7 +18,10 @@ class CoapObserveNotificationOrderer {
   CoapConfig _config;
   int _number;
 
+  /// Current number
   int get current => _number;
+
+  /// Time
   DateTime timestamp;
 
   /// Gets a new observe option number.
@@ -32,6 +36,7 @@ class CoapObserveNotificationOrderer {
     return next;
   }
 
+  /// Is new indicator
   bool isNew(CoapResponse response) {
     final int obs = response.observe;
     if (obs != null) {
@@ -44,13 +49,13 @@ class CoapObserveNotificationOrderer {
     // ensure that only the most fresh one is being delivered.
     // We use the notation from the observe draft-08.
     final DateTime t1 = timestamp;
-    final DateTime t2 = new DateTime.now();
+    final DateTime t2 = DateTime.now();
     final int v1 = current;
     final int v2 = obs;
     final int notifMaxAge = _config.notificationMaxAge;
     if (v1 < v2 && v2 - v1 < 1 << 23 ||
         v1 > v2 && v1 - v2 > 1 << 23 ||
-        t2.isAfter(t1.add(new Duration(milliseconds: notifMaxAge)))) {
+        t2.isAfter(t1.add(Duration(milliseconds: notifMaxAge)))) {
       timestamp = t2;
       _number = v2;
       return true;

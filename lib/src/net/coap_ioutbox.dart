@@ -7,6 +7,7 @@
 
 part of coap;
 
+/// Interface for an Outbox
 abstract class CoapIOutbox {
   /// Sends the specified request over the connector that the stack is connected to.
   void sendRequest(CoapExchange exchange, CoapRequest request);

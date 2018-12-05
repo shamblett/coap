@@ -7,6 +7,7 @@
 
 part of coap;
 
+/// Interface for a resource
 abstract class CoapIResource {
   /// The name of the resource.
   /// Note that changing the name of a resource changes
@@ -22,50 +23,50 @@ abstract class CoapIResource {
   /// the path of all its children.
   String path;
 
-  /// The uri of the resource.
   String _uri;
 
+  /// The uri of the resource.
   String get uri => _uri;
 
-  /// Indicates if the resource is visible to remote CoAP clients.
   bool _visible;
 
+  /// Indicates if the resource is visible to remote CoAP clients.
   bool get visible => _visible;
+
+  bool _cachable;
 
   /// Indicates if is the URI of the resource can be cached.
   /// If another request with the same destination URI arrives,
   /// it can be forwarded to this resource right away instead of
   /// traveling through the resource tree looking for it.
-  bool _cachable;
-
   bool get cachable => _cachable;
 
-  /// Indicates if this resource is observable by remote CoAP clients.
   bool _observable;
 
+  /// Indicates if this resource is observable by remote CoAP clients.
   bool get observable => _observable;
 
-  /// Gets the attributes of this resource.
   CoapResourceAttributes _attributes;
 
+  /// Gets the attributes of this resource.
   CoapResourceAttributes get attributes => _attributes;
 
-  /// Gets the executor of this resource.
   CoapIExecutor _executor;
 
+  /// Gets the executor of this resource.
   CoapIExecutor get executor => _executor;
 
-  /// Gets the endpoints this resource is bound to.
   Iterable<CoapIEndPoint> _endPoints;
 
+  /// Gets the endpoints this resource is bound to.
   Iterable<CoapIEndPoint> get endPoints => _endPoints;
 
   /// The parent of this resource.
   CoapIResource parent;
 
-  /// Gets all child resources.
   Iterable<CoapIResource> _children;
 
+  /// Gets all child resources.
   Iterable<CoapIResource> get children => _children;
 
   /// Adds the specified resource as child.

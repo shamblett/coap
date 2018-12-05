@@ -9,41 +9,66 @@ part of coap;
 
 /// draft-ietf-core-coap-03
 class CoapDraft03 implements CoapISpec {
+  /// Version
   static const int version = 1;
+
+  /// Version bit length
   static const int versionBits = 2;
+
+  /// Type bit length
   static const int typeBits = 2;
+
+  /// Option count nit length
   static const int optionCountBits = 4;
+
+  /// Code bit length
   static const int codeBits = 8;
+
+  /// Id bit length
   static const int idBits = 16;
+
+  /// Option delta bit length
   static const int optionDeltaBits = 4;
+
+  /// Option length base bit length
   static const int optionLengthBaseBits = 4;
+
+  /// Option length extended bit length
   static const int optionLengthExtendedBits = 8;
+
+  /// Max option delta
   static const int maxOptionDelta = (1 << optionDeltaBits) - 1;
+
+  /// Max Option length base
   static const int maxOptionLengthBase = (1 << optionLengthBaseBits) - 2;
+
+  /// Fence post divisor position
   static const int fencepostDivisor = 14;
 
-  static CoapILogger _log = new CoapLogManager("console").logger;
+  static CoapILogger _log = CoapLogManager('console').logger;
 
-  String get name => "draft-ietf-core-coap-03";
+  @override
+  String get name => 'draft-ietf-core-coap-03';
 
+  @override
   int get defaultPort => 61616;
 
-  CoapIMessageEncoder newMessageEncoder() {
-    return new CoapMessageEncoder03();
-  }
+  @override
+  CoapIMessageEncoder newMessageEncoder() => CoapMessageEncoder03();
 
-  CoapIMessageDecoder newMessageDecoder(typed.Uint8Buffer data) {
-    return new CoapMessageDecoder03(data);
-  }
+  @override
+  CoapIMessageDecoder newMessageDecoder(typed.Uint8Buffer data) =>
+      CoapMessageDecoder03(data);
 
-  typed.Uint8Buffer encode(CoapMessage msg) {
-    return newMessageEncoder().encodeMessage(msg);
-  }
+  @override
+  typed.Uint8Buffer encode(CoapMessage msg) =>
+      newMessageEncoder().encodeMessage(msg);
 
-  CoapMessage decode(typed.Uint8Buffer bytes) {
-    return newMessageDecoder(bytes).decodeMessage();
-  }
+  @override
+  CoapMessage decode(typed.Uint8Buffer bytes) =>
+      newMessageDecoder(bytes).decodeMessage();
 
+  /// Option number
   static int getOptionNumber(int optionType) {
     switch (optionType) {
       case optionTypeReserved:
@@ -81,6 +106,7 @@ class CoapDraft03 implements CoapISpec {
     }
   }
 
+  /// Option type
   static int getOptionType(int optionNumber) {
     switch (optionNumber) {
       case 0:
@@ -118,14 +144,14 @@ class CoapDraft03 implements CoapISpec {
     }
   }
 
-  static int nextFencepost(int optionNumber) {
-    return (optionNumber / fencepostDivisor + 1).toInt() * fencepostDivisor;
-  }
+  /// Next fence post
+  static int nextFencepost(int optionNumber) =>
+      (optionNumber / fencepostDivisor + 1).toInt() * fencepostDivisor;
 
-  static bool isFencepost(int type) {
-    return type % fencepostDivisor == 0;
-  }
+  /// Is a fence post
+  static bool isFencepost(int type) => type % fencepostDivisor == 0;
 
+  /// Output media mapper
   static int mapOutMediaType(int mediaType) {
     switch (mediaType) {
       case CoapMediaType.applicationXObixBinary:
@@ -141,6 +167,7 @@ class CoapDraft03 implements CoapISpec {
     }
   }
 
+  /// Input media mapper
   static int mapInMediaType(int mediaType) {
     switch (mediaType) {
       case 48:
@@ -156,6 +183,7 @@ class CoapDraft03 implements CoapISpec {
     }
   }
 
+  /// Out code mapper
   static int mapOutCode(int code) {
     switch (code) {
       case CoapCode.content:
@@ -165,10 +193,12 @@ class CoapDraft03 implements CoapISpec {
     }
   }
 
+  /// In code mapper
   static int mapInCode(int code) {
-    if (code == 80)
+    if (code == 80) {
       return CoapCode.content;
-    else
+    } else {
       return ((code ~/ 40) << 5) + (code % 40);
+    }
   }
 }

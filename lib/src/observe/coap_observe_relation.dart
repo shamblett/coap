@@ -15,19 +15,22 @@ class CoapObserveRelation {
   /// The exchange that tries to establish the observe relation
   CoapObserveRelation(CoapObservingEndpoint endpoint, CoapIResource resource,
       CoapExchange exchange) {
-    if (endpoint == null)
-      throw new ArgumentError.notNull("CoapObserveRelation::endpoint");
-    if (resource == null)
-      throw new ArgumentError.notNull("CoapObserveRelation::resource");
-    if (exchange == null)
-      throw new ArgumentError.notNull("CoapObserveRelation::exchange");
+    if (endpoint == null) {
+      throw ArgumentError.notNull('CoapObserveRelation::endpoint');
+    }
+    if (resource == null) {
+      throw ArgumentError.notNull('CoapObserveRelation::resource');
+    }
+    if (exchange == null) {
+      throw ArgumentError.notNull('CoapObserveRelation::exchange');
+    }
     _endpoint = endpoint;
     _resource = resource;
     _exchange = exchange;
-    _key = "$source#${exchange.request.tokenString}";
+    _key = '$source#${exchange.request.tokenString}';
   }
 
-  CoapILogger log = new CoapLogManager('console').logger;
+  CoapILogger _log = CoapLogManager('console').logger;
   CoapConfig _config;
   CoapObservingEndpoint _endpoint;
 
@@ -35,27 +38,36 @@ class CoapObserveRelation {
   InternetAddress get source => _endpoint.endpoint;
   CoapIResource _resource;
 
+  /// The resource
   CoapIResource get resource => _resource;
   CoapExchange _exchange;
 
+  /// The exchange
   CoapExchange get exchange => _exchange;
+
+  /// Current control notification
   CoapResponse currentControlNotification;
+
+  /// Next control notification
   CoapResponse nextControlNotification;
   String _key;
+
+  /// Key
   String get key => _key;
 
   /// A value indicating if this relation has been established
   bool established;
-  DateTime _interestCheckTime = new DateTime.now();
+  DateTime _interestCheckTime = DateTime.now();
   int _interestCheckCounter = 1;
 
   /// The notifications that have been sent, so they can be removed from the Matcher
-  Queue<CoapResponse> _notifications = new Queue<CoapResponse>();
+  Queue<CoapResponse> _notifications = Queue<CoapResponse>();
 
   /// Cancel this observe relation.
   void cancel() {
-    log.debug(
-        "CoapObserveRelation::Cancel observe relation from $_key with ${_resource.path}");
+    _log.debug(
+        'CoapObserveRelation::Cancel observe relation from $_key with ${_resource
+            .path}');
     // Stop ongoing retransmissions
     if (_exchange.response != null) {
       _exchange.response.cancel();
@@ -78,12 +90,13 @@ class CoapObserveRelation {
     _resource.handleRequest(_exchange);
   }
 
+  /// Check
   bool check() {
     bool check = false;
-    final DateTime now = new DateTime.now();
+    final DateTime now = DateTime.now();
     check = check ||
         _interestCheckTime
-            .add(new Duration(
+            .add(Duration(
                 milliseconds: CoapConfig.inst.notificationCheckIntervalTime))
             .isBefore(now);
     check = check ||
@@ -96,10 +109,12 @@ class CoapObserveRelation {
     return check;
   }
 
+  /// Add a notification
   void addNotification(CoapResponse notification) {
     _notifications.add(notification);
   }
 
+  /// Clear notifications
   Iterable<CoapResponse> clearNotifications() {
     Iterable<CoapResponse> list;
     list = _notifications.toList();

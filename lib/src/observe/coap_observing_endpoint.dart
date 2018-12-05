@@ -19,8 +19,9 @@ class CoapObservingEndpoint {
 
   InternetAddress _endpoint;
 
+  /// Th endpoint
   InternetAddress get endpoint => _endpoint;
-  List<CoapObserveRelation> _relations = new List<CoapObserveRelation>();
+  List<CoapObserveRelation> _relations = List<CoapObserveRelation>();
 
   /// Adds the specified observe relation.
   void addObserveRelation(CoapObserveRelation relation) {
@@ -35,8 +36,9 @@ class CoapObservingEndpoint {
   /// Finds the observe relation by token.
   CoapObserveRelation getObserveRelation(typed.Uint8Buffer token) {
     for (CoapObserveRelation relation in _relations) {
-      if (CoapByteArrayUtil.equals(token, relation.exchange.request.token))
+      if (CoapByteArrayUtil.equals(token, relation.exchange.request.token)) {
         return relation;
+      }
     }
     return null;
   }

@@ -13,7 +13,7 @@ part of coap;
 /// example, if a title was specified, the link description for a sensor resource
 /// might look like this &lt;/sensors&gt;;title="Sensor Index"
 class CoapResourceAttributes {
-  Map<String, List<String>> _attributes = new Map<String, List<String>>();
+  Map<String, List<String>> _attributes = Map<String, List<String>>();
 
   /// Gets the number of attributes.
   int get count => _attributes.length;
@@ -29,7 +29,7 @@ class CoapResourceAttributes {
   /// Gets or sets a value indicating if the resource is observable.
   bool get observable => getValues(CoapLinkFormat.observable).first.isNotEmpty;
 
-  set observable(bool value) => set(CoapLinkFormat.observable, "");
+  set observable(bool value) => set(CoapLinkFormat.observable, '');
 
   /// Gets or sets the maximum size estimate string value.
   String get maximumSizeEstimateString =>
@@ -52,13 +52,12 @@ class CoapResourceAttributes {
   }
 
   /// Gets all resource types.
-  Iterable<String> getResourceTypes() {
-    return _attributes[CoapLinkFormat.resourceType];
-  }
+  Iterable<String> getResourceTypes() =>
+      _attributes[CoapLinkFormat.resourceType];
 
   /// Clears all resource types.
   void clearResourceTypes() {
-    _attributes[CoapLinkFormat.resourceType] = new List<String>();
+    _attributes[CoapLinkFormat.resourceType] = List<String>();
   }
 
   /// Adds an interface description.
@@ -67,13 +66,12 @@ class CoapResourceAttributes {
   }
 
   /// Gets all interface descriptions.
-  Iterable<String> getInterfaceDescriptions() {
-    return _attributes[CoapLinkFormat.interfaceDescription];
-  }
+  Iterable<String> getInterfaceDescriptions() =>
+      _attributes[CoapLinkFormat.interfaceDescription];
 
   /// Clears all interface descriptions.
   void clearInterfaceDescriptions() {
-    _attributes[CoapLinkFormat.interfaceDescription] = new List<String>();
+    _attributes[CoapLinkFormat.interfaceDescription] = List<String>();
   }
 
   /// Adds a content type specified by an integer.
@@ -82,19 +80,15 @@ class CoapResourceAttributes {
   }
 
   /// Gets all content types.
-  Iterable<String> getContentTypes() {
-    return _attributes[CoapLinkFormat.contentType];
-  }
+  Iterable<String> getContentTypes() => _attributes[CoapLinkFormat.contentType];
 
   /// Clears all content types.
   void clearContentTypes() {
-    _attributes[CoapLinkFormat.contentType] = new List<String>();
+    _attributes[CoapLinkFormat.contentType] = List<String>();
   }
 
   /// Returns true if this object contains the specified attribute.
-  bool contains(String name) {
-    return _attributes.containsKey(name);
-  }
+  bool contains(String name) => _attributes.containsKey(name);
 
   /// Adds the specified value to the other values of the specified attribute.
   void add(String name, String value) {
@@ -103,13 +97,11 @@ class CoapResourceAttributes {
 
   /// Adds an arbitrary attribute with no value.
   void addNoValue(String name) {
-    add(name, "");
+    add(name, '');
   }
 
   /// Gets all values for the specified attribute.
-  Iterable<String> getValues(String name) {
-    return _attributes[name];
-  }
+  Iterable<String> getValues(String name) => _attributes[name];
 
   /// Replaces the value for the specified attribute with the specified value.
   /// If another value has been set for the attribute name, it will be removed.
@@ -119,6 +111,6 @@ class CoapResourceAttributes {
 
   /// Removes all values for the specified attribute.
   void clear(String name) {
-    _attributes[name] = new List<String>();
+    _attributes[name] = List<String>();
   }
 }
