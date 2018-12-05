@@ -7,17 +7,18 @@
 
 part of coap;
 
+/// Blockwise layer
 class CoapBlockwiseLayer extends CoapAbstractLayer {
-  /// Constructs a new blockwise layer.
+  /// Constructs a blockwise layer.
   CoapBlockwiseLayer(CoapConfig config) {
     _maxMessageSize = config.maxMessageSize;
     _defaultBlockSize = config.defaultBlockSize;
     _blockTimeout = config.blockwiseStatusLifetime;
     _log.debug(
-        "BlockwiseLayer uses MaxMessageSize: $_maxMessageSize and DefaultBlockSize: $_defaultBlockSize");
+        'BlockwiseLayer uses MaxMessageSize: $_maxMessageSize and DefaultBlockSize: $_defaultBlockSize');
   }
 
-  static CoapILogger _log = new CoapLogManager("console").logger;
+  static CoapILogger _log = CoapLogManager('console').logger;
 
   int _maxMessageSize;
   int _defaultBlockSize;
@@ -33,9 +34,9 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       // 0. This is because the user might just want to do early block
       // size negotiation but actually wants to receive all blocks.
       _log.debug(
-          "Request carries explicit defined block2 option: create random access blockwise status");
+          'Request carries explicit defined block2 option: create random access blockwise status');
       final CoapBlockwiseStatus status =
-          new CoapBlockwiseStatus(request.contentFormat);
+      CoapBlockwiseStatus(request.contentFormat);
       final CoapBlockOption block2 = request.block2;
       status.currentSZX = block2.szx;
       status.currentNUM = block2.num;
@@ -45,7 +46,8 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     } else if (_requiresBlockwise(request)) {
       // This must be a large POST or PUT request
       _log.debug(
-          "Request payload ${request.payloadSize} / $_maxMessageSize requires Blockwise.");
+          'Request payload ${request
+              .payloadSize} / $_maxMessageSize requires Blockwise.');
       final CoapBlockwiseStatus status =
           _findRequestBlockStatus(exchange, request);
       final CoapRequest block = _getNextRequestBlock(request, status);
@@ -64,14 +66,14 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     if (request.hasOption(optionTypeBlock1)) {
       // This must be a large POST or PUT request
       final CoapBlockOption block1 = request.block1;
-      _log.debug("Request contains block1 option $block1");
+      _log.debug('Request contains block1 option $block1');
 
       CoapBlockwiseStatus status = _findRequestBlockStatus(exchange, request);
       if (block1.num == 0 && status.currentNUM > 0) {
         // Reset the blockwise transfer
         _log.debug(
-            "Block1 num is 0, the client has restarted the blockwise transfer. Reset status.");
-        status = new CoapBlockwiseStatus(request.contentType);
+            'Block1 num is 0, the client has restarted the blockwise transfer. Reset status.');
+        status = CoapBlockwiseStatus(request.contentType);
         exchange.requestBlockStatus = status;
       }
 
@@ -81,9 +83,10 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
         } else {
           final CoapResponse error = CoapResponse.createResponse(
               request, CoapCode.requestEntityIncomplete);
-          error.addOption(new CoapBlockOption.fromParts(
-              optionTypeBlock1, block1.num, block1.szx, m: block1.m));
-          error.setPayload("Changed Content-Format");
+          error.addOption(CoapBlockOption.fromParts(
+              optionTypeBlock1, block1.num, block1.szx,
+              m: block1.m));
+          error.setPayload('Changed Content-Format');
 
           exchange.currentResponse = error;
           super.sendResponse(nextLayer, exchange, error);
@@ -92,12 +95,13 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
 
         status.currentNUM = status.currentNUM + 1;
         if (block1.m) {
-          _log.debug("There are more blocks to come. Acknowledge this block.");
+          _log.debug('There are more blocks to come. Acknowledge this block.');
 
           final CoapResponse piggybacked =
               CoapResponse.createResponse(request, CoapCode.continues);
-          piggybacked.addOption(new CoapBlockOption.fromParts(
-              optionTypeBlock1, block1.num, block1.szx, m: true));
+          piggybacked.addOption(CoapBlockOption.fromParts(
+              optionTypeBlock1, block1.num, block1.szx,
+              m: true));
           piggybacked.last = false;
 
           exchange.currentResponse = piggybacked;
@@ -105,7 +109,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
 
           // Do not assemble and deliver the request yet
         } else {
-          _log.debug("This was the last block. Deliver request");
+          _log.debug('This was the last block. Deliver request');
 
           // Remember block to acknowledge.
           exchange.block1ToAck = block1;
@@ -114,7 +118,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           _earlyBlock2Negotiation(exchange, request);
 
           // Assemble and deliver
-          final CoapRequest assembled = new CoapRequest(request.method);
+          final CoapRequest assembled = CoapRequest(request.method);
           _assembleMessage(status, assembled, request);
 
           exchange.request = assembled;
@@ -123,12 +127,15 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       } else {
         // ERROR, wrong number, Incomplete
         _log.warn(
-            "Wrong block number. Expected ${status.currentNUM} but received ${block1.num} Respond with 4.08 (Request Entity Incomplete).");
+            'Wrong block number. Expected ${status
+                .currentNUM} but received ${block1
+                .num} Respond with 4.08 (Request Entity Incomplete).');
         final CoapResponse error = CoapResponse.createResponse(
             request, CoapCode.requestEntityIncomplete);
-        error.addOption(new CoapBlockOption.fromParts(
-            optionTypeBlock1, block1.num, block1.szx, m: block1.m));
-        error.setPayload("Wrong block number");
+        error.addOption(CoapBlockOption.fromParts(
+            optionTypeBlock1, block1.num, block1.szx,
+            m: block1.m));
+        error.setPayload('Wrong block number');
         exchange.currentResponse = error;
         super.sendResponse(nextLayer, exchange, error);
       }
@@ -149,11 +156,11 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
 
       if (status.complete) {
         // Clean up blockwise status
-        _log.debug("Ongoing is complete $status");
+        _log.debug('Ongoing is complete $status');
         exchange.responseBlockStatus = null;
         _clearBlockCleanup(exchange);
       } else {
-        _log.debug("Ongoing is continuing $status");
+        _log.debug('Ongoing is continuing $status');
       }
 
       exchange.currentResponse = block;
@@ -176,30 +183,35 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
 
     if (_requiresBlockwiseExchange(exchange, response)) {
       _log.debug(
-          "Response payload ${response.payloadSize} / $_maxMessageSize requires Blockwise");
+          'Response payload ${response
+              .payloadSize} / $_maxMessageSize requires Blockwise');
 
       final CoapBlockwiseStatus status =
           _findResponseBlockStatus(exchange, response);
 
       final CoapResponse block = _getNextResponseBlock(response, status);
 
-      if (block1 != null) // In case we still have to ack the last block1
+      if (block1 != null) {
+        // In case we still have to ack the last block1
         block.setOption(block1);
-      if (block.token == null) block.token = exchange.request.token;
+      }
+      block.token ??= exchange.request.token;
 
       if (status.complete) {
         // Clean up blockwise status
-        _log.debug("Ongoing finished on first block $status");
+        _log.debug('Ongoing finished on first block $status');
         exchange.responseBlockStatus = null;
         _clearBlockCleanup(exchange);
       } else {
-        _log.debug("Ongoing started $status");
+        _log.debug('Ongoing started $status');
       }
 
       exchange.currentResponse = block;
       super.sendResponse(nextLayer, exchange, block);
     } else {
-      if (block1 != null) response.setOption(block1);
+      if (block1 != null) {
+        response.setOption(block1);
+      }
       exchange.currentResponse = response;
       // Block1 transfer completed
       _clearBlockCleanup(exchange);
@@ -214,7 +226,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     if (exchange.request.isCancelled) {
       // Reject (in particular for Block+Observe)
       if (response.type != CoapMessageType.ack) {
-        _log.debug("Rejecting blockwise transfer for canceled Exchange");
+        _log.debug('Rejecting blockwise transfer for canceled Exchange');
         final CoapEmptyMessage rst = CoapEmptyMessage.newRST(response);
         sendEmptyMessage(nextLayer, exchange, rst);
         // Matcher sets exchange as complete when RST is sent
@@ -232,7 +244,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
 
     final CoapBlockOption block1 = response.block1;
     if (block1 != null) {
-      _log.debug("Response acknowledges block $block1");
+      _log.debug('Response acknowledges block $block1');
 
       final CoapBlockwiseStatus status = exchange.requestBlockStatus;
       if (!status.complete) {
@@ -240,14 +252,12 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
         final int currentSize = 1 << (4 + status.currentSZX);
         final int nextNum =
             (status.currentNUM + currentSize / block1.size()).toInt();
-        _log.debug("Send next block num = $nextNum");
+        _log.debug('Send next block num = $nextNum');
         status.currentNUM = nextNum;
         status.currentSZX = block1.szx;
         final CoapRequest nextBlock =
             _getNextRequestBlock(exchange.request, status);
-        if (nextBlock.token == null) {
-          nextBlock.token = response.token; // reuse same token
-        }
+        nextBlock.token ??= response.token; // reuse same token
         exchange.currentRequest = nextBlock;
         super.sendRequest(nextLayer, exchange, nextBlock);
         // Do not deliver response
@@ -257,7 +267,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
         super.receiveResponse(nextLayer, exchange, response);
       } else {
         _log.debug(
-            "Response has Block2 option and is therefore sent blockwise");
+            'Response has Block2 option and is therefore sent blockwise');
       }
     }
 
@@ -282,20 +292,20 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           exchange.response = response;
           super.receiveResponse(nextLayer, exchange, response);
         } else if (block2.m) {
-          _log.debug("Request the next response block");
+          _log.debug('Request the next response block');
 
           final CoapRequest request = exchange.request;
           final int num = block2.num + 1;
           final int szx = block2.szx;
-          final bool m = false;
+          const bool m = false;
 
-          final CoapRequest block = new CoapRequest(request.method);
+          final CoapRequest block = CoapRequest(request.method);
           // NON could make sense over SMS or similar transports
           block.type = request.type;
           block.destination = request.destination;
           block.setOptions(request.getSortedOptions());
           block.setOption(
-              new CoapBlockOption.fromParts(optionTypeBlock2, num, szx, m: m));
+              CoapBlockOption.fromParts(optionTypeBlock2, num, szx, m: m));
           // We use the same token to ease traceability (GET without Observe no longer cancels relations)
           block.token = response.token;
           // Make sure not to use Observe for block retrieval
@@ -307,13 +317,14 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           super.sendRequest(nextLayer, exchange, block);
         } else {
           _log.debug(
-              "We have received all ${status.blockCount} blocks of the response. Assemble and deliver.");
-          final CoapResponse assembled = new CoapResponse(response.statusCode);
+              'We have received all ${status
+                  .blockCount} blocks of the response. Assemble and deliver.');
+          final CoapResponse assembled = CoapResponse(response.statusCode);
           _assembleMessage(status, assembled, response);
           assembled.type = response.type;
 
           // Set overall transfer RTT
-          assembled.rtt = (new DateTime.now().difference(exchange.timestamp))
+          assembled.rtt = (DateTime.now().difference(exchange.timestamp))
               .inMilliseconds
               .toDouble();
 
@@ -327,7 +338,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
             exchange.responseBlockStatus = null;
           }
 
-          _log.debug("Assembled response: $assembled");
+          _log.debug('Assembled response: $assembled');
           exchange.response = assembled;
           super.receiveResponse(nextLayer, exchange, assembled);
         }
@@ -335,7 +346,9 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
         // ERROR, wrong block number (server error)
         // Currently, we reject it and cancel the request.
         _log.warn(
-            "Wrong block number. Expected ${status.currentNUM} but received ${block2.num}. Reject response; exchange has failed.");
+            'Wrong block number. Expected ${status
+                .currentNUM} but received ${block2
+                .num}. Reject response; exchange has failed.');
         if (response.type == CoapMessageType.con) {
           final CoapEmptyMessage rst = CoapEmptyMessage.newRST(response);
           super.sendEmptyMessage(nextLayer, exchange, rst);
@@ -347,23 +360,24 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
 
   bool _requiresBlockwise(CoapRequest request) {
     if (request.method == CoapCode.methodPUT ||
-        request.method == CoapCode.methodPOST)
+        request.method == CoapCode.methodPOST) {
       return request.payloadSize > _maxMessageSize;
-    else
+    } else {
       return false;
+    }
   }
 
   CoapBlockwiseStatus _findRequestBlockStatus(
       CoapExchange exchange, CoapRequest request) {
     CoapBlockwiseStatus status = exchange.requestBlockStatus;
     if (status == null) {
-      status = new CoapBlockwiseStatus(request.contentType);
+      status = CoapBlockwiseStatus(request.contentType);
       status.currentSZX = CoapBlockOption.encodeSZX(_defaultBlockSize);
       exchange.requestBlockStatus = status;
       _log.debug(
-          "There is no assembler status yet. Create and set new Block1 status: $status");
+          'There is no assembler status yet. Create and set Block1 status: $status');
     } else {
-      _log.debug("Current Block1 status: $status");
+      _log.debug('Current Block1 status: $status');
     }
     // sets a timeout to complete exchange
     _prepareBlockCleanup(exchange);
@@ -374,7 +388,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       CoapRequest request, CoapBlockwiseStatus status) {
     final int num = status.currentNUM;
     final int szx = status.currentSZX;
-    final CoapRequest block = new CoapRequest(request.method);
+    final CoapRequest block = CoapRequest(request.method);
     block.setOptions(request.getSortedOptions());
     block.destination = request.destination;
     block.token = request.token;
@@ -384,13 +398,13 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     final int from = num * currentSize;
     final int to = min((num + 1) * currentSize, request.payloadSize);
     final int length = to - from;
-    final typed.Uint8Buffer blockPayload = new typed.Uint8Buffer()
+    final typed.Uint8Buffer blockPayload = typed.Uint8Buffer()
       ..addAll(request.payload.getRange(from, from + length));
     block.payload = blockPayload;
 
     final bool m = to < request.payloadSize;
-    block.addOption(
-        new CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m: m));
+    block
+        .addOption(CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m: m));
 
     status.complete = !m;
     return block;
@@ -401,10 +415,10 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     // been sent in one piece without blockwise).
     if (request.hasOption(optionTypeBlock2)) {
       final CoapBlockOption block2 = request.block2;
-      final CoapBlockwiseStatus status2 = new CoapBlockwiseStatus.withSize(
+      final CoapBlockwiseStatus status2 = CoapBlockwiseStatus.withSize(
           request.contentType, block2.num, block2.szx);
       _log.debug(
-          "Request with early block negotiation $block2. Create and set new Block2 status: $status2");
+          'Request with early block negotiation $block2. Create and set Block2 status: $status2');
       exchange.responseBlockStatus = status2;
     }
   }
@@ -418,10 +432,8 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     message.type = last.type;
     message.setOptions(last.getSortedOptions());
 
-    final typed.Uint8Buffer payload = new typed.Uint8Buffer();
-    for (typed.Uint8Buffer block in status.blocks) {
-      payload.addAll(block);
-    }
+    final typed.Uint8Buffer payload = typed.Uint8Buffer();
+    status.blocks.forEach(payload.addAll);
     message.payload = payload;
   }
 
@@ -429,13 +441,14 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       CoapExchange exchange, CoapResponse response) {
     final CoapBlockwiseStatus status = exchange.responseBlockStatus;
     if (status == null) {
-      final status = new CoapBlockwiseStatus(response.contentType);
+      final CoapBlockwiseStatus status =
+      CoapBlockwiseStatus(response.contentType);
       status.currentSZX = CoapBlockOption.encodeSZX(_defaultBlockSize);
       exchange.responseBlockStatus = status;
       _log.debug(
-          "There is no blockwise status yet. Create and set new Block2 status: $status");
+          'There is no blockwise status yet. Create and set Block2 status: $status');
     } else {
-      _log.debug("Current Block2 status: $status");
+      _log.debug('Current Block2 status: $status');
     }
 
     // Sets a timeout to complete exchange
@@ -453,7 +466,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       // A blockwise notification transmits the first block only
       block = response;
     } else {
-      block = new CoapResponse(response.statusCode);
+      block = CoapResponse(response.statusCode);
       block.destination = response.destination;
       block.token = response.token;
       block.setOptions(response.getSortedOptions());
@@ -466,7 +479,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     if (payloadSize > 0 && payloadSize > from) {
       final int to = min((num + 1) * currentSize, response.payloadSize);
       final int length = to - from;
-      final typed.Uint8Buffer blockPayload = new typed.Uint8Buffer();
+      final typed.Uint8Buffer blockPayload = typed.Uint8Buffer();
       final bool m = to < response.payloadSize;
       block.setBlock2(szx, num, m: m);
 
@@ -480,7 +493,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       status.complete = !m;
     } else {
       block.addOption(
-          new CoapBlockOption.fromParts(optionTypeBlock2, num, szx, m: false));
+          CoapBlockOption.fromParts(optionTypeBlock2, num, szx, m: false));
       block.last = true;
       status.complete = true;
     }
@@ -490,30 +503,29 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
 
   /// Schedules a clean-up task.
   void _prepareBlockCleanup(CoapExchange exchange) {
-    final Timer timer = new Timer(new Duration(milliseconds: _blockTimeout),
+    final Timer timer = Timer(Duration(milliseconds: _blockTimeout),
         () => _blockwiseTimeout(exchange));
-    final Timer old = exchange.set("BlockCleanupTimer", timer);
+    final Timer old = exchange.set('BlockCleanupTimer', timer);
     old?.cancel();
   }
 
   /// Clears the clean-up task.
   void _clearBlockCleanup(CoapExchange exchange) {
-    final Timer timer = exchange.remove("BlockCleanupTimer");
+    final Timer timer = exchange.remove('BlockCleanupTimer');
     timer?.cancel();
   }
 
   void _blockwiseTimeout(CoapExchange exchange) {
     if (exchange.request == null) {
-      _log.info("Block1 transfer timed out: $exchange.currentRequest");
+      _log.info('Block1 transfer timed out: $exchange.currentRequest');
     } else {
-      _log.info("Block2 transfer timed out: $exchange.request");
+      _log.info('Block2 transfer timed out: $exchange.request');
     }
     exchange.complete = true;
   }
 
-  bool _requiresBlockwiseExchange(
-      CoapExchange exchange, CoapResponse response) {
-    return response.payloadSize > _maxMessageSize ||
-        exchange.responseBlockStatus != null;
-  }
+  bool _requiresBlockwiseExchange(CoapExchange exchange,
+      CoapResponse response) =>
+      response.payloadSize > _maxMessageSize ||
+          exchange.responseBlockStatus != null;
 }

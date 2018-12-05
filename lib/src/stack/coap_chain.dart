@@ -7,48 +7,45 @@
 
 part of coap;
 
-typedef bool TEqualsFunc<TFilter>(TFilter a, TFilter b);
-typedef CoapEntry TEntryFactoryFunc<TChain, TFilter>(
+typedef TEqualsFunc = bool Function<TFilter>(TFilter a, TFilter b);
+typedef TEntryFactoryFunc = CoapEntry Function<TChain, TFilter>(
     TChain a, CoapEntry b, CoapEntry c, String d, TFilter e);
 typedef TNextFilter TNextFilterFactory<TNextFilter, TFilter>(TFilter v);
 typedef TFilter TFilterFactory<TFilter>();
 
 /// Represents a chain of filters.
 abstract class CoapIChain<TFilter, TNextFilter> {
-  /// Gets the <see cref="IEntry&lt;TFilter, TNextFilter&gt;"/> with the specified <paramref name="name"/> in this chain.
+  /// Gets the entry with the specified name in this chain.
   CoapIEntry<TFilter, TNextFilter> getEntryByName(String name);
 
-  /// Gets the <see cref="IEntry&lt;TFilter, TNextFilter&gt;"/> with the specified <paramref name="filter"/> in this chain.
+  /// Gets the entry with the specified filter in this chain.
   CoapIEntry<TFilter, TNextFilter> getEntryByFilter(TFilter filter);
 
-  /// Gets the <see cref="IEntry&lt;TFilter, TNextFilter&gt;"/> with the specified <paramref name="filterType"/> in this chain.
+  /// Gets the entry with the specified filter type in this chain.
   CoapIEntry<TFilter, TNextFilter> getEntryByType(Type filterType);
 
-  /// Gets the <typeparamref name="TFilter"/> with the specified <paramref name="name"/> in this chain.
+  /// Gets the filter with the specified name in this chain.
   TFilter get(String name);
 
-  /// Gets the <typeparamref name="TNextFilter"/> of the <typeparamref name="TFilter"/>
-  /// with the specified <paramref name="name"/> in this chain.
+  /// Gets the next filter with the specified name in this chain.
   TNextFilter getNextFilterByName(String name);
 
-  /// Gets the <typeparamref name="TNextFilter"/> of the <typeparamref name="TFilter"/>
-  /// with the specified <paramref name="filter"/> in this chain.
+  /// Gets the next filter with the specified filter in this chain.
   TNextFilter getNextFilterByFilter(TFilter filter);
 
-  /// Gets the <typeparamref name="TNextFilter"/> of the <typeparamref name="TFilter"/>
-  /// with the specified <paramref name="filterType"/> in this chain.
+  /// Gets the next filter with the specified filter type in this chain.
   TNextFilter getNextFilterByType(Type filterType);
 
-  /// Gets all <see cref="IEntry&lt;TFilter, TNextFilter&gt;"/>s in this chain.
+  /// Gets all entries in this chain.
   Iterable<CoapEntry> getAll();
 
-  /// Checks if this chain contains a filter with the specified <paramref name="name"/>.
+  /// Checks if this chain contains a filter with the specified name.
   bool containsName(String name);
 
-  /// Checks if this chain contains the specified <paramref name="filter"/>.
+  /// Checks if this chain contains the specified filter.
   bool containsFilter(TFilter filter);
 
-  /// Checks if this chain contains a filter with the specified <paramref name="filterType"/>.
+  /// Checks if this chain contains a filter with the specified filterType.
   bool containsType(Type filterType);
 
   /// Adds the specified filter with the specified name at the beginning of this chain.
@@ -57,12 +54,10 @@ abstract class CoapIChain<TFilter, TNextFilter> {
   /// Adds the specified filter with the specified name at the end of this chain.
   void addLast(String name, TFilter filter);
 
-  /// Adds the specified filter with the specified name just before the filter whose name is
-  /// <paramref name="baseName"/> in this chain.
+  /// Adds the specified filter with the specified name just before the filter whose name is baseName in this chain.
   void addBefore(String baseName, String name, TFilter filter);
 
-  /// Adds the specified filter with the specified name just after the filter whose name is
-  /// <paramref name="baseName"/> in this chain.
+  /// Adds the specified filter with the specified name just after the filter whose name is baseName in this chain.
   void addAfter(String baseName, String name, TFilter filter);
 
   /// Replace the filter with the specified name with the specified new filter.
@@ -85,7 +80,7 @@ abstract class CoapIChain<TFilter, TNextFilter> {
 class CoapEntry<TFilter, TNextFilter>
     implements CoapIEntry<TFilter, TNextFilter> {
   /// Instantiates.
-  CoapEntry(CoapChain chain, CoapEntry prevEntry, CoapEntry nextEntry,
+  CoapEntry(CoapIChain chain, CoapEntry prevEntry, CoapEntry nextEntry,
       String name, TFilter filter, TNextFilterFactory nextFilterFactory) {
     if (filter == null) throw new ArgumentError.notNull("filter");
     if (name == null) throw new ArgumentError.notNull("name");
@@ -186,7 +181,7 @@ class CoapEntry<TFilter, TNextFilter>
   }
 }
 
-/// Implementation of <see cref="IChain&lt;TFilter, TNextFilter&gt;"/>
+/// Implementation of IChain TFilter,TNextFilter
 class CoapChain<TChain, TFilter, TNextFilter>
     implements CoapIChain<TFilter, TNextFilter> {
   /// Instantiates.
@@ -203,17 +198,19 @@ class CoapChain<TChain, TFilter, TNextFilter>
   CoapChain.entryFactory(TEntryFactoryFunc entryFactory,
       TFilterFactory headFilterFactory, TFilterFactory tailFilterFactory)
       : this(entryFactory, headFilterFactory, tailFilterFactory,
-            (t1, t2) => t1 == t2);
+      <TFilter>(TFilter t1, TFilter t2) => t1 == t2);
 
   /// Instantiates.
   CoapChain.filterFactory(TNextFilterFactory nextFilterFactory,
       TFilterFactory headFilterFactory, TFilterFactory tailFilterFactory)
       : this(
-            (chain, prev, next, name, filter) => new CoapEntry(
-                chain, prev, next, name, filter, nextFilterFactory),
+      <TChain, TFilter>(TChain chain, CoapEntry prev, CoapEntry next,
+          String name, TFilter filter) =>
+          CoapEntry<dynamic, dynamic>(
+              chain as CoapIChain, prev, next, name, filter, nextFilterFactory),
             headFilterFactory,
             tailFilterFactory,
-            (t1, t2) => t1 == t2);
+      <TFilter>(TFilter t1, TFilter t2) => t1 == t2);
 
   Map<String, CoapIEntry<dynamic, dynamic>> _name2entry =
   new Map<String, CoapIEntry<dynamic, dynamic>>();
