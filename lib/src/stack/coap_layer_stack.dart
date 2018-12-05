@@ -7,51 +7,58 @@
 
 part of coap;
 
+/// The next processing layer
 class CoapNextLayer implements CoapINextLayer {
-  CoapEntry _entry;
+  /// Construction
+  CoapNextLayer(this._entry);
 
-  CoapNextLayer(CoapEntry entry) {
-    _entry = entry;
-  }
+  CoapEntry<dynamic, dynamic> _entry;
 
+  @override
   void sendRequest(CoapExchange exchange, CoapRequest request) {
     _entry.nextEntry.filter
         .sendRequest(_entry.nextEntry.nextFilter, exchange, request);
   }
 
+  @override
   void sendResponse(CoapExchange exchange, CoapResponse response) {
     _entry.nextEntry.filter
         .sendResponse(_entry.nextEntry.nextFilter, exchange, response);
   }
 
+  @override
   void sendEmptyMessage(CoapExchange exchange, CoapEmptyMessage message) {
     _entry.nextEntry.filter
         .sendEmptyMessage(_entry.nextEntry.nextFilter, exchange, message);
   }
 
+  @override
   void receiveRequest(CoapExchange exchange, CoapRequest request) {
     _entry.prevEntry.filter
         .receiveRequest(_entry.prevEntry.nextFilter, exchange, request);
   }
 
+  @override
   void receiveResponse(CoapExchange exchange, CoapResponse response) {
     _entry.prevEntry.filter
         .receiveResponse(_entry.prevEntry.nextFilter, exchange, response);
   }
 
+  @override
   void receiveEmptyMessage(CoapExchange exchange, CoapEmptyMessage message) {
     _entry.prevEntry.filter
         .receiveEmptyMessage(_entry.prevEntry.nextFilter, exchange, message);
   }
 }
 
+/// Top layer
 class CoapStackTopLayer extends CoapAbstractLayer {
   @override
   void sendRequest(
       CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
     CoapExchange nexchange = exchange;
     if (exchange == null) {
-      nexchange = new CoapExchange(request, CoapOrigin.local);
+      nexchange = CoapExchange(request, CoapOrigin.local);
       nexchange.endpoint = request.endPoint;
     }
 
@@ -70,9 +77,7 @@ class CoapStackTopLayer extends CoapAbstractLayer {
   void receiveRequest(
       CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
     // If there is no BlockwiseLayer we still have to set it
-    if (exchange.request == null) {
-      exchange.request = request;
-    }
+    exchange.request ??= request;
     if (exchange.deliverer != null) {
       exchange.deliverer.deliverRequest(exchange);
     }
@@ -97,6 +102,7 @@ class CoapStackTopLayer extends CoapAbstractLayer {
   }
 }
 
+/// Bottom layer
 class CoapStackBottomLayer extends CoapAbstractLayer {
   @override
   void sendRequest(
@@ -122,8 +128,8 @@ class CoapLayerStack
     extends CoapChain<CoapLayerStack, CoapILayer, CoapINextLayer> {
   /// Instantiates.
   CoapLayerStack()
-      : super.filterFactory((e) => new CoapNextLayer(e),
-            () => new CoapStackTopLayer(), () => new CoapStackBottomLayer());
+      : super.filterFactory((dynamic e) => CoapNextLayer(e),
+          () => CoapStackTopLayer(), () => CoapStackBottomLayer());
 
   /// Sends a request into the layer stack.
   void sendRequest(CoapRequest request) {

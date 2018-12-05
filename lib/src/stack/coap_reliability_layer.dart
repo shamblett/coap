@@ -7,43 +7,42 @@
 
 part of coap;
 
+/// Transmission context
 class CoapTransmissionContext {
-  CoapTransmissionContext(CoapConfig config, CoapExchange exchange,
-      CoapMessage message, ActionGeneric<CoapTransmissionContext> retransmit) {
-    _config = config;
-    _exchange = exchange;
-    _message = message;
-    _retransmit = retransmit;
-    _currentTimeout = message.ackTimeout;
+  /// Construction
+  CoapTransmissionContext(this._config, this._exchange, this._message,
+      this._retransmit) {
+    currentTimeout = _message.ackTimeout;
   }
 
-  static CoapILogger _log = new CoapLogManager("console").logger;
+  static CoapILogger _log = CoapLogManager('console').logger;
   CoapConfig _config;
   CoapExchange _exchange;
   CoapMessage _message;
-  int _currentTimeout = 0;
 
-  int get currentTimeout => _currentTimeout;
+  /// Current timeout
+  int currentTimeout = 0;
 
-  set currentTimeout(int value) => _currentTimeout = value;
+  /// Failed transmission count
   int failedTransmissionCount = 0;
   Timer _timer;
   ActionGeneric<CoapTransmissionContext> _retransmit;
 
+  /// Start
   void start() {
     _timer?.cancel();
 
-    if (_currentTimeout > 0) {
-      _log.debug("Retransmission timeout is $_currentTimeout ms");
-      _timer = new Timer(
-          new Duration(milliseconds: _currentTimeout), () => _timerElapsed());
+    if (currentTimeout > 0) {
+      _log.debug('Retransmission timeout is $currentTimeout ms');
+      _timer = Timer(Duration(milliseconds: currentTimeout), _timerElapsed);
     }
   }
 
+  /// Cancel
   void cancel() {
     _timer.cancel();
 
-    _log.debug("Cancel retransmission for -->");
+    _log.debug('Cancel retransmission for -->');
     if (_exchange.origin == CoapOrigin.local) {
       _log.debug(_exchange.currentRequest.toString());
     } else {
@@ -55,34 +54,36 @@ class CoapTransmissionContext {
     // Do not retransmit a message if it has been acknowledged,
     // rejected, canceled or already been retransmitted for the maximum
     // number of times.
-    _log.debug("Retransmission timeout elapsed");
+    _log.debug('Retransmission timeout elapsed');
     final int failedCount = ++failedTransmissionCount;
 
     if (_message.isAcknowledged) {
       _log.debug(
-          "Timeout: message already acknowledged, cancel retransmission of $_message");
+          'Timeout: message already acknowledged, cancel retransmission of $_message');
       return;
     } else if (_message.isRejected) {
       _log.debug(
-          "Timeout: message already rejected, cancel retransmission of _message");
+          'Timeout: message already rejected, cancel retransmission of _message');
       return;
     } else if (_message.isCancelled) {
-      _log.debug("Timeout: canceled (ID= ${_message.id} do not retransmit");
+      _log.debug('Timeout: canceled (ID= ${_message.id} do not retransmit');
       return;
     } else if (failedCount <=
         (_message.maxRetransmit != 0
             ? _message.maxRetransmit
             : _config.maxRetransmit)) {
       _log.debug(
-          "Timeout: retransmit message, failed: $failedCount message: $_message");
+          'Timeout: retransmit message, failed: $failedCount message: $_message');
 
       _message.fireRetransmitting();
 
 // Message might have canceled
-      if (!_message.isCancelled) _retransmit(this);
+      if (!_message.isCancelled) {
+        _retransmit(this);
+      }
     } else {
       _log.debug(
-          "Timeout: retransmission limit reached, exchange failed, message: $_message");
+          'Timeout: retransmission limit reached, exchange failed, message: $_message');
       _exchange.timedOut = true;
       _message.isTimedOut = true;
       _exchange.remove(CoapReliabilityLayer.transmissionContextKey);
@@ -98,14 +99,16 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
     _config = config;
   }
 
-  static CoapILogger _log = new CoapLogManager("console").logger;
-  static String transmissionContextKey = "TransmissionContext";
+  static CoapILogger _log = CoapLogManager('console').logger;
+
+  /// Context key
+  static String transmissionContextKey = 'TransmissionContext';
 
   CoapConfig _config;
-  Random _rand = new Random();
+  Random _rand = Random();
 
   /// Schedules a retransmission for confirmable messages.
-  /// @override
+  @override
   void sendRequest(
       CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
     if (request.type == CoapMessageType.unknown) {
@@ -113,9 +116,9 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
     }
 
     if (request.type == CoapMessageType.con) {
-      _log.debug("Scheduling retransmission for $request");
+      _log.debug('Scheduling retransmission for $request');
       _prepareRetransmission(exchange, request,
-          (ctx) => sendRequest(nextLayer, exchange, request));
+              (dynamic ctx) => sendRequest(nextLayer, exchange, request));
     }
 
     super.sendRequest(nextLayer, exchange, request);
@@ -150,9 +153,9 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
     }
 
     if (response.type == CoapMessageType.con) {
-      _log.debug("Scheduling retransmission for $response");
+      _log.debug('Scheduling retransmission for $response');
       _prepareRetransmission(exchange, response,
-          (ctx) => sendResponse(nextLayer, exchange, response));
+              (dynamic ctx) => sendResponse(nextLayer, exchange, response));
     }
 
     super.sendResponse(nextLayer, exchange, response);
@@ -172,21 +175,21 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
       // Request is a duplicate, so resend ACK, RST or response
       if (exchange.currentResponse != null) {
         _log.debug(
-            "Respond with the current response to the duplicate request");
+            'Respond with the current response to the duplicate request');
         super.sendResponse(nextLayer, exchange, exchange.currentResponse);
       } else if (exchange.currentRequest != null) {
         if (exchange.currentRequest.isAcknowledged) {
           _log.debug(
-              "The duplicate request was acknowledged but no response computed yet. Retransmit ACK.");
+              'The duplicate request was acknowledged but no response computed yet. Retransmit ACK.');
           final CoapEmptyMessage ack = CoapEmptyMessage.newACK(request);
           sendEmptyMessage(nextLayer, exchange, ack);
         } else if (exchange.currentRequest.isRejected) {
-          _log.debug("The duplicate request was rejected. Reject again.");
+          _log.debug('The duplicate request was rejected. Reject again.');
           final CoapEmptyMessage rst = CoapEmptyMessage.newRST(request);
           sendEmptyMessage(nextLayer, exchange, rst);
         } else {
           _log.debug(
-              "The server has not yet decided what to do with the request. We ignore the duplicate.");
+              'The server has not yet decided what to do with the request. We ignore the duplicate.');
           // The server has not yet decided, whether to acknowledge or
           // reject the request. We know for sure that the server has
           // received the request though and can drop this duplicate here.
@@ -207,21 +210,20 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
   @override
   void receiveResponse(
       CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
-    final CoapTransmissionContext ctx =
-        exchange.remove(transmissionContextKey) as CoapTransmissionContext;
+    final CoapTransmissionContext ctx = exchange.remove(transmissionContextKey);
     if (ctx != null) {
       exchange.currentRequest.isAcknowledged = true;
       ctx.cancel();
     }
 
     if (response.type == CoapMessageType.con && !exchange.request.isCancelled) {
-      _log.debug("Response is confirmable, send ACK.");
+      _log.debug('Response is confirmable, send ACK.');
       final CoapEmptyMessage ack = CoapEmptyMessage.newACK(response);
       sendEmptyMessage(nextLayer, exchange, ack);
     }
 
     if (response.duplicate) {
-      _log.debug("Response is duplicate, ignore it.");
+      _log.debug('Response is duplicate, ignore it.');
     } else {
       super.receiveResponse(nextLayer, exchange, response);
     }
@@ -248,13 +250,14 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
         }
         break;
       default:
-        _log.warn("Empty messgae was not ACK nor RST: $message");
+        _log.warn('Empty messgae was not ACK nor RST: $message');
         break;
     }
 
-    final CoapTransmissionContext ctx =
-        exchange.remove(transmissionContextKey) as CoapTransmissionContext;
-    if (ctx != null) ctx.cancel();
+    final CoapTransmissionContext ctx = exchange.remove(transmissionContextKey);
+    if (ctx != null) {
+      ctx.cancel();
+    }
 
     super.receiveEmptyMessage(nextLayer, exchange, message);
   }
@@ -263,7 +266,7 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
       ActionGeneric<CoapTransmissionContext> retransmit) {
     final CoapTransmissionContext ctx =
         exchange.getOrAdd<CoapTransmissionContext>(transmissionContextKey,
-            new CoapTransmissionContext(_config, exchange, msg, retransmit));
+            CoapTransmissionContext(_config, exchange, msg, retransmit));
 
     if (ctx.failedTransmissionCount > 0) {
       ctx.currentTimeout =
@@ -274,14 +277,12 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
     }
 
     _log.debug(
-        "Send request, failed transmissions: ${ctx.failedTransmissionCount}");
+        'Send request, failed transmissions: ${ctx.failedTransmissionCount}');
 
     ctx.start();
   }
 
-  int _initialTimeout(int initialTimeout, double factor) {
-    return (initialTimeout +
-            initialTimeout * (factor - 1.0) * _rand.nextDouble())
-        .toInt();
-  }
+  int _initialTimeout(int initialTimeout, double factor) =>
+      (initialTimeout + initialTimeout * (factor - 1.0) * _rand.nextDouble())
+          .toInt();
 }

@@ -7,31 +7,29 @@
 
 part of coap;
 
+/// Registration context
 class CoapReregistrationContext {
-  static CoapILogger _log = new CoapLogManager("console").logger;
+  /// Construction
+  CoapReregistrationContext(this._exchange, this._timeout, this._reregister);
+
+  static CoapILogger _log = CoapLogManager('console').logger;
   CoapExchange _exchange;
   ActionGeneric<CoapRequest> _reregister;
   Timer _timer;
   int _timeout;
 
-  CoapReregistrationContext(CoapExchange exchange, int timeout,
-      ActionGeneric<CoapRequest> reregister) {
-    _exchange = exchange;
-    _reregister = reregister;
-    _timeout = timeout;
-  }
-
+  /// Start
   void start() {
-    _timer =
-        new Timer(new Duration(milliseconds: _timeout), () => _timerElapsed());
+    _timer = Timer(Duration(milliseconds: _timeout), _timerElapsed);
   }
 
+  /// Restart
   void restart() {
     cancel();
-    _timer =
-        new Timer(new Duration(milliseconds: _timeout), () => _timerElapsed());
+    _timer = Timer(Duration(milliseconds: _timeout), _timerElapsed);
   }
 
+  /// Cancel
   void cancel() {
     _timer.cancel();
   }
@@ -47,23 +45,26 @@ class CoapReregistrationContext {
       refresh.token = request.token;
       refresh.destination = request.destination;
       refresh.copyEventHandler(request);
-      _log.debug("Re-registering for $request");
+      _log.debug('Re-registering for $request');
       request.fireReregistering(refresh);
       _reregister(refresh);
     } else {
-      _log.debug("Dropping re-registration for canceled $request");
+      _log.debug('Dropping re-registration for canceled $request');
     }
   }
 }
 
+/// Observe layer
 class CoapObserveLayer extends CoapAbstractLayer {
   /// Constructs a new observe layer.
   CoapObserveLayer(CoapConfig config) {
     _backoff = config.notificationReregistrationBackoff;
   }
 
-  static CoapILogger _log = new CoapLogManager("console").logger;
-  static String reregistrationContextKey = "ReregistrationContext";
+  static CoapILogger _log = CoapLogManager('console').logger;
+
+  /// Context key
+  static String reregistrationContextKey = 'ReregistrationContext';
 
   /// Additional time to wait until re-registration
   int _backoff;
@@ -78,19 +79,21 @@ class CoapObserveLayer extends CoapAbstractLayer {
         // Transmit errors as CON
         if (!CoapCode.isSuccess(response.code)) {
           _log.debug(
-              "Response has error code ${response.code} and must be sent as CON");
+              'Response has error code ${response
+                  .code} and must be sent as CON');
           response.type = CoapMessageType.con;
           relation.cancel();
         } else {
           // Make sure that every now and than a CON is mixed within
           if (relation.check()) {
             _log.debug(
-                "The observe relation check requires the notification to be sent as CON");
+                'The observe relation check requires the notification to be sent as CON');
             response.type = CoapMessageType.con;
           } else {
             // By default use NON, but do not override resource decision
-            if (response.type == CoapMessageType.unknown)
+            if (response.type == CoapMessageType.unknown) {
               response.type = CoapMessageType.non;
+            }
           }
         }
       }
@@ -121,7 +124,7 @@ class CoapObserveLayer extends CoapAbstractLayer {
       final CoapResponse current = relation.currentControlNotification;
       if (current != null && _isInTransit(current)) {
         _log.debug(
-            "A former notification is still in transit. Postpone $response");
+            'A former notification is still in transit. Postpone $response');
         // use the same ID
         response.id = current.id;
         relation.nextControlNotification = response;
@@ -141,13 +144,14 @@ class CoapObserveLayer extends CoapAbstractLayer {
     if (response.hasOption(optionTypeObserve)) {
       if (exchange.request.isCancelled) {
         // The request was canceled and we no longer want notifications
-        _log.debug("ObserveLayer rejecting notification for canceled Exchange");
+        _log.debug('ObserveLayer rejecting notification for canceled Exchange');
         final CoapEmptyMessage rst = CoapEmptyMessage.newRST(response);
         sendEmptyMessage(nextLayer, exchange, rst);
         // Matcher sets exchange as complete when RST is sent
       } else {
         _prepareReregistration(
-            exchange, response, (msg) => sendRequest(nextLayer, exchange, msg));
+            exchange, response, (dynamic msg) =>
+            sendRequest(nextLayer, exchange, msg));
         super.receiveResponse(nextLayer, exchange, response);
       }
     } else {
@@ -156,6 +160,7 @@ class CoapObserveLayer extends CoapAbstractLayer {
     }
   }
 
+  @override
   void receiveEmptyMessage(CoapINextLayer nextLayer, CoapExchange exchange,
       CoapEmptyMessage message) {
     // NOTE: We could also move this into the MessageObserverAdapter from
@@ -187,7 +192,7 @@ class CoapObserveLayer extends CoapAbstractLayer {
       relation.currentControlNotification = next; // next may be null
       relation.nextControlNotification = null;
       if (next != null) {
-        _log.debug("Notification has been acknowledged, send the next one");
+        _log.debug('Notification has been acknowledged, send the next one');
         // this is not a self replacement, hence a new ID
         next.id = CoapMessage.none;
         // Create a new task for sending next response so that we can leave the sync-block
@@ -200,7 +205,7 @@ class CoapObserveLayer extends CoapAbstractLayer {
       final CoapResponse next = relation.nextControlNotification;
       if (next != null) {
         _log.debug(
-            "The notification has timed out and there is a fresher notification for the retransmission.");
+            'The notification has timed out and there is a fresher notification for the retransmission.');
         // Cancel the original retransmission and send the fresh notification here
         response.isCancelled = true;
         // Use the same ID
@@ -220,7 +225,9 @@ class CoapObserveLayer extends CoapAbstractLayer {
     response.timedOutHook = () {
       final CoapObserveRelation relation = exchange.relation;
       _log.debug(
-          "Notification ${relation.exchange.request.tokenString} timed out. Cancel all relations with source ${relation.source}");
+          'Notification ${relation.exchange.request
+              .tokenString} timed out. Cancel all relations with source ${relation
+              .source}');
       relation.cancelAll();
     };
   }
@@ -230,10 +237,10 @@ class CoapObserveLayer extends CoapAbstractLayer {
     final int timeout = response.maxAge * 1000 + _backoff;
     final CoapReregistrationContext ctx =
         exchange.getOrAdd<CoapReregistrationContext>(reregistrationContextKey,
-            new CoapReregistrationContext(exchange, timeout, reregister));
+            CoapReregistrationContext(exchange, timeout, reregister));
 
     _log.debug(
-        "Scheduling re-registration in $timeout ms for ${exchange.request}");
+        'Scheduling re-registration in $timeout ms for ${exchange.request}');
     ctx.restart();
   }
 }
