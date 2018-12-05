@@ -80,103 +80,103 @@ abstract class CoapIChain<TFilter, TNextFilter> {
 class CoapEntry<TFilter, TNextFilter>
     implements CoapIEntry<TFilter, TNextFilter> {
   /// Instantiates.
-  CoapEntry(CoapIChain chain, CoapEntry prevEntry, CoapEntry nextEntry,
-      String name, TFilter filter, TNextFilterFactory nextFilterFactory) {
-    if (filter == null) throw new ArgumentError.notNull("filter");
-    if (name == null) throw new ArgumentError.notNull("name");
-
-    _chain = chain;
-    _prevEntry = prevEntry;
-    _nextEntry = nextEntry;
-    _name = name;
-    _filter = filter;
-    _nextFilter = nextFilterFactory(this);
+  CoapEntry(this._chain, this.prevEntry, this.nextEntry,
+      this.name, this._filter, TNextFilterFactory nextFilterFactory) {
+    if (filter == null) {
+      throw ArgumentError.notNull('filter');
+    }
+    if (name == null) {
+      throw ArgumentError.notNull('name');
+    }
+    nextFilter = nextFilterFactory(this);
   }
 
   CoapChain _chain;
 
+  /// The chain
   CoapChain get chain => _chain;
-  String _name;
 
-  String get name => _name;
+  @override
+  String name;
 
-  set name(String name) => _name = name;
-  CoapEntry _prevEntry;
+  /// Previous entry
+  CoapEntry prevEntry;
 
-  CoapEntry get prevEntry => _prevEntry;
+  /// Next entry
+  CoapEntry nextEntry;
 
-  set prevEntry(CoapEntry entry) => _prevEntry = entry;
-
-  CoapEntry _nextEntry;
-
-  CoapEntry get nextEntry => _nextEntry;
-
-  set nextEntry(CoapEntry entry) => _nextEntry = entry;
   TFilter _filter;
 
+  @override
   TFilter get filter => _filter;
 
+  @override
   set filter(TFilter value) {
     if (value == null) {
-      throw new ArgumentError.notNull("value");
+      throw ArgumentError.notNull('value');
     }
     _filter = value;
   }
 
-  TNextFilter _nextFilter;
+  @override
+  TNextFilter nextFilter;
 
-  TNextFilter get nextFilter => _nextFilter;
-
-  set nextFilter(TNextFilter filter) => _nextFilter = filter;
-
+  @override
   void addBefore(String name, TFilter filter) {
-    _chain.addBefore(_name, name, filter);
+    _chain.addBefore(name, name, filter);
   }
 
+  @override
   void addAfter(String name, TFilter filter) {
-    _chain.addAfter(_name, name, filter);
+    _chain.addAfter(name, name, filter);
   }
 
+  @override
   void replace(TFilter newFilter) {
-    _chain.replaceByName(_name, newFilter);
+    _chain.replaceByName(name, newFilter);
   }
 
+  @override
   void remove() {
-    _chain.removeByName(_name);
+    _chain.removeByName(name);
   }
 
   @override
   String toString() {
-    final StringBuffer sb = new StringBuffer();
+    final StringBuffer sb = StringBuffer();
 
     // Add the current filter
-    sb.write("('");
+    sb.write('(');
     sb.write(name);
     sb.write('\'');
 
     // Add the previous filter
-    sb.write(", prev: '");
+    sb.write(', prev: ');
 
-    if (_prevEntry != null) {
-      sb.write(_prevEntry.name);
+    if (prevEntry != null) {
+      sb.write(prevEntry.name);
       sb.write(':');
-      sb.write(_prevEntry.filter.getType().name);
+      sb.write(prevEntry.filter
+          .getType()
+          .name);
     } else {
-      sb.write("null");
+      sb.write('null');
     }
 
     // Add the next filter
-    sb.write("', next: '");
+    sb.write(', next: ');
 
-    if (_nextEntry != null) {
-      sb.write(_nextEntry.name);
+    if (nextEntry != null) {
+      sb.write(nextEntry.name);
       sb.write(':');
-      sb.write(_nextEntry.filter.getType().name);
+      sb.write(nextEntry.filter
+          .getType()
+          .name);
     } else {
-      sb.write("null");
+      sb.write('null');
     }
 
-    sb.write("')");
+    sb.write(')');
     return sb.toString();
   }
 }
@@ -189,9 +189,9 @@ class CoapChain<TChain, TFilter, TNextFilter>
       TFilterFactory tailFilterFactory, TEqualsFunc equalsFunc) {
     _equalsFunc = equalsFunc;
     _entryFactory = entryFactory;
-    _head = entryFactory(this, null, null, "head", headFilterFactory());
-    _tail = entryFactory(this, _head, null, "tail", tailFilterFactory());
-    _head._nextEntry = _tail;
+    _head = entryFactory(this, null, null, 'head', headFilterFactory());
+    _tail = entryFactory(this, _head, null, 'tail', tailFilterFactory());
+    _head.nextEntry = _tail;
   }
 
   /// Instantiates.
@@ -206,70 +206,79 @@ class CoapChain<TChain, TFilter, TNextFilter>
       : this(
       <TChain, TFilter>(TChain chain, CoapEntry prev, CoapEntry next,
           String name, TFilter filter) =>
-          CoapEntry<dynamic, dynamic>(
-              chain as CoapIChain, prev, next, name, filter, nextFilterFactory),
+          CoapEntry<dynamic, dynamic>(chain as CoapChain, prev, next,
+              name, filter, nextFilterFactory),
             headFilterFactory,
             tailFilterFactory,
       <TFilter>(TFilter t1, TFilter t2) => t1 == t2);
 
   Map<String, CoapIEntry<dynamic, dynamic>> _name2entry =
-  new Map<String, CoapIEntry<dynamic, dynamic>>();
+  Map<String, CoapIEntry<dynamic, dynamic>>();
   CoapEntry _head;
 
+  /// Head
   CoapEntry get head => _head;
   CoapEntry _tail;
 
+  /// Tail
   CoapEntry get tail => _tail;
   TEqualsFunc _equalsFunc;
   TEntryFactoryFunc _entryFactory;
 
-  CoapIEntry<TFilter, TNextFilter> getEntryByName(String name) {
-    return _name2entry[name];
-  }
+  @override
+  CoapIEntry<TFilter, TNextFilter> getEntryByName(String name) =>
+      _name2entry[name];
 
+  @override
   TFilter get(String name) {
     final CoapIEntry<TFilter, TNextFilter> e = getEntryByName(name);
     return e.filter;
   }
 
+  @override
   CoapIEntry<TFilter, TNextFilter> getEntryByFilter(TFilter filter) {
-    CoapEntry e = _head._nextEntry;
+    CoapEntry<TFilter, TNextFilter> e = _head.nextEntry;
     while (e != _tail) {
       if (_equalsFunc(e.filter, filter)) {
-        return e as CoapIEntry<TFilter, TNextFilter>;
+        return e;
       }
       e = e.nextEntry;
     }
     return null;
   }
 
+  @override
   CoapIEntry<TFilter, TNextFilter> getEntryByType(Object filterType) {
-    CoapIEntry<TFilter, TNextFilter> e =
-        _head.nextEntry as CoapIEntry<TFilter, TNextFilter>;
-    while (e != _tail as CoapIEntry<TFilter, TNextFilter>) {
+    CoapEntry<TFilter, TNextFilter> e =
+        _head.nextEntry;
+    while (e != _tail) {
       if (filterType is TFilter) {
         return e;
       }
-      e = ((e as CoapEntry).nextEntry) as CoapIEntry<TFilter, TNextFilter>;
+      e = e.nextEntry;
     }
     return null;
   }
 
+  @override
   TNextFilter getNextFilterByName(String name) {
     final CoapIEntry<TFilter, TNextFilter> e = getEntryByName(name);
     return e.nextFilter;
   }
 
+  @override
   TNextFilter getNextFilterByFilter(TFilter filter) {
     final CoapIEntry<TFilter, TNextFilter> e = getEntryByFilter(filter);
     return e.nextFilter;
   }
 
+  @override
   TNextFilter getNextFilterByType(Object filterType) {
     final CoapIEntry<TFilter, TNextFilter> e = getEntryByType(filterType);
     return e.nextFilter;
   }
 
+  @override
   Iterable<CoapEntry> getAll() sync* {
     final CoapEntry e = _head.nextEntry;
     while (e != _tail) {
@@ -277,40 +286,42 @@ class CoapChain<TChain, TFilter, TNextFilter>
     }
   }
 
-  bool containsName(String name) {
-    return getEntryByName(name) != null;
-  }
+  @override
+  bool containsName(String name) => getEntryByName(name) != null;
 
-  bool containsFilter(TFilter filter) {
-    return getEntryByFilter(filter) != null;
-  }
+  @override
+  bool containsFilter(TFilter filter) => getEntryByFilter(filter) != null;
 
-  bool containsType(Object filterType) {
-    return getEntryByType(filterType) != null;
-  }
+  @override
+  bool containsType(Object filterType) => getEntryByType(filterType) != null;
 
+  @override
   void addFirst(String name, TFilter filter) {
     _checkAddable(name);
     _register(_head, name, filter);
   }
 
+  @override
   void addLast(String name, TFilter filter) {
     _checkAddable(name);
     _register(_tail.prevEntry, name, filter);
   }
 
+  @override
   void addAfter(String baseName, String name, TFilter filter) {
     final CoapEntry baseEntry = _checkOldName(baseName);
     _checkAddable(name);
     _register(baseEntry, name, filter);
   }
 
+  @override
   void addBefore(String baseName, String name, TFilter filter) {
     final CoapEntry baseEntry = _checkOldName(baseName);
     _checkAddable(name);
     _register(baseEntry.prevEntry, name, filter);
   }
 
+  @override
   TFilter replaceByName(String name, TFilter newFilter) {
     final CoapEntry entry = _checkOldName(name);
     final TFilter oldFilter = entry.filter;
@@ -318,6 +329,7 @@ class CoapChain<TChain, TFilter, TNextFilter>
     return oldFilter;
   }
 
+  @override
   void replaceByFilter(TFilter oldFilter, TFilter newFilter) {
     CoapEntry e = _head.nextEntry;
     while (e != _tail) {
@@ -327,15 +339,17 @@ class CoapChain<TChain, TFilter, TNextFilter>
       }
       e = e.nextEntry;
     }
-    throw new ArgumentError("Filter not found: ${oldFilter}");
+    throw ArgumentError('Filter not found: $oldFilter');
   }
 
+  @override
   TFilter removeByName(String name) {
     final CoapEntry entry = _checkOldName(name);
     _deregister(entry);
     return entry.filter;
   }
 
+  @override
   void removeByFilter(TFilter filter) {
     CoapEntry e = _head.nextEntry;
     while (e != _tail) {
@@ -345,13 +359,12 @@ class CoapChain<TChain, TFilter, TNextFilter>
       }
       e = e.nextEntry;
     }
-    throw new ArgumentError("Filter not found: ${filter}");
+    throw ArgumentError('Filter not found: $filter');
   }
 
+  @override
   void clear() {
-    for (CoapIEntry<TFilter, TNextFilter> entry in _name2entry.values) {
-      _deregister(entry as CoapEntry);
-    }
+    _name2entry.values.forEach(_deregister);
   }
 
   /// Fires after the entry is added to this chain.
@@ -368,7 +381,7 @@ class CoapChain<TChain, TFilter, TNextFilter>
 
   void _checkAddable(String name) {
     if (_name2entry.containsKey(name)) {
-      throw new ArgumentError("Other filter is using the same name $name");
+      throw ArgumentError('Other filter is using the same name $name');
     }
   }
 
@@ -383,9 +396,7 @@ class CoapChain<TChain, TFilter, TNextFilter>
     onPostAdd(newEntry);
   }
 
-  CoapEntry _checkOldName(String baseName) {
-    return _name2entry[baseName] as CoapEntry;
-  }
+  CoapEntry _checkOldName(String baseName) => _name2entry[baseName];
 
   void _deregister(CoapEntry entry) {
     onPreRemove(entry);
