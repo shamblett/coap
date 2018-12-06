@@ -67,6 +67,6 @@ class CoapConsoleLogger implements CoapILogger {
   String _formatter(String message) {
     final DateTime now = DateTime.now();
     final String level = _logger.level.toString();
-    return _lastMessage = '$now  $level >> ';
+    return _lastMessage = '$now  $level >> $message';
   }
 }
