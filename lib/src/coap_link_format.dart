@@ -160,9 +160,9 @@ class CoapLinkFormat {
     sb.write(name);
     for (String value in values) {
       sb.write(delimiter);
-      sb.write(''');
-      sb.write($value);
-      sb.write(''');
+      sb.write('"');
+      sb.write(value);
+      sb.write('"');
     }
   }
 
