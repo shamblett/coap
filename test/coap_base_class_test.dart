@@ -11,13 +11,13 @@ import 'package:test/test.dart';
 void main() {
   group('Media types', () {
     test('Properties', () {
-      final int type = CoapMediaType.applicationJson;
+      const int type = CoapMediaType.applicationJson;
       expect(CoapMediaType.name(type), 'application/json');
       expect(CoapMediaType.fileExtension(type), 'json');
       expect(CoapMediaType.isPrintable(type), true);
       expect(CoapMediaType.isImage(type), false);
 
-      final int unknownType = 200;
+      const int unknownType = 200;
       expect(CoapMediaType.name(unknownType), 'unknown/200');
       expect(CoapMediaType.fileExtension(unknownType), 'unknown/200');
       expect(CoapMediaType.isPrintable(unknownType), false);
@@ -25,9 +25,9 @@ void main() {
     });
 
     test('Negotiation Content', () {
-      final int defaultContentType = 10;
-      final List<int> supported = [11, 5];
-      List<CoapOption> accepted = new List<CoapOption>();
+      const int defaultContentType = 10;
+      final List<int> supported = <int>[11, 5];
+      List<CoapOption> accepted = List<CoapOption>();
       final CoapOption opt1 = CoapOption.createVal(optionTypeMaxAge, 10);
       final CoapOption opt2 = CoapOption.createVal(optionTypeContentFormat, 5);
       accepted.add(opt1);
@@ -61,7 +61,7 @@ void main() {
       expect(res, isNull);
 
       res = CoapMediaType.parseWildcard('xml*');
-      expect(res, [
+      expect(res, <int>[
         CoapMediaType.textXml,
         CoapMediaType.applicationXml,
         CoapMediaType.applicationRdfXml,
@@ -74,8 +74,8 @@ void main() {
 
   group('Configuration', () {
     test('All', () {
-      final CoapConfig conf = new CoapConfig(File('test/config_all.yaml'));
-      conf.spec = new CoapDraft18();
+      final CoapConfig conf = CoapConfig(File('test/config_all.yaml'));
+      conf.spec = CoapDraft18();
       expect(conf.version, 'RFC7252');
       expect(conf.defaultPort, 1);
       expect(conf.defaultSecurePort, 2);
@@ -106,8 +106,8 @@ void main() {
     });
 
     test('Default', () {
-      final CoapConfig conf = new CoapConfig(File('test/config_default.yaml'));
-      conf.spec = new CoapDraft18();
+      final CoapConfig conf = CoapConfig(File('test/config_default.yaml'));
+      conf.spec = CoapDraft18();
       expect(conf.version, 'RFC7252');
       expect(conf.defaultPort, CoapConstants.defaultPort);
       expect(conf.defaultSecurePort, CoapConstants.defaultSecurePort);
@@ -138,14 +138,14 @@ void main() {
     });
 
     test('Instance', () {
-      final CoapConfig conf = new CoapConfig(File('test/config_default.yaml'));
+      final CoapConfig conf = CoapConfig(File('test/config_default.yaml'));
       expect(conf == CoapConfig.inst, isTrue);
     });
   });
 
   group('Logging', () {
     test('Null', () {
-      final CoapLogManager logmanager = new CoapLogManager('none');
+      final CoapLogManager logmanager = CoapLogManager('none');
       final CoapILogger logger = logmanager.logger;
       expect(logger.isDebugEnabled(), isFalse);
       expect(logger.isErrorEnabled(), isFalse);
@@ -158,9 +158,9 @@ void main() {
     });
 
     test('Console', () {
-      final CoapConfig conf = new CoapConfig(File('test/config_logging.yaml'));
+      final CoapConfig conf = CoapConfig(File('test/config_logging.yaml'));
       expect(conf.logTarget, 'console');
-      final CoapLogManager logmanager = new CoapLogManager('console');
+      final CoapLogManager logmanager = CoapLogManager('console');
       final CoapILogger logger = logmanager.logger;
       // Add a string appender to test correct log strings
       expect(logger.isDebugEnabled(), isTrue);
@@ -176,6 +176,5 @@ void main() {
       logger.debug('Debug message');
       expect(logger.lastMessage, 'DEBUG ConsoleLogger: Debug message');
     });
-
   });
 }

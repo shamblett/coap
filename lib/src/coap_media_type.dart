@@ -142,7 +142,7 @@ class CoapMediaType {
     if (_registry.containsKey(mediaType)) {
       return _registry[mediaType][0];
     } else {
-      return 'unknown$mediaType';
+      return 'unknown/$mediaType';
     }
   }
 

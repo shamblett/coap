@@ -18,20 +18,27 @@ class CoapLogManager {
       logger = CoapNullLogger();
       setCommon = false;
     }
-
     // Logging common configuration
     if (setCommon) {
       if (CoapConfig.inst.logDebug) {
-        logger.root.level = logging.Level.SEVERE;
+        if (logger.root.level.value >= logging.Level.INFO.value) {
+          logger.root.level = logging.Level.SEVERE;
+        }
       }
       if (CoapConfig.inst.logError) {
-        logger.root.level = logging.Level.SHOUT;
+        if (logger.root.level.value < logging.Level.SEVERE.value) {
+          logger.root.level = logging.Level.SHOUT;
+        }
       }
       if (CoapConfig.inst.logWarn) {
-        logger.root.level = logging.Level.WARNING;
+        if (logger.root.level.value < logging.Level.SHOUT.value) {
+          logger.root.level = logging.Level.WARNING;
+        }
       }
       if (CoapConfig.inst.logInfo) {
-        logger.root.level = logging.Level.INFO;
+        if (logger.root.level.value < logging.Level.WARNING.value) {
+          logger.root.level = logging.Level.INFO;
+        }
       }
     }
   }
