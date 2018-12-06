@@ -4,28 +4,28 @@
  * Date   : 09/05/2018
  * Copyright :  S.Hamblett
  */
+import 'dart:convert';
+import 'dart:math';
 import 'package:coap/coap.dart';
 import 'package:test/test.dart';
 import 'package:typed_data/typed_data.dart' as typed;
-import 'dart:convert';
-import 'dart:math';
 
 void main() {
-  group("Options", () {
-    final Utf8Encoder encoder = new Utf8Encoder();
+  group('Options', () {
+    const Utf8Encoder encoder = Utf8Encoder();
 
     test('Raw', () {
-      final typed.Uint8Buffer raw = new typed.Uint8Buffer(3);
-      raw.addAll(encoder.convert("raw"));
+      final typed.Uint8Buffer raw = typed.Uint8Buffer(3);
+      raw.addAll(encoder.convert('raw'));
       final CoapOption opt = CoapOption.createRaw(optionTypeContentType, raw);
       expect(opt.valueBytes, raw);
       expect(opt.type, optionTypeContentType);
     });
 
     test('IntValue', () {
-      final int oneByteValue = 255;
-      final int twoByteValue = oneByteValue + 1;
-      final int fourByteValue = 65535 + 1;
+      const int oneByteValue = 255;
+      const int twoByteValue = oneByteValue + 1;
+      const int fourByteValue = 65535 + 1;
       final CoapOption opt1 =
           CoapOption.createVal(optionTypeContentType, oneByteValue);
       final CoapOption opt2 =
@@ -59,7 +59,7 @@ void main() {
     });
 
     test('String', () {
-      final String s = "hello world";
+      const String s = 'hello world';
       final CoapOption opt = CoapOption.createString(optionTypeContentType, s);
       expect(opt.length, 11);
       expect(s, opt.stringValue);
@@ -68,15 +68,15 @@ void main() {
 
     test('Name', () {
       final CoapOption opt = CoapOption.create(optionTypeUriQuery);
-      expect(opt.name, "Uri-Query");
+      expect(opt.name, 'Uri-Query');
     });
 
     test('Value', () {
       final CoapOption opt = CoapOption.createVal(optionTypeMaxAge, 10);
       expect(opt.value, 10);
       final CoapOption opt1 =
-          CoapOption.createString(optionTypeUriQuery, "Hello");
-      expect(opt1.value, "Hello");
+      CoapOption.createString(optionTypeUriQuery, 'Hello');
+      expect(opt1.value, 'Hello');
       final CoapOption opt2 = CoapOption.create(optionTypeReserved);
       expect(opt2.value, isNull);
       final CoapOption opt3 = CoapOption.create(1000);
@@ -101,7 +101,7 @@ void main() {
     test('To string', () {
       final CoapOption opt =
           CoapOption.createVal(optionTypeMaxAge, CoapConstants.defaultMaxAge);
-      expect(opt.toString(), "Max-Age: 60");
+      expect(opt.toString(), 'Max-Age: 60');
     });
 
     test('Option format', () {
@@ -119,8 +119,8 @@ void main() {
     });
 
     test('Equality', () {
-      final int oneByteValue = 255;
-      final int twoByteValue = 256;
+      const int oneByteValue = 255;
+      const int twoByteValue = 256;
 
       final CoapOption opt1 =
           CoapOption.createVal(optionTypeContentType, oneByteValue);
@@ -137,7 +137,7 @@ void main() {
     test('Empty token', () {
       final CoapOption opt1 = CoapOption.create(optionTypeToken);
       final CoapOption opt2 = CoapOption.create(optionTypeToken);
-      final CoapOption opt22 = CoapOption.createString(optionTypeToken, "full");
+      final CoapOption opt22 = CoapOption.createString(optionTypeToken, 'full');
 
       expect(opt1 == opt2, isTrue);
       expect(opt2 == opt22, isFalse);
@@ -178,21 +178,21 @@ void main() {
     test('Set value', () {
       final CoapOption option = CoapOption.create(optionTypeReserved);
 
-      option.valueBytes = new typed.Uint8Buffer(4);
+      option.valueBytes = typed.Uint8Buffer(4);
       expect(option.length, 4);
 
-      option.valueBytesList = [69, 152, 35, 55, 152, 116, 35, 152];
-      expect(option.valueBytes, [69, 152, 35, 55, 152, 116, 35, 152]);
+      option.valueBytesList = <int>[69, 152, 35, 55, 152, 116, 35, 152];
+      expect(option.valueBytes, <int>[69, 152, 35, 55, 152, 116, 35, 152]);
     });
 
     test('Set string value', () {
       final CoapOption option = CoapOption.create(optionTypeReserved);
 
-      option.stringValue = "";
+      option.stringValue = '';
       expect(option.length, 0);
 
-      option.stringValue = "CoAP.NET";
-      expect(option.stringValue, "CoAP.NET");
+      option.stringValue = 'CoAP.NET';
+      expect(option.stringValue, 'CoAP.NET');
     });
 
     test('Set int value', () {
@@ -271,7 +271,8 @@ void main() {
       expect(option.valueBytes[3], 0xFF);
 
       option.longValue = 0x9823749837239845;
-      expect(option.valueBytes.toList(), [69, 152, 35, 55, 152, 116, 35, 152]);
+      expect(option.valueBytes.toList(),
+          <int>[69, 152, 35, 55, 152, 116, 35, 152]);
 
       option.longValue = 0xFFFFFFFFFFFFFFFF;
       expect(option.valueBytes[0], 0xFF);
@@ -286,31 +287,31 @@ void main() {
 
     test('Split', () {
       final List<CoapOption> opts =
-          CoapOption.split(optionTypeUriPath, "hello/from/me", "/");
+      CoapOption.split(optionTypeUriPath, 'hello/from/me', '/');
       expect(opts.length, 3);
-      expect(opts[0].stringValue, "hello");
+      expect(opts[0].stringValue, 'hello');
       expect(opts[0].type, optionTypeUriPath);
-      expect(opts[1].stringValue, "from");
-      expect(opts[2].stringValue, "me");
+      expect(opts[1].stringValue, 'from');
+      expect(opts[2].stringValue, 'me');
 
       final List<CoapOption> opts1 =
-          CoapOption.split(optionTypeUriPath, "///hello/from/me/again", "/");
+      CoapOption.split(optionTypeUriPath, '///hello/from/me/again', '/');
       expect(opts1.length, 4);
-      expect(opts1[0].stringValue, "hello");
+      expect(opts1[0].stringValue, 'hello');
       expect(opts1[0].type, optionTypeUriPath);
-      expect(opts1[1].stringValue, "from");
-      expect(opts1[2].stringValue, "me");
-      expect(opts1[3].stringValue, "again");
+      expect(opts1[1].stringValue, 'from');
+      expect(opts1[2].stringValue, 'me');
+      expect(opts1[3].stringValue, 'again');
     });
 
     test('Join', () {
       final CoapOption opt1 =
-          CoapOption.createString(optionTypeUriPath, "Hello");
+      CoapOption.createString(optionTypeUriPath, 'Hello');
       final CoapOption opt2 =
-          CoapOption.createString(optionTypeUriPath, "from");
-      final CoapOption opt3 = CoapOption.createString(optionTypeUriPath, "me");
-      final String str = CoapOption.join([opt1, opt2, opt3], "/");
-      expect(str, "Hello/from/me");
+      CoapOption.createString(optionTypeUriPath, 'from');
+      final CoapOption opt3 = CoapOption.createString(optionTypeUriPath, 'me');
+      final String str = CoapOption.join(<CoapOption>[opt1, opt2, opt3], '/');
+      expect(str, 'Hello/from/me');
     });
 
     test('Critical', () {
@@ -338,48 +339,48 @@ void main() {
     test('Get value', () {
       /// Helper function that creates a BlockOption with the specified parameters
       /// and serializes them to a byte array.
-      typed.Uint8Buffer toBytes(int szx, bool m, int num) {
+      typed.Uint8Buffer toBytes(int szx, int num, {bool m}) {
         final CoapBlockOption opt =
-        new CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m: m);
+        CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m: m);
         return opt.blockValueBytes;
       }
 
       // Original test assumes network byte ordering is needed, hence the reverse
-      expect(toBytes(0, false, 0), [0x0]);
-      expect(toBytes(0, false, 1), [0x10]);
-      expect(toBytes(0, false, 15), [0xf0]);
-      expect(toBytes(0, false, 16), [0x01, 0x00].reversed);
-      expect(toBytes(0, false, 79), [0x04, 0xf0].reversed);
-      expect(toBytes(0, false, 113), [0x07, 0x10].reversed);
-      expect(toBytes(0, false, 26387), [0x06, 0x71, 0x30].reversed);
-      expect(toBytes(0, false, 1048575), [0xff, 0xff, 0xf0].reversed);
-      expect(toBytes(7, false, 1048575), [0xff, 0xff, 0xf7].reversed);
-      expect(toBytes(7, true, 1048575), [0xff, 0xff, 0xff].reversed);
+      expect(toBytes(0, 0, m: false), <int>[0x0]);
+      expect(toBytes(0, 1, m: false), <int>[0x10]);
+      expect(toBytes(0, 15, m: false), <int>[0xf0]);
+      expect(toBytes(0, 16, m: false), <int>[0x01, 0x00].reversed);
+      expect(toBytes(0, 79, m: false), <int>[0x04, 0xf0].reversed);
+      expect(toBytes(0, 113, m: false), <int>[0x07, 0x10].reversed);
+      expect(toBytes(0, 26387, m: false), <int>[0x06, 0x71, 0x30].reversed);
+      expect(toBytes(0, 1048575, m: false), <int>[0xff, 0xff, 0xf0].reversed);
+      expect(toBytes(7, 1048575, m: false), <int>[0xff, 0xff, 0xf7].reversed);
+      expect(toBytes(7, 1048575, m: true), <int>[0xff, 0xff, 0xff].reversed);
     });
 
     test('Combined', () {
       /// Converts a BlockOption with the specified parameters to a byte array and
       /// back and checks that the result is the same as the original.
-      void testCombined(int szx, bool m, int num) {
+      void testCombined(int szx, int num, {bool m}) {
         final CoapBlockOption block =
-        new CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m: m);
-        final CoapBlockOption copy = new CoapBlockOption(optionTypeBlock1);
+        CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m: m);
+        final CoapBlockOption copy = CoapBlockOption(optionTypeBlock1);
         copy.valueBytes = block.valueBytes;
         expect(block.szx, copy.szx);
         expect(block.m, copy.m);
         expect(block.num, copy.num);
       }
 
-      testCombined(0, false, 0);
-      testCombined(0, false, 1);
-      testCombined(0, false, 15);
-      testCombined(0, false, 16);
-      testCombined(0, false, 79);
-      testCombined(0, false, 113);
-      testCombined(0, false, 26387);
-      testCombined(0, false, 1048575);
-      testCombined(7, false, 1048575);
-      testCombined(7, true, 1048575);
+      testCombined(0, 0, m: false);
+      testCombined(0, 1, m: false);
+      testCombined(0, 15, m: false);
+      testCombined(0, 16, m: false);
+      testCombined(0, 79, m: false);
+      testCombined(0, 113, m: false);
+      testCombined(0, 26387, m: false);
+      testCombined(0, 1048575, m: false);
+      testCombined(7, 1048575, m: false);
+      testCombined(7, 1048575, m: false);
     });
   });
 }

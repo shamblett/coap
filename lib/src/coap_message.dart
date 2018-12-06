@@ -407,7 +407,7 @@ class CoapMessage {
 
   /// Etags
   Iterable<CoapOption> get etags =>
-      _selectOptions(optionTypeETag, (CoapOption o) => o.valueBytes).toList();
+      _selectOptions(optionTypeETag, (CoapOption o) => o);
 
   /// Contains an E-tag
   bool containsETag(typed.Uint8Buffer what) => CoapUtil.contains(
@@ -594,7 +594,7 @@ class CoapMessage {
 
   /// Location paths
   dynamic get locationPaths =>
-      _selectOptions(optionTypeLocationPath, (CoapOption o) => o.toString());
+      _selectOptions(optionTypeLocationPath, (CoapOption o) => o);
 
   /// Location
   String get location {
