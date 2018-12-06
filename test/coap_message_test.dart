@@ -10,12 +10,12 @@ import 'package:typed_data/typed_data.dart' as typed;
 import 'package:collection/collection.dart';
 
 void main() {
-  final ListEquality leq = new ListEquality();
-  group("COAP All", () {
-    final Map<String, List<List<int>>> check = {
-      'draft-ietf-core-coap-03': [
-        [64, 1, 48, 57, 112, 97, 121, 108, 111, 97, 100],
-        [
+  const ListEquality<dynamic> leq = ListEquality<dynamic>();
+  group('COAP All', () {
+    final Map<String, List<List<int>>> check = <String, List<List<int>>>{
+      'draft-ietf-core-coap-03': <List<int>>[
+        <int>[64, 1, 48, 57, 112, 97, 121, 108, 111, 97, 100],
+        <int>[
           66,
           1,
           48,
@@ -41,7 +41,7 @@ void main() {
           97,
           100
         ],
-        [
+        <int>[
           79,
           1,
           48,
@@ -84,9 +84,9 @@ void main() {
           100
         ]
       ],
-      'draft-ietf-core-coap-08': [
-        [64, 1, 48, 57, 112, 97, 121, 108, 111, 97, 100],
-        [
+      'draft-ietf-core-coap-08': <List<int>>[
+        <int>[64, 1, 48, 57, 112, 97, 121, 108, 111, 97, 100],
+        <int>[
           66,
           1,
           48,
@@ -112,7 +112,7 @@ void main() {
           97,
           100
         ],
-        [
+        <int>[
           79,
           1,
           48,
@@ -155,9 +155,9 @@ void main() {
           100
         ]
       ],
-      'draft-ietf-core-coap-12': [
-        [64, 1, 48, 57, 112, 97, 121, 108, 111, 97, 100],
-        [
+      'draft-ietf-core-coap-12': <List<int>>[
+        <int>[64, 1, 48, 57, 112, 97, 121, 108, 111, 97, 100],
+        <int>[
           66,
           1,
           48,
@@ -183,7 +183,7 @@ void main() {
           97,
           100
         ],
-        [
+        <int>[
           66,
           1,
           48,
@@ -214,7 +214,7 @@ void main() {
           97,
           100
         ],
-        [
+        <int>[
           85,
           2,
           0,
@@ -239,7 +239,7 @@ void main() {
           77,
           3
         ],
-        [
+        <int>[
           87,
           69,
           0,
@@ -355,9 +355,9 @@ void main() {
           113
         ]
       ],
-      'draft-ietf-core-coap-13': [
-        [64, 1, 48, 57, 255, 112, 97, 121, 108, 111, 97, 100],
-        [
+      'draft-ietf-core-coap-13': <List<int>>[
+        <int>[64, 1, 48, 57, 255, 112, 97, 121, 108, 111, 97, 100],
+        <int>[
           64,
           1,
           48,
@@ -384,7 +384,7 @@ void main() {
           97,
           100
         ],
-        [
+        <int>[
           64,
           1,
           48,
@@ -416,7 +416,7 @@ void main() {
           97,
           100
         ],
-        [
+        <int>[
           85,
           2,
           0,
@@ -440,7 +440,7 @@ void main() {
           65,
           40
         ],
-        [
+        <int>[
           86,
           69,
           0,
@@ -553,9 +553,9 @@ void main() {
           113
         ]
       ],
-      'draft-ietf-core-coap-18': [
-        [64, 1, 48, 57, 255, 112, 97, 121, 108, 111, 97, 100],
-        [
+      'draft-ietf-core-coap-18': <List<int>>[
+        <int>[64, 1, 48, 57, 255, 112, 97, 121, 108, 111, 97, 100],
+        <int>[
           64,
           1,
           48,
@@ -582,7 +582,7 @@ void main() {
           97,
           100
         ],
-        [
+        <int>[
           64,
           1,
           48,
@@ -614,7 +614,7 @@ void main() {
           97,
           100
         ],
-        [
+        <int>[
           85,
           2,
           0,
@@ -638,7 +638,7 @@ void main() {
           81,
           40
         ],
-        [
+        <int>[
           86,
           69,
           0,
@@ -755,10 +755,10 @@ void main() {
 
     /// Helper functions
     void printData(String name, List<int> data, int testNo) {
-      print("Draft name is - $name");
-      print("Test number is $testNo");
-      print("Data is - " + data.toString());
-      print("Chk  is - " + check[name][testNo].toString());
+      print('Draft name is - $name');
+      print('Test number is $testNo');
+      print('Data is - $data');
+      print('Chk  is - ${check[name][testNo]}');
     }
 
     void checkData(String name, typed.Uint8Buffer data, int testNo) {
@@ -769,10 +769,11 @@ void main() {
 
     void testMessage(CoapISpec spec, int testNo) {
       final CoapMessage msg =
-      new CoapRequest.isConfirmable(CoapCode.methodGET, confirmable: true);
+      CoapRequest.isConfirmable(CoapCode.methodGET, confirmable: true);
 
       msg.id = 12345;
-      msg.payload = new typed.Uint8Buffer()..addAll("payload".codeUnits);
+      msg.payload = typed.Uint8Buffer()
+        ..addAll('payload'.codeUnits);
       final typed.Uint8Buffer data = spec.encode(msg);
       checkData(spec.name, data, testNo);
       final CoapMessage convMsg = spec.decode(data);
@@ -787,15 +788,18 @@ void main() {
 
     void testMessageWithOptions(CoapISpec spec, int testNo) {
       final CoapMessage msg =
-      new CoapRequest.isConfirmable(CoapCode.methodGET, confirmable: true);
+      CoapRequest.isConfirmable(CoapCode.methodGET, confirmable: true);
 
       msg.id = 12345;
-      msg.payload = new typed.Uint8Buffer()..addAll("payload".codeUnits);
+      msg.payload = typed.Uint8Buffer()
+        ..addAll('payload'.codeUnits);
       msg.addOption(
-          CoapOption.createString(optionTypeContentType, "text/plain"));
+          CoapOption.createString(optionTypeContentType, 'text/plain'));
       msg.addOption(CoapOption.createVal(optionTypeMaxAge, 30));
       expect(
-          msg.getFirstOption(optionTypeContentType).stringValue, "text/plain");
+          msg
+              .getFirstOption(optionTypeContentType)
+              .stringValue, 'text/plain');
       expect(msg.getFirstOption(optionTypeMaxAge).value, 30);
       final typed.Uint8Buffer data = spec.encode(msg);
       checkData(spec.name, data, testNo);
@@ -810,7 +814,7 @@ void main() {
               convMsg.getSortedOptions().toList()),
           isTrue);
       expect(convMsg.getFirstOption(optionTypeContentType).stringValue,
-          "text/plain");
+          'text/plain');
       expect(convMsg.getFirstOption(optionTypeMaxAge).value, 30);
       expect(
           leq.equals(msg.payload.toList(), convMsg.payload.toList()), isTrue);
@@ -818,14 +822,19 @@ void main() {
 
     void testMessageWithExtendedOption(CoapISpec spec, int testNo) {
       final CoapMessage msg =
-      new CoapRequest.isConfirmable(CoapCode.methodGET, confirmable: true);
+      CoapRequest.isConfirmable(CoapCode.methodGET, confirmable: true);
 
       msg.id = 12345;
-      msg.addOption(CoapOption.createString(12, "a"));
-      msg.addOption(CoapOption.createString(197, "extend option"));
-      expect(msg.getFirstOption(12).stringValue, "a");
-      expect(msg.getFirstOption(197).stringValue, "extend option");
-      msg.payload = new typed.Uint8Buffer()..addAll("payload".codeUnits);
+      msg.addOption(CoapOption.createString(12, 'a'));
+      msg.addOption(CoapOption.createString(197, 'extend option'));
+      expect(msg
+          .getFirstOption(12)
+          .stringValue, 'a');
+      expect(msg
+          .getFirstOption(197)
+          .stringValue, 'extend option');
+      msg.payload = typed.Uint8Buffer()
+        ..addAll('payload'.codeUnits);
 
       final typed.Uint8Buffer data = spec.encode(msg);
       checkData(spec.name, data, testNo);
@@ -839,23 +848,28 @@ void main() {
           leq.equals(msg.getSortedOptions().toList(),
               convMsg.getSortedOptions().toList()),
           isTrue);
-      expect(convMsg.getFirstOption(12).stringValue, "a");
+      expect(convMsg
+          .getFirstOption(12)
+          .stringValue, 'a');
       expect(
           leq.equals(msg.payload.toList(), convMsg.payload.toList()), isTrue);
 
       final CoapOption extendOpt = convMsg.getFirstOption(197);
       expect(extendOpt, isNotNull);
-      expect(extendOpt.stringValue, "extend option");
+      expect(extendOpt.stringValue, 'extend option');
     }
 
     void testRequestParsing(CoapISpec spec, int testNo) {
       final CoapRequest request =
-      new CoapRequest.isConfirmable(CoapCode.methodPOST, confirmable: false);
+      CoapRequest.isConfirmable(CoapCode.methodPOST, confirmable: false);
       request.id = 7;
-      request.token = new typed.Uint8Buffer()..addAll([11, 82, 165, 77, 3]);
+      request.token = typed.Uint8Buffer()
+        ..addAll(<int>[11, 82, 165, 77, 3]);
       request
-          .addIfMatch(new typed.Uint8Buffer()..addAll([34, 239]))
-          .addIfMatch(new typed.Uint8Buffer()..addAll([88, 12, 254, 157, 5]));
+          .addIfMatch(typed.Uint8Buffer()
+        ..addAll(<int>[34, 239]))
+          .addIfMatch(typed.Uint8Buffer()
+        ..addAll(<int>[88, 12, 254, 157, 5]));
       request.contentType = 40;
       request.accept = 40;
 
@@ -874,18 +888,19 @@ void main() {
     }
 
     void testResponseParsing(CoapISpec spec, int testNo) {
-      final CoapResponse response = new CoapResponse(CoapCode.content);
+      final CoapResponse response = CoapResponse(CoapCode.content);
       response.type = CoapMessageType.non;
       response.id = 9;
-      response.token = new typed.Uint8Buffer()
-        ..addAll([22, 255, 0, 78, 100, 22]);
-      response.addETag(new typed.Uint8Buffer()..addAll([1, 0, 0, 0, 0, 1]))
-        ..addLocationPath("/one/two/three/four/five/six/seven/eight/nine/ten")
+      response.token = typed.Uint8Buffer()
+        ..addAll(<int>[22, 255, 0, 78, 100, 22]);
+      response.addETag(typed.Uint8Buffer()
+        ..addAll(<int>[1, 0, 0, 0, 0, 1]))
+        ..addLocationPath('/one/two/three/four/five/six/seven/eight/nine/ten')
         ..addOption(CoapOption.createVal(
-            57453, 0x71ca949f)) // C# "Arbitrary".hashCode()
-        ..addOption(CoapOption.createString(19205, "Arbitrary1"))
-        ..addOption(CoapOption.createString(19205, "Arbitrary2"))
-        ..addOption(CoapOption.createString(19205, "Arbitrary3"));
+            57453, 0x71ca949f)) // C# 'Arbitrary'.hashCode()
+        ..addOption(CoapOption.createString(19205, 'Arbitrary1'))..addOption(
+          CoapOption.createString(19205, 'Arbitrary2'))..addOption(
+          CoapOption.createString(19205, 'Arbitrary3'));
 
       final typed.Uint8Buffer bytes = spec.encode(response);
       checkData(spec.name, bytes, testNo);
@@ -914,35 +929,35 @@ void main() {
     }
 
     test('TestDraft03', () {
-      testMessage(new CoapDraft03(), 0);
-      testMessageWithOptions(new CoapDraft03(), 1);
-      testMessageWithExtendedOption(new CoapDraft03(), 2);
+      testMessage(CoapDraft03(), 0);
+      testMessageWithOptions(CoapDraft03(), 1);
+      testMessageWithExtendedOption(CoapDraft03(), 2);
     });
     test('TestDraft08', () {
-      testMessage(new CoapDraft08(), 0);
-      testMessageWithOptions(new CoapDraft08(), 1);
-      testMessageWithExtendedOption(new CoapDraft08(), 2);
+      testMessage(CoapDraft08(), 0);
+      testMessageWithOptions(CoapDraft08(), 1);
+      testMessageWithExtendedOption(CoapDraft08(), 2);
     });
     test('TestDraft12', () {
-      testMessage(new CoapDraft12(), 0);
-      testMessageWithOptions(new CoapDraft12(), 1);
-      testMessageWithExtendedOption(new CoapDraft12(), 2);
-      testRequestParsing(new CoapDraft12(), 3);
-      testResponseParsing(new CoapDraft12(), 4);
+      testMessage(CoapDraft12(), 0);
+      testMessageWithOptions(CoapDraft12(), 1);
+      testMessageWithExtendedOption(CoapDraft12(), 2);
+      testRequestParsing(CoapDraft12(), 3);
+      testResponseParsing(CoapDraft12(), 4);
     });
     test('TestDraft13', () {
-      testMessage(new CoapDraft13(), 0);
-      testMessageWithOptions(new CoapDraft13(), 1);
-      testMessageWithExtendedOption(new CoapDraft13(), 2);
-      testRequestParsing(new CoapDraft13(), 3);
-      testResponseParsing(new CoapDraft13(), 4);
+      testMessage(CoapDraft13(), 0);
+      testMessageWithOptions(CoapDraft13(), 1);
+      testMessageWithExtendedOption(CoapDraft13(), 2);
+      testRequestParsing(CoapDraft13(), 3);
+      testResponseParsing(CoapDraft13(), 4);
     });
     test('TestDraft18', () {
-      testMessage(new CoapDraft18(), 0);
-      testMessageWithOptions(new CoapDraft18(), 1);
-      testMessageWithExtendedOption(new CoapDraft18(), 2);
-      testRequestParsing(new CoapDraft18(), 3);
-      testResponseParsing(new CoapDraft18(), 4);
+      testMessage(CoapDraft18(), 0);
+      testMessageWithOptions(CoapDraft18(), 1);
+      testMessageWithExtendedOption(CoapDraft18(), 2);
+      testRequestParsing(CoapDraft18(), 3);
+      testResponseParsing(CoapDraft18(), 4);
     });
   });
 }

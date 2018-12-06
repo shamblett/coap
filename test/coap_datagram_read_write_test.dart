@@ -18,122 +18,112 @@ void main() {
     final CoapDatagramWriter writer = CoapDatagramWriter();
     writer.write(intIn, 32);
 
-    final CoapDatagramReader reader =
-    CoapDatagramReader(writer.toByteArray());
+    final CoapDatagramReader reader = CoapDatagramReader(writer.toByteArray());
     final int intOut = reader.read(32);
 
     expect(intIn, intOut);
   });
   test('Test32BitIntZero', () {
-    final int intIn = 0;
+    const int intIn = 0;
 
     final CoapDatagramWriter writer = CoapDatagramWriter();
     writer.write(intIn, 32);
 
-    final CoapDatagramReader reader =
-    CoapDatagramReader(writer.toByteArray());
+    final CoapDatagramReader reader = CoapDatagramReader(writer.toByteArray());
     final int intOut = reader.read(32);
 
     expect(intIn, intOut);
   });
   test('Test32BitInt1', () {
-    final int intIn = 0xFFFFFFFF;
+    const int intIn = 0xFFFFFFFF;
 
     final CoapDatagramWriter writer = CoapDatagramWriter();
     writer.write(intIn, 32);
 
-    final CoapDatagramReader reader =
-    CoapDatagramReader(writer.toByteArray());
+    final CoapDatagramReader reader = CoapDatagramReader(writer.toByteArray());
     final int intOut = reader.read(32);
 
     expect(intIn, intOut);
   });
   test('Test16BitInt', () {
-    final int intIn = 0x00004321;
+    const int intIn = 0x00004321;
 
     final CoapDatagramWriter writer = CoapDatagramWriter();
     writer.write(intIn, 16);
 
-    final CoapDatagramReader reader =
-    CoapDatagramReader(writer.toByteArray());
+    final CoapDatagramReader reader = CoapDatagramReader(writer.toByteArray());
     final int intOut = reader.read(16);
 
     expect(intIn, intOut);
   });
   test('Test8BitInt', () {
-    final int intIn = 0x00000021;
+    const int intIn = 0x00000021;
 
     final CoapDatagramWriter writer = CoapDatagramWriter();
     writer.write(intIn, 8);
 
-    final CoapDatagramReader reader =
-    CoapDatagramReader(writer.toByteArray());
+    final CoapDatagramReader reader = CoapDatagramReader(writer.toByteArray());
     final int intOut = reader.read(8);
 
     expect(intIn, intOut);
   });
 
   test('Test4BitInt', () {
-    final int intIn = 0x00000005;
+    const int intIn = 0x00000005;
 
     final CoapDatagramWriter writer = CoapDatagramWriter();
     writer.write(intIn, 4);
 
-    final CoapDatagramReader reader =
-    CoapDatagramReader(writer.toByteArray());
+    final CoapDatagramReader reader = CoapDatagramReader(writer.toByteArray());
     final int intOut = reader.read(4);
 
     expect(intIn, intOut);
   });
   test('Test2BitInt', () {
-    final int intIn = 0x00000002;
+    const int intIn = 0x00000002;
 
     final CoapDatagramWriter writer = CoapDatagramWriter();
     writer.write(intIn, 2);
 
-    final CoapDatagramReader reader =
-    CoapDatagramReader(writer.toByteArray());
+    final CoapDatagramReader reader = CoapDatagramReader(writer.toByteArray());
     final int intOut = reader.read(2);
 
     expect(intIn, intOut);
   });
   test('Test1BitInt', () {
-    final int intIn = 0x00000001;
+    const int intIn = 0x00000001;
 
     final CoapDatagramWriter writer = CoapDatagramWriter();
     writer.write(intIn, 1);
 
-    final CoapDatagramReader reader =
-    CoapDatagramReader(writer.toByteArray());
+    final CoapDatagramReader reader = CoapDatagramReader(writer.toByteArray());
     final int intOut = reader.read(1);
 
     expect(intIn, intOut);
   });
   test('TestAlignedBytes', () {
     final typed.Uint8Buffer bytesIn = typed.Uint8Buffer()
-      ..addAll("Some aligned bytes".codeUnits);
+      ..addAll('Some aligned bytes'.codeUnits);
 
     final CoapDatagramWriter writer = CoapDatagramWriter();
     writer.writeBytes(bytesIn);
 
-    final CoapDatagramReader reader =
-    CoapDatagramReader(writer.toByteArray());
+    final CoapDatagramReader reader = CoapDatagramReader(writer.toByteArray());
     final typed.Uint8Buffer bytesOut = reader.readBytesLeft();
 
     expect(leq.equals(bytesIn.toList(), bytesOut.toList()), isTrue);
   });
   test('TestUnalignedBytes1', () {
-    final int bitCount = 1;
-    final int bitsIn = 0x1;
+    const int bitCount = 1;
+    const int bitsIn = 0x1;
     final typed.Uint8Buffer bytesIn = typed.Uint8Buffer()
-      ..addAll("Some aligned bytes".codeUnits);
+      ..addAll('Some aligned bytes'.codeUnits);
 
     final CoapDatagramWriter writer = CoapDatagramWriter();
     writer.write(bitsIn, bitCount);
     writer.writeBytes(bytesIn);
 
-    final CoapDatagramReader reader =
-    CoapDatagramReader(writer.toByteArray());
+    final CoapDatagramReader reader = CoapDatagramReader(writer.toByteArray());
     final int bitsOut = reader.read(bitCount);
     final typed.Uint8Buffer bytesOut = reader.readBytes(bytesIn.length);
 
@@ -141,17 +131,16 @@ void main() {
     expect(leq.equals(bytesIn.toList(), bytesOut.toList()), isTrue);
   });
   test('TestUnalignedBytes3', () {
-    final int bitCount = 3;
-    final int bitsIn = 0x5;
+    const int bitCount = 3;
+    const int bitsIn = 0x5;
     final typed.Uint8Buffer bytesIn = typed.Uint8Buffer()
-      ..addAll("Some aligned bytes".codeUnits);
+      ..addAll('Some aligned bytes'.codeUnits);
 
     final CoapDatagramWriter writer = CoapDatagramWriter();
     writer.write(bitsIn, bitCount);
     writer.writeBytes(bytesIn);
 
-    final CoapDatagramReader reader =
-    CoapDatagramReader(writer.toByteArray());
+    final CoapDatagramReader reader = CoapDatagramReader(writer.toByteArray());
     final int bitsOut = reader.read(bitCount);
     final typed.Uint8Buffer bytesOut = reader.readBytes(bytesIn.length);
 
@@ -159,17 +148,16 @@ void main() {
     expect(leq.equals(bytesIn.toList(), bytesOut.toList()), isTrue);
   });
   test('TestUnalignedBytes7', () {
-    final int bitCount = 7;
-    final int bitsIn = 0x69;
+    const int bitCount = 7;
+    const int bitsIn = 0x69;
     final typed.Uint8Buffer bytesIn = typed.Uint8Buffer()
-      ..addAll("Some aligned bytes".codeUnits);
+      ..addAll('Some aligned bytes'.codeUnits);
 
     final CoapDatagramWriter writer = CoapDatagramWriter();
     writer.write(bitsIn, bitCount);
     writer.writeBytes(bytesIn);
 
-    final CoapDatagramReader reader =
-    CoapDatagramReader(writer.toByteArray());
+    final CoapDatagramReader reader = CoapDatagramReader(writer.toByteArray());
     final int bitsOut = reader.read(bitCount);
     final typed.Uint8Buffer bytesOut = reader.readBytes(bytesIn.length);
 
@@ -177,17 +165,16 @@ void main() {
     expect(leq.equals(bytesIn.toList(), bytesOut.toList()), isTrue);
   });
   test('TestBytesLeft', () {
-    final int bitCount = 8;
-    final int bitsIn = 0xaa;
+    const int bitCount = 8;
+    const int bitsIn = 0xaa;
     final typed.Uint8Buffer bytesIn = typed.Uint8Buffer()
-      ..addAll("Some aligned bytes".codeUnits);
+      ..addAll('Some aligned bytes'.codeUnits);
 
     final CoapDatagramWriter writer = CoapDatagramWriter();
     writer.write(bitsIn, bitCount);
     writer.writeBytes(bytesIn);
 
-    final CoapDatagramReader reader =
-    CoapDatagramReader(writer.toByteArray());
+    final CoapDatagramReader reader = CoapDatagramReader(writer.toByteArray());
     final int bitsOut = reader.read(bitCount);
     final typed.Uint8Buffer bytesOut = reader.readBytes(bytesIn.length);
 
@@ -195,17 +182,16 @@ void main() {
     expect(leq.equals(bytesIn.toList(), bytesOut.toList()), isTrue);
   });
   test('TestBytesLeftUnaligned', () {
-    final int bitCount = 7;
-    final int bitsIn = 0x55;
+    const int bitCount = 7;
+    const int bitsIn = 0x55;
     final typed.Uint8Buffer bytesIn = typed.Uint8Buffer()
-      ..addAll("Some aligned bytes".codeUnits);
+      ..addAll('Some aligned bytes'.codeUnits);
 
     final CoapDatagramWriter writer = CoapDatagramWriter();
     writer.write(bitsIn, bitCount);
     writer.writeBytes(bytesIn);
 
-    final CoapDatagramReader reader =
-    CoapDatagramReader(writer.toByteArray());
+    final CoapDatagramReader reader = CoapDatagramReader(writer.toByteArray());
     final int bitsOut = reader.read(bitCount);
     final typed.Uint8Buffer bytesOut = reader.readBytes(bytesIn.length);
 
@@ -213,16 +199,16 @@ void main() {
     expect(leq.equals(bytesIn.toList(), bytesOut.toList()), isTrue);
   });
   test('TestGETRequestHeader', () {
-    final int versionIn = 1;
-    final int versionSz = 2;
-    final int typeIn = 0; // Confirmable
-    final int typeSz = 2;
-    final int optionCntIn = 1;
-    final int optionCntSz = 4;
-    final int codeIn = 1; // GET Request
-    final int codeSz = 8;
-    final int msgIdIn = 0x1234;
-    final int msgIdSz = 16;
+    const int versionIn = 1;
+    const int versionSz = 2;
+    const int typeIn = 0; // Confirmable
+    const int typeSz = 2;
+    const int optionCntIn = 1;
+    const int optionCntSz = 4;
+    const int codeIn = 1; // GET Request
+    const int codeSz = 8;
+    const int msgIdIn = 0x1234;
+    const int msgIdSz = 16;
 
     final CoapDatagramWriter writer = CoapDatagramWriter();
     writer.write(versionIn, versionSz);
@@ -233,7 +219,7 @@ void main() {
 
     final typed.Uint8Buffer data = writer.toByteArray();
     final typed.Uint8Buffer dataRef = typed.Uint8Buffer()
-      ..addAll([0x41, 0x01, 0x12, 0x34]);
+      ..addAll(<int>[0x41, 0x01, 0x12, 0x34]);
 
     expect(leq.equals(dataRef.toList(), data.toList()), isTrue);
 
