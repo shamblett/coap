@@ -12,19 +12,19 @@ part of coap;
 class CoapStack extends CoapLayerStack {
   /// Instantiates.
   CoapStack(CoapConfig config) {
-    this.addLast("Observe", new CoapObserveLayer(config));
-    this.addLast("Blockwise", new CoapBlockwiseLayer(config));
-    this.addLast("Token", new CoapTokenLayer(config));
-    this.addLast("Reliability", new CoapReliabilityLayer(config));
+    addLast('Observe', CoapObserveLayer(config));
+    addLast('Blockwise', CoapBlockwiseLayer(config));
+    addLast('Token', CoapTokenLayer(config));
+    addLast('Reliability', CoapReliabilityLayer(config));
   }
 
-  /// Sets the <see cref="IExecutor"/> for all layers.
   CoapIExecutor _executor;
 
+  /// The IExecutor for all layers.
   CoapIExecutor get executor => _executor;
 
   set executor(CoapIExecutor value) {
-    for (CoapEntry entry in this.getAll()) {
+    for (CoapEntry<dynamic, dynamic> entry in getAll()) {
       entry.filter.executor = value;
     }
   }

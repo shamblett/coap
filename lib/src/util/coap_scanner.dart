@@ -7,14 +7,15 @@
 
 part of coap;
 
+/// String scanner
 class CoapScanner {
-  String _s;
-  int _position;
-
-  CoapScanner(String s) {
-    _s = s;
+  /// Construction
+  CoapScanner(this._s) {
     _position = 0;
   }
+
+  String _s;
+  int _position;
 
   /// Find any from position
   String find(RegExp regex) {

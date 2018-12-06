@@ -7,13 +7,16 @@
 
 part of coap;
 
+/// Task executor
 class CoapExecutor implements CoapIExecutor {
-  tasking.Executor executor = new tasking.Executor(concurrency: 10);
 
-  /// Starts a task.
+  /// The executor
+  tasking.Executor executor = tasking.Executor(concurrency: 10);
+
+  @override
   void start(Action task) {
     executor.scheduleTask(() {
-      task;
+      task();
     });
   }
 }
