@@ -93,33 +93,37 @@ class CoapUtil {
     final StringBuffer sb = StringBuffer();
     sb.writeln('If-Match : ${iterableToString(msg.ifMatches)}');
     sb.write('Uri Host : ');
-    msg.hasOption(optionTypeUriHost) ? sb.writeln(msg.uriHost) : sb.writeln(
-        'None');
+    msg.hasOption(optionTypeUriHost)
+        ? sb.writeln(msg.uriHost)
+        : sb.writeln('None');
     sb.writeln('E-tags : ${iterableToString(msg.etags)}');
-    msg.hasOption(optionTypeIfNoneMatch) ? sb.writeln(msg.ifNoneMatch) : sb
-        .writeln('None');
+    msg.hasOption(optionTypeIfNoneMatch)
+        ? sb.writeln(msg.ifNoneMatch)
+        : sb.writeln('None');
     sb.write('Uri Port : ');
     if ((msg.uriPort != null) && (msg.uriPort > 0)) {
       sb.writeln(msg.uriPort);
     } else {
       sb.writeln('None');
     }
-    sb.writeln(
-        'Location Paths: ${iterableToString(msg.locationPaths)}');
-    sb.writeln('Uri Paths : ' + iterableToString(msg.uriPaths) ?? 'None');
+    sb.writeln('Location Paths: ${iterableToString(msg.locationPaths)}');
+    sb.writeln('Uri Paths : ${iterableToString(msg.uriPaths)}');
     sb.write('Content-Type : ');
     sb.writeln(
         msg.contentType != CoapMediaType.undefined ? msg.contentType : 'None');
     sb.write('Max Age : ');
-    msg.hasOption(optionTypeMaxAge) ? sb.writeln(msg.maxAge) : 'None';
-    sb.writeln('Uri Queries : ' + iterableToString(msg.uriQueries) ?? 'None');
+    msg.hasOption(optionTypeMaxAge)
+        ? sb.writeln(msg.maxAge)
+        : sb.writeln('None');
+    sb.writeln('Uri Queries : ${iterableToString(msg.uriQueries)}');
     sb.write('Accept : ');
     sb.writeln(
         msg.contentType != CoapMediaType.undefined ? msg.accept : 'None');
-    sb.writeln('Location Queries : ' + iterableToString(msg.locationQueries) ??
-        'None');
+    sb.writeln('Location Queries : ${iterableToString(msg.locationQueries)}');
     sb.write('Proxy Uri : ');
-    msg.hasOption(optionTypeProxyUri) ? sb.writeln(msg.proxyUri) : 'None';
+    msg.hasOption(optionTypeProxyUri)
+        ? sb.writeln(msg.proxyUri)
+        : sb.writeln('None');
     sb.write('Proxy Scheme : ');
     sb.writeln(msg.proxyScheme ?? 'None');
     sb.write('Block 1 : ');
@@ -136,15 +140,14 @@ class CoapUtil {
   }
 
   /// Regex to check if a host name is an IP address
-  static RegExp regIP = new RegExp(
+  static RegExp regIP = RegExp(
       r'(\\[[0-9a-f:]+\\]|[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})',
       caseSensitive: false);
 
   /// Sleep function that allows asynchronous activity to continue.
   /// Time units are milliseconds
-  static Future asyncSleep(int milliseconds) {
-    return new Future.delayed(new Duration(milliseconds: milliseconds));
-  }
+  static Future<void> asyncSleep(int milliseconds) =>
+      Future<void>.delayed(Duration(milliseconds: milliseconds));
 
   /// Puts a value associated with a key into a Map,
   /// and returns the old value, or null if not exists.
@@ -158,21 +161,21 @@ class CoapUtil {
     return old;
   }
 
+  /// Host lookup
   static Future<InternetAddress> lookupHost(String host) async {
-    final Completer<InternetAddress> completer = new Completer<
-        InternetAddress>();
-    InternetAddress.lookup(host, type: InternetAddressType.IPv6)
-      ..then((List<InternetAddress> addresses) {
-        logResolvedAddresses(addresses);
-        if (addresses != null && addresses.length >= 1) {
-          completer.complete(addresses[0]);
-        } else {
-          completer.complete(null);
-        }
-      });
+    final Completer<InternetAddress> completer = Completer<InternetAddress>();
+    final List<InternetAddress> addresses =
+    await InternetAddress.lookup(host, type: InternetAddressType.IPv6);
+    logResolvedAddresses(addresses);
+    if (addresses != null && addresses.isNotEmpty) {
+      completer.complete(addresses[0]);
+    } else {
+      completer.complete(null);
+    }
     return completer.future;
   }
 
+  /// Resolved address logger
   static void logResolvedAddresses(List<InternetAddress> addresses) {
     if (addresses == null) {
       print('No resolved addresses');
