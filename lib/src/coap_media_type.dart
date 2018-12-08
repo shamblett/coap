@@ -31,7 +31,9 @@ class CoapMediaType {
     applicationXmppXml: <String>['application/xmpp+xml', 'xmpp'],
     applicationFastinfoset: <String>['application/fastinfoset', 'finf'],
     applicationSoapFastinfoset: <String>[
-      'application/soap+fastinfoset', 'soap.finf'],
+      'application/soap+fastinfoset',
+      'soap.finf'
+    ],
     applicationXObixBinary: <String>['application/x-obix-binary', 'obix'],
     applicationExi: <String>['application/exi', 'exi'],
     applicationJson: <String>['application/json', 'json']
@@ -197,8 +199,7 @@ class CoapMediaType {
       return null;
     }
     final List<int> res = List<int>();
-    String regex1 =
-    regex.trim().substring(0, regex.indexOf('*')).trim();
+    String regex1 = regex.trim().substring(0, regex.indexOf('*')).trim();
     regex1 += '.*';
     final RegExp r = RegExp(regex1);
     _registry.forEach((int key, List<String> value) {

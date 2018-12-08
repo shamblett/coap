@@ -53,8 +53,7 @@ class CoapNetworkUDP extends CoapNetwork {
       return null;
     }
     print('SJH - UDP - received ${rec.data}');
-    return typed.Uint8Buffer()
-      ..addAll(rec.data);
+    return typed.Uint8Buffer()..addAll(rec.data);
   }
 
   @override

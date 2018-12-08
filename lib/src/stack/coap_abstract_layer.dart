@@ -13,12 +13,14 @@ class CoapAbstractLayer implements CoapILayer {
   CoapIExecutor executor;
 
   @override
-  void sendRequest(CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
+  void sendRequest(
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
     nextLayer.sendRequest(exchange, request);
   }
 
   @override
-  void sendResponse(CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
+  void sendResponse(
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
     nextLayer.sendResponse(exchange, response);
   }
 
@@ -29,12 +31,14 @@ class CoapAbstractLayer implements CoapILayer {
   }
 
   @override
-  void receiveRequest(CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
+  void receiveRequest(
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
     nextLayer.receiveRequest(exchange, request);
   }
 
   @override
-  void receiveResponse(CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
+  void receiveResponse(
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
     nextLayer.receiveResponse(exchange, response);
   }
 

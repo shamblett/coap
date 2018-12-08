@@ -75,7 +75,7 @@ void main() {
       final CoapOption opt = CoapOption.createVal(optionTypeMaxAge, 10);
       expect(opt.value, 10);
       final CoapOption opt1 =
-      CoapOption.createString(optionTypeUriQuery, 'Hello');
+          CoapOption.createString(optionTypeUriQuery, 'Hello');
       expect(opt1.value, 'Hello');
       final CoapOption opt2 = CoapOption.create(optionTypeReserved);
       expect(opt2.value, isNull);
@@ -287,7 +287,7 @@ void main() {
 
     test('Split', () {
       final List<CoapOption> opts =
-      CoapOption.split(optionTypeUriPath, 'hello/from/me', '/');
+          CoapOption.split(optionTypeUriPath, 'hello/from/me', '/');
       expect(opts.length, 3);
       expect(opts[0].stringValue, 'hello');
       expect(opts[0].type, optionTypeUriPath);
@@ -295,7 +295,7 @@ void main() {
       expect(opts[2].stringValue, 'me');
 
       final List<CoapOption> opts1 =
-      CoapOption.split(optionTypeUriPath, '///hello/from/me/again', '/');
+          CoapOption.split(optionTypeUriPath, '///hello/from/me/again', '/');
       expect(opts1.length, 4);
       expect(opts1[0].stringValue, 'hello');
       expect(opts1[0].type, optionTypeUriPath);
@@ -306,9 +306,9 @@ void main() {
 
     test('Join', () {
       final CoapOption opt1 =
-      CoapOption.createString(optionTypeUriPath, 'Hello');
+          CoapOption.createString(optionTypeUriPath, 'Hello');
       final CoapOption opt2 =
-      CoapOption.createString(optionTypeUriPath, 'from');
+          CoapOption.createString(optionTypeUriPath, 'from');
       final CoapOption opt3 = CoapOption.createString(optionTypeUriPath, 'me');
       final String str = CoapOption.join(<CoapOption>[opt1, opt2, opt3], '/');
       expect(str, 'Hello/from/me');
@@ -341,7 +341,7 @@ void main() {
       /// and serializes them to a byte array.
       typed.Uint8Buffer toBytes(int szx, int num, {bool m}) {
         final CoapBlockOption opt =
-        CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m: m);
+            CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m: m);
         return opt.blockValueBytes;
       }
 
@@ -363,7 +363,7 @@ void main() {
       /// back and checks that the result is the same as the original.
       void testCombined(int szx, int num, {bool m}) {
         final CoapBlockOption block =
-        CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m: m);
+            CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m: m);
         final CoapBlockOption copy = CoapBlockOption(optionTypeBlock1);
         copy.valueBytes = block.valueBytes;
         expect(block.szx, copy.szx);

@@ -313,9 +313,7 @@ class CoapMessage {
         payload += '... $payloadSize bytes';
       }
     }
-    return '\n${type.toString()}-$codeString ID=${id
-        .toString()}, Token=$tokenString, \nOptions=[${CoapUtil.optionsToString(
-        this)}], \nPayload : $payload';
+    return '\n${type.toString()}-$codeString ID=${id.toString()}, Token=$tokenString, \nOptions=[${CoapUtil.optionsToString(this)}], \nPayload : $payload';
   }
 
   @override
@@ -352,8 +350,8 @@ class CoapMessage {
   int get hashCode => super.hashCode;
 
   /// Select options helper
-  Iterable<CoapOption> _selectOptions(int optionType,
-      func(CoapOption option)) sync* {
+  Iterable<CoapOption> _selectOptions(
+      int optionType, func(CoapOption option)) sync* {
     final Iterable<CoapOption> opts = getOptions(optionType);
     if (opts != null) {
       for (CoapOption opt in opts) {
@@ -785,8 +783,7 @@ class CoapMessage {
       removeOptions(optionTypeObserve);
     } else if (value < 0 || ((1 << 24) - 1) < value) {
       throw ArgumentError.value(value, 'Message::observe',
-          'Observe option must be between 0 and ${(1 << 24) -
-              1} (3 bytes) inclusive');
+          'Observe option must be between 0 and ${(1 << 24) - 1} (3 bytes) inclusive');
     } else {
       setOption(CoapOption.createVal(optionTypeObserve, value));
     }

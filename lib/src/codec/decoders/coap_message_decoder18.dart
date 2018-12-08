@@ -43,8 +43,7 @@ class CoapMessageDecoder18 extends CoapMessageDecoder {
         if (!_reader.bytesAvailable) {
           // The presence of a marker followed by a zero-length payload
           // must be processed as a message format error
-          throw StateError(
-              'Decoder18 - Marker followed by 0 length payload');
+          throw StateError('Decoder18 - Marker followed by 0 length payload');
         }
 
         message.payload = _reader.readBytesLeft();

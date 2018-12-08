@@ -9,7 +9,6 @@ part of coap;
 
 /// Task executor
 class CoapExecutor implements CoapIExecutor {
-
   /// The executor
   tasking.Executor executor = tasking.Executor(concurrency: 10);
 

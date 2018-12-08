@@ -108,14 +108,12 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
           _log.warn('Message format error caused by $e');
         } else {
           // Manually build RST from raw information
-          final CoapEmptyMessage rst =
-          CoapEmptyMessage(CoapMessageType.rst);
+          final CoapEmptyMessage rst = CoapEmptyMessage(CoapMessageType.rst);
           rst.destination = event.address;
           rst.id = decoder.id;
           clientEventBus.fire(CoapSendingEmptyMessageEvent(rst));
           _channel.send(_serializeEmpty(rst), rst.destination);
-          _log.warn(
-              'Message format error caused by $e and reset.');
+          _log.warn('Message format error caused by $e and reset.');
         }
         return;
       }
@@ -139,9 +137,9 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
       if (!response.isCancelled) {
         final CoapExchange exchange = _matcher.receiveResponse(response);
         if (exchange != null) {
-          response.rtt = ((DateTime.now().difference(exchange.timestamp))
-                  .inMilliseconds)
-              .toDouble();
+          response.rtt =
+              ((DateTime.now().difference(exchange.timestamp)).inMilliseconds)
+                  .toDouble();
           exchange.endpoint = this;
           _coapStack.receiveResponse(exchange, response);
         } else if (response.type != CoapMessageType.ack) {

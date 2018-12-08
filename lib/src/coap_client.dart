@@ -101,8 +101,8 @@ class CoapClient {
 
   /// Sends a POST request with the specified Accept option and byte payload.
   /// Blocks until the response is available.
-  CoapResponse postBytePayloadWithAccept(typed.Uint8Buffer payload, int format,
-      int acceptVal) =>
+  CoapResponse postBytePayloadWithAccept(
+          typed.Uint8Buffer payload, int format, int acceptVal) =>
       send(accept(CoapRequest.newPost().setPayloadMediaRaw(payload, format),
           acceptVal));
 
@@ -112,20 +112,20 @@ class CoapClient {
 
   /// Sends a PUT request with the specified Accept option and blocks
   /// until the response is available.
-  CoapResponse putBytePayloadWithAccept(typed.Uint8Buffer payload, int format,
-      int acceptVal) =>
+  CoapResponse putBytePayloadWithAccept(
+          typed.Uint8Buffer payload, int format, int acceptVal) =>
       send(accept(
           CoapRequest.newPut().setPayloadMediaRaw(payload, format), acceptVal));
 
   /// If match
-  CoapResponse putIfMatch(String payload, int format,
-      List<typed.Uint8Buffer> etags) =>
+  CoapResponse putIfMatch(
+          String payload, int format, List<typed.Uint8Buffer> etags) =>
       send(ifMatch(
           CoapRequest.newPut().setPayloadMedia(payload, format), etags));
 
   /// If match byte payload
   CoapResponse putIfMatchBytePayload(typed.Uint8Buffer payload, int format,
-      List<typed.Uint8Buffer> etags) =>
+          List<typed.Uint8Buffer> etags) =>
       send(ifMatch(
           CoapRequest.newPut().setPayloadMediaRaw(payload, format), etags));
 
@@ -134,8 +134,8 @@ class CoapClient {
       send(ifNoneMatch(CoapRequest.newPut().setPayloadMedia(payload, format)));
 
   /// If none match byte payload
-  CoapResponse putIfNoneMatchBytePayload(typed.Uint8Buffer payload,
-      int format) =>
+  CoapResponse putIfNoneMatchBytePayload(
+          typed.Uint8Buffer payload, int format) =>
       send(ifNoneMatch(
           CoapRequest.newPut().setPayloadMediaRaw(payload, format)));
 
@@ -147,14 +147,15 @@ class CoapClient {
       send(eTags(CoapRequest.newGet(), etags));
 
   /// Observe
-  CoapObserveClientRelation observe([ActionGeneric<CoapResponse> notify,
-    ActionGeneric<FailReason> error]) =>
+  CoapObserveClientRelation observe(
+          [ActionGeneric<CoapResponse> notify,
+          ActionGeneric<FailReason> error]) =>
       _observe(CoapRequest.newGet().markObserve(), notify, error);
 
   /// Observe with accept
   CoapObserveClientRelation observeWitAccept(int acceptVal,
-      [ActionGeneric<CoapResponse> notify,
-        ActionGeneric<FailReason> error]) =>
+          [ActionGeneric<CoapResponse> notify,
+          ActionGeneric<FailReason> error]) =>
       _observe(
           accept(CoapRequest.newGet().markObserve(), acceptVal), notify, error);
 
@@ -251,7 +252,7 @@ class CoapClient {
       ActionGeneric<CoapResponse> notify, ActionGeneric<FailReason> error) {
     final CoapIEndPoint endpoint = _getEffectiveEndpoint(request);
     final CoapObserveClientRelation relation =
-    CoapObserveClientRelation(request, endpoint, _config);
+        CoapObserveClientRelation(request, endpoint, _config);
     _doPrepare(request, endpoint).send();
     return relation;
   }

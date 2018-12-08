@@ -80,8 +80,8 @@ abstract class CoapIChain<TFilter, TNextFilter> {
 class CoapEntry<TFilter, TNextFilter>
     implements CoapIEntry<TFilter, TNextFilter> {
   /// Instantiates.
-  CoapEntry(this._chain, this.prevEntry, this.nextEntry,
-      this.name, this._filter, TNextFilterFactory nextFilterFactory) {
+  CoapEntry(this._chain, this.prevEntry, this.nextEntry, this.name,
+      this._filter, TNextFilterFactory nextFilterFactory) {
     if (filter == null) {
       throw ArgumentError.notNull('filter');
     }
@@ -156,9 +156,7 @@ class CoapEntry<TFilter, TNextFilter>
     if (prevEntry != null) {
       sb.write(prevEntry.name);
       sb.write(':');
-      sb.write(prevEntry.filter
-          .getType()
-          .name);
+      sb.write(prevEntry.filter.getType().name);
     } else {
       sb.write('null');
     }
@@ -169,9 +167,7 @@ class CoapEntry<TFilter, TNextFilter>
     if (nextEntry != null) {
       sb.write(nextEntry.name);
       sb.write(':');
-      sb.write(nextEntry.filter
-          .getType()
-          .name);
+      sb.write(nextEntry.filter.getType().name);
     } else {
       sb.write('null');
     }
@@ -198,22 +194,22 @@ class CoapChain<TChain, TFilter, TNextFilter>
   CoapChain.entryFactory(TEntryFactoryFunc entryFactory,
       TFilterFactory headFilterFactory, TFilterFactory tailFilterFactory)
       : this(entryFactory, headFilterFactory, tailFilterFactory,
-      <TFilter>(TFilter t1, TFilter t2) => t1 == t2);
+            <TFilter>(TFilter t1, TFilter t2) => t1 == t2);
 
   /// Instantiates.
   CoapChain.filterFactory(TNextFilterFactory nextFilterFactory,
       TFilterFactory headFilterFactory, TFilterFactory tailFilterFactory)
       : this(
-      <TChain, TFilter>(TChain chain, CoapEntry prev, CoapEntry next,
-          String name, TFilter filter) =>
-          CoapEntry<dynamic, dynamic>(chain as CoapChain, prev, next,
-              name, filter, nextFilterFactory),
+            <TChain, TFilter>(TChain chain, CoapEntry prev, CoapEntry next,
+                    String name, TFilter filter) =>
+                CoapEntry<dynamic, dynamic>(chain as CoapChain, prev, next,
+                    name, filter, nextFilterFactory),
             headFilterFactory,
             tailFilterFactory,
-      <TFilter>(TFilter t1, TFilter t2) => t1 == t2);
+            <TFilter>(TFilter t1, TFilter t2) => t1 == t2);
 
   Map<String, CoapIEntry<dynamic, dynamic>> _name2entry =
-  Map<String, CoapIEntry<dynamic, dynamic>>();
+      Map<String, CoapIEntry<dynamic, dynamic>>();
   CoapEntry _head;
 
   /// Head
@@ -249,8 +245,7 @@ class CoapChain<TChain, TFilter, TNextFilter>
 
   @override
   CoapIEntry<TFilter, TNextFilter> getEntryByType(Object filterType) {
-    CoapEntry<TFilter, TNextFilter> e =
-        _head.nextEntry;
+    CoapEntry<TFilter, TNextFilter> e = _head.nextEntry;
     while (e != _tail) {
       if (filterType is TFilter) {
         return e;

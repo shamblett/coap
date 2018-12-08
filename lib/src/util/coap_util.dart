@@ -20,7 +20,7 @@ class CoapUtil {
   static bool areSequenceEqualTo<T>(Iterable<T> first, Iterable<T> second,
       [collection.Equality<T> equality]) {
     final collection.IterableEquality<T> ie =
-    collection.IterableEquality<T>(equality);
+        collection.IterableEquality<T>(equality);
     return ie.equals(first, second);
   }
 
@@ -165,7 +165,7 @@ class CoapUtil {
   static Future<InternetAddress> lookupHost(String host) async {
     final Completer<InternetAddress> completer = Completer<InternetAddress>();
     final List<InternetAddress> addresses =
-    await InternetAddress.lookup(host, type: InternetAddressType.IPv6);
+        await InternetAddress.lookup(host, type: InternetAddressType.IPv6);
     logResolvedAddresses(addresses);
     if (addresses != null && addresses.isNotEmpty) {
       completer.complete(addresses[0]);

@@ -17,7 +17,7 @@ class CoapSweepDeduplicator implements CoapIDeduplicator {
   static CoapILogger _log = CoapLogManager('console').logger;
 
   Map<CoapKeyId, CoapExchange> _incomingMessages =
-  Map<CoapKeyId, CoapExchange>();
+      Map<CoapKeyId, CoapExchange>();
   Timer _timer;
   CoapConfig _config;
 

@@ -25,11 +25,11 @@ class CoapMatcher implements CoapIMatcher {
 
   /// For outgoing
   Map<CoapKeyToken, CoapExchange> _exchangesByToken =
-  Map<CoapKeyToken, CoapExchange>();
+      Map<CoapKeyToken, CoapExchange>();
 
   /// For blockwise
   Map<CoapKeyUri, CoapExchange> _ongoingExchanges =
-  Map<CoapKeyUri, CoapExchange>();
+      Map<CoapKeyUri, CoapExchange>();
 
   int _currentId;
   CoapIDeduplicator _deduplicator;
@@ -99,8 +99,7 @@ class CoapMatcher implements CoapIMatcher {
     // Blockwise transfers are identified by URI and remote endpoint
     if (response.hasOption(optionTypeBlock2)) {
       final CoapRequest request = exchange.currentRequest;
-      final CoapKeyUri keyUri =
-      CoapKeyUri(request.uri, response.destination);
+      final CoapKeyUri keyUri = CoapKeyUri(request.uri, response.destination);
       // Observe notifications only send the first block, hence do not store them as ongoing
       if (exchange.responseBlockStatus != null &&
           !response.hasOption(optionTypeObserve)) {
@@ -161,8 +160,7 @@ class CoapMatcher implements CoapIMatcher {
 
     if (!request.hasOption(optionTypeBlock1) &&
         !request.hasOption(optionTypeBlock2)) {
-      final CoapExchange exchange =
-      CoapExchange(request, CoapOrigin.remote);
+      final CoapExchange exchange = CoapExchange(request, CoapOrigin.remote);
       final CoapExchange previous = _deduplicator.findPrevious(keyId, exchange);
       if (previous == null) {
         return exchange;
@@ -200,10 +198,9 @@ class CoapMatcher implements CoapIMatcher {
         // hash map 'ongoing' and the deduplicator. They must agree on
         // which exchange they store!
 
-        final CoapExchange exchange =
-        CoapExchange(request, CoapOrigin.remote);
+        final CoapExchange exchange = CoapExchange(request, CoapOrigin.remote);
         final CoapExchange previous =
-        _deduplicator.findPrevious(keyId, exchange);
+            _deduplicator.findPrevious(keyId, exchange);
         if (previous == null) {
           _log.debug('New ongoing request, storing $keyUri for $request');
           _ongoingExchanges[keyUri] = exchange;
@@ -253,9 +250,7 @@ class CoapMatcher implements CoapIMatcher {
           exchange.currentRequest.id != response.id) {
         // The token matches but not the MID. This is a response for an older exchange
         _log.warn(
-            'Possible MID reuse before lifetime end: ${response
-                .tokenString} expected MID ${exchange.currentRequest
-                .id} but received ${response.id}');
+            'Possible MID reuse before lifetime end: ${response.tokenString} expected MID ${exchange.currentRequest.id} but received ${response.id}');
       }
 
       return exchange;
@@ -271,8 +266,7 @@ class CoapMatcher implements CoapIMatcher {
         }
       } else {
         _log.info(
-            'Ignoring unmatchable piggy-backed response from ${response
-                .source} : $response');
+            'Ignoring unmatchable piggy-backed response from ${response.source} : $response');
       }
       // Ignore response
       return null;
@@ -290,8 +284,7 @@ class CoapMatcher implements CoapIMatcher {
       return exchange;
     } else {
       _log.info(
-          'Ignoring unmatchable empty message from ${message
-              .source} : $message');
+          'Ignoring unmatchable empty message from ${message.source} : $message');
       return null;
     }
   }
@@ -303,8 +296,7 @@ class CoapMatcher implements CoapIMatcher {
     if (exchange.origin == CoapOrigin.local) {
       // This endpoint created the Exchange by issuing a request
       final CoapKeyId keyId = CoapKeyId(exchange.currentRequest.id, null);
-      final CoapKeyToken keyToken =
-      CoapKeyToken(exchange.currentRequest.token);
+      final CoapKeyToken keyToken = CoapKeyToken(exchange.currentRequest.token);
       _log.debug('Exchange completed: Cleaning up $keyToken');
 
       _exchangesByToken.remove(keyToken);

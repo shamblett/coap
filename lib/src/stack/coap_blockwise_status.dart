@@ -15,8 +15,8 @@ class CoapBlockwiseStatus {
   }
 
   /// Instantiates a new blockwise status.
-  CoapBlockwiseStatus.withSize(this._contentFormat, this.currentNUM,
-      this.currentSZX);
+  CoapBlockwiseStatus.withSize(
+      this._contentFormat, this.currentNUM, this.currentSZX);
 
   /// Not observing
   static const int noObserve = -1;
