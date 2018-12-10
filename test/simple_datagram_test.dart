@@ -7,6 +7,7 @@
 import 'dart:io';
 
 void main() async {
+  /// Create and bind to the first(and only!) IPV6 loopback interface
   RawDatagramSocket socket;
   final List<NetworkInterface> interfaces = await NetworkInterface.list(
       includeLoopback: true,
@@ -24,5 +25,8 @@ void main() async {
   }
   print(loopbackAddress);
   socket = await RawDatagramSocket.bind(loopbackAddress, 5683);
-  print(socket);
+  print(socket.address);
+
+  /// Send some data
+  socket.send([41, 42, 43, 44], loopbackAddress, 5683);
 }
