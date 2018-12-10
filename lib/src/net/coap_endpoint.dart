@@ -82,8 +82,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
 
   @override
   void sendEpRequest(CoapRequest request) {
-    //TODO SJH fix this executor.start(() => _coapStack.sendRequest(request));
-    _coapStack.sendRequest(request);
+    executor.start(() => _coapStack.sendRequest(request));
   }
 
   @override
