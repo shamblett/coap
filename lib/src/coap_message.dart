@@ -211,7 +211,10 @@ class CoapMessage {
 
   /// Fire retransmitting event
   void fireRetransmitting() {
-    this?.retransmittingHook();
+    if (retransmittingHook != null) {
+      retransmittingHook();
+    }
+    ;
   }
 
   bool _cancelled = false;
