@@ -23,7 +23,7 @@ void main() {
     });
 
     test('Simple test - rt first', () {
-      const String input = '</sensors/temp>;rt=\'TemperatureC\';ct=41';
+      const String input = '</sensors/temp>;rt="TemperatureC";ct=41';
       final CoapRemoteResource root = CoapRemoteResource.newRoot(input);
       final CoapRemoteResource res = root.getResourcePath('/sensors/temp');
       expect(res, isNotNull);
@@ -33,7 +33,7 @@ void main() {
       expect(res.observable, isFalse);
     });
     test('Simple test - ct first', () {
-      const String input = '</sensors/temp>;ct=42;rt=\'TemperatureF\'';
+      const String input = '</sensors/temp>;ct=42;rt="TemperatureF"';
       final CoapRemoteResource root = CoapRemoteResource.newRoot(input);
       final CoapRemoteResource res = root.getResourcePath('/sensors/temp');
       expect(res, isNotNull);
@@ -43,7 +43,7 @@ void main() {
       expect(res.observable, isFalse);
     });
     test('Simple test - boolean value', () {
-      const String input = '</sensors/temp>;ct=42;rt=\'TemperatureF\';obs';
+      const String input = '</sensors/temp>;ct=42;rt="TemperatureF";obs';
       final CoapRemoteResource root = CoapRemoteResource.newRoot(input);
       final CoapRemoteResource res = root.getResourcePath('/sensors/temp');
       expect(res, isNotNull);
@@ -54,7 +54,7 @@ void main() {
     });
     test('Extended test', () {
       const String input =
-          '</my/Päth>;rt=\'MyName\';if=\'/someRef/path\';ct=42;obs;sz=20';
+          '</my/Päth>;rt="MyName";if="/someRef/path";ct=42;obs;sz=20';
       final CoapRemoteResource root = CoapRemoteResource.newRoot(input);
 
       final CoapRemoteResource my = CoapRemoteResource('my');
