@@ -129,7 +129,7 @@ class CoapLayerStack
   /// Instantiates.
   CoapLayerStack()
       : super.filterFactory((dynamic e) => CoapNextLayer(e),
-          () => CoapStackTopLayer(), () => CoapStackBottomLayer());
+            () => CoapStackTopLayer(), () => CoapStackBottomLayer());
 
   /// Sends a request into the layer stack.
   void sendRequest(CoapRequest request) {

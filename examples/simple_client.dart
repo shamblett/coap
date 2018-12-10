@@ -29,16 +29,15 @@ FutureOr<void> main(List<String> args) async {
   }
 
   // Config
-  final CoapConfig conf = CoapConfig(
-      File('test/config_default.yaml'));
+  final CoapConfig conf = CoapConfig(File('test/config_default.yaml'));
 
   // Build the request
   final CoapRequest request = newRequest('DISCOVER');
   const String host = 'localhost';
   const String path = '.well-known/core';
   //final String query = 'rt=alpha.light';
-  final Uri uri = Uri(
-      scheme: 'coap', host: host, port: conf.defaultPort, path: path);
+  final Uri uri =
+      Uri(scheme: 'coap', host: host, port: conf.defaultPort, path: path);
   request.uri = uri;
   await request.resolveDestination();
   print('SJH - isLinkLocal - ${request.destination.isLinkLocal}');
@@ -46,8 +45,7 @@ FutureOr<void> main(List<String> args) async {
   print('SJH - isLinkMulticast - ${request.destination.isMulticast}');
   print('SJH - type - ${request.destination.type}');
   CoapEndpointManager.getDefaultSpec();
-  final CoapIChannel channel = CoapUDPChannel(
-      request.destination, uri.port);
+  final CoapIChannel channel = CoapUDPChannel(request.destination, uri.port);
   request.endPoint = CoapEndPoint(channel, conf);
   final typed.Uint8Buffer payload = typed.Uint8Buffer();
   request.setPayloadMediaRaw(payload, CoapMediaType.textPlain);
@@ -60,7 +58,7 @@ FutureOr<void> main(List<String> args) async {
   if (response != null) {
     if (response.contentType == CoapMediaType.applicationLinkFormat) {
       final Iterable<CoapWebLink> links =
-      CoapLinkFormat.parse(response.payloadString);
+          CoapLinkFormat.parse(response.payloadString);
       if (links == null) {
         print('Failed parsing link format');
       } else {

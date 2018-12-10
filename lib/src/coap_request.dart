@@ -64,13 +64,12 @@ class CoapRequest extends CoapMessage {
   Uri _uri;
 
   /// The URI of this CoAP message.
-  Uri get uri =>
-      _uri ??= Uri(
-          scheme: CoapConstants.uriScheme,
-          host: uriHost ?? 'localhost',
-          port: uriPort,
-          path: uriPath,
-          query: uriQuery);
+  Uri get uri => _uri ??= Uri(
+      scheme: CoapConstants.uriScheme,
+      host: uriHost ?? 'localhost',
+      port: uriPort,
+      path: uriPath,
+      query: uriQuery);
 
   set uri(Uri value) {
     if (value == null) {
@@ -188,7 +187,7 @@ class CoapRequest extends CoapMessage {
 
   /// Response stream, used by waitForResponse
   StreamController<CoapResponse> _responseStream =
-  StreamController<CoapResponse>.broadcast();
+      StreamController<CoapResponse>.broadcast();
 
   /// Wait for a response.
   /// Returns the response, or null if timeout occured.
@@ -202,7 +201,7 @@ class CoapRequest extends CoapMessage {
       final StreamSubscription<CoapResponse> responseFuture =
           _responseStream.stream.listen((CoapResponse resp) {});
       Future.any<dynamic>(
-          <Future<dynamic>>[sleepFuture, responseFuture.asFuture()])
+              <Future<dynamic>>[sleepFuture, responseFuture.asFuture()])
           .then((dynamic resp) {
         _currentResponse = response;
         responseFuture.cancel();

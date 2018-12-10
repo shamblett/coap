@@ -769,11 +769,10 @@ void main() {
 
     void testMessage(CoapISpec spec, int testNo) {
       final CoapMessage msg =
-      CoapRequest.isConfirmable(CoapCode.methodGET, confirmable: true);
+          CoapRequest.isConfirmable(CoapCode.methodGET, confirmable: true);
 
       msg.id = 12345;
-      msg.payload = typed.Uint8Buffer()
-        ..addAll('payload'.codeUnits);
+      msg.payload = typed.Uint8Buffer()..addAll('payload'.codeUnits);
       final typed.Uint8Buffer data = spec.encode(msg);
       checkData(spec.name, data, testNo);
       final CoapMessage convMsg = spec.decode(data);
@@ -788,18 +787,15 @@ void main() {
 
     void testMessageWithOptions(CoapISpec spec, int testNo) {
       final CoapMessage msg =
-      CoapRequest.isConfirmable(CoapCode.methodGET, confirmable: true);
+          CoapRequest.isConfirmable(CoapCode.methodGET, confirmable: true);
 
       msg.id = 12345;
-      msg.payload = typed.Uint8Buffer()
-        ..addAll('payload'.codeUnits);
+      msg.payload = typed.Uint8Buffer()..addAll('payload'.codeUnits);
       msg.addOption(
           CoapOption.createString(optionTypeContentType, 'text/plain'));
       msg.addOption(CoapOption.createVal(optionTypeMaxAge, 30));
       expect(
-          msg
-              .getFirstOption(optionTypeContentType)
-              .stringValue, 'text/plain');
+          msg.getFirstOption(optionTypeContentType).stringValue, 'text/plain');
       expect(msg.getFirstOption(optionTypeMaxAge).value, 30);
       final typed.Uint8Buffer data = spec.encode(msg);
       checkData(spec.name, data, testNo);
@@ -822,19 +818,14 @@ void main() {
 
     void testMessageWithExtendedOption(CoapISpec spec, int testNo) {
       final CoapMessage msg =
-      CoapRequest.isConfirmable(CoapCode.methodGET, confirmable: true);
+          CoapRequest.isConfirmable(CoapCode.methodGET, confirmable: true);
 
       msg.id = 12345;
       msg.addOption(CoapOption.createString(12, 'a'));
       msg.addOption(CoapOption.createString(197, 'extend option'));
-      expect(msg
-          .getFirstOption(12)
-          .stringValue, 'a');
-      expect(msg
-          .getFirstOption(197)
-          .stringValue, 'extend option');
-      msg.payload = typed.Uint8Buffer()
-        ..addAll('payload'.codeUnits);
+      expect(msg.getFirstOption(12).stringValue, 'a');
+      expect(msg.getFirstOption(197).stringValue, 'extend option');
+      msg.payload = typed.Uint8Buffer()..addAll('payload'.codeUnits);
 
       final typed.Uint8Buffer data = spec.encode(msg);
       checkData(spec.name, data, testNo);
@@ -848,9 +839,7 @@ void main() {
           leq.equals(msg.getSortedOptions().toList(),
               convMsg.getSortedOptions().toList()),
           isTrue);
-      expect(convMsg
-          .getFirstOption(12)
-          .stringValue, 'a');
+      expect(convMsg.getFirstOption(12).stringValue, 'a');
       expect(
           leq.equals(msg.payload.toList(), convMsg.payload.toList()), isTrue);
 
@@ -861,15 +850,12 @@ void main() {
 
     void testRequestParsing(CoapISpec spec, int testNo) {
       final CoapRequest request =
-      CoapRequest.isConfirmable(CoapCode.methodPOST, confirmable: false);
+          CoapRequest.isConfirmable(CoapCode.methodPOST, confirmable: false);
       request.id = 7;
-      request.token = typed.Uint8Buffer()
-        ..addAll(<int>[11, 82, 165, 77, 3]);
+      request.token = typed.Uint8Buffer()..addAll(<int>[11, 82, 165, 77, 3]);
       request
-          .addIfMatch(typed.Uint8Buffer()
-        ..addAll(<int>[34, 239]))
-          .addIfMatch(typed.Uint8Buffer()
-        ..addAll(<int>[88, 12, 254, 157, 5]));
+          .addIfMatch(typed.Uint8Buffer()..addAll(<int>[34, 239]))
+          .addIfMatch(typed.Uint8Buffer()..addAll(<int>[88, 12, 254, 157, 5]));
       request.contentType = 40;
       request.accept = 40;
 
@@ -893,14 +879,13 @@ void main() {
       response.id = 9;
       response.token = typed.Uint8Buffer()
         ..addAll(<int>[22, 255, 0, 78, 100, 22]);
-      response.addETag(typed.Uint8Buffer()
-        ..addAll(<int>[1, 0, 0, 0, 0, 1]))
+      response.addETag(typed.Uint8Buffer()..addAll(<int>[1, 0, 0, 0, 0, 1]))
         ..addLocationPath('/one/two/three/four/five/six/seven/eight/nine/ten')
         ..addOption(CoapOption.createVal(
             57453, 0x71ca949f)) // C# 'Arbitrary'.hashCode()
-        ..addOption(CoapOption.createString(19205, 'Arbitrary1'))..addOption(
-          CoapOption.createString(19205, 'Arbitrary2'))..addOption(
-          CoapOption.createString(19205, 'Arbitrary3'));
+        ..addOption(CoapOption.createString(19205, 'Arbitrary1'))
+        ..addOption(CoapOption.createString(19205, 'Arbitrary2'))
+        ..addOption(CoapOption.createString(19205, 'Arbitrary3'));
 
       final typed.Uint8Buffer bytes = spec.encode(response);
       checkData(spec.name, bytes, testNo);

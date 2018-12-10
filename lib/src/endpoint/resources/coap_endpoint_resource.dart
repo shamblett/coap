@@ -27,7 +27,7 @@ abstract class CoapEndpointResource {
 
   CoapEndpointResource _parent;
   SplayTreeMap<String, CoapEndpointResource> _subResources =
-  SplayTreeMap<String, CoapEndpointResource>();
+      SplayTreeMap<String, CoapEndpointResource>();
 
   /// Sub resources
   SplayTreeMap<String, CoapEndpointResource> get subResources => _subResources;
@@ -44,17 +44,15 @@ abstract class CoapEndpointResource {
   bool hidden = false;
 
   /// Resource type
-  String get resourceType =>
-      getAttributes(CoapLinkFormat.resourceType).isEmpty
-          ? null
-          : getAttributes(CoapLinkFormat.resourceType)[0].valueAsString;
+  String get resourceType => getAttributes(CoapLinkFormat.resourceType).isEmpty
+      ? null
+      : getAttributes(CoapLinkFormat.resourceType)[0].valueAsString;
 
   set resourceType(String value) =>
       setAttribute(CoapLinkAttribute(CoapLinkFormat.resourceType, value));
 
   /// Title
-  String get title =>
-      getAttributes(CoapLinkFormat.title).isEmpty
+  String get title => getAttributes(CoapLinkFormat.title).isEmpty
       ? null
       : getAttributes(CoapLinkFormat.title)[0].valueAsString;
 
@@ -81,10 +79,9 @@ abstract class CoapEndpointResource {
       getIntValues(getAttributes(CoapLinkFormat.contentType));
 
   /// The content type code
-  int get contentTypeCode =>
-      getAttributes(CoapLinkFormat.contentType).isEmpty
-          ? null
-          : getAttributes(CoapLinkFormat.contentType)[0].valueAsInt;
+  int get contentTypeCode => getAttributes(CoapLinkFormat.contentType).isEmpty
+      ? null
+      : getAttributes(CoapLinkFormat.contentType)[0].valueAsInt;
 
   set contentTypeCode(int value) =>
       setAttribute(CoapLinkAttribute(CoapLinkFormat.contentType, value));
@@ -142,9 +139,8 @@ abstract class CoapEndpointResource {
   }
 
   /// Set an attribute
-  bool setAttribute(CoapLinkAttribute attr) =>
-      CoapLinkFormat.addAttribute(
-          attributes, attr); // Adds depending on the Link Format rules
+  bool setAttribute(CoapLinkAttribute attr) => CoapLinkFormat.addAttribute(
+      attributes, attr); // Adds depending on the Link Format rules
 
   /// Clear an attribute
   bool clearAttribute(String name) {
@@ -256,8 +252,7 @@ abstract class CoapEndpointResource {
     while (resource.name.startsWith('/')) {
       if (_parent != null) {
         _log.warn(
-            'Adding absolute path only allowed for root: made relative ${resource
-                .name}');
+            'Adding absolute path only allowed for root: made relative ${resource.name}');
       }
       resource.name = resource.name.substring(1);
     }

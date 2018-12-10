@@ -21,7 +21,7 @@ class CoapEndpointManager {
     config.spec ??= CoapDraft18();
     config.defaultPort = config.spec.defaultPort;
     final CoapIChannel channel =
-    CoapUDPChannel(endpoint.localEndpoint, config.defaultPort);
+        CoapUDPChannel(endpoint.localEndpoint, config.defaultPort);
     final CoapEndPoint ep = CoapEndPoint(channel, config);
     ep.start();
     return ep;

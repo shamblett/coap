@@ -10,8 +10,8 @@ part of coap;
 /// Transmission context
 class CoapTransmissionContext {
   /// Construction
-  CoapTransmissionContext(this._config, this._exchange, this._message,
-      this._retransmit) {
+  CoapTransmissionContext(
+      this._config, this._exchange, this._message, this._retransmit) {
     currentTimeout = _message.ackTimeout;
   }
 
@@ -118,7 +118,7 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
     if (request.type == CoapMessageType.con) {
       _log.debug('Scheduling retransmission for $request');
       _prepareRetransmission(exchange, request,
-              (dynamic ctx) => sendRequest(nextLayer, exchange, request));
+          (dynamic ctx) => sendRequest(nextLayer, exchange, request));
     }
 
     super.sendRequest(nextLayer, exchange, request);
@@ -155,7 +155,7 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
     if (response.type == CoapMessageType.con) {
       _log.debug('Scheduling retransmission for $response');
       _prepareRetransmission(exchange, response,
-              (dynamic ctx) => sendResponse(nextLayer, exchange, response));
+          (dynamic ctx) => sendResponse(nextLayer, exchange, response));
     }
 
     super.sendResponse(nextLayer, exchange, response);

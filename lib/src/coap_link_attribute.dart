@@ -52,8 +52,7 @@ class CoapLinkAttribute {
           builder.write(_value);
         } else {
           _log.error(
-              'Serializing attribute of unexpected type: $_name ${_value
-                  .runtimeType}');
+              'Serializing attribute of unexpected type: $_name ${_value.runtimeType}');
         }
       }
     }

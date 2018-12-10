@@ -45,12 +45,12 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
   @override
   bool get isRequest =>
       _code >= CoapConstants.requestCodeLowerBound &&
-          _code <= CoapConstants.requestCodeUpperBound;
+      _code <= CoapConstants.requestCodeUpperBound;
 
   @override
   bool get isResponse =>
       _code >= CoapConstants.responseCodeLowerBound &&
-          _code <= CoapConstants.responseCodeUpperBound;
+      _code <= CoapConstants.responseCodeUpperBound;
 
   @override
   bool get isEmpty => _code == CoapCode.empty;

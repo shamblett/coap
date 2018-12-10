@@ -12,8 +12,7 @@ class CoapDatagramWriter {
   /// Initializes a new DatagramWriter object
   CoapDatagramWriter() {
     _buffer = typed.Uint8Buffer();
-    _currentByte = ByteData(1)
-      ..setUint8(0, 0);
+    _currentByte = ByteData(1)..setUint8(0, 0);
     _currentBitIndex = 7;
   }
 
@@ -69,8 +68,7 @@ class CoapDatagramWriter {
 
   /// Writes one byte to the stream.
   void writeByte(int b) {
-    final typed.Uint8Buffer buff = typed.Uint8Buffer()
-      ..add(b);
+    final typed.Uint8Buffer buff = typed.Uint8Buffer()..add(b);
     writeBytes(buff);
   }
 

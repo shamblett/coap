@@ -167,8 +167,8 @@ class CoapLinkFormat {
   }
 
   /// Serialize options
-  static String serializeOptions(CoapEndpointResource resource,
-      Iterable<CoapOption> query,
+  static String serializeOptions(
+      CoapEndpointResource resource, Iterable<CoapOption> query,
       {bool recursive}) {
     final StringBuffer linkFormat = StringBuffer();
 
@@ -372,8 +372,7 @@ class CoapLinkFormat {
       for (CoapLinkAttribute attr in attributes) {
         if (attr.name == attrToAdd.name) {
           _log.debug(
-              'CoapLinkFormat::addAttribute - Found existing singleton attribute: ${attr
-                  .name}');
+              'CoapLinkFormat::addAttribute - Found existing singleton attribute: ${attr.name}');
           return false;
         }
       }

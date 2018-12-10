@@ -79,8 +79,7 @@ class CoapObserveLayer extends CoapAbstractLayer {
         // Transmit errors as CON
         if (!CoapCode.isSuccess(response.code)) {
           _log.debug(
-              'Response has error code ${response
-                  .code} and must be sent as CON');
+              'Response has error code ${response.code} and must be sent as CON');
           response.type = CoapMessageType.con;
           relation.cancel();
         } else {
@@ -149,9 +148,8 @@ class CoapObserveLayer extends CoapAbstractLayer {
         sendEmptyMessage(nextLayer, exchange, rst);
         // Matcher sets exchange as complete when RST is sent
       } else {
-        _prepareReregistration(
-            exchange, response, (dynamic msg) =>
-            sendRequest(nextLayer, exchange, msg));
+        _prepareReregistration(exchange, response,
+            (dynamic msg) => sendRequest(nextLayer, exchange, msg));
         super.receiveResponse(nextLayer, exchange, response);
       }
     } else {
@@ -225,9 +223,7 @@ class CoapObserveLayer extends CoapAbstractLayer {
     response.timedOutHook = () {
       final CoapObserveRelation relation = exchange.relation;
       _log.debug(
-          'Notification ${relation.exchange.request
-              .tokenString} timed out. Cancel all relations with source ${relation
-              .source}');
+          'Notification ${relation.exchange.request.tokenString} timed out. Cancel all relations with source ${relation.source}');
       relation.cancelAll();
     };
   }
