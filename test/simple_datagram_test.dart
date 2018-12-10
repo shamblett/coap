@@ -23,13 +23,21 @@ void main() async {
       }
     }
   }
-  print(loopbackAddress);
+  print('The selected loopback address is $loopbackAddress');
   socket = await RawDatagramSocket.bind(loopbackAddress, 5683);
 
   /// Send some data
-  socket.send([41, 42, 43, 44], loopbackAddress, 5683);
+  print('Sending some data');
+  List<int> sendData = <int>[41, 42, 43, 44];
+  socket.send(sendData, loopbackAddress, 5683);
 
   /// Receive it
+  print('Receiving the data');
   Datagram rx = socket.receive();
-  print(rx.data);
+  print('The data is : ${rx.data}');
+  if (rx.data == sendData) {
+    print('Hoorah a match');
+  } else {
+    print('Boo no match');
+  }
 }
