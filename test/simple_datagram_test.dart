@@ -25,8 +25,11 @@ void main() async {
   }
   print(loopbackAddress);
   socket = await RawDatagramSocket.bind(loopbackAddress, 5683);
-  print(socket.address);
 
   /// Send some data
   socket.send([41, 42, 43, 44], loopbackAddress, 5683);
+
+  /// Receive it
+  Datagram rx = socket.receive();
+  print(rx.data);
 }
