@@ -5,6 +5,7 @@
  * Copyright :  S.Hamblett
  */
 import 'dart:io';
+import 'package:collection/collection.dart';
 
 void main() async {
   /// Create and bind to the first(and only!) IPV6 loopback interface
@@ -35,7 +36,7 @@ void main() async {
   print('Receiving the data');
   Datagram rx = socket.receive();
   print('The data is : ${rx.data}');
-  if (rx.data == sendData) {
+  if (const IterableEquality().equals(rx.data, sendData)) {
     print('Hoorah a match');
   } else {
     print('Boo no match');
