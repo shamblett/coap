@@ -172,12 +172,12 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   }
 
   @override
-  void sendRequest(CoapExchange exchange, CoapRequest request) {
+  Future<void> sendRequest(CoapExchange exchange, CoapRequest request) async {
     _matcher.sendRequest(exchange, request);
     clientEventBus.fire(CoapSendingRequestEvent(request));
 
     if (!request.isCancelled) {
-      _channel.send(_serializeRequest(request), request.destination);
+      await _channel.send(_serializeRequest(request), request.destination);
     }
   }
 

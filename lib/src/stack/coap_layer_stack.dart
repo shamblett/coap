@@ -105,9 +105,9 @@ class CoapStackTopLayer extends CoapAbstractLayer {
 /// Bottom layer
 class CoapStackBottomLayer extends CoapAbstractLayer {
   @override
-  void sendRequest(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
-    exchange.outbox.sendRequest(exchange, request);
+  Future<void> sendRequest(CoapINextLayer nextLayer, CoapExchange exchange,
+      CoapRequest request) async {
+    await exchange.outbox.sendRequest(exchange, request);
   }
 
   @override
