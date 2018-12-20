@@ -34,25 +34,19 @@ class CoapNetworkUDP extends CoapNetwork {
 
   @override
   int send(typed.Uint8Buffer data) {
-    print('SJH - UDP - sending ${data.length} bytes');
     final int bytesSent = _socket?.send(data.toList(), address, port);
-    print('SJH - UDP - sending - sent $bytesSent bytes');
     return bytesSent;
   }
 
   @override
   typed.Uint8Buffer receive() {
-    print('SJH - UDP - receiving');
     final Datagram rec = _socket.receive();
     if (rec == null) {
-      print('SJH - UDP - null recieve');
       return null;
     }
     if (rec.data.isEmpty) {
-      print('SJH - UDP - null length');
       return null;
     }
-    print('SJH - UDP - received ${rec.data}');
     return typed.Uint8Buffer()..addAll(rec.data);
   }
 
@@ -64,7 +58,6 @@ class CoapNetworkUDP extends CoapNetwork {
     }
     if (!_bound && _binding == 0) {
       _binding++;
-      print('SJH - UDP - binding');
       try {
         _socket = await RawDatagramSocket.bind(address.host, port);
         _socket.listen((RawSocketEvent e) {

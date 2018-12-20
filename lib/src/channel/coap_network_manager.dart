@@ -18,11 +18,9 @@ class CoapNetworkManagement {
     final Completer<CoapNetwork> completer = Completer<CoapNetwork>();
     final CoapNetwork network = CoapNetworkUDP(address, port);
     if (_networks.contains(network)) {
-      print('SJH - NM - same network');
       completer.complete(
           _networks.where((CoapNetwork e) => e == network).toList()[0]);
     } else {
-      print('SJH - NM  - creating network');
       await network.bind();
       _networks.add(network);
       completer.complete(network);
