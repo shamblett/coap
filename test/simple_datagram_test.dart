@@ -35,10 +35,14 @@ void main() async {
   /// Receive it
   print('Receiving the data');
   final Datagram rx = socket.receive();
-  print('The data is : ${rx.data}');
-  if (const IterableEquality().equals(rx.data, sendData)) {
-    print('Hoorah a match');
+  if (rx == null) {
+    print('Boo no date received at all!');
   } else {
-    print('Boo no match');
+    print('The data is : ${rx.data}');
+    if (const IterableEquality().equals(rx.data, sendData)) {
+      print('Hoorah a match');
+    } else {
+      print('Boo no match');
+    }
   }
 }
