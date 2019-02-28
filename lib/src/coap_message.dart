@@ -214,7 +214,6 @@ class CoapMessage {
     if (retransmittingHook != null) {
       retransmittingHook();
     }
-    ;
   }
 
   bool _cancelled = false;

@@ -29,12 +29,12 @@ void main() async {
 
   /// Send some data
   print('Sending some data');
-  List<int> sendData = <int>[41, 42, 43, 44];
+  final List<int> sendData = <int>[41, 42, 43, 44];
   socket.send(sendData, loopbackAddress, 5683);
 
   /// Receive it
   print('Receiving the data');
-  Datagram rx = socket.receive();
+  final Datagram rx = socket.receive();
   print('The data is : ${rx.data}');
   if (const IterableEquality().equals(rx.data, sendData)) {
     print('Hoorah a match');

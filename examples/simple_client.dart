@@ -51,7 +51,7 @@ FutureOr<void> main(List<String> args) async {
   request.setPayloadMediaRaw(payload, CoapMediaType.textPlain);
   print(
       'Simple client, sending request to $host with path $path, waiting for response....');
-  await request.send();
+  request.send();
 
   // Get the response
   final CoapResponse response = await request.waitForResponse(60000);

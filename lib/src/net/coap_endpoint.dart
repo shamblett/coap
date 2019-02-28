@@ -177,7 +177,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
     clientEventBus.fire(CoapSendingRequestEvent(request));
 
     if (!request.isCancelled) {
-      await _channel.send(_serializeRequest(request), request.destination);
+      _channel.send(_serializeRequest(request), request.destination);
     }
   }
 
