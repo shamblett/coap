@@ -34,7 +34,7 @@ void main() async {
   for (int i = 0; i < 10; i++) {
     /// Send some data
     print('Sending some data');
-    int sent = socket.send(sendData, loopbackAddress, 5683);
+    final int sent = socket.send(sendData, loopbackAddress, 5683);
     if (sent != sendData.length) {
       print('Boo, we didnt send 4 ints');
     }
