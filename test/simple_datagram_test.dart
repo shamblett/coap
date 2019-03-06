@@ -4,8 +4,15 @@
  * Date   : 13/04/2017
  * Copyright :  S.Hamblett
  */
+import 'dart:async';
 import 'dart:io';
+
 import 'package:collection/collection.dart';
+
+Future<void> sleep() =>
+    Future<void>.delayed(const Duration(milliseconds: 1), () => '1');
+
+Datagram receiveDatagram(RawDatagramSocket socket) => socket.receive();
 
 void main() async {
   /// Create and bind to the first(and only!) IPV6 loopback interface
@@ -29,16 +36,11 @@ void main() async {
 
   final List<int> sendData = <int>[41, 42, 43, 44];
 
-  /// Receive it
-  print('Receiving the data');
-  for (int i = 0; i < 10; i++) {
-    /// Send some data
-    print('Sending some data');
-    final int sent = socket.send(sendData, loopbackAddress, 5683);
-    if (sent != sendData.length) {
-      print('Boo, we didnt send 4 ints');
-    }
-    final Datagram rx = socket.receive();
+  /// Start
+  print('Starting test');
+  const bool go = true;
+  do {
+    final Datagram rx = receiveDatagram(socket);
     if (rx == null) {
       print('Boo no date received at all!');
     } else {
@@ -49,5 +51,13 @@ void main() async {
         print('Boo no match');
       }
     }
-  }
+    await sleep();
+
+    /// Send some data
+    print('Sending some data');
+    final int sent = socket.send(sendData, loopbackAddress, 5683);
+    if (sent != sendData.length) {
+      print('Boo, we didnt send 4 ints, we sent $sent');
+    }
+  } while (go);
 }
