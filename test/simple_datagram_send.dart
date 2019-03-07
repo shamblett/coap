@@ -18,7 +18,7 @@ void main() async {
   final List<NetworkInterface> interfaces = await NetworkInterface.list(
       includeLoopback: true,
       includeLinkLocal: true,
-      type: InternetAddressType.IPv6);
+      type: InternetAddressType.IPv4);
   print(interfaces);
   InternetAddress loopbackAddress;
   for (NetworkInterface interface in interfaces) {
@@ -30,7 +30,8 @@ void main() async {
     }
   }
   print('The selected loopback address is $loopbackAddress');
-  socket = await RawDatagramSocket.bind(loopbackAddress, 5683);
+  socket = await RawDatagramSocket.bind(
+      loopbackAddress, 5683, reuseAddress: true, reusePort: true, ttl: 5);
 
   final List<int> sendData = <int>[41, 42, 43, 44];
 
@@ -39,10 +40,11 @@ void main() async {
   const bool go = true;
   do {
     /// Send some data
-    print('Sending some data');
     final int sent = socket.send(sendData, loopbackAddress, 5683);
     if (sent != sendData.length) {
       print('Boo, we didnt send 4 ints, we sent $sent');
+    } else {
+      print('Hoorah $sent ints sent');
     }
     await sleep();
   } while (go);

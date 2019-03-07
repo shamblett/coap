@@ -20,7 +20,7 @@ void main() async {
   final List<NetworkInterface> interfaces = await NetworkInterface.list(
       includeLoopback: true,
       includeLinkLocal: true,
-      type: InternetAddressType.IPv6);
+      type: InternetAddressType.IPv4);
   print(interfaces);
   InternetAddress loopbackAddress;
   for (NetworkInterface interface in interfaces) {
@@ -32,7 +32,8 @@ void main() async {
     }
   }
   print('The selected loopback address is $loopbackAddress');
-  socket = await RawDatagramSocket.bind(loopbackAddress, 5683);
+  socket = await RawDatagramSocket.bind(
+      loopbackAddress, 5683, reuseAddress: true, reusePort: true, ttl: 5);
 
   final List<int> sendData = <int>[41, 42, 43, 44];
 
