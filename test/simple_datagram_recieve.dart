@@ -10,7 +10,7 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 
 Future<void> sleep() =>
-    Future<void>.delayed(const Duration(milliseconds: 1), () => '1');
+    Future<void>.delayed(const Duration(milliseconds: 1), () => '500');
 
 Datagram receiveDatagram(RawDatagramSocket socket) => socket.receive();
 
@@ -37,7 +37,7 @@ void main() async {
   final List<int> sendData = <int>[41, 42, 43, 44];
 
   /// Start
-  print('Starting test');
+  print('Starting recieve test');
   const bool go = true;
   do {
     final Datagram rx = receiveDatagram(socket);
@@ -52,12 +52,5 @@ void main() async {
       }
     }
     await sleep();
-
-    /// Send some data
-    print('Sending some data');
-    final int sent = socket.send(sendData, loopbackAddress, 5683);
-    if (sent != sendData.length) {
-      print('Boo, we didnt send 4 ints, we sent $sent');
-    }
   } while (go);
 }
