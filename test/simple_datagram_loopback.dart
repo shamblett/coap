@@ -5,10 +5,14 @@
  * Copyright :  S.Hamblett
  */
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 Future<void> sleep() =>
-    Future<void>.delayed(const Duration(milliseconds: 1), () => '500');
+    Future<void>.delayed(const Duration(milliseconds: 1), () => '5000');
+
+Future<void> sleep1() =>
+    Future<void>.delayed(const Duration(milliseconds: 1), () => '200');
 
 Datagram receiveDatagram(RawDatagramSocket socket) => socket.receive();
 
@@ -33,28 +37,28 @@ void main() async {
 
   socket = await RawDatagramSocket.bind(loopbackAddress.address, 5683);
 
-  final List<int> sendData = <int>[0x30, 0x31, 0x32, 0x33];
-
   /// Start
-  print('Starting sending');
-  const bool go = true;
-  do {
-    /// Send some data
-    final int sent = socket.send(sendData, loopbackAddress, 5683);
-    if (sent != sendData.length) {
-      print('Boo, we didnt send 4 ints, we sent $sent');
-    } else {
-      print('Hoorah $sent ints sent');
-    }
-    // Receive it
+  print('Starting loop');
+  socket.asBroadcastStream().listen((RawSocketEvent e) {
     do {
-      final Datagram rx = socket.receive();
-      if (rx == null) {
-        print('Boo no date received at all!');
-      } else {
-        print('The data is : ${rx.data}');
+      //print(e);
+      switch (e) {
+        case RawSocketEvent.read:
+          Datagram dg = socket.receive();
+          if (dg != null) {
+            dg.data.forEach((x) => print(x));
+          }
+          socket.writeEventsEnabled = true;
+          break;
+        case RawSocketEvent.write:
+          socket.send(const Utf8Codec().encode('Hello from client'),
+              loopbackAddress, 5683);
+          break;
+        case RawSocketEvent.closed:
+          print('Client disconnected.');
       }
+      sleep1();
     } while (true);
-    await sleep();
-  } while (go);
+  });
+  await sleep();
 }
