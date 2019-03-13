@@ -1,24 +1,14 @@
-/*
- * Package : Coap
- * Author : S. Hamblett <steve.hamblett@linux.com>
- * Date   : 13/04/2017
- * Copyright :  S.Hamblett
- */
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:pedantic/pedantic.dart';
+
 Future<void> sleep() =>
-    Future<void>.delayed(const Duration(milliseconds: 1), () => '5000');
-
-Future<void> sleep1() =>
-    Future<void>.delayed(const Duration(milliseconds: 1), () => '200');
-
-Datagram receiveDatagram(RawDatagramSocket socket) => socket.receive();
+    Future<void>.delayed(const Duration(milliseconds: 1), () => '1000');
 
 void main() async {
   /// Create and bind to the first(and only!) IPV6 loopback interface
-  RawDatagramSocket socket;
   final List<NetworkInterface> interfaces = await NetworkInterface.list(
       includeLoopback: true,
       includeLinkLocal: true,
@@ -33,32 +23,36 @@ void main() async {
       }
     }
   }
+  RawDatagramSocket theSocket;
   print('The selected loopback address is $loopbackAddress');
 
-  socket = await RawDatagramSocket.bind(loopbackAddress.address, 5683);
-
-  /// Start
-  print('Starting loop');
-  socket.asBroadcastStream().listen((RawSocketEvent e) {
-    do {
-      //print(e);
-      switch (e) {
-        case RawSocketEvent.read:
-          Datagram dg = socket.receive();
-          if (dg != null) {
-            dg.data.forEach((x) => print(x));
-          }
-          socket.writeEventsEnabled = true;
-          break;
-        case RawSocketEvent.write:
-          socket.send(const Utf8Codec().encode('Hello from client'),
-              loopbackAddress, 5683);
-          break;
-        case RawSocketEvent.closed:
-          print('Client disconnected.');
+  unawaited(RawDatagramSocket.bind(loopbackAddress, 5683)
+      .then((RawDatagramSocket socket) {
+    theSocket = socket;
+    print('Datagram socket ready to receive');
+    print('${socket.address.address}:${socket.port}');
+    socket.listen((RawSocketEvent e) {
+      final Datagram d = socket.receive();
+      if (d == null) {
+        return;
       }
-      sleep1();
-    } while (true);
-  });
-  await sleep();
+
+      final String message = String.fromCharCodes(d.data).trim();
+      print('Datagram from ${d.address.address}:${d.port}: $message');
+    });
+  }));
+
+  /// Send some data
+  const bool go = true;
+  const String message = 'Hello from client';
+  do {
+    final int sent = theSocket?.send(
+        const Utf8Codec().encode(message), loopbackAddress, 5683);
+    if (sent != message.length) {
+      print('Boo, we didnt send 4 ints, we sent $sent');
+    } else {
+      print('Hoorah $sent ints sent');
+    }
+    await sleep();
+  } while (go);
 }
