@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:pedantic/pedantic.dart';
-
 Future<void> sleep() =>
     Future<void>.delayed(const Duration(milliseconds: 1), () => '1000');
 
@@ -23,24 +21,22 @@ void main() async {
       }
     }
   }
-  RawDatagramSocket theSocket;
+
   print('The selected loopback address is $loopbackAddress');
 
-  unawaited(RawDatagramSocket.bind(loopbackAddress, 5683)
-      .then((RawDatagramSocket socket) {
-    theSocket = socket;
-    print('Datagram socket ready to receive');
-    print('${socket.address.address}:${socket.port}');
-    socket.listen((RawSocketEvent e) {
-      final Datagram d = socket.receive();
-      if (d == null) {
-        return;
-      }
+  final RawDatagramSocket theSocket =
+  await RawDatagramSocket.bind(loopbackAddress, 5683);
+  print('Datagram socket ready to receive');
+  print('${theSocket.address.address}:${theSocket.port}');
+  theSocket.listen((RawSocketEvent e) {
+    final Datagram d = theSocket.receive();
+    if (d == null) {
+      return;
+    }
 
-      final String message = String.fromCharCodes(d.data).trim();
-      print('Datagram from ${d.address.address}:${d.port}: $message');
-    });
-  }));
+    final String message = String.fromCharCodes(d.data).trim();
+    print('Datagram from ${d.address.address}:${d.port}: $message');
+  });
 
   /// Send some data
   const bool go = true;
