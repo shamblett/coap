@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 Future<void> sleep() =>
-    Future<void>.delayed(const Duration(milliseconds: 1), () => '1000');
+    Future<void>.delayed(const Duration(milliseconds: 1), () => '2000');
 
 void main() async {
   /// Create and bind to the first(and only!) IPV6 loopback interface
@@ -39,9 +39,8 @@ void main() async {
   });
 
   /// Send some data
-  const bool go = true;
   const String message = 'Hello from client';
-  do {
+  for (int count = 0; count <= 9; count++) {
     final int sent = theSocket?.send(
         const Utf8Codec().encode(message), loopbackAddress, 5683);
     if (sent != message.length) {
@@ -50,5 +49,7 @@ void main() async {
       print('Hoorah $sent ints sent');
     }
     await sleep();
-  } while (go);
+  }
+  print('Closing socket');
+  theSocket.close();
 }
