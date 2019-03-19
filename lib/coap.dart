@@ -189,7 +189,7 @@ part 'src/channel/coap_ichannel.dart';
 
 part 'src/channel/coap_udp_channel.dart';
 
-part 'src/channel/coap_network.dart';
+part 'src/channel/coap_inetwork.dart';
 
 part 'src/channel/coap_network_udp.dart';
 

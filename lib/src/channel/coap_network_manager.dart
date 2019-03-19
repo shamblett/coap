@@ -10,16 +10,16 @@ part of coap;
 /// A network management/caching class, allows already
 /// bound endpoints to be reused without instantiating them again.
 class CoapNetworkManagement {
-  static List<CoapNetwork> _networks = List<CoapNetwork>();
+  static List<CoapINetwork> _networks = List<CoapINetwork>();
 
   /// Gets a new network, otherwise tries to find a cached network and returns that.
-  static Future<CoapNetwork> getNetwork(InternetAddress address,
+  static Future<CoapINetwork> getNetwork(InternetAddress address,
       int port) async {
-    final Completer<CoapNetwork> completer = Completer<CoapNetwork>();
-    final CoapNetwork network = CoapNetworkUDP(address, port);
+    final Completer<CoapINetwork> completer = Completer<CoapINetwork>();
+    final CoapINetwork network = CoapNetworkUDP(address, port);
     if (_networks.contains(network)) {
       completer.complete(
-          _networks.where((CoapNetwork e) => e == network).toList()[0]);
+          _networks.where((CoapINetwork e) => e == network).toList()[0]);
     } else {
       await network.bind();
       _networks.add(network);
@@ -29,7 +29,7 @@ class CoapNetworkManagement {
   }
 
   /// Removes a network
-  static void removeNetwork(CoapNetwork network) {
+  static void removeNetwork(CoapINetwork network) {
     _networks.remove(network);
   }
 }
