@@ -20,6 +20,7 @@ import 'package:collection/collection.dart' as collection;
 import 'package:hex/hex.dart' as hex;
 import 'package:executor/executor.dart' as tasking;
 import 'package:event_bus/event_bus.dart' as events;
+import 'package:pedantic/pedantic.dart';
 
 /// The Coap package exported interface
 

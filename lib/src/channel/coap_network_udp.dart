@@ -12,6 +12,8 @@ class CoapNetworkUDP implements CoapINetwork {
   /// Initialize with an address and a port
   CoapNetworkUDP(this.address, this.port);
 
+  static CoapILogger _log = CoapLogManager('console').logger;
+
   /// The internet address
   @override
   InternetAddress address;
@@ -43,7 +45,7 @@ class CoapNetworkUDP implements CoapINetwork {
     _socket?.listen((RawSocketEvent e) {
       switch (e) {
         case RawSocketEvent.read:
-          final Datagram d = _socket.receive();
+          final Datagram d = _socket?.receive();
           if (d != null) {
             _data.add(d.data.toList());
           }
@@ -55,25 +57,27 @@ class CoapNetworkUDP implements CoapINetwork {
   }
 
   @override
-  Future<dynamic> bind() async {
-    final Completer<dynamic> completer = Completer<dynamic>();
+  void bind() {
     if (_bound) {
       return null;
     }
     try {
-      _socket = await RawDatagramSocket.bind(address.host, port);
-      _bound = true;
-      completer.complete();
+      RawDatagramSocket.bind(address.host, port)
+          .then((RawDatagramSocket socket) {
+        _socket = socket;
+        _bound = true;
+      });
     } on Exception catch (e) {
-      print('Not bound - exception raised $e');
-      completer.completeError(e);
+      _log.error(
+          'Failed to bind, address ${address
+              .host}, port $port with exception $e');
     }
-    return completer.future;
   }
 
   @override
   void close() {
-    _socket.close();
+    _log.info('Closing ${address.host}, port $port');
+    _socket?.close();
     _data.close();
   }
 
