@@ -21,7 +21,7 @@ class CoapNetworkManagement {
       completer.complete(
           _networks.where((CoapINetwork e) => e == network).toList()[0]);
     } else {
-      await network.bind();
+      network.bind();
       _networks.add(network);
       completer.complete(network);
     }

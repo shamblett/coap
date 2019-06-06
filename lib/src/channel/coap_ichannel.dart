@@ -37,5 +37,5 @@ abstract class CoapIChannel {
   void send(typed.Uint8Buffer data, InternetAddress address);
 
   /// Receives data, returns null if none
-  typed.Uint8Buffer receive();
+  void receive();
 }
