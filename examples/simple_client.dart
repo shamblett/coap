@@ -33,7 +33,7 @@ FutureOr<void> main(List<String> args) async {
 
   // Build the request
   final CoapRequest request = newRequest('DISCOVER');
-  const String host = 'localhost';
+  const String host = '[::1]';
   const String path = '';
   //final String query = 'rt=alpha.light';
   final Uri uri =

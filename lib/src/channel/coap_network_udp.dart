@@ -37,8 +37,11 @@ class CoapNetworkUDP implements CoapINetwork {
   RawDatagramSocket get socket => _socket;
 
   @override
-  int send(typed.Uint8Buffer data) =>
-      _bound ? _socket?.send(data.toList(), address, port) : null;
+  int send(typed.Uint8Buffer data) {
+    print('SJH - trace - sending to socket, data is ${data.toList()}');
+    _bound ? _socket?.send(data.toList(), address, port) : null;
+    return -1;
+  }
 
   @override
   void receive() {
