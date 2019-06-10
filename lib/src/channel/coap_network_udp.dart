@@ -65,7 +65,7 @@ class CoapNetworkUDP implements CoapINetwork {
       return null;
     }
     try {
-      RawDatagramSocket.bind(address.host, port)
+      RawDatagramSocket.bind(address.host, port, reusePort: true)
           .then((RawDatagramSocket socket) {
         _socket = socket;
         _bound = true;
