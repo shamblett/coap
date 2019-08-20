@@ -349,6 +349,8 @@ class CoapMessage {
   }
 
   @override
+
+  /// Overridden hashcode for the == definition
   int get hashCode => super.hashCode;
 
   /// Select options helper
@@ -774,7 +776,7 @@ class CoapMessage {
   int get observe {
     final CoapOption opt = getFirstOption(optionTypeObserve);
     if (opt == null) {
-      return null;
+      return -1;
     } else {
       return opt.value;
     }

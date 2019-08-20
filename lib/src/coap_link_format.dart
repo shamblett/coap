@@ -239,8 +239,9 @@ class CoapLinkFormat {
         String s;
         if ((s = scanner.findFirstExact(quotedStringRegex)) != null)
           // trim ' '
+            {
           value = s.substring(1, s.length - 1);
-        else if ((s = scanner.findFirstExact(cardinalRegex)) != null) {
+        } else if ((s = scanner.findFirstExact(cardinalRegex)) != null) {
           value = int.parse(s);
         }
       }

@@ -211,6 +211,7 @@ class CoapOption {
   }
 
   /// Creates an option.
+  // ignore: prefer_constructors_over_static_methods
   static CoapOption create(int type) {
     switch (type) {
       case optionTypeBlock1:

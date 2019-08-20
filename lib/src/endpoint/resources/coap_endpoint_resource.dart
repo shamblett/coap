@@ -234,9 +234,9 @@ abstract class CoapEndpointResource {
       tail = path.substring(pos + 1);
     }
 
-    if (_subResources.containsKey(head))
+    if (_subResources.containsKey(head)) {
       return _subResources[head].getResource(tail, last: last);
-    else if (last) {
+    } else if (last) {
       return this;
     } else {
       return null;

@@ -5,6 +5,8 @@
  * Copyright :  S.Hamblett
  */
 
+// ignore_for_file: prefer_constructors_over_static_methods
+
 part of coap;
 
 /// Event classes

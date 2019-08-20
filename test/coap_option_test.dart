@@ -270,6 +270,7 @@ void main() {
       expect(option.valueBytes[2], 0xFF);
       expect(option.valueBytes[3], 0xFF);
 
+      // ignore: avoid_js_rounded_ints
       option.longValue = 0x9823749837239845;
       expect(option.valueBytes.toList(),
           <int>[69, 152, 35, 55, 152, 116, 35, 152]);

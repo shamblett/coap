@@ -35,6 +35,7 @@ class CoapResponse extends CoapMessage {
   /// The destination endpoint of the response is the source endpoint of the request.
   /// The response has the same token as the request.
   /// Type and ID are usually set automatically by the ReliabilityLayer>.
+  // ignore: prefer_constructors_over_static_methods
   static CoapResponse createResponse(CoapRequest request, int statusCode) {
     final CoapResponse response = CoapResponse(statusCode);
     response.destination = request.source;
