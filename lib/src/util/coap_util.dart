@@ -162,10 +162,11 @@ class CoapUtil {
   }
 
   /// Host lookup
-  static Future<InternetAddress> lookupHost(String host) async {
+  static Future<InternetAddress> lookupHost(String host,
+      InternetAddressType addressType) async {
     final Completer<InternetAddress> completer = Completer<InternetAddress>();
     final List<InternetAddress> addresses =
-        await InternetAddress.lookup(host, type: InternetAddressType.IPv6);
+    await InternetAddress.lookup(host, type: addressType);
     logResolvedAddresses(addresses);
     if (addresses != null && addresses.isNotEmpty) {
       completer.complete(addresses[0]);

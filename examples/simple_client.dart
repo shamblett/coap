@@ -33,13 +33,13 @@ FutureOr<void> main(List<String> args) async {
 
   // Build the request
   final CoapRequest request = newRequest('DISCOVER');
-  const String host = '[::1]';
+  const String host = 'localhost';
   const String path = '.well-known/core';
   //final String query = 'rt=alpha.light';
   final Uri uri =
       Uri(scheme: 'coap', host: host, port: conf.defaultPort, path: path);
   request.uri = uri;
-  await request.resolveDestination();
+  await request.resolveDestination(InternetAddressType.IPv4);
   print('SJH - isLinkLocal - ${request.destination.isLinkLocal}');
   print('SJH - isLoopback - ${request.destination.isLoopback}');
   print('SJH - isLinkMulticast - ${request.destination.isMulticast}');

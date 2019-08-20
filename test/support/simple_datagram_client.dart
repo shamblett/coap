@@ -3,11 +3,11 @@ import 'package:hex/hex.dart';
 import 'package:pedantic/pedantic.dart';
 
 void main() async {
-  /// Create and bind to the first(and only!) IPV6 loopback interface
+  /// Create and bind to the first(and only!) IPV4 loopback interface
   final List<NetworkInterface> interfaces = await NetworkInterface.list(
       includeLoopback: true,
       includeLinkLocal: true,
-      type: InternetAddressType.IPv6);
+      type: InternetAddressType.IPv4);
   print(interfaces);
   InternetAddress loopbackAddress;
   for (NetworkInterface interface in interfaces) {

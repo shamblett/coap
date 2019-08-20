@@ -131,8 +131,9 @@ class CoapRequest extends CoapMessage {
   }
 
   /// Resolves the destination internet address
-  Future<InternetAddress> resolveDestination() async =>
-      destination = await CoapUtil.lookupHost(resolveHost);
+  Future<InternetAddress> resolveDestination(
+      InternetAddressType addressType) async =>
+      destination = await CoapUtil.lookupHost(resolveHost, addressType);
 
   /// Sets CoAP's observe option. If the target resource of this request
   /// responds with a success code and also sets the observe option, it will
@@ -182,7 +183,7 @@ class CoapRequest extends CoapMessage {
   }
 
   void _validateBeforeSending() {
-    print('SJH - trace - _va;lidateBeforeSending');
+    print('SJH - trace - _validateBeforeSending');
     if (destination == null) {
       throw StateError(
           'CoapRequest::validateBeforeSending - Missing destination');

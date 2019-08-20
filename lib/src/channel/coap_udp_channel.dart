@@ -22,7 +22,7 @@ class CoapUDPChannel extends CoapIChannel {
 
   @override
   InternetAddress get address =>
-      _address == null ? InternetAddress.anyIPv6 : _address;
+      _address == null ? InternetAddress.anyIPv4 : _address;
   CoapNetworkUDP _socket;
 
   typed.Uint8Buffer _buff = typed.Uint8Buffer();

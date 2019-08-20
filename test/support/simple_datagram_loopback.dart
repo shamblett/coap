@@ -10,7 +10,7 @@ void main() async {
   final List<NetworkInterface> interfaces = await NetworkInterface.list(
       includeLoopback: true,
       includeLinkLocal: true,
-      type: InternetAddressType.IPv6);
+      type: InternetAddressType.IPv4);
   print(interfaces);
   InternetAddress loopbackAddress;
   for (NetworkInterface interface in interfaces) {
