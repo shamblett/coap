@@ -14,7 +14,6 @@ class CoapExecutor implements CoapIExecutor {
 
   @override
   void start(Action task) {
-    print('SJH - trace - start');
     executor.scheduleTask(() {
       task();
     });

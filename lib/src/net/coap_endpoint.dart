@@ -82,7 +82,6 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
 
   @override
   void sendEpRequest(CoapRequest request) {
-    print('SJH - trace - sendEpRequest');
     executor.start(() => _coapStack.sendRequest(request));
   }
 

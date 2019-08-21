@@ -133,7 +133,6 @@ class CoapLayerStack
 
   /// Sends a request into the layer stack.
   void sendRequest(CoapRequest request) {
-    print('SJH - trace - sendRequest');
     head.filter.sendRequest(head.nextFilter, null, request);
   }
 

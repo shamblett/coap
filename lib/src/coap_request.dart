@@ -166,7 +166,6 @@ class CoapRequest extends CoapMessage {
 
   /// Sends this message.
   CoapRequest send() {
-    print('SJH - trace - send');
     _validateBeforeSending();
     endPoint.sendEpRequest(this);
     // Clear the internal response stream
@@ -183,7 +182,6 @@ class CoapRequest extends CoapMessage {
   }
 
   void _validateBeforeSending() {
-    print('SJH - trace - _validateBeforeSending');
     if (destination == null) {
       throw StateError(
           'CoapRequest::validateBeforeSending - Missing destination');
