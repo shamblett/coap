@@ -36,6 +36,9 @@ class CoapOption {
 
   /// Integer value
   int get intValue {
+    if (valueBytes.isEmpty) {
+      return 0;
+    }
     if (valueBytes.length == 1) {
       return valueBytes[0];
     } else if (valueBytes.length == 2) {
