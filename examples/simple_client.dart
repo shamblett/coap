@@ -45,18 +45,19 @@ FutureOr<void> main(List<String> args) async {
   request.endPoint = CoapEndPoint(channel, conf);
   final typed.Uint8Buffer payload = typed.Uint8Buffer();
   request.setPayloadMediaRaw(payload, CoapMediaType.textPlain);
-  // print(
-  //     'Simple client, sending request to $host with path $path, waiting for response....');
-  //request.send();
+  print(
+      'Simple client, sending request to $host with path $path, waiting for response....');
+  request.send();
 
   // Get the response
   print('Awaiting response.....');
   request.endPoint.start();
   final CoapResponse response = await request.waitForResponse(60000);
   if (response != null) {
+    print('Response received......');
     if (response.contentType == CoapMediaType.applicationLinkFormat) {
       final Iterable<CoapWebLink> links =
-          CoapLinkFormat.parse(response.payloadString);
+      CoapLinkFormat.parse(response.payloadString);
       if (links == null) {
         print('Failed parsing link format');
       } else {
