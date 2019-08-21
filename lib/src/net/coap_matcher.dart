@@ -315,7 +315,7 @@ class CoapMatcher implements CoapIMatcher {
       final CoapRequest request = exchange.currentRequest;
       if (request != null &&
           (request.hasOption(optionTypeBlock1) ||
-              response.hasOption(optionTypeBlock2))) {
+              (response != null && response.hasOption(optionTypeBlock2)))) {
         final CoapKeyUri uriKey = CoapKeyUri(request.uri, request.source);
         _log.debug('Remote ongoing completed, cleaning up $uriKey');
         _ongoingExchanges.remove(uriKey);
