@@ -5,8 +5,8 @@ import 'package:hex/hex.dart';
 void main() async {
   /// Create and bind to the first(and only!) IPV4 loopback interface
   final List<NetworkInterface> interfaces = await NetworkInterface.list(
-      includeLoopback: true,
-      includeLinkLocal: true,
+      includeLoopback: false,
+      includeLinkLocal: false,
       type: InternetAddressType.IPv4);
   print(interfaces);
   InternetAddress ipAddress;
