@@ -33,9 +33,6 @@ class CoapUDPChannel extends CoapIChannel {
     _socket.address = _address;
     _socket.bind();
     _socket.receive();
-    _socket.data.listen((List<int> data) {
-      _buff.addAll(data);
-    });
   }
 
   @override

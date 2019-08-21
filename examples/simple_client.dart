@@ -40,20 +40,18 @@ FutureOr<void> main(List<String> args) async {
       Uri(scheme: 'coap', host: host, port: conf.defaultPort, path: path);
   request.uri = uri;
   await request.resolveDestination(InternetAddressType.IPv4);
-  print('SJH - isLinkLocal - ${request.destination.isLinkLocal}');
-  print('SJH - isLoopback - ${request.destination.isLoopback}');
-  print('SJH - isLinkMulticast - ${request.destination.isMulticast}');
-  print('SJH - type - ${request.destination.type}');
   CoapEndpointManager.getDefaultSpec();
   final CoapIChannel channel = CoapUDPChannel(request.destination, uri.port);
   request.endPoint = CoapEndPoint(channel, conf);
   final typed.Uint8Buffer payload = typed.Uint8Buffer();
   request.setPayloadMediaRaw(payload, CoapMediaType.textPlain);
-  print(
-      'Simple client, sending request to $host with path $path, waiting for response....');
+  // print(
+  //     'Simple client, sending request to $host with path $path, waiting for response....');
   //request.send();
 
   // Get the response
+  print('Awaiting response.....');
+  request.endPoint.start();
   final CoapResponse response = await request.waitForResponse(60000);
   if (response != null) {
     if (response.contentType == CoapMediaType.applicationLinkFormat) {
