@@ -46,9 +46,9 @@ FutureOr<void> main(List<String> args) async {
   request.endPoint = CoapEndPoint(channel, conf);
   final typed.Uint8Buffer payload = typed.Uint8Buffer();
   request.setPayloadMediaRaw(payload, CoapMediaType.textPlain);
-  // print(
-  //     'Simple client, sending request to $host with path $path, waiting for response....');
-  // request.send();
+//   print(
+//       'Simple client, sending request to $host with path $path, waiting for response....');
+//   request.send();
 
   // Get the response
   print('Awaiting response.....');
