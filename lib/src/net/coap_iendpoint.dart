@@ -72,7 +72,7 @@ abstract class CoapIEndPoint {
   InternetAddress get localEndpoint;
 
   /// Gets or sets the message deliverer.
-  CoapIMessageDeliverer deliverer = CoapClientMessageDeliverer();
+  CoapIMessageDeliverer deliverer;
 
   /// Gets the outbox.
   CoapIOutbox get outbox;

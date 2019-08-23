@@ -11,7 +11,7 @@ part of coap;
 class CoapClientMessageDeliverer implements CoapIMessageDeliverer {
   @override
   void deliverRequest(CoapExchange exchange) {
-    exchange.sendReject();
+    // TODO exchange.sendReject();
   }
 
   @override
