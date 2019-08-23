@@ -32,14 +32,9 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   CoapConfig get config => _config;
   CoapIChannel _channel;
   CoapStack _coapStack;
-  CoapIMessageDeliverer _deliverer;
-
   @override
-  set deliverer(CoapIMessageDeliverer value) => _deliverer = value;
+  CoapIMessageDeliverer deliverer;
 
-  @override
-  CoapIMessageDeliverer get deliverer =>
-      _deliverer != null ? _deliverer : CoapClientMessageDeliverer();
   CoapIMatcher _matcher;
   InternetAddress _localEndpoint;
 
