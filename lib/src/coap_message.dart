@@ -134,7 +134,7 @@ class CoapMessage {
   /// Returns true if options of the specified type exists.
   bool hasOption(int type) => getFirstOption(type) != null;
 
-  typed.Uint8Buffer _token = typed.Uint8Buffer();
+  typed.Uint8Buffer _token; //typed.Uint8Buffer();
 
   /// The 0-8 byte token.
   typed.Uint8Buffer get token => _token;
