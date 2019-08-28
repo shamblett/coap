@@ -34,7 +34,7 @@ FutureOr<void> main(List<String> args) async {
 
   // Build the request
   final CoapRequest request = newRequest('DISCOVER');
-  const String host = '172.17.215.3';
+  const String host = 'coap.me';
   const String path = '.well-known/core';
   //final String query = 'rt=alpha.light';
   final Uri uri =
@@ -48,11 +48,11 @@ FutureOr<void> main(List<String> args) async {
   request.setPayloadMediaRaw(payload, CoapMediaType.textPlain);
   print(
       'Simple client, sending request to $host with path $path, waiting for response....');
+  //request.endPoint.start();
   request.send();
 
   // Get the response
   print('Awaiting response.....');
-  request.endPoint.start();
   final CoapResponse response = await request.waitForResponse(60000);
   if (response != null) {
     print('Response received......');
