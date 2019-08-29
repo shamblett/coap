@@ -30,7 +30,9 @@ class CoapMessageEncoder18 extends CoapMessageEncoder {
         options, (dynamic a, dynamic b) => a.type.compareTo(b.type));
 
     for (CoapOption opt in options) {
-      if (opt.type == optionTypeToken) {
+      if (opt.type == optionTypeToken ||
+          opt.type == optionTypeUriHost ||
+          opt.type == optionTypeUriPort) {
         continue;
       }
 
