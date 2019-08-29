@@ -18,7 +18,7 @@ class CoapNetworkUDP implements CoapINetwork {
   @override
   InternetAddress address;
 
-  /// The port
+  /// The port to use for sending.
   @override
   int port;
 
@@ -71,7 +71,9 @@ class CoapNetworkUDP implements CoapINetwork {
       return null;
     }
     try {
-      RawDatagramSocket.bind(address.host, port)
+      // Use a port of 0 here as we are a client, this will generate
+      // a random source port.
+      RawDatagramSocket.bind(address.host, 0)
           .then((RawDatagramSocket socket) {
         _socket = socket;
         receive();
