@@ -7,6 +7,54 @@
 
 part of coap;
 
+/// Cancellable asynchronous sleep support class
+class CoapCancellableAsyncSleep {
+  /// Timeout value in milliseconds
+  CoapCancellableAsyncSleep(this._timeout);
+
+  /// Millisecond timeout
+  int _timeout;
+
+  /// Timeout
+  int get timeout => _timeout;
+
+  /// The completer
+  Completer<void> _completer = Completer<void>();
+
+  /// The timer
+  Timer _timer;
+
+  /// Timer running flag
+  bool _running = false;
+
+  /// Running
+  bool get isRunning => _running;
+
+  /// Start the timer
+  Future<void> sleep() {
+    if (!_running) {
+      _timer = Timer(Duration(milliseconds: _timeout), _timerCallback);
+      _running = true;
+    }
+    return _completer.future;
+  }
+
+  /// Cancel the timer
+  void cancel() {
+    if (_running) {
+      _timer.cancel();
+      _running = false;
+      _completer.complete();
+    }
+  }
+
+  /// The timer callback
+  void _timerCallback() {
+    _running = false;
+    _completer.complete();
+  }
+}
+
 /// Utility methods
 class CoapUtil {
   static CoapILogger _log = CoapLogManager('console').logger;

@@ -200,17 +200,17 @@ class CoapRequest extends CoapMessage {
         (!isCancelled) &&
         (!isTimedOut) &&
         (!isRejected)) {
-      final Future<void> sleepFuture = CoapUtil.asyncSleep(millisecondsTimeout);
+      final CoapCancellableAsyncSleep asyncSleep =
+      CoapCancellableAsyncSleep(millisecondsTimeout);
+      final Future<void> sleepFuture = asyncSleep.sleep();
       final StreamSubscription<CoapResponse> responseFuture =
       _responseStream.stream.listen((CoapResponse resp) {
         _currentResponse = resp;
-      });
-      Future.any<dynamic>(
-              <Future<dynamic>>[sleepFuture, responseFuture.asFuture()])
-          .then((dynamic resp) {
-        _currentResponse = resp;
-        responseFuture.cancel();
+        asyncSleep.cancel();
         return completer.complete(_currentResponse);
+      });
+      Future.any<dynamic>(<Future<dynamic>>[sleepFuture]).then((dynamic p) {
+        responseFuture.cancel();
       });
       return completer.future;
     }
