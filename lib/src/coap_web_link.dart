@@ -38,34 +38,36 @@ class CoapWebLink extends Comparable<CoapWebLink> {
     sb.write(_uri);
     sb.write('>');
     sb.write(' ');
-    sb.write(_attributes.title);
-    if (_attributes.contains(CoapLinkFormat.resourceType)) {
-      sb.write('\n\t');
-      sb.write(CoapLinkFormat.resourceType);
-      sb.write(':\t');
-      sb.write(_attributes.getResourceTypes());
-    }
-    if (_attributes.contains(CoapLinkFormat.interfaceDescription)) {
-      sb.write('\n\t');
-      sb.write(CoapLinkFormat.interfaceDescription);
-      sb.write(':\t');
-      sb.write(_attributes.getInterfaceDescriptions());
-    }
-    if (_attributes.contains(CoapLinkFormat.contentType)) {
-      sb.write('\n\t');
-      sb.write(CoapLinkFormat.contentType);
-      sb.write(':\t');
-      sb.write(_attributes.getContentTypes());
-    }
-    if (_attributes.contains(CoapLinkFormat.maxSizeEstimate)) {
-      sb.write('\n\t');
-      sb.write(CoapLinkFormat.maxSizeEstimate);
-      sb.write(':\t');
-      sb.write(_attributes.maximumSizeEstimate);
-    }
-    if (_attributes.observable) {
-      sb.write('\n\t');
-      sb.write(CoapLinkFormat.observable);
+    if (_attributes.isNotEmpty) {
+      sb.write(_attributes.title);
+      if (_attributes.contains(CoapLinkFormat.resourceType)) {
+        sb.write('\n\t');
+        sb.write(CoapLinkFormat.resourceType);
+        sb.write(':\t');
+        sb.write(_attributes.getResourceTypes());
+      }
+      if (_attributes.contains(CoapLinkFormat.interfaceDescription)) {
+        sb.write('\n\t');
+        sb.write(CoapLinkFormat.interfaceDescription);
+        sb.write(':\t');
+        sb.write(_attributes.getInterfaceDescriptions());
+      }
+      if (_attributes.contains(CoapLinkFormat.contentType)) {
+        sb.write('\n\t');
+        sb.write(CoapLinkFormat.contentType);
+        sb.write(':\t');
+        sb.write(_attributes.getContentTypes());
+      }
+      if (_attributes.contains(CoapLinkFormat.maxSizeEstimate)) {
+        sb.write('\n\t');
+        sb.write(CoapLinkFormat.maxSizeEstimate);
+        sb.write(':\t');
+        sb.write(_attributes.maximumSizeEstimate);
+      }
+      if (_attributes.observable != null) {
+        sb.write('\n\t');
+        sb.write(CoapLinkFormat.observable);
+      }
     }
     return sb.toString();
   }

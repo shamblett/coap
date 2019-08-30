@@ -34,7 +34,8 @@ FutureOr<void> main(List<String> args) async {
 
   // Build the request
   final CoapRequest request = newRequest('DISCOVER');
-  const String host = '172.17.215.3';
+  //const String host = '172.17.215.3';
+  const String host = '172.17.199.238';
   const String path = '.well-known/core';
   final Uri uri =
       Uri(scheme: 'coap', host: host, port: conf.defaultPort, path: path);
@@ -63,6 +64,8 @@ FutureOr<void> main(List<String> args) async {
         print('Discovered resources:');
         links.forEach(print);
       }
+      print('Response received, closing client');
+      request.cancel();
     }
   } else {
     print('No response received, closing client');

@@ -18,16 +18,28 @@ class CoapResourceAttributes {
   /// Gets the number of attributes.
   int get count => _attributes.length;
 
+  /// Is empty
+  bool get isEmpty => _attributes.isEmpty;
+
+  /// Is not empty
+  bool get isNotEmpty => _attributes.isNotEmpty;
+
   /// Gets all the attribute names.
   Iterable<String> get keys => _attributes.keys;
 
   /// The resource title.
-  String get title => getValues(CoapLinkFormat.title).first;
+  String get title =>
+      getValues(CoapLinkFormat.title) == null
+          ? null
+          : getValues(CoapLinkFormat.title).first;
 
   set title(String value) => set(CoapLinkFormat.title, value);
 
   /// Gets or sets a value indicating if the resource is observable.
-  bool get observable => getValues(CoapLinkFormat.observable).first.isNotEmpty;
+  bool get observable =>
+      getValues(CoapLinkFormat.observable) == null
+          ? null
+          : getValues(CoapLinkFormat.observable).first.isNotEmpty;
 
   set observable(bool value) => set(CoapLinkFormat.observable, '');
 
@@ -92,6 +104,9 @@ class CoapResourceAttributes {
 
   /// Adds the specified value to the other values of the specified attribute.
   void add(String name, String value) {
+    if (_attributes[name] == null) {
+      _attributes[name] = List<String>();
+    }
     _attributes[name].add(value);
   }
 
