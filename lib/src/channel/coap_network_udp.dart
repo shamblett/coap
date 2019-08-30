@@ -73,7 +73,7 @@ class CoapNetworkUDP implements CoapINetwork {
     try {
       // Use a port of 0 here as we are a client, this will generate
       // a random source port.
-      RawDatagramSocket.bind(address.host, 0)
+      RawDatagramSocket.bind('0.0.0.0', 0)
           .then((RawDatagramSocket socket) {
         _socket = socket;
         receive();
