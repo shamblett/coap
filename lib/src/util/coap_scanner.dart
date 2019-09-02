@@ -8,55 +8,7 @@
 part of coap;
 
 /// String scanner
-class CoapScanner {
+class CoapScanner extends scanner.StringScanner {
   /// Construction
-  CoapScanner(this._s) {
-    _position = 0;
-  }
-
-  String _s;
-  int _position;
-
-  /// Find any from position
-  String find(RegExp regex) {
-    if (_position < _s.length) {
-      final String tmp = _s.substring(_position);
-      final Match m = regex.firstMatch(tmp);
-      if (m != null) {
-        _position = _position + (m.end - m.start);
-        return m.group(0);
-      }
-    }
-    return null;
-  }
-
-  /// Find first exactly from position
-  String findFirstExact(RegExp regex) {
-    if (_position < _s.length) {
-      final String tmp = _s.substring(_position);
-      final Match m = regex.firstMatch(tmp);
-      if (m != null) {
-        if (m.start == 1) {
-          _position = _position + (m.end - m.start) + 1;
-          return m.group(0);
-        }
-      }
-    }
-    return null;
-  }
-
-  /// Find with a specified character horizon
-  String findHorizon(RegExp regex, int horizon) {
-    if (_position < _s.length) {
-      final String tmp = _s.substring(_position);
-      final Match m = regex.firstMatch(tmp);
-      if (m != null) {
-        if (m.start == 0) {
-          _position = _position + 1;
-          return m.group(0);
-        }
-      }
-    }
-    return null;
-  }
+  CoapScanner(String source) : super(source);
 }

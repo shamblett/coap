@@ -37,6 +37,9 @@ class CoapLinkFormat {
   /// The string to separate attributes
   static const String separator = ';';
 
+  /// Link start marker
+  static const String linkStart = '<';
+
   /// Supporting regular expressions
 
   /// Delimiter
@@ -56,7 +59,12 @@ class CoapLinkFormat {
 
   /// Cardinal
   static final RegExp cardinalRegex = RegExp('\\d+');
-  static final RegExp _equalRegex = RegExp('=');
+
+  /// Equal
+  static final RegExp equalRegex = RegExp('=');
+
+  /// Blank
+  static final RegExp blankRegex = RegExp('\\s');
 
   static CoapILogger _log = CoapLogManager('console').logger;
 
@@ -78,43 +86,67 @@ class CoapLinkFormat {
   }
 
   /// Parse
-  static Iterable<CoapWebLink> parse(String linkFormat) sync* {
+  static Iterable<CoapWebLink> parse(String linkFormat) {
+    final List<CoapWebLink> links = List<CoapWebLink>();
     if (linkFormat.isNotEmpty) {
       final CoapScanner scanner = CoapScanner(linkFormat);
       String path;
-      while ((path = scanner.find(resourceNameRegex)) != null) {
+      // Scan for paths
+      while (scanner.scan(resourceNameRegex)) {
+        // Check for the end of the string
+        if (scanner.position == linkFormat.length) {
+          break;
+        }
+        final Match matched = scanner.lastMatch;
+        path = matched.group(0);
         path = path.substring(1, path.length - 1);
         final CoapWebLink link = CoapWebLink(path);
-
-        String attr;
-        while (scanner.findHorizon(delimiterRegex, 1) == null &&
-            (attr = scanner.find(wordRegex)) != null) {
-          if (scanner.findHorizon(_equalRegex, 1) == null) {
-            // flag attribute without value
-            link.attributes.addNoValue(attr);
-          } else {
-            String value;
-            if ((value = scanner.findFirstExact(quotedStringRegex)) != null) {
-              // trim ' '
-              value = value.substring(1, value.length - 2);
-              if (title == attr) {
-                link.attributes.add(attr, value);
-              } else {
-                for (String part in value.split('\\')) {
-                  link.attributes.add(attr, part);
-                }
-              }
-            } else if ((value = scanner.find(wordRegex)) != null) {
-              link.attributes.set(attr, value);
-            } else if ((value = scanner.findFirstExact(cardinalRegex)) !=
-                null) {
-              link.attributes.set(attr, value);
-            }
-          }
+        links.add(link);
+        // Look for either a path or attribute delimiter
+        final int char = scanner.readChar();
+        if (char == delimiter.codeUnitAt(0)) {
+          // Next path
+          continue;
         }
-        yield link;
+        if (char == separator.codeUnitAt(0)) {
+          // Process attributes
+          final StringBuffer attr = StringBuffer();
+          while (scanner.peekChar(0) != linkStart.codeUnitAt(0)) {
+            attr.write(String.fromCharCode(scanner.readChar()));
+            //TODO process this
+          }
+          // Next path
+          continue;
+        }
+
+//        while (scanner.findHorizon(delimiterRegex, 1) == null &&
+//            (attr = scanner.findHorizon(separatorRegex, 1)) != null) {
+//          if (scanner.find(equalRegex) == null) {
+//            // flag attribute without value
+//            link.attributes.addNoValue(attr);
+//          } else {
+//            String value;
+//            if ((value = scanner.findFirstExact(quotedStringRegex)) != null) {
+//              // trim ' '
+//              value = value.substring(1, value.length - 1);
+//              if (title == attr) {
+//                link.attributes.add(attr, value);
+//              } else {
+//                for (String part in value.split(blankRegex)) {
+//                  link.attributes.add(attr, part);
+//                }
+//              }
+//            } else if ((value = scanner.find(wordRegex)) != null) {
+//              link.attributes.set(attr, value);
+//            } else if ((value = scanner.findFirstExact(cardinalRegex)) !=
+//                null) {
+//              link.attributes.set(attr, value);
+//            }
+//          }
+//        }
       }
     }
+    return links;
   }
 
   static void _serializeTree(
@@ -209,42 +241,42 @@ class CoapLinkFormat {
     final CoapRemoteResource root = CoapRemoteResource('');
     final CoapScanner scanner = CoapScanner(linkFormat);
     String path;
-    while ((path = scanner.find(resourceNameRegex)) != null) {
-      path = path.substring(1, path.length - 1);
-      // Retrieve specified resource, create if necessary
-      final CoapRemoteResource resource = CoapRemoteResource(path);
-      CoapLinkAttribute attr;
-      while (scanner.findHorizon(delimiterRegex, 1) == null &&
-          (attr = parseAttribute(scanner)) != null) {
-        addAttribute(resource.attributes, attr);
-      }
-      root.addSubResource(resource);
-    }
+//    while ((path = scanner.find(resourceNameRegex)) != null) {
+//      path = path.substring(1, path.length - 1);
+//      // Retrieve specified resource, create if necessary
+//      final CoapRemoteResource resource = CoapRemoteResource(path);
+//      CoapLinkAttribute attr;
+//      while (scanner.findHorizon(delimiterRegex, 1) == null &&
+//          (attr = parseAttribute(scanner)) != null) {
+//        addAttribute(resource.attributes, attr);
+//      }
+//      root.addSubResource(resource);
+//    }
     return root;
   }
 
   /// Parse attribute
   static CoapLinkAttribute parseAttribute(CoapScanner scanner) {
-    final String name = scanner.find(wordRegex);
+    final String name = 'fred'; //scanner.find(wordRegex);
     if (name == null) {
       return null;
     } else {
       Object value;
       value = true;
       // check for name-value-pair
-      if (scanner.find(_equalRegex) == null) {
-        // flag attribute
-        value = true;
-      } else {
-        String s;
-        if ((s = scanner.findFirstExact(quotedStringRegex)) != null)
-          // trim ' '
-            {
-          value = s.substring(1, s.length - 1);
-        } else if ((s = scanner.findFirstExact(cardinalRegex)) != null) {
-          value = int.parse(s);
-        }
-      }
+//      if (scanner.find(equalRegex) == null) {
+//        // flag attribute
+//        value = true;
+//      } else {
+//        String s;
+//        if ((s = scanner.findFirstExact(quotedStringRegex)) != null)
+//        // trim ' '
+//        {
+//          value = s.substring(1, s.length - 1);
+//        } else if ((s = scanner.findFirstExact(cardinalRegex)) != null) {
+//          value = int.parse(s);
+//        }
+//      }
       return CoapLinkAttribute(name, value);
     }
   }
