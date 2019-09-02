@@ -83,13 +83,13 @@ class CoapLinkFormat {
       final CoapScanner scanner = CoapScanner(linkFormat);
       String path;
       while ((path = scanner.find(resourceNameRegex)) != null) {
-        path = path.substring(1, path.length - 2);
+        path = path.substring(1, path.length - 1);
         final CoapWebLink link = CoapWebLink(path);
 
         String attr;
-        while (scanner.find(delimiterRegex) == null &&
+        while (scanner.findHorizon(delimiterRegex, 1) == null &&
             (attr = scanner.find(wordRegex)) != null) {
-          if (scanner.find(_equalRegex) == null) {
+          if (scanner.findHorizon(_equalRegex, 1) == null) {
             // flag attribute without value
             link.attributes.addNoValue(attr);
           } else {

@@ -121,6 +121,9 @@ class CoapResourceAttributes {
   /// Replaces the value for the specified attribute with the specified value.
   /// If another value has been set for the attribute name, it will be removed.
   void set(String name, String value) {
+    if (_attributes[name] == null) {
+      _attributes[name] = List<String>(1);
+    }
     _attributes[name][0] = value;
   }
 
