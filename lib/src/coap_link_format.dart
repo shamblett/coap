@@ -40,6 +40,9 @@ class CoapLinkFormat {
   /// Link start marker
   static const String linkStart = '<';
 
+  /// Attribute name/value separator
+  static const String attrNameValueSeparator = '=';
+
   /// Supporting regular expressions
 
   /// Delimiter
@@ -110,40 +113,25 @@ class CoapLinkFormat {
         }
         if (char == separator.codeUnitAt(0)) {
           // Process attributes
-          final StringBuffer attr = StringBuffer();
-          while (scanner.peekChar(0) != linkStart.codeUnitAt(0)) {
-            attr.write(String.fromCharCode(scanner.readChar()));
-            //TODO process this
+          String attributeString = scanner.takeUntil(linkStart);
+          if (attributeString != null) {
+            // Condition the string before splitting
+            attributeString =
+                attributeString.substring(0, attributeString.length - 1);
+            // Split on delimiter
+            final List<String> attrs = attributeString.split(separator);
+            for (String attr in attrs) {
+              final List<String> parts = attr.split(attrNameValueSeparator);
+              if (parts.length == 1) {
+                link.attributes.addNoValue(parts[0]);
+              } else {
+                link.attributes.add(parts[0], parts[1]);
+              }
+            }
           }
           // Next path
           continue;
         }
-
-//        while (scanner.findHorizon(delimiterRegex, 1) == null &&
-//            (attr = scanner.findHorizon(separatorRegex, 1)) != null) {
-//          if (scanner.find(equalRegex) == null) {
-//            // flag attribute without value
-//            link.attributes.addNoValue(attr);
-//          } else {
-//            String value;
-//            if ((value = scanner.findFirstExact(quotedStringRegex)) != null) {
-//              // trim ' '
-//              value = value.substring(1, value.length - 1);
-//              if (title == attr) {
-//                link.attributes.add(attr, value);
-//              } else {
-//                for (String part in value.split(blankRegex)) {
-//                  link.attributes.add(attr, part);
-//                }
-//              }
-//            } else if ((value = scanner.find(wordRegex)) != null) {
-//              link.attributes.set(attr, value);
-//            } else if ((value = scanner.findFirstExact(cardinalRegex)) !=
-//                null) {
-//              link.attributes.set(attr, value);
-//            }
-//          }
-//        }
       }
     }
     return links;

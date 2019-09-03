@@ -39,7 +39,12 @@ class CoapWebLink extends Comparable<CoapWebLink> {
     sb.write('>');
     sb.write(' ');
     if (_attributes.isNotEmpty) {
-      sb.write(_attributes.title);
+      if (_attributes.contains(CoapLinkFormat.title)) {
+        sb.write('\n\t');
+        sb.write(CoapLinkFormat.title);
+        sb.write(':\t');
+        sb.write(_attributes.title);
+      }
       if (_attributes.contains(CoapLinkFormat.resourceType)) {
         sb.write('\n\t');
         sb.write(CoapLinkFormat.resourceType);
