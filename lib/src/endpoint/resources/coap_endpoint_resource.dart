@@ -285,7 +285,7 @@ abstract class CoapEndpointResource {
 
       final List<String> segments = path.split('/');
       if (segments.length > 1) {
-        _log.debug('Splitting up compound resource ${resource.name}');
+        _log.info('Splitting up compound resource ${resource.name}');
         resource.name = segments[segments.length - 1];
 
         // insert middle segments
@@ -303,7 +303,7 @@ abstract class CoapEndpointResource {
       resource._parent = baseRes;
       baseRes.subResources[resource.name] = resource;
 
-      _log.debug('Add resource ${resource.name}');
+      _log.info('Add resource ${resource.name}');
     }
 
     // update number of sub-resources in the tree

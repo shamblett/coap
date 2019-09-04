@@ -33,7 +33,7 @@ class CoapTransmissionContext {
     _timer?.cancel();
 
     if (currentTimeout > 0) {
-      _log.debug('Retransmission timeout is $currentTimeout ms');
+      _log.info('Retransmission timeout is $currentTimeout ms');
       _timer = Timer(Duration(milliseconds: currentTimeout), _timerElapsed);
     }
   }
@@ -42,11 +42,11 @@ class CoapTransmissionContext {
   void cancel() {
     _timer.cancel();
 
-    _log.debug('Cancel retransmission for -->');
+    _log.info('Cancel retransmission for -->');
     if (_exchange.origin == CoapOrigin.local) {
-      _log.debug(_exchange.currentRequest.toString());
+      _log.info(_exchange.currentRequest.toString());
     } else {
-      _log.debug(_exchange.currentResponse.toString());
+      _log.info(_exchange.currentResponse.toString());
     }
   }
 
@@ -54,35 +54,35 @@ class CoapTransmissionContext {
     // Do not retransmit a message if it has been acknowledged,
     // rejected, canceled or already been retransmitted for the maximum
     // number of times.
-    _log.debug('Retransmission timeout elapsed');
+    _log.warn('Retransmission timeout elapsed');
     final int failedCount = ++failedTransmissionCount;
 
     if (_message.isAcknowledged) {
-      _log.debug(
+      _log.info(
           'Timeout: message already acknowledged, cancel retransmission of $_message');
       return;
     } else if (_message.isRejected) {
-      _log.debug(
+      _log.info(
           'Timeout: message already rejected, cancel retransmission of _message');
       return;
     } else if (_message.isCancelled) {
-      _log.debug('Timeout: canceled (ID= ${_message.id} do not retransmit');
+      _log.info('Timeout: canceled (ID= ${_message.id} do not retransmit');
       return;
     } else if (failedCount <=
         (_message.maxRetransmit != 0
             ? _message.maxRetransmit
             : _config.maxRetransmit)) {
-      _log.debug(
-          'Timeout: retransmit message, failed: $failedCount message: $_message');
+      _log.warn(
+          'Timeout: retransmit message, failed count: $failedCount message: $_message');
 
       _message.fireRetransmitting();
 
-// Message might have canceled
+      // Message might have canceled
       if (!_message.isCancelled) {
         _retransmit(this);
       }
     } else {
-      _log.debug(
+      _log.warn(
           'Timeout: retransmission limit reached, exchange failed, message: $_message');
       _exchange.timedOut = true;
       _message.isTimedOut = true;
@@ -153,7 +153,7 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
     }
 
     if (response.type == CoapMessageType.con) {
-      _log.debug('Scheduling retransmission for $response');
+      _log.info('Scheduling retransmission for $response');
       _prepareRetransmission(exchange, response,
           (dynamic ctx) => sendResponse(nextLayer, exchange, response));
     }
@@ -174,21 +174,20 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
     if (request.duplicate) {
       // Request is a duplicate, so resend ACK, RST or response
       if (exchange.currentResponse != null) {
-        _log.debug(
-            'Respond with the current response to the duplicate request');
+        _log.info('Respond with the current response to the duplicate request');
         super.sendResponse(nextLayer, exchange, exchange.currentResponse);
       } else if (exchange.currentRequest != null) {
         if (exchange.currentRequest.isAcknowledged) {
-          _log.debug(
+          _log.info(
               'The duplicate request was acknowledged but no response computed yet. Retransmit ACK.');
           final CoapEmptyMessage ack = CoapEmptyMessage.newACK(request);
           sendEmptyMessage(nextLayer, exchange, ack);
         } else if (exchange.currentRequest.isRejected) {
-          _log.debug('The duplicate request was rejected. Reject again.');
+          _log.info('The duplicate request was rejected. Reject again.');
           final CoapEmptyMessage rst = CoapEmptyMessage.newRST(request);
           sendEmptyMessage(nextLayer, exchange, rst);
         } else {
-          _log.debug(
+          _log.info(
               'The server has not yet decided what to do with the request. We ignore the duplicate.');
           // The server has not yet decided, whether to acknowledge or
           // reject the request. We know for sure that the server has
@@ -217,13 +216,13 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
     }
 
     if (response.type == CoapMessageType.con && !exchange.request.isCancelled) {
-      _log.debug('Response is confirmable, send ACK.');
+      _log.info('Response is confirmable, send ACK.');
       final CoapEmptyMessage ack = CoapEmptyMessage.newACK(response);
       sendEmptyMessage(nextLayer, exchange, ack);
     }
 
     if (response.duplicate) {
-      _log.debug('Response is duplicate, ignore it.');
+      _log.info('Response is duplicate, ignore it.');
     } else {
       super.receiveResponse(nextLayer, exchange, response);
     }
@@ -277,7 +276,8 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
     }
 
     _log.debug(
-        'Send request, failed transmissions: ${ctx.failedTransmissionCount}');
+        'Send request, failed transmission count: ${ctx
+            .failedTransmissionCount}');
 
     ctx.start();
   }

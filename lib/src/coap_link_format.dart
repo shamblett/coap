@@ -45,12 +45,6 @@ class CoapLinkFormat {
 
   /// Supporting regular expressions
 
-  /// Delimiter
-  static final RegExp delimiterRegex = RegExp('\\s*$delimiter+\\s*');
-
-  /// Separator
-  static final RegExp separatorRegex = RegExp('\\s*$separator+\\s*');
-
   /// Resource name
   static final RegExp resourceNameRegex = RegExp('<[^>]*>');
 
@@ -65,9 +59,6 @@ class CoapLinkFormat {
 
   /// Equal
   static final RegExp equalRegex = RegExp('=');
-
-  /// Blank
-  static final RegExp blankRegex = RegExp('\\s');
 
   static CoapILogger _log = CoapLogManager().logger;
 
@@ -405,7 +396,7 @@ class CoapLinkFormat {
     if (isSingle(attrToAdd.name)) {
       for (CoapLinkAttribute attr in attributes) {
         if (attr.name == attrToAdd.name) {
-          _log.debug(
+          _log.warn(
               'CoapLinkFormat::addAttribute - Found existing singleton attribute: ${attr.name}');
           return false;
         }
