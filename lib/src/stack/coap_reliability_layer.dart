@@ -116,7 +116,7 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
     }
 
     if (request.type == CoapMessageType.con) {
-      _log.debug('Scheduling retransmission for $request');
+      _log.info('Scheduling retransmission for $request');
       _prepareRetransmission(exchange, request,
           (dynamic ctx) => sendRequest(nextLayer, exchange, request));
     }

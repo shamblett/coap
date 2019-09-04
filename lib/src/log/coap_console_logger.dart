@@ -11,7 +11,11 @@ part of coap;
 class CoapConsoleLogger implements CoapILogger {
   /// Construction
   CoapConsoleLogger() {
-    logging.Logger.root.level = logging.Level.ALL;
+    logging.hierarchicalLoggingEnabled = true;
+    _logger.level = logging.Level.ALL;
+    root.onRecord.listen((logging.LogRecord rec) {
+      print('${rec.level.name}: ${rec.time}: ${rec.message}');
+    });
   }
 
   static final logging.Logger _logger = logging.Logger('ConsoleLogger');
@@ -64,9 +68,5 @@ class CoapConsoleLogger implements CoapILogger {
   }
 
   /// Formatter
-  String _formatter(String message) {
-    final DateTime now = DateTime.now();
-    final String level = _logger.level.toString();
-    return _lastMessage = '$now  $level >> $message';
-  }
+  String _formatter(String message) => _lastMessage = '>> $message';
 }
