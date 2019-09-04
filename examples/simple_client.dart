@@ -59,7 +59,7 @@ FutureOr<void> main(List<String> args) async {
       final Iterable<CoapWebLink> links =
       CoapLinkFormat.parse(response.payloadString);
       if (links == null) {
-        print('Failed parsing link format');
+        print('No resources discovered');
       } else {
         print('Discovered resources:');
         links.forEach(print);
