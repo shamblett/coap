@@ -33,9 +33,9 @@ FutureOr<void> main(List<String> args) async {
 
   // Build the request
   final CoapRequest request = newRequest('DISCOVER');
-  const String host = '172.17.215.3';
+  //const String host = '172.17.215.3';
   //const String host = '172.17.199.238';
-  //const String host = 'coap.me';
+  const String host = 'coap.me';
   const String path = '.well-known/core';
   final Uri uri =
       Uri(scheme: 'coap', host: host, port: conf.defaultPort, path: path);
@@ -52,7 +52,7 @@ FutureOr<void> main(List<String> args) async {
 
   // Get the response
   print('Awaiting response.....');
-  final CoapResponse response = await request.waitForResponse(5000);
+  final CoapResponse response = await request.waitForResponse(10000);
   if (response != null) {
     print('Response received......');
     if (response.contentType == CoapMediaType.applicationLinkFormat) {
@@ -64,8 +64,7 @@ FutureOr<void> main(List<String> args) async {
         print('Discovered resources:');
         links.forEach(print);
       }
-      print('Response received, closing client');
-      request.cancel();
+      print('Response received');
     }
   } else {
     print('No response received, closing client');

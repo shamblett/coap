@@ -194,27 +194,24 @@ class CoapRequest extends CoapMessage {
 
   /// Wait for a response.
   /// Returns the response, or null if timeout occured.
-  FutureOr<dynamic> waitForResponse(int millisecondsTimeout) {
-    final Completer<dynamic> completer = Completer<dynamic>();
+  FutureOr<CoapResponse> waitForResponse(int millisecondsTimeout) {
+    final Completer<CoapResponse> completer = Completer<CoapResponse>();
     if ((_currentResponse == null) &&
         (!isCancelled) &&
         (!isTimedOut) &&
         (!isRejected)) {
-      final CoapCancellableAsyncSleep asyncSleep =
-      CoapCancellableAsyncSleep(millisecondsTimeout);
-      final Future<void> sleepFuture = asyncSleep.sleep();
-      final StreamSubscription<CoapResponse> responseFuture =
-      _responseStream.stream.listen((CoapResponse resp) {
+      _responseStream.stream
+          .listen((CoapResponse resp) {
         _currentResponse = resp;
-        asyncSleep.cancel();
-        return completer.complete(_currentResponse);
-      });
-      Future.any<dynamic>(<Future<dynamic>>[sleepFuture]).then((dynamic p) {
-        responseFuture.cancel();
+        completer.complete(_currentResponse);
+      })
+          .asFuture()
+          .timeout(Duration(milliseconds: millisecondsTimeout), onTimeout: () {
+        completer.complete(null);
       });
       return completer.future;
     }
-    return _currentResponse;
+    return completer.future;
   }
 
   /// Fire the respond event
