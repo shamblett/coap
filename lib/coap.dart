@@ -174,9 +174,9 @@ part 'src/observe/coap_observing_endpoint.dart';
 
 part 'src/observe/coap_observe_notification_orderer.dart';
 
-part 'src/server/resources/coap_iresource.dart';
+part 'src/resources/coap_iresource.dart';
 
-part 'src/server/resources/coap_resource_attributes.dart';
+part 'src/resources/coap_resource_attributes.dart';
 
 part 'src/threading/coap_iexecutor.dart';
 
