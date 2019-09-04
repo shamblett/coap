@@ -46,29 +46,21 @@ class CoapConsoleLogger implements CoapILogger {
   @override
   void debug(String message) {
     _logger.severe(_formatter(message));
-    // SJH log
-    print(_formatter(message));
   }
 
   @override
   void error(String message) {
     _logger.shout(_formatter(message));
-    // SJH log
-    print(_formatter(message));
   }
 
   @override
   void info(String message) {
     _logger.info(_formatter(message));
-    // SJH log
-    print(_formatter(message));
   }
 
   @override
   void warn(String message) {
     _logger.warning(_formatter(message));
-    // SJH log
-    print(_formatter(message));
   }
 
   /// Formatter

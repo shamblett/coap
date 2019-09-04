@@ -15,7 +15,7 @@ abstract class CoapEndpointResource {
   /// Initialize a resource.
   CoapEndpointResource.hide(this.name, {this.hidden});
 
-  static CoapILogger _log = CoapLogManager('console').logger;
+  static CoapILogger _log = CoapLogManager().logger;
 
   /// The name of the resource identifier
   String name;

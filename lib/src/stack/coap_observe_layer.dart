@@ -12,7 +12,7 @@ class CoapReregistrationContext {
   /// Construction
   CoapReregistrationContext(this._exchange, this._timeout, this._reregister);
 
-  static CoapILogger _log = CoapLogManager('console').logger;
+  static CoapILogger _log = CoapLogManager().logger;
   CoapExchange _exchange;
   ActionGeneric<CoapRequest> _reregister;
   Timer _timer;
@@ -61,7 +61,7 @@ class CoapObserveLayer extends CoapAbstractLayer {
     _backoff = config.notificationReregistrationBackoff;
   }
 
-  static CoapILogger _log = CoapLogManager('console').logger;
+  static CoapILogger _log = CoapLogManager().logger;
 
   /// Context key
   static String reregistrationContextKey = 'ReregistrationContext';

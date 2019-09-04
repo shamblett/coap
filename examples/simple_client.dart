@@ -30,7 +30,6 @@ FutureOr<void> main(List<String> args) async {
 
   // Config
   final CoapConfig conf = CoapConfig(File('test/config_logging.yaml'));
-  //final CoapLogManager logmanager = CoapLogManager('console');
 
   // Build the request
   final CoapRequest request = newRequest('DISCOVER');

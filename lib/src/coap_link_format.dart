@@ -69,7 +69,7 @@ class CoapLinkFormat {
   /// Blank
   static final RegExp blankRegex = RegExp('\\s');
 
-  static CoapILogger _log = CoapLogManager('console').logger;
+  static CoapILogger _log = CoapLogManager().logger;
 
   /// Serialize
   static String serialize(CoapIResource root) => _serializeQueries(root, null);
@@ -242,6 +242,7 @@ class CoapLinkFormat {
       while (scanner.readChar() == separator.codeUnitAt(0)) {
         attr = parseAttribute(scanner);
         addAttribute(resource.attributes, attr);
+        // ignore: invariant_booleans
         if (scanner.position == linkFormat.length) {
           break;
         }

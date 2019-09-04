@@ -15,7 +15,7 @@ class CoapTransmissionContext {
     currentTimeout = _message.ackTimeout;
   }
 
-  static CoapILogger _log = CoapLogManager('console').logger;
+  static CoapILogger _log = CoapLogManager().logger;
   CoapConfig _config;
   CoapExchange _exchange;
   CoapMessage _message;
@@ -99,7 +99,7 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
     _config = config;
   }
 
-  static CoapILogger _log = CoapLogManager('console').logger;
+  static CoapILogger _log = CoapLogManager().logger;
 
   /// Context key
   static String transmissionContextKey = 'TransmissionContext';

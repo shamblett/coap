@@ -30,7 +30,7 @@ class CoapObserveRelation {
     _key = '$source#${exchange.request.tokenString}';
   }
 
-  CoapILogger _log = CoapLogManager('console').logger;
+  CoapILogger _log = CoapLogManager().logger;
   CoapConfig _config;
   CoapObservingEndpoint _endpoint;
 

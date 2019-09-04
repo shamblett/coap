@@ -18,7 +18,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
         'BlockwiseLayer uses MaxMessageSize: $_maxMessageSize and DefaultBlockSize: $_defaultBlockSize');
   }
 
-  static CoapILogger _log = CoapLogManager('console').logger;
+  static CoapILogger _log = CoapLogManager().logger;
 
   int _maxMessageSize;
   int _defaultBlockSize;

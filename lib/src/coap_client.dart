@@ -21,7 +21,7 @@ class CoapClient {
   /// Instantiates.
   CoapClient(this.uri, this._config);
 
-  static CoapILogger _log = CoapLogManager('console').logger;
+  static CoapILogger _log = CoapLogManager().logger;
   static Iterable<CoapWebLink> _emptyLinks = <CoapWebLink>[CoapWebLink('')];
 
   /// The URI

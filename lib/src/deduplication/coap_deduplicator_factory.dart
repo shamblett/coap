@@ -9,7 +9,7 @@ part of coap;
 
 /// Deduplicator factory
 class CoapDeduplicatorFactory {
-  static CoapILogger _log = CoapLogManager('console').logger;
+  static CoapILogger _log = CoapLogManager().logger;
 
   /// Mark and sweep
   static const String markAndSweepDeduplicator = 'MarkAndSweep';

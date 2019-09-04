@@ -36,7 +36,7 @@ class CoapDraft13 implements CoapISpec {
   /// Payload marker
   static const int payloadMarker = 0xFF;
 
-  static CoapILogger _log = CoapLogManager('console').logger;
+  static CoapILogger _log = CoapLogManager().logger;
 
   @override
   String get name => 'draft-ietf-core-coap-13';

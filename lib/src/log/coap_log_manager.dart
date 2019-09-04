@@ -10,9 +10,9 @@ part of coap;
 /// Allows selection and management of logging for the coap library.
 class CoapLogManager {
   /// Construction
-  CoapLogManager(String type) {
+  CoapLogManager([String type]) {
     bool setCommon = true;
-    if (type == 'console') {
+    if (type == null || type == 'console') {
       logger = CoapConsoleLogger();
     } else {
       logger = CoapNullLogger();

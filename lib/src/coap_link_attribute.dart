@@ -15,7 +15,7 @@ class CoapLinkAttribute {
     _value = value;
   }
 
-  static CoapILogger _log = CoapLogManager('console').logger;
+  static CoapILogger _log = CoapLogManager().logger;
 
   String _name;
 
