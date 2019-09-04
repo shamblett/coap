@@ -33,9 +33,9 @@ FutureOr<void> main(List<String> args) async {
 
   // Build the request
   final CoapRequest request = newRequest('DISCOVER');
-  //const String host = '172.17.215.3';
+  const String host = '172.17.215.3';
   //const String host = '172.17.199.238';
-  const String host = 'coap.me';
+  //const String host = 'coap.me';
   const String path = '.well-known/core';
   final Uri uri =
       Uri(scheme: 'coap', host: host, port: conf.defaultPort, path: path);

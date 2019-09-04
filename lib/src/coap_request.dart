@@ -207,7 +207,9 @@ class CoapRequest extends CoapMessage {
       })
           .asFuture()
           .timeout(Duration(milliseconds: millisecondsTimeout), onTimeout: () {
-        completer.complete(null);
+        if (!completer.isCompleted) {
+          completer.complete(null);
+        }
       });
       return completer.future;
     }
