@@ -96,15 +96,15 @@ class CoapLinkFormat {
       String path;
       // Scan for paths
       while (scanner.scan(resourceNameRegex)) {
-        // Check for the end of the string
-        if (scanner.position == linkFormat.length) {
-          break;
-        }
         final Match matched = scanner.lastMatch;
         path = matched.group(0);
         path = path.substring(1, path.length - 1);
         final CoapWebLink link = CoapWebLink(path);
         links.add(link);
+        // Check for the end of the link format string
+        if (scanner.position == linkFormat.length) {
+          break;
+        }
         // Look for either a path or attribute delimiter
         final int char = scanner.readChar();
         if (char == delimiter.codeUnitAt(0)) {
@@ -228,45 +228,57 @@ class CoapLinkFormat {
   static CoapRemoteResource deserialize(String linkFormat) {
     final CoapRemoteResource root = CoapRemoteResource('');
     final CoapScanner scanner = CoapScanner(linkFormat);
-    String path;
-//    while ((path = scanner.find(resourceNameRegex)) != null) {
-//      path = path.substring(1, path.length - 1);
-//      // Retrieve specified resource, create if necessary
-//      final CoapRemoteResource resource = CoapRemoteResource(path);
-//      CoapLinkAttribute attr;
-//      while (scanner.findHorizon(delimiterRegex, 1) == null &&
-//          (attr = parseAttribute(scanner)) != null) {
-//        addAttribute(resource.attributes, attr);
-//      }
-//      root.addSubResource(resource);
-//    }
+    while (scanner.scan(resourceNameRegex)) {
+      final Match matched = scanner.lastMatch;
+      String path = matched.group(0);
+      path = path.substring(1, path.length - 1);
+      // Retrieve specified resource, create if necessary
+      final CoapRemoteResource resource = CoapRemoteResource(path);
+      if (scanner.position == linkFormat.length) {
+        root.addSubResource(resource);
+        break;
+      }
+      CoapLinkAttribute attr;
+      while (scanner.readChar() == separator.codeUnitAt(0)) {
+        attr = parseAttribute(scanner);
+        addAttribute(resource.attributes, attr);
+        if (scanner.position == linkFormat.length) {
+          break;
+        }
+      }
+      root.addSubResource(resource);
+    }
     return root;
   }
 
   /// Parse attribute
   static CoapLinkAttribute parseAttribute(CoapScanner scanner) {
-    final String name = 'fred'; //scanner.find(wordRegex);
-    if (name == null) {
-      return null;
-    } else {
+    if (scanner.scan(wordRegex)) {
+      final Match matched = scanner.lastMatch;
+      final String name = matched.group(0);
       Object value;
       value = true;
       // check for name-value-pair
-//      if (scanner.find(equalRegex) == null) {
-//        // flag attribute
-//        value = true;
-//      } else {
-//        String s;
-//        if ((s = scanner.findFirstExact(quotedStringRegex)) != null)
-//        // trim ' '
-//        {
-//          value = s.substring(1, s.length - 1);
-//        } else if ((s = scanner.findFirstExact(cardinalRegex)) != null) {
-//          value = int.parse(s);
-//        }
-//      }
+      if (!scanner.scan(equalRegex)) {
+        // Flag attribute
+        value = true;
+      } else {
+        if (scanner.matches(quotedStringRegex)) {
+          scanner.scan(quotedStringRegex);
+          final Match matched = scanner.lastMatch;
+          final String s = matched.group(0);
+          value = s.substring(1, s.length - 1);
+        } else if (scanner.matches(cardinalRegex)) {
+          scanner.scan(cardinalRegex);
+          final Match matched = scanner.lastMatch;
+          final String num = matched.group(0);
+          value = int.tryParse(num);
+          value ??= 0;
+        }
+      }
       return CoapLinkAttribute(name, value);
     }
+    return null;
   }
 
   static bool _matchesOption(
