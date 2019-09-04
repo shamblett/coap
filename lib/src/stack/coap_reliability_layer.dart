@@ -275,9 +275,15 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
           _initialTimeout(_config.ackTimeout, _config.ackRandomFactor);
     }
 
-    _log.debug(
-        'Send request, failed transmission count: ${ctx
-            .failedTransmissionCount}');
+    if (ctx.failedTransmissionCount > 0) {
+      _log.debug(
+          'Send request, failed transmission count: ${ctx
+              .failedTransmissionCount}');
+    } else {
+      _log.info(
+          'Send request, failed transmission count: ${ctx
+              .failedTransmissionCount}');
+    }
 
     ctx.start();
   }

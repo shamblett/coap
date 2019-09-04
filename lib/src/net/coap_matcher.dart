@@ -66,7 +66,7 @@ class CoapMatcher implements CoapIMatcher {
       // The MID is from the local namespace -- use blank address
       final CoapKeyId keyId = CoapKeyId(request.id, null);
       final CoapKeyToken keyToken = CoapKeyToken(request.token);
-      _log.debug('Stored open request by $keyId + $keyToken');
+      _log.info('Stored open request by $keyId + $keyToken');
 
       _exchangesById[keyId] = exchange;
       _exchangesByToken[keyToken] = exchange;
@@ -105,14 +105,13 @@ class CoapMatcher implements CoapIMatcher {
           !response.hasOption(optionTypeObserve)) {
         // Remember ongoing blockwise GET requests
         if (CoapUtil.put(_ongoingExchanges, keyUri, exchange) == null) {
-          _log.debug(
+          _log.info(
               'Ongoing Block2 started late, storing $keyUri for $request');
         } else {
-          _log.debug('Ongoing Block2 continued, storing $keyUri for $request');
+          _log.info('Ongoing Block2 continued, storing $keyUri for $request');
         }
       } else {
-        _log.debug(
-            'Ongoing Block2 completed, cleaning up $keyUri for $request');
+        _log.info('Ongoing Block2 completed, cleaning up $keyUri for $request');
         _ongoingExchanges.remove(keyUri);
       }
     }
@@ -171,7 +170,7 @@ class CoapMatcher implements CoapIMatcher {
       }
     } else {
       final CoapKeyUri keyUri = CoapKeyUri(request.uri, request.source);
-      _log.debug('Looking up ongoing exchange for $keyUri');
+      _log.info('Looking up ongoing exchange for $keyUri');
 
       final CoapExchange ongoing = _ongoingExchanges[keyUri];
       if (ongoing != null) {
@@ -184,7 +183,7 @@ class CoapMatcher implements CoapIMatcher {
           if (ongoing.currentResponse.type != CoapMessageType.ack &&
               !ongoing.currentResponse.hasOption(optionTypeObserve)) {
             keyId = CoapKeyId(ongoing.currentResponse.id, null);
-            _log.debug('Ongoing exchange got new request, cleaning up $keyId');
+            _log.info('Ongoing exchange got new request, cleaning up $keyId');
             _exchangesById.remove(keyId);
           }
         }
@@ -202,7 +201,7 @@ class CoapMatcher implements CoapIMatcher {
         final CoapExchange previous =
             _deduplicator.findPrevious(keyId, exchange);
         if (previous == null) {
-          _log.debug('New ongoing request, storing $keyUri for $request');
+          _log.info('New ongoing request, storing $keyUri for $request');
           _ongoingExchanges[keyUri] = exchange;
           return exchange;
         } else {
@@ -242,7 +241,7 @@ class CoapMatcher implements CoapIMatcher {
         response.duplicate = true;
       } else {
         keyId = CoapKeyId(exchange.currentRequest.id, null);
-        _log.debug('Exchange got response: Cleaning up $keyId');
+        _log.info('Exchange got response: Cleaning up $keyId');
         _exchangesById.remove(keyId);
       }
 
@@ -260,12 +259,12 @@ class CoapMatcher implements CoapIMatcher {
         // Only act upon separate responses
         final CoapExchange prev = _deduplicator.find(keyId);
         if (prev != null) {
-          _log.info('Duplicate response for completed exchange: $response');
+          _log.warn('Duplicate response for completed exchange: $response');
           response.duplicate = true;
           return prev;
         }
       } else {
-        _log.info(
+        _log.warn(
             'Ignoring unmatchable piggy-backed response from ${response.source} : $response');
       }
       // Ignore response
@@ -279,11 +278,11 @@ class CoapMatcher implements CoapIMatcher {
     final CoapKeyId keyId = CoapKeyId(message.id, null);
     final CoapExchange exchange = _exchangesById[keyId];
     if (exchange != null) {
-      _log.debug('Exchange got reply: Cleaning up $keyId');
+      _log.info('Exchange got reply: Cleaning up $keyId');
       _exchangesById.remove(keyId);
       return exchange;
     } else {
-      _log.info(
+      _log.warn(
           'Ignoring unmatchable empty message from ${message.source} : $message');
       return null;
     }
@@ -297,7 +296,7 @@ class CoapMatcher implements CoapIMatcher {
       // This endpoint created the Exchange by issuing a request
       final CoapKeyId keyId = CoapKeyId(exchange.currentRequest.id, null);
       final CoapKeyToken keyToken = CoapKeyToken(exchange.currentRequest.token);
-      _log.debug('Exchange completed: Cleaning up $keyToken');
+      _log.info('Exchange completed: Cleaning up $keyToken');
 
       _exchangesByToken.remove(keyToken);
       // In case an empty ACK was lost
@@ -317,7 +316,7 @@ class CoapMatcher implements CoapIMatcher {
           (request.hasOption(optionTypeBlock1) ||
               (response != null && response.hasOption(optionTypeBlock2)))) {
         final CoapKeyUri uriKey = CoapKeyUri(request.uri, request.source);
-        _log.debug('Remote ongoing completed, cleaning up $uriKey');
+        _log.info('Remote ongoing completed, cleaning up $uriKey');
         _ongoingExchanges.remove(uriKey);
       }
 
@@ -330,7 +329,7 @@ class CoapMatcher implements CoapIMatcher {
   }
 
   void _removeNotificatoinsOf(CoapObserveRelation relation) {
-    _log.debug('Remove all remaining NON-notifications of observe relation');
+    _log.info('Remove all remaining NON-notifications of observe relation');
 
     for (CoapResponse previous in relation.clearNotifications()) {
       // Notifications are local MID namespace
