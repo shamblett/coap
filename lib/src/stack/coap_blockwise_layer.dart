@@ -271,7 +271,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       final CoapBlockwiseStatus status =
           _findResponseBlockStatus(exchange, response);
 
-      if (block2.num == status.currentNUM) {
+      if (status != null && block2.num == status.currentNUM) {
         // We got the block we expected :-)
         status.addBlock(response.payload);
         final int obs = response.observe;
@@ -340,7 +340,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
         // ERROR, wrong block number (server error)
         // Currently, we reject it and cancel the request.
         _log.warn(
-            'Wrong block number. Expected ${status.currentNUM} but received ${block2.num}. Reject response; exchange has failed.');
+            'Wrong block number. Expected ${status?.currentNUM} but received ${block2.num}. Reject response; exchange has failed.');
         if (response.type == CoapMessageType.con) {
           final CoapEmptyMessage rst = CoapEmptyMessage.newRST(response);
           super.sendEmptyMessage(nextLayer, exchange, rst);
