@@ -15,7 +15,7 @@ dependencies:
  executor: '^2.1.0'
  logging: '^0.11.3+2'
  event_bus: '^1.0.1'
- pedantic: '1.5.0'
+ pedantic: '^1.5.0'
  string_scanner: '^1.0.5'
 
 dev_dependencies:
