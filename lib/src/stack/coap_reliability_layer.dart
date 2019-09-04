@@ -60,13 +60,25 @@ class CoapTransmissionContext {
     if (_message.isAcknowledged) {
       _log.info(
           'Timeout: message already acknowledged, cancel retransmission of $_message');
+      _exchange.timedOut = true;
+      _message.isTimedOut = true;
+      _exchange.remove(CoapReliabilityLayer.transmissionContextKey);
+      cancel();
       return;
     } else if (_message.isRejected) {
       _log.info(
           'Timeout: message already rejected, cancel retransmission of _message');
+      _exchange.timedOut = true;
+      _message.isTimedOut = true;
+      _exchange.remove(CoapReliabilityLayer.transmissionContextKey);
+      cancel();
       return;
     } else if (_message.isCancelled) {
-      _log.info('Timeout: canceled (ID= ${_message.id} do not retransmit');
+      _log.info('Timeout: message ${_message.id} cancelled');
+      _exchange.timedOut = true;
+      _message.isTimedOut = true;
+      _exchange.remove(CoapReliabilityLayer.transmissionContextKey);
+      cancel();
       return;
     } else if (failedCount <=
         (_message.maxRetransmit != 0
