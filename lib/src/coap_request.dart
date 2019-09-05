@@ -131,9 +131,10 @@ class CoapRequest extends CoapMessage {
   }
 
   /// Resolves the destination internet address
-  Future<InternetAddress> resolveDestination(
+  Future<CoapInternetAddress> resolveDestination(
       InternetAddressType addressType) async =>
-      destination = await CoapUtil.lookupHost(resolveHost, addressType);
+      destination =
+      await CoapUtil.lookupHost(resolveHost, addressType, bindAddress);
 
   /// Sets CoAP's observe option. If the target resource of this request
   /// responds with a success code and also sets the observe option, it will

@@ -180,7 +180,7 @@ class CoapKeyId {
   }
 
   int _id;
-  InternetAddress _endpoint;
+  CoapInternetAddress _endpoint;
   int _hash;
 
   @override
@@ -235,7 +235,7 @@ class CoapKeyUri {
   }
 
   Uri _uri;
-  InternetAddress _endpoint;
+  CoapInternetAddress _endpoint;
   int _hash;
 
   @override

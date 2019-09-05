@@ -58,6 +58,9 @@ class CoapMessage {
   /// Host name to resolve
   String resolveHost = 'localhost';
 
+  /// Bind address if not using the default
+  InternetAddress bindAddress;
+
   /// Adds an option to the list of options of this CoAP message.
   CoapMessage addOption(CoapOption option) {
     if (option == null) {
@@ -157,10 +160,10 @@ class CoapMessage {
   bool get isResponse => CoapCode.isResponse(code);
 
   /// The destination endpoint.
-  InternetAddress destination;
+  CoapInternetAddress destination;
 
   /// The source endpoint.
-  InternetAddress source;
+  CoapInternetAddress source;
 
   bool _acknowledged = false;
 

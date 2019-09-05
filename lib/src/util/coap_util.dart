@@ -210,14 +210,18 @@ class CoapUtil {
   }
 
   /// Host lookup
-  static Future<InternetAddress> lookupHost(String host,
-      InternetAddressType addressType) async {
-    final Completer<InternetAddress> completer = Completer<InternetAddress>();
+  static Future<CoapInternetAddress> lookupHost(String host,
+      InternetAddressType addressType, InternetAddress bindAddress) async {
+    final Completer<CoapInternetAddress> completer =
+    Completer<CoapInternetAddress>();
     final List<InternetAddress> addresses =
     await InternetAddress.lookup(host, type: addressType);
     logResolvedAddresses(addresses);
     if (addresses != null && addresses.isNotEmpty) {
-      completer.complete(addresses[0]);
+      final CoapInternetAddress coapAddress =
+      CoapInternetAddress(addressType, addresses[0]);
+      coapAddress.bindAddress = bindAddress;
+      completer.complete(coapAddress);
     } else {
       completer.complete(null);
     }

@@ -11,7 +11,7 @@ part of coap;
 /// UDP, test etc.
 abstract class CoapINetwork {
   /// The internet address
-  InternetAddress address;
+  CoapInternetAddress address;
 
   /// The port
   int port;

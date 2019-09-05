@@ -16,7 +16,7 @@ class CoapNetworkUDP implements CoapINetwork {
 
   /// The internet address
   @override
-  InternetAddress address;
+  CoapInternetAddress address;
 
   /// The port to use for sending.
   @override
@@ -40,7 +40,7 @@ class CoapNetworkUDP implements CoapINetwork {
   int send(typed.Uint8Buffer data) {
     try {
       if (_bound) {
-        _socket?.send(data.toList(), address, port);
+        _socket?.send(data.toList(), address.address, port);
       }
     } on Exception catch (e) {
       _log.error('CoapNetworkUDP Send - severe error : $e');
@@ -81,8 +81,9 @@ class CoapNetworkUDP implements CoapINetwork {
     try {
       // Use a port of 0 here as we are a client, this will generate
       // a random source port.
-      //TODO 0:0:0:0:0:0:0:0  for IPV6
-      RawDatagramSocket.bind('0.0.0.0', 0).then((RawDatagramSocket socket) {
+      final String bindAddress = address.bind;
+      _log.info('CoapNetworkUDP - binding to $bindAddress');
+      RawDatagramSocket.bind(bindAddress, 0).then((RawDatagramSocket socket) {
         _socket = socket;
         receive();
         _bound = true;
@@ -90,13 +91,13 @@ class CoapNetworkUDP implements CoapINetwork {
     } on Exception catch (e) {
       _log.error(
           'CoapNetworkUDP - severe error - Failed to bind, address ${address
-              .host}, port $port with exception $e');
+              .address.host}, port $port with exception $e');
     }
   }
 
   @override
   void close() {
-    _log.info('Closing ${address.host}, port $port');
+    _log.info('Closing ${address.address.host}, port $port');
     _socket?.close();
     _data.close();
   }

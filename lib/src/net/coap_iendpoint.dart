@@ -69,7 +69,7 @@ abstract class CoapIEndPoint {
   CoapConfig get config;
 
   /// Gets the local internetAddress this endpoint is associated with.
-  InternetAddress get localEndpoint;
+  CoapInternetAddress get localEndpoint;
 
   /// Gets or sets the message deliverer.
   CoapIMessageDeliverer deliverer;

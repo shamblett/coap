@@ -16,13 +16,13 @@ class CoapDataReceivedEvent {
   typed.Uint8Buffer data;
 
   /// The address
-  InternetAddress address;
+  CoapInternetAddress address;
 }
 
 /// Represents a channel where bytes data can flow through.
 abstract class CoapIChannel {
   /// Gets the address of this channel.
-  InternetAddress address;
+  CoapInternetAddress address;
 
   /// Port
   int port;
@@ -34,7 +34,7 @@ abstract class CoapIChannel {
   void stop();
 
   /// Sends data through this channel. This method should be non-blocking.
-  void send(typed.Uint8Buffer data, InternetAddress address);
+  void send(typed.Uint8Buffer data, CoapInternetAddress address);
 
   /// Receives data, returns null if none
   void receive();
