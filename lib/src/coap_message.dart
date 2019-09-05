@@ -258,8 +258,13 @@ class CoapMessage {
   int get payloadSize => null == payload ? 0 : payload.length;
 
   /// The payload of this CoAP message in string representation.
-  String get payloadString =>
-      payload != null ? _utfDecoder.convert(payload) : null;
+  String get payloadString {
+    if (payload != null && payload.isNotEmpty) {
+      final String ret = _utfDecoder.convert(payload);
+      return ret;
+    }
+    return null;
+  }
 
   set payloadString(String value) =>
       setPayloadMedia(value, CoapMediaType.textPlain);

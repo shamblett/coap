@@ -33,12 +33,20 @@ FutureOr<void> main(List<String> args) async {
 
   // Build the request
   final CoapRequest request = newRequest('DISCOVER');
-  const String host = '172.17.215.3';
+  const String host = 'localhost';
+  //const String host = '172.17.215.3';
   //const String host = '172.17.199.238';
   //const String host = 'coap.me';
-  const String path = '.well-known/core';
+  //const String path = '.well-known/core';
+  //const String path = '/time';
+  //const String path = '/hello';
+  const String path = '/mirror';
+  //const String path = '/fibonacci';
+  //const String query = 'n=10';
+  //final Uri uri =
+  //  Uri(scheme: 'coap', host: host, port: conf.defaultPort, path: path, query:query);
   final Uri uri =
-      Uri(scheme: 'coap', host: host, port: conf.defaultPort, path: path);
+  Uri(scheme: 'coap', host: host, port: conf.defaultPort, path: path);
   request.uri = uri;
   await request.resolveDestination(InternetAddressType.IPv4);
   CoapEndpointManager.getDefaultSpec();
@@ -64,7 +72,9 @@ FutureOr<void> main(List<String> args) async {
         print('Discovered resources:');
         links.forEach(print);
       }
-      print('Response received');
+    } else if (response.contentType == CoapMediaType.textPlain) {
+      print('Path resource, data is ....');
+      print(response.payloadString);
     }
   } else {
     print('No response received, closing client');

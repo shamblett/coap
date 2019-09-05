@@ -38,31 +38,39 @@ class CoapNetworkUDP implements CoapINetwork {
 
   @override
   int send(typed.Uint8Buffer data) {
-    if (_bound) {
-      _socket?.send(data.toList(), address, port);
+    try {
+      if (_bound) {
+        _socket?.send(data.toList(), address, port);
+      }
+    } on Exception catch (e) {
+      _log.error('CoapNetworkUDP Send - severe error : $e');
     }
     return -1;
   }
 
   @override
   void receive() {
-    _socket?.listen((RawSocketEvent e) {
-      switch (e) {
-        case RawSocketEvent.read:
-          final Datagram d = _socket?.receive();
-          if (d != null) {
-            final typed.Uint8Buffer buff = typed.Uint8Buffer();
-            _data.add(d.data.toList());
-            buff.addAll(d.data.toList());
-            final CoapDataReceivedEvent rxEvent =
-            CoapDataReceivedEvent(buff, address);
-            clientEventBus.fire(rxEvent);
-          }
-          break;
-        case RawSocketEvent.closed:
-          close();
-      }
-    });
+    try {
+      _socket?.listen((RawSocketEvent e) {
+        switch (e) {
+          case RawSocketEvent.read:
+            final Datagram d = _socket?.receive();
+            if (d != null) {
+              final typed.Uint8Buffer buff = typed.Uint8Buffer();
+              _data.add(d.data.toList());
+              buff.addAll(d.data.toList());
+              final CoapDataReceivedEvent rxEvent =
+              CoapDataReceivedEvent(buff, address);
+              clientEventBus.fire(rxEvent);
+            }
+            break;
+          case RawSocketEvent.closed:
+            close();
+        }
+      });
+    } on Exception catch (e) {
+      _log.error('CoapNetworkUDP Recieve - severe error : $e');
+    }
   }
 
   @override
@@ -73,6 +81,7 @@ class CoapNetworkUDP implements CoapINetwork {
     try {
       // Use a port of 0 here as we are a client, this will generate
       // a random source port.
+      //TODO 0:0:0:0:0:0:0:0  for IPV6
       RawDatagramSocket.bind('0.0.0.0', 0).then((RawDatagramSocket socket) {
         _socket = socket;
         receive();
@@ -80,7 +89,7 @@ class CoapNetworkUDP implements CoapINetwork {
       });
     } on Exception catch (e) {
       _log.error(
-          'Failed to bind, address ${address
+          'CoapNetworkUDP - severe error - Failed to bind, address ${address
               .host}, port $port with exception $e');
     }
   }
