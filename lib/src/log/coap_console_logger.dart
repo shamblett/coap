@@ -12,7 +12,7 @@ class CoapConsoleLogger implements CoapILogger {
   /// Construction
   CoapConsoleLogger() {
     logging.hierarchicalLoggingEnabled = true;
-    _logger.level = logging.Level.ALL;
+    _logger.level = logging.Level.OFF;
     root.onRecord.listen((logging.LogRecord rec) {
       print('${rec.time}: ${rec.level.name}: ${rec.message}');
     });
@@ -25,6 +25,12 @@ class CoapConsoleLogger implements CoapILogger {
 
   @override
   set root(logging.Logger root) {}
+
+  @override
+  logging.Level get level => _logger.level;
+
+  @override
+  set level(logging.Level level) => _logger.level = level;
 
   /// Last message
   String _lastMessage;

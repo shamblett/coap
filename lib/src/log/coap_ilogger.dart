@@ -12,6 +12,9 @@ abstract class CoapILogger {
   /// The root logger
   logging.Logger root;
 
+  /// The level
+  logging.Level level;
+
   /// Is debug enabled
   bool isDebugEnabled();
 

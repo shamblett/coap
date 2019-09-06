@@ -31,7 +31,7 @@ class CoapReregistrationContext {
 
   /// Cancel
   void cancel() {
-    _timer.cancel();
+    _timer?.cancel();
   }
 
   void _timerElapsed() {

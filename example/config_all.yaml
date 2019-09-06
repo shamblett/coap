@@ -1,0 +1,18 @@
+# A test COAP config file
+# Syntax is YAML
+
+# Protocol section
+
+version: "RFC7252"
+deduplicator: "MarkAndSweep"
+
+
+# Logging section
+
+# Target is none, console or file
+logTarget: "console"
+# Log levels
+logError: true
+logDebug: false
+logWarn: true
+logInfo: false

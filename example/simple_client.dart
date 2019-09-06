@@ -29,7 +29,7 @@ FutureOr<void> main(List<String> args) async {
   }
 
   // Config
-  final CoapConfig conf = CoapConfig(File('test/config_logging.yaml'));
+  final CoapConfig conf = CoapConfig(File('example/config_all.yaml'));
 
   // Build the request
   final CoapRequest request = newRequest('DISCOVER');
@@ -37,11 +37,13 @@ FutureOr<void> main(List<String> args) async {
   //const String host = '172.17.215.3';
   //const String host = '172.17.199.238';
   //const String host = 'coap.me';
-  const String path = '.well-known/core';
-  //const String path = '/time';
+  //const String path = '.well-known/core';
+  const String path = '/time';
   //const String path = '/hello';
   //const String path = '/mirror';
   //const String path = '/fibonacci';
+  //const String path = '/separate';
+  //const String path = '/careless';
   //const String query = 'n=10';
   //final Uri uri =
   //  Uri(scheme: 'coap', host: host, port: conf.defaultPort, path: path, query:query);
@@ -54,30 +56,33 @@ FutureOr<void> main(List<String> args) async {
   request.endPoint = CoapEndPoint(channel, conf);
   final typed.Uint8Buffer payload = typed.Uint8Buffer();
   request.setPayloadMediaRaw(payload, CoapMediaType.textPlain);
+  request.markObserve();
   print(
       'Simple client, sending request to $host with path $path, waiting for response....');
   request.send();
 
-  // Get the response
-  print('Awaiting response.....');
-  final CoapResponse response = await request.waitForResponse(10000);
-  if (response != null) {
-    print('Response received......');
-    if (response.contentType == CoapMediaType.applicationLinkFormat) {
-      final Iterable<CoapWebLink> links =
-      CoapLinkFormat.parse(response.payloadString);
-      if (links == null) {
-        print('No resources discovered');
-      } else {
-        print('Discovered resources:');
-        links.forEach(print);
+  // Get the response(s)
+  int count = 1;
+  // ignore: literal_only_boolean_expressions
+  while (true) {
+    print('Awaiting response $count.....');
+    final CoapResponse response = await request.waitForResponse(30000);
+    if (response != null) {
+      print('Response received......');
+      if (response.contentType == CoapMediaType.applicationLinkFormat) {
+        final Iterable<CoapWebLink> links =
+        CoapLinkFormat.parse(response.payloadString);
+        if (links == null) {
+          print('No resources discovered');
+        } else {
+          print('Discovered resources:');
+          links.forEach(print);
+        }
+      } else if (response.contentType == CoapMediaType.textPlain) {
+        print('Path resource, data is ....');
+        print(response.payloadString);
       }
-    } else if (response.contentType == CoapMediaType.textPlain) {
-      print('Path resource, data is ....');
-      print(response.payloadString);
+      count++;
     }
-  } else {
-    print('No response received, closing client');
-    request.cancel();
   }
 }

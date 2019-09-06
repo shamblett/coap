@@ -201,7 +201,8 @@ class CoapRequest extends CoapMessage {
         (!isCancelled) &&
         (!isTimedOut) &&
         (!isRejected)) {
-      _responseStream.stream
+      final Stream<CoapResponse> response = _responseStream.stream.take(1);
+      response
           .listen((CoapResponse resp) {
         _currentResponse = resp;
         completer.complete(_currentResponse);
