@@ -20,8 +20,8 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   }
 
   /// Instantiates a new endpoint with internet address, port and configuration
-  CoapEndPoint.address(CoapInternetAddress localEndpoint, int port,
-      CoapConfig config)
+  CoapEndPoint.address(
+      CoapInternetAddress localEndpoint, int port, CoapConfig config)
       : this(newUDPChannel(localEndpoint, port), config);
 
   static CoapILogger _log = CoapLogManager().logger;
@@ -233,8 +233,8 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   }
 
   /// New UDP channel
-  static CoapIChannel newUDPChannel(CoapInternetAddress localEndpoint,
-      int port) {
+  static CoapIChannel newUDPChannel(
+      CoapInternetAddress localEndpoint, int port) {
     final CoapIChannel channel = CoapUDPChannel(localEndpoint, port);
     return channel;
   }

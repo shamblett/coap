@@ -60,7 +60,7 @@ class CoapNetworkUDP implements CoapINetwork {
               _data.add(d.data.toList());
               buff.addAll(d.data.toList());
               final CoapDataReceivedEvent rxEvent =
-              CoapDataReceivedEvent(buff, address);
+                  CoapDataReceivedEvent(buff, address);
               clientEventBus.fire(rxEvent);
             }
             break;
@@ -90,8 +90,7 @@ class CoapNetworkUDP implements CoapINetwork {
       });
     } on Exception catch (e) {
       _log.error(
-          'CoapNetworkUDP - severe error - Failed to bind, address ${address
-              .address.host}, port $port with exception $e');
+          'CoapNetworkUDP - severe error - Failed to bind, address ${address.address.host}, port $port with exception $e');
     }
   }
 

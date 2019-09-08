@@ -31,7 +31,7 @@ class CoapClient {
   /// The endpoint
   CoapIEndPoint endpoint;
   int _type = CoapMessageType.con;
-  int _blockwise;
+  int _blockwise = 0;
 
   /// The request
   CoapRequest request;
@@ -200,7 +200,7 @@ class CoapClient {
     if (query != null && query.isNotEmpty) {
       discover.uriQuery = query;
     }
-    final CoapResponse links = discover.send().waitForResponse(timeout);
+    final CoapResponse links = await discover.send().waitForResponse(timeout);
     if (links == null) {
       // If no response, return null (e.g., timeout)
       return null;
@@ -219,7 +219,7 @@ class CoapClient {
 
   /// Prepare
   Future<CoapRequest> prepare(CoapRequest request) async =>
-      await _doPrepare(request, _getEffectiveEndpoint(request));
+      await _doPrepare(request);
 
   /// Gets the effective endpoint that the specified request
   /// is supposed to be sent over.
@@ -231,8 +231,7 @@ class CoapClient {
     }
   }
 
-  Future<CoapRequest> _doPrepare(
-      CoapRequest request, CoapIEndPoint endpoint) async {
+  Future<CoapRequest> _doPrepare(CoapRequest request) async {
     request.type = _type;
     request.uri = uri;
 
@@ -269,7 +268,7 @@ class CoapClient {
     final CoapIEndPoint endpoint = _getEffectiveEndpoint(request);
     final CoapObserveClientRelation relation =
         CoapObserveClientRelation(request, endpoint, _config);
-    _doPrepare(request, endpoint);
+    _doPrepare(request);
     request.send();
     return relation;
   }

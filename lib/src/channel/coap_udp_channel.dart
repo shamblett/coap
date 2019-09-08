@@ -44,7 +44,7 @@ class CoapUDPChannel extends CoapIChannel {
       [CoapInternetAddress address]) async {
     if (address != null) {
       final CoapNetworkUDP socket =
-      await CoapNetworkManagement.getNetwork(address, _port);
+          await CoapNetworkManagement.getNetwork(address, _port);
       if (socket?.socket != null) {
         socket.send(data);
       }
@@ -58,7 +58,7 @@ class CoapUDPChannel extends CoapIChannel {
   @override
   void receive() {
     final CoapDataReceivedEvent rxEvent =
-    CoapDataReceivedEvent(_buff, _address);
+        CoapDataReceivedEvent(_buff, _address);
     clientEventBus.fire(rxEvent);
     _buff.clear();
   }

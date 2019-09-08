@@ -135,9 +135,9 @@ class CoapRequest extends CoapMessage {
 
   /// Resolves the destination internet address
   Future<CoapInternetAddress> resolveDestination(
-      InternetAddressType addressType) async =>
+          InternetAddressType addressType) async =>
       destination =
-      await CoapUtil.lookupHost(resolveHost, addressType, bindAddress);
+          await CoapUtil.lookupHost(resolveHost, addressType, bindAddress);
 
   /// Sets CoAP's observe option. If the target resource of this request
   /// responds with a success code and also sets the observe option, it will
@@ -207,15 +207,15 @@ class CoapRequest extends CoapMessage {
       final Stream<CoapResponse> response = _responseStream.stream.take(1);
       response
           .listen((CoapResponse resp) {
-        _currentResponse = resp;
-        completer.complete(_currentResponse);
-      })
+            _currentResponse = resp;
+            completer.complete(_currentResponse);
+          })
           .asFuture()
           .timeout(Duration(milliseconds: millisecondsTimeout), onTimeout: () {
-        if (!completer.isCompleted) {
-          completer.complete(null);
-        }
-      });
+            if (!completer.isCompleted) {
+              completer.complete(null);
+            }
+          });
       return completer.future;
     }
     return completer.future;

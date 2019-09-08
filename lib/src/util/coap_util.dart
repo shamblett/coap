@@ -213,13 +213,13 @@ class CoapUtil {
   static Future<CoapInternetAddress> lookupHost(String host,
       InternetAddressType addressType, InternetAddress bindAddress) async {
     final Completer<CoapInternetAddress> completer =
-    Completer<CoapInternetAddress>();
+        Completer<CoapInternetAddress>();
     final List<InternetAddress> addresses =
-    await InternetAddress.lookup(host, type: addressType);
+        await InternetAddress.lookup(host, type: addressType);
     logResolvedAddresses(addresses);
     if (addresses != null && addresses.isNotEmpty) {
       final CoapInternetAddress coapAddress =
-      CoapInternetAddress(addressType, addresses[0]);
+          CoapInternetAddress(addressType, addresses[0]);
       coapAddress.bindAddress = bindAddress;
       completer.complete(coapAddress);
     } else {

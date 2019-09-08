@@ -13,8 +13,8 @@ class CoapNetworkManagement {
   static List<CoapINetwork> _networks = List<CoapINetwork>();
 
   /// Gets a new network, otherwise tries to find a cached network and returns that.
-  static Future<CoapINetwork> getNetwork(CoapInternetAddress address,
-      int port) async {
+  static Future<CoapINetwork> getNetwork(
+      CoapInternetAddress address, int port) async {
     final Completer<CoapINetwork> completer = Completer<CoapINetwork>();
     final CoapINetwork network = CoapNetworkUDP(address, port);
     if (_networks.contains(network)) {
