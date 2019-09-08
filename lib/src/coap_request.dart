@@ -43,9 +43,12 @@ class CoapReregisteringEvent {
 /// 1. operations to answer a request by a response using respond()
 /// 2. different ways to handle incoming responses: receiveResponse() or Response event
 class CoapRequest extends CoapMessage {
+  /// Default
+  CoapRequest();
+
   /// Initializes a request message.
   /// Defaults to confirmable
-  CoapRequest(int code) : this.isConfirmable(code, confirmable: true);
+  CoapRequest.withType(int code) : this.isConfirmable(code, confirmable: true);
 
   /// Initializes a request message.
   /// True if the request is Confirmable
@@ -234,14 +237,14 @@ class CoapRequest extends CoapMessage {
   }
 
   /// Construct a GET request.
-  static CoapRequest newGet() => CoapRequest(CoapCode.methodGET);
+  static CoapRequest newGet() => CoapRequest.withType(CoapCode.methodGET);
 
   /// Construct a POST request.
-  static CoapRequest newPost() => CoapRequest(CoapCode.methodPOST);
+  static CoapRequest newPost() => CoapRequest.withType(CoapCode.methodPOST);
 
   /// Construct a PUT request.
-  static CoapRequest newPut() => CoapRequest(CoapCode.methodPUT);
+  static CoapRequest newPut() => CoapRequest.withType(CoapCode.methodPUT);
 
   /// Construct a DELETE request.
-  static CoapRequest newDelete() => CoapRequest(CoapCode.methodDELETE);
+  static CoapRequest newDelete() => CoapRequest.withType(CoapCode.methodDELETE);
 }

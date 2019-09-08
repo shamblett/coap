@@ -117,7 +117,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           _earlyBlock2Negotiation(exchange, request);
 
           // Assemble and deliver
-          final CoapRequest assembled = CoapRequest(request.method);
+          final CoapRequest assembled = CoapRequest.withType(request.method);
           _assembleMessage(status, assembled, request);
 
           exchange.request = assembled;
@@ -294,7 +294,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           final int szx = block2.szx;
           const bool m = false;
 
-          final CoapRequest block = CoapRequest(request.method);
+          final CoapRequest block = CoapRequest.withType(request.method);
           // NON could make sense over SMS or similar transports
           block.type = request.type;
           block.destination = request.destination;
@@ -380,7 +380,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       CoapRequest request, CoapBlockwiseStatus status) {
     final int num = status.currentNUM;
     final int szx = status.currentSZX;
-    final CoapRequest block = CoapRequest(request.method);
+    final CoapRequest block = CoapRequest.withType(request.method);
     block.setOptions(request.getSortedOptions());
     block.destination = request.destination;
     block.token = request.token;

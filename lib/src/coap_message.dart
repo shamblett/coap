@@ -26,8 +26,11 @@ typedef HookFunction = void Function();
 /// each of which has a MessageType, a message identifier,
 /// a token (0-8 bytes), a collection of Options and a payload.
 class CoapMessage {
+  /// Default
+  CoapMessage();
+
   /// Instantiates a message with the given type.
-  CoapMessage(this.type);
+  CoapMessage.withType(this.type);
 
   /// Instantiates a message with the given type and code.
   CoapMessage.withCode(this.type, this.code);

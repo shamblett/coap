@@ -24,8 +24,6 @@ import 'package:string_scanner/string_scanner.dart' as scanner;
 
 /// The Coap package exported interface
 
-part 'src/coap.dart';
-
 part 'src/coap_client.dart';
 
 part 'src/coap_option_type.dart';

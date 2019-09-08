@@ -58,7 +58,7 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
   @override
   CoapRequest decodeRequest() {
     if (isRequest) {
-      final CoapRequest request = CoapRequest(_code);
+      final CoapRequest request = CoapRequest.withType(_code);
       request.type = _type;
       request.id = _id;
       parseMessage(request);

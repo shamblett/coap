@@ -19,7 +19,7 @@ enum FailReason {
 /// Provides convenient methods for accessing CoAP resources.
 class CoapClient {
   /// Instantiates.
-  CoapClient(this.uri, this._config);
+  CoapClient(this.uri, this._config, this.request);
 
   static CoapILogger _log = CoapLogManager().logger;
   static Iterable<CoapWebLink> _emptyLinks = <CoapWebLink>[CoapWebLink('')];
@@ -32,6 +32,9 @@ class CoapClient {
   CoapIEndPoint endpoint;
   int _type = CoapMessageType.con;
   int _blockwise;
+
+  /// The request
+  CoapRequest request;
 
   /// Timeout
   int timeout = 32767;
@@ -62,7 +65,7 @@ class CoapClient {
   /// Performs a CoAP ping and gives up after the given number of milliseconds.
   bool doPing(int timeout) {
     try {
-      final CoapRequest request = CoapRequest(CoapCode.empty);
+      final CoapRequest request = CoapRequest.withType(CoapCode.empty);
       request.token = CoapConstants.emptyToken;
       request.uri = uri;
       request.send().waitForResponse(timeout);
@@ -74,76 +77,79 @@ class CoapClient {
   }
 
   /// Discovers remote resources.
-  Iterable<CoapWebLink> discover() => doDiscover(null);
+  Future<Iterable<CoapWebLink>> discover() => doDiscover(null);
 
   /// Sends a GET request and blocks until the response is available.
-  CoapResponse get() => send(CoapRequest.newGet());
+  Future<CoapResponse> get() => send(CoapRequest.newGet());
 
   /// Sends a GET request with the specified Accept option and blocks
   /// until the response is available.
-  CoapResponse getWithAccept(int acceptVal) =>
+  Future<CoapResponse> getWithAccept(int acceptVal) =>
       send(accept(CoapRequest.newGet(), acceptVal));
 
   /// Sends a POST request and blocks until the response is available.
-  CoapResponse post(String payload, [int format = CoapMediaType.textPlain]) =>
+  Future<CoapResponse> post(String payload,
+          [int format = CoapMediaType.textPlain]) =>
       send(CoapRequest.newPost().setPayloadMedia(payload, format));
 
   /// Sends a POST request with the specified Accept option and blocks
   /// until the response is available.
-  CoapResponse postWithAccept(String payload, int format, int acceptVal) =>
+  Future<CoapResponse> postWithAccept(
+          String payload, int format, int acceptVal) =>
       send(accept(
           CoapRequest.newPost().setPayloadMedia(payload, format), acceptVal));
 
   /// Sends a POST request with the specified byte payload and blocks
   /// until the response is available.
-  CoapResponse postBytePayload(typed.Uint8Buffer payload, int format) =>
+  Future<CoapResponse> postBytePayload(typed.Uint8Buffer payload, int format) =>
       send(CoapRequest.newPost().setPayloadMediaRaw(payload, format));
 
   /// Sends a POST request with the specified Accept option and byte payload.
   /// Blocks until the response is available.
-  CoapResponse postBytePayloadWithAccept(
+  Future<CoapResponse> postBytePayloadWithAccept(
           typed.Uint8Buffer payload, int format, int acceptVal) =>
       send(accept(CoapRequest.newPost().setPayloadMediaRaw(payload, format),
           acceptVal));
 
   /// Sends a PUT request and blocks until the response is available.
-  CoapResponse put(String payload, [int format = CoapMediaType.textPlain]) =>
+  Future<CoapResponse> put(String payload,
+          [int format = CoapMediaType.textPlain]) =>
       send(CoapRequest.newPut().setPayloadMedia(payload, format));
 
   /// Sends a PUT request with the specified Accept option and blocks
   /// until the response is available.
-  CoapResponse putBytePayloadWithAccept(
+  Future<CoapResponse> putBytePayloadWithAccept(
           typed.Uint8Buffer payload, int format, int acceptVal) =>
       send(accept(
           CoapRequest.newPut().setPayloadMediaRaw(payload, format), acceptVal));
 
   /// If match
-  CoapResponse putIfMatch(
+  Future<CoapResponse> putIfMatch(
           String payload, int format, List<typed.Uint8Buffer> etags) =>
       send(ifMatch(
           CoapRequest.newPut().setPayloadMedia(payload, format), etags));
 
   /// If match byte payload
-  CoapResponse putIfMatchBytePayload(typed.Uint8Buffer payload, int format,
-          List<typed.Uint8Buffer> etags) =>
+  Future<CoapResponse> putIfMatchBytePayload(typed.Uint8Buffer payload,
+          int format, List<typed.Uint8Buffer> etags) =>
       send(ifMatch(
           CoapRequest.newPut().setPayloadMediaRaw(payload, format), etags));
 
   /// If none match
-  CoapResponse putIfNoneMatch(String payload, int format) =>
+  Future<CoapResponse> putIfNoneMatch(String payload, int format) =>
       send(ifNoneMatch(CoapRequest.newPut().setPayloadMedia(payload, format)));
 
   /// If none match byte payload
-  CoapResponse putIfNoneMatchBytePayload(
+  Future<CoapResponse> putIfNoneMatchBytePayload(
           typed.Uint8Buffer payload, int format) =>
       send(ifNoneMatch(
           CoapRequest.newPut().setPayloadMediaRaw(payload, format)));
 
   /// Delete
-  CoapResponse delete() => send(CoapRequest.newDelete());
+  Future<CoapResponse> delete() => send(CoapRequest.newDelete());
 
   /// Validate
-  CoapResponse validate(List<typed.Uint8Buffer> etags) =>
+  Future<CoapResponse> validate(List<typed.Uint8Buffer> etags) =>
       send(eTags(CoapRequest.newGet(), etags));
 
   /// Observe
@@ -185,8 +191,10 @@ class CoapClient {
   }
 
   /// Discovers remote resources.
-  Iterable<CoapWebLink> doDiscover(String query) {
-    final CoapRequest discover = prepare(CoapRequest.newGet());
+  Future<Iterable<CoapWebLink>> doDiscover(String query) async {
+    final CoapRequest request = CoapRequest.newGet();
+    request.uri = uri;
+    final CoapRequest discover = await prepare(request);
     discover.clearUriPath().clearUriQuery().uriPath =
         CoapConstants.defaultWellKnownURI;
     if (query != null && query.isNotEmpty) {
@@ -204,12 +212,14 @@ class CoapClient {
   }
 
   /// Send
-  CoapResponse send(CoapRequest request) =>
-      prepare(request).send().waitForResponse(timeout);
+  Future<CoapResponse> send(CoapRequest request) async {
+    await prepare(request);
+    return request.send().waitForResponse(timeout);
+  }
 
   /// Prepare
-  CoapRequest prepare(CoapRequest request) =>
-      _doPrepare(request, _getEffectiveEndpoint(request));
+  Future<CoapRequest> prepare(CoapRequest request) async =>
+      await _doPrepare(request, _getEffectiveEndpoint(request));
 
   /// Gets the effective endpoint that the specified request
   /// is supposed to be sent over.
@@ -221,9 +231,15 @@ class CoapClient {
     }
   }
 
-  CoapRequest _doPrepare(CoapRequest request, CoapIEndPoint endpoint) {
+  Future<CoapRequest> _doPrepare(
+      CoapRequest request, CoapIEndPoint endpoint) async {
     request.type = _type;
     request.uri = uri;
+
+    await request.resolveDestination(InternetAddressType.IPv4);
+    CoapEndpointManager.getDefaultSpec();
+    final CoapIChannel channel = CoapUDPChannel(request.destination, uri.port);
+    request.endPoint = CoapEndPoint(channel, _config);
 
     if (_blockwise != 0) {
       request.setBlock2(CoapBlockOption.encodeSZX(_blockwise), 0, m: false);
@@ -253,7 +269,8 @@ class CoapClient {
     final CoapIEndPoint endpoint = _getEffectiveEndpoint(request);
     final CoapObserveClientRelation relation =
         CoapObserveClientRelation(request, endpoint, _config);
-    _doPrepare(request, endpoint).send();
+    _doPrepare(request, endpoint);
+    request.send();
     return relation;
   }
 }
