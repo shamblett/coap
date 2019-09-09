@@ -7,6 +7,8 @@
 
 part of coap;
 
+// ignore_for_file: public_member_api_docs
+
 /// Configuration loading class. The config file itself is a YAML
 /// file. The configuration items below are marked as optional to allow
 /// the config file to contain only those entries that override the defaults.

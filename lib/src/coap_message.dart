@@ -162,6 +162,12 @@ class CoapMessage {
   /// Gets a value that indicates whether this CoAP message is a response message.
   bool get isResponse => CoapCode.isResponse(code);
 
+  /// Gets a value that indicates whether this CoAP message is an empty message
+  bool get isEmpty => CoapCode.isEmpty(code);
+
+  /// Gets a value that indicates whether this CoAP message is a valid message
+  bool get isValid => CoapCode.isValid(code);
+
   /// The destination endpoint.
   CoapInternetAddress destination;
 

@@ -65,19 +65,22 @@ class CoapClient {
     return this;
   }
 
-  /// Performs a CoAP ping.
-  bool ping() => doPing(timeout);
-
   /// Performs a CoAP ping and gives up after the given number of milliseconds.
-  bool doPing(int timeout) {
+  /// If a timeout is supplied it will overwrite any set in the client
+  Future<bool> doPing(int timeout) async {
     try {
-      final CoapRequest request = CoapRequest.withType(CoapCode.empty);
+      // Ping is a confirmable empty message
+      CoapRequest request =
+      CoapRequest.isConfirmable(CoapCode.empty, confirmable: true);
       request.token = CoapConstants.emptyToken;
       request.uri = uri;
-      request.send().waitForResponse(timeout);
+      request = await prepare(request);
+      this.request = request;
+      final int timeoutToUse = timeout == null ? this.timeout : timeout;
+      await request.send().waitForResponse(timeoutToUse);
       return request.isRejected;
     } on Exception catch (e) {
-      _log.warn('Exception raise pinging: $e');
+      _log.warn('doPing - Exception raised pinging: $e');
     }
     return false;
   }
@@ -165,7 +168,7 @@ class CoapClient {
       _observe(CoapRequest.newGet().markObserve(), notify, error);
 
   /// Observe with accept
-  CoapObserveClientRelation observeWitAccept(int acceptVal,
+  CoapObserveClientRelation observeWithAccept(int acceptVal,
           [ActionGeneric<CoapResponse> notify,
           ActionGeneric<FailReason> error]) =>
       _observe(

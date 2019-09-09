@@ -13,6 +13,6 @@ deduplicator: "MarkAndSweep"
 logTarget: "console"
 # Log levels
 logError: true
-logDebug: false
+logDebug: true
 logWarn: true
-logInfo: false
+logInfo: true

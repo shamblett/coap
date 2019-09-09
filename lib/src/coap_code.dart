@@ -118,6 +118,10 @@ class CoapCode {
   /// Returns true iff the code indicates a response
   static bool isResponse(int code) => (code >= 64) && (code <= 191);
 
+  /// Checks whether a code indicates an empty message
+  /// Returns true iff the code indicates an empty message
+  static bool isEmpty(int code) => code == 0;
+
   /// Checks whether a code represents a success code.
   static bool isSuccess(int code) => code >= 64 && code < 96;
 

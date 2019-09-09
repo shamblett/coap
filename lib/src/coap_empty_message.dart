@@ -34,4 +34,14 @@ class CoapEmptyMessage extends CoapMessage {
     rst.destination = message.source;
     return rst;
   }
+
+  /// Create a new empty message confirmable for the specified message.
+  /// Return the empty
+  // ignore: prefer_constructors_over_static_methods
+  static CoapEmptyMessage newCon(CoapMessage message) {
+    final CoapEmptyMessage ep = CoapEmptyMessage(CoapMessageType.con);
+    ep.token = CoapConstants.emptyToken;
+    ep.destination = message.source;
+    return ep;
+  }
 }
