@@ -1,4 +1,4 @@
-This directory contains a simple .NET based CoAP test server to use with the examples.
+This directory contains a simple .NET based CoAP test server to use with the examples provided.
 Windows only unfortunately as its .NET based.
 It returns the following resource links :-
 
@@ -29,4 +29,8 @@ It returns the following resource links :-
 	obs
 </mirror> 
 ``````
-You can use these as path examples in any testing you do for intance the time path returns as it says the current time and is observable.
+You can use these as path examples in any testing you do for instance the time path returns as it says the current time and is observable.
+The examples in this directory show the usage of each resource.
+
+To start the server run the net40server.bat file in the testserver directory, the server will use all available local interfaces including localhost
+for both IPV4 and IPV6.

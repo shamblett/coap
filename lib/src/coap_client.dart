@@ -17,9 +17,15 @@ enum FailReason {
 }
 
 /// Provides convenient methods for accessing CoAP resources.
+/// This class provides a fairly high level interface for the majority of
+/// simple CoAP requests but because of this is fairly coarsely grained.
+/// Much finer control of a request can be achieved by direct construction
+/// and manipulation of a CoapRequest itself, however this is more involved,
+/// for most cases the API in this class should suffice.
 class CoapClient {
   /// Instantiates.
-  CoapClient(this.uri, this._config, this.request);
+  /// A supplied request is optional depending on the API call being used.
+  CoapClient(this.uri, this._config, [this.request]);
 
   static CoapILogger _log = CoapLogManager().logger;
   static Iterable<CoapWebLink> _emptyLinks = <CoapWebLink>[CoapWebLink('')];
@@ -191,6 +197,7 @@ class CoapClient {
   }
 
   /// Discovers remote resources.
+  /// Creates its own request to do this.
   Future<Iterable<CoapWebLink>> doDiscover(String query) async {
     final CoapRequest request = CoapRequest.newGet();
     request.uri = uri;
@@ -200,6 +207,7 @@ class CoapClient {
     if (query != null && query.isNotEmpty) {
       discover.uriQuery = query;
     }
+    this.request = discover;
     final CoapResponse links = await discover.send().waitForResponse(timeout);
     if (links == null) {
       // If no response, return null (e.g., timeout)
