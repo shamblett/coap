@@ -236,6 +236,10 @@ class CoapRequest extends CoapMessage {
     clientEventBus.fire(CoapReregisteringEvent(request));
   }
 
+  /// Stop a request, effectively cancels the request
+  void stop() {
+    endPoint.stop();
+  }
   /// Construct a GET request.
   static CoapRequest newGet() => CoapRequest.withType(CoapCode.methodGET);
 

@@ -29,7 +29,8 @@ class CoapSweepDeduplicator implements CoapIDeduplicator {
 
   @override
   void stop() {
-    _timer.cancel();
+    _timer?.cancel();
+    _log.debug('Stopping Mark-And-Sweep');
     _timer = null;
   }
 

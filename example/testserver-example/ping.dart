@@ -37,4 +37,7 @@ FutureOr<void> main(List<String> args) async {
   } else {
     print('EXAMPLE  - Ping failed');
   }
+
+  // Cancel the current request
+  client.cancelRequest();
 }

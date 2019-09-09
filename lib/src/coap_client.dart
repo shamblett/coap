@@ -232,6 +232,10 @@ class CoapClient {
   Future<CoapRequest> prepare(CoapRequest request) async =>
       await _doPrepare(request);
 
+  /// Cancel the current request
+  void cancelRequest() {
+    request?.stop();
+  }
   /// Gets the effective endpoint that the specified request
   /// is supposed to be sent over.
   CoapIEndPoint _getEffectiveEndpoint(CoapRequest request) {
@@ -250,6 +254,7 @@ class CoapClient {
     CoapEndpointManager.getDefaultSpec();
     final CoapIChannel channel = CoapUDPChannel(request.destination, uri.port);
     request.endPoint = CoapEndPoint(channel, _config);
+    request.endPoint.start();
 
     if (_blockwise != 0) {
       request.setBlock2(CoapBlockOption.encodeSZX(_blockwise), 0, m: false);

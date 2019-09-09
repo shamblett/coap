@@ -41,7 +41,7 @@ class CoapMatcher implements CoapIMatcher {
 
   @override
   void stop() {
-    _deduplicator.stop();
+    _deduplicator?.stop();
     clear();
   }
 

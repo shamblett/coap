@@ -41,4 +41,7 @@ FutureOr<void> main(List<String> args) async {
     print('EXAMPLE  - Discovered resources:');
     links.forEach(print);
   }
+
+  // Cancel the current request
+  client.cancelRequest();
 }
