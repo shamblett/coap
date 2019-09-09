@@ -32,17 +32,17 @@ class CoapLogManager {
       }
       if (CoapConfig.inst.logError) {
         if (logger.level < logging.Level.SEVERE) {
-          logger.root.level = logging.Level.SHOUT;
+          logger.level = logging.Level.SHOUT;
         }
       }
       if (CoapConfig.inst.logWarn) {
         if (logger.root.level < logging.Level.SHOUT) {
-          logger.root.level = logging.Level.WARNING;
+          logger.level = logging.Level.WARNING;
         }
       }
       if (CoapConfig.inst.logInfo) {
         if (logger.root.level < logging.Level.WARNING) {
-          logger.root.level = logging.Level.INFO;
+          logger.level = logging.Level.INFO;
         }
       }
     }
