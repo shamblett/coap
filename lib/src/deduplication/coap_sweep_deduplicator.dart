@@ -59,7 +59,7 @@ class CoapSweepDeduplicator implements CoapIDeduplicator {
   }
 
   void _sweep(Timer timer) {
-    _log.debug('Start Mark-And-Sweep with ${_incomingMessages.length} entries');
+    _log.info('Start Mark-And-Sweep with ${_incomingMessages.length} entries');
 
     final DateTime oldestAllowed = DateTime.now()
       ..add(Duration(milliseconds: _config.exchangeLifetime));

@@ -69,7 +69,6 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
         'Endpoint - stopping endpoint bound to ${_localEndpoint.address}');
     _channel.stop();
     _matcher.stop();
-    _matcher.clear();
   }
 
   @override
