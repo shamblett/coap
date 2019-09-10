@@ -233,7 +233,6 @@ class CoapClient {
   void cancelRequest() {
     request?.stop();
   }
-
   /// Close the client, this effectively means this client is no longer usable
   void close() {
     _log.info('Close - closing client');
