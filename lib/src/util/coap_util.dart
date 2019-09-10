@@ -216,7 +216,6 @@ class CoapUtil {
         Completer<CoapInternetAddress>();
     final List<InternetAddress> addresses =
         await InternetAddress.lookup(host, type: addressType);
-    logResolvedAddresses(addresses);
     if (addresses != null && addresses.isNotEmpty) {
       final CoapInternetAddress coapAddress =
           CoapInternetAddress(addressType, addresses[0]);

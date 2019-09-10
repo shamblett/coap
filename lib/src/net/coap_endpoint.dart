@@ -60,7 +60,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
       stop();
       rethrow;
     }
-    _log.debug('Starting endpoint bound to ${_localEndpoint.address}');
+    _log.info('Starting endpoint bound to ${_localEndpoint.address}');
   }
 
   @override
