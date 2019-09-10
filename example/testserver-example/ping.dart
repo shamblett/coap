@@ -29,8 +29,8 @@ FutureOr<void> main(List<String> args) async {
   print(
       'EXAMPLE - Ping client, sending ping request to $host, waiting for response....');
 
-  // Do the discovery, note that using this method forces the path to be .well-known/core
-  final bool pingOk = await client.doPing(10000);
+  // Perform the ping
+  final bool pingOk = await client.ping(10000);
 
   if (pingOk) {
     print('EXAMPLE - Ping response OK ');
@@ -39,5 +39,8 @@ FutureOr<void> main(List<String> args) async {
   }
 
   // Cancel the current request
-  client.cancelRequest();
+  print('EXAMPLE  - Cleaning up');
+  client.close();
+
+  exit(0);
 }

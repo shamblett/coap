@@ -67,7 +67,7 @@ class CoapClient {
 
   /// Performs a CoAP ping and gives up after the given number of milliseconds.
   /// If a timeout is supplied it will overwrite any set in the client
-  Future<bool> doPing(int timeout) async {
+  Future<bool> ping(int timeout) async {
     try {
       // Ping is a confirmable empty message
       CoapRequest request =
@@ -84,9 +84,6 @@ class CoapClient {
     }
     return false;
   }
-
-  /// Discovers remote resources.
-  Future<Iterable<CoapWebLink>> discover() => doDiscover(null);
 
   /// Sends a GET request and blocks until the response is available.
   Future<CoapResponse> get() => send(CoapRequest.newGet());
@@ -201,7 +198,7 @@ class CoapClient {
 
   /// Discovers remote resources.
   /// Creates its own request to do this.
-  Future<Iterable<CoapWebLink>> doDiscover(String query) async {
+  Future<Iterable<CoapWebLink>> discover(String query) async {
     final CoapRequest request = CoapRequest.newGet();
     request.uri = uri;
     final CoapRequest discover = await prepare(request);
@@ -235,6 +232,13 @@ class CoapClient {
   /// Cancel the current request
   void cancelRequest() {
     request?.stop();
+  }
+
+  /// Close the client, this effectively means this client is no longer usable
+  void close() {
+    _log.info('Close - closing client');
+    cancelRequest();
+    clientEventBus.destroy();
   }
   /// Gets the effective endpoint that the specified request
   /// is supposed to be sent over.

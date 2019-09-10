@@ -33,7 +33,7 @@ FutureOr<void> main(List<String> args) async {
       'EXAMPLE - Discover client, sending discover request to $host, waiting for response....');
 
   // Do the discovery, note that using this method forces the path to be .well-known/core
-  final Iterable<CoapWebLink> links = await client.doDiscover(null);
+  final Iterable<CoapWebLink> links = await client.discover(null);
 
   if (links == null) {
     print('EXAMPLE - No resources discovered');
