@@ -16,7 +16,7 @@ class CoapDatagramWriter {
     _currentBitIndex = 7;
   }
 
-  static CoapILogger _log = CoapLogManager().logger;
+  CoapILogger _log = CoapLogManager().logger;
 
   typed.Uint8Buffer _buffer;
   ByteData _currentByte;

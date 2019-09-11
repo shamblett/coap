@@ -57,7 +57,7 @@ class CoapCancellableAsyncSleep {
 
 /// Utility methods
 class CoapUtil {
-  static CoapILogger _log = CoapLogManager().logger;
+  CoapILogger _log = CoapLogManager().logger;
 
   /// Insertion sort, to make the options list stably ordered.
   static void insertionSort<T>(List<T> list, Comparator<T> comparison) {

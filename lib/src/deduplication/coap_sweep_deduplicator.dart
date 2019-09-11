@@ -14,7 +14,7 @@ class CoapSweepDeduplicator implements CoapIDeduplicator {
     _config = config;
   }
 
-  static CoapILogger _log = CoapLogManager().logger;
+  CoapILogger _log = CoapLogManager().logger;
 
   Map<CoapKeyId, CoapExchange> _incomingMessages =
       Map<CoapKeyId, CoapExchange>();

@@ -27,7 +27,7 @@ class CoapClient {
   /// A supplied request is optional depending on the API call being used.
   CoapClient(this.uri, this._config, [this.request]);
 
-  static CoapILogger _log = CoapLogManager().logger;
+  CoapILogger _log = CoapLogManager().logger;
   static Iterable<CoapWebLink> _emptyLinks = <CoapWebLink>[CoapWebLink('')];
 
   /// The URI

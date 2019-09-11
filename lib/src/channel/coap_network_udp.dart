@@ -12,7 +12,7 @@ class CoapNetworkUDP implements CoapINetwork {
   /// Initialize with an address and a port
   CoapNetworkUDP(this.address, this.port);
 
-  static CoapILogger _log = CoapLogManager().logger;
+  CoapILogger _log = CoapLogManager().logger;
 
   CoapEventBus _eventBus = CoapEventBus();
 

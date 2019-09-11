@@ -24,7 +24,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
       CoapInternetAddress localEndpoint, int port, CoapConfig config)
       : this(newUDPChannel(localEndpoint, port), config);
 
-  static CoapILogger _log = CoapLogManager().logger;
+  CoapILogger _log = CoapLogManager().logger;
   CoapEventBus _eventBus = CoapEventBus();
 
   CoapConfig _config;

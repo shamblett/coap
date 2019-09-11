@@ -139,7 +139,7 @@ class CoapEventBus {
     _eventBus = events.EventBus();
   }
 
-  static CoapILogger _log = CoapLogManager().logger;
+  CoapILogger _log = CoapLogManager().logger;
   events.EventBus _eventBus;
   bool _destroyed = false;
 

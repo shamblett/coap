@@ -9,7 +9,7 @@ part of coap;
 
 /// Message encoder 12
 class CoapMessageEncoder12 extends CoapMessageEncoder {
-  static CoapILogger _log = CoapLogManager().logger;
+  CoapILogger _log = CoapLogManager().logger;
 
   @override
   void serialize(CoapDatagramWriter writer, CoapMessage message, int code) {

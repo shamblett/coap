@@ -18,7 +18,7 @@ class CoapMatcher implements CoapIMatcher {
     _eventBus.on<CoapCompletedEvent>().listen(onExchangeCompleted);
   }
 
-  static CoapILogger _log = CoapLogManager().logger;
+  CoapILogger _log = CoapLogManager().logger;
   CoapEventBus _eventBus = CoapEventBus();
 
   /// For all
