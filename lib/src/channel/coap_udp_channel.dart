@@ -26,6 +26,8 @@ class CoapUDPChannel extends CoapIChannel {
 
   typed.Uint8Buffer _buff = typed.Uint8Buffer();
 
+  CoapEventBus _eventBus = CoapEventBus();
+
   @override
   void start() {
     _socket.port = _port;
@@ -59,7 +61,7 @@ class CoapUDPChannel extends CoapIChannel {
   void receive() {
     final CoapDataReceivedEvent rxEvent =
         CoapDataReceivedEvent(_buff, _address);
-    clientEventBus.fire(rxEvent);
+    _eventBus.fire(rxEvent);
     _buff.clear();
   }
 }

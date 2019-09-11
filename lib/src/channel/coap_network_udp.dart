@@ -14,6 +14,8 @@ class CoapNetworkUDP implements CoapINetwork {
 
   static CoapILogger _log = CoapLogManager().logger;
 
+  CoapEventBus _eventBus = CoapEventBus();
+
   /// The internet address
   @override
   CoapInternetAddress address;
@@ -28,7 +30,7 @@ class CoapNetworkUDP implements CoapINetwork {
   RawDatagramSocket _socket;
   bool _bound = false;
 
-  /// The incoming data stream, call receive() to instifgate
+  /// The incoming data stream, call receive() to instigate
   /// data reception
   @override
   Stream<List<int>> get data => _data.stream;
@@ -64,7 +66,7 @@ class CoapNetworkUDP implements CoapINetwork {
               buff.addAll(d.data.toList());
               final CoapDataReceivedEvent rxEvent =
                   CoapDataReceivedEvent(buff, address);
-              clientEventBus.fire(rxEvent);
+              _eventBus.fire(rxEvent);
             }
             break;
           case RawSocketEvent.closed:

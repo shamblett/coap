@@ -19,6 +19,8 @@ class CoapExchange {
     _timestamp = DateTime.now();
   }
 
+  CoapEventBus _eventBus = CoapEventBus();
+
   Map<Object, Object> _attributes = Map<Object, Object>();
   CoapOrigin _origin;
 
@@ -80,7 +82,7 @@ class CoapExchange {
   set complete(bool value) {
     _complete = value;
     if (value) {
-      clientEventBus.fire(CoapCompletedEvent(this));
+      _eventBus.fire(CoapCompletedEvent(this));
     }
   }
 

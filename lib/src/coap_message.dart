@@ -42,6 +42,7 @@ class CoapMessage {
   int id = none;
 
   Map<int, List<CoapOption>> _optionMap = Map<int, List<CoapOption>>();
+  CoapEventBus _eventBus = CoapEventBus();
 
   /// Option map
   Map<int, List<CoapOption>> get optionMap => _optionMap;
@@ -173,7 +174,7 @@ class CoapMessage {
   set isAcknowledged(bool value) {
     _acknowledged = value;
     if (acknowledgedHook == null) {
-      clientEventBus.fire(CoapAcknowledgedEvent());
+      _eventBus.fire(CoapAcknowledgedEvent());
     } else {
       acknowledgedHook();
     }
@@ -186,7 +187,7 @@ class CoapMessage {
 
   set isRejected(bool value) {
     _rejected = value;
-    clientEventBus.fire(CoapRejectedEvent());
+    _eventBus.fire(CoapRejectedEvent());
   }
 
   bool _timedOut = false;
@@ -200,7 +201,7 @@ class CoapMessage {
   set isTimedOut(bool value) {
     _timedOut = value;
     if (timedOutHook == null) {
-      clientEventBus.fire(CoapTimedOutEvent());
+      _eventBus.fire(CoapTimedOutEvent());
     } else {
       timedOutHook();
     }
@@ -223,7 +224,7 @@ class CoapMessage {
 
   set isCancelled(bool value) {
     _cancelled = value;
-    clientEventBus.fire(CoapCancelledEvent());
+    _eventBus.fire(CoapCancelledEvent());
   }
 
   /// Indicates whether this message is a duplicate.

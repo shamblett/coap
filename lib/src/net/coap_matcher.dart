@@ -15,10 +15,11 @@ class CoapMatcher implements CoapIMatcher {
     if (config.useRandomIDStart) {
       _currentId = Random().nextInt(1 << 16);
     }
-    clientEventBus.on<CoapCompletedEvent>().listen(onExchangeCompleted);
+    _eventBus.on<CoapCompletedEvent>().listen(onExchangeCompleted);
   }
 
   static CoapILogger _log = CoapLogManager().logger;
+  CoapEventBus _eventBus = CoapEventBus();
 
   /// For all
   Map<CoapKeyId, CoapExchange> _exchangesById = Map<CoapKeyId, CoapExchange>();

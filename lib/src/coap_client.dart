@@ -45,6 +45,8 @@ class CoapClient {
   /// Timeout
   int timeout = 32767;
 
+  CoapEventBus _eventBus = CoapEventBus();
+
   /// Let the client use Confirmable requests.
   CoapClient useCONs() {
     _type = CoapMessageType.con;
@@ -237,7 +239,7 @@ class CoapClient {
   void close() {
     _log.info('Close - closing client');
     cancelRequest();
-    clientEventBus.destroy();
+    _eventBus.destroy();
   }
   /// Gets the effective endpoint that the specified request
   /// is supposed to be sent over.

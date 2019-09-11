@@ -18,11 +18,12 @@ class CoapObserveClientRelation {
     _request = request;
     _endpoint = endpoint;
     _orderer = CoapObserveNotificationOrderer(config);
-    clientEventBus.on<CoapReregisteringEvent>().listen(_onReregister);
+    _eventBus.on<CoapReregisteringEvent>().listen(_onReregister);
   }
 
   CoapConfig _config;
   CoapRequest _request;
+  CoapEventBus _eventBus = CoapEventBus();
 
   /// Request
   CoapRequest get request => _request;

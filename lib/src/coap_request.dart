@@ -86,7 +86,7 @@ class CoapRequest extends CoapMessage {
 
   set response(CoapResponse value) {
     _currentResponse = value;
-    clientEventBus.fire(CoapRespondEvent(value));
+    _eventBus.fire(CoapRespondEvent(value));
     // Add to the internal response stream
     _responseStream.add(value);
   }
@@ -194,23 +194,24 @@ class CoapRequest extends CoapMessage {
 
   /// Fire the respond event
   void fireRespond(CoapResponse response) {
-    clientEventBus.fire(CoapRespondEvent(response));
+    _eventBus.fire(CoapRespondEvent(response));
   }
 
   /// Fire the responding event
   void fireResponding(CoapResponse response) {
-    clientEventBus.fire(CoapRespondingEvent(response));
+    _eventBus.fire(CoapRespondingEvent(response));
   }
 
   /// Fire the reregistering event
   void fireReregistering(CoapRequest request) {
-    clientEventBus.fire(CoapReregisteringEvent(request));
+    _eventBus.fire(CoapReregisteringEvent(request));
   }
 
   /// Stop a request, effectively cancels the request
   void stop() {
     endPoint.stop();
   }
+
   /// Construct a GET request.
   static CoapRequest newGet() => CoapRequest.withType(CoapCode.methodGET);
 

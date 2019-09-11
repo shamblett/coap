@@ -131,4 +131,35 @@ class CoapDataReceivedEvent {
 }
 
 /// Event bus class
-class CoapEventBus {}
+class CoapEventBus {
+  /// Construction
+  factory CoapEventBus() => _singleton;
+
+  CoapEventBus._internal() {
+    _eventBus = events.EventBus();
+  }
+
+  static CoapILogger _log = CoapLogManager().logger;
+  events.EventBus _eventBus;
+  bool _destroyed = false;
+
+  /// Fire
+  void fire(dynamic event) {
+    if (!_destroyed) {
+      _eventBus.fire(event);
+    } else {
+      _log.warn(
+          'Event Bus - attempting to raise event on destroyed event bus : $event');
+    }
+  }
+
+  /// On
+  Stream<T> on<T>() => _eventBus.on();
+
+  /// Destroy
+  void destroy() {
+    _eventBus.destroy();
+  }
+
+  static final CoapEventBus _singleton = CoapEventBus._internal();
+}
