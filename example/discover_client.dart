@@ -21,16 +21,17 @@ FutureOr<void> main(List<String> args) async {
   //const String host = '172.17.215.3';
   //const String host = '172.17.199.238';
   //const String host = 'coap.me';
-  const String path = '.well-known/core';
+  //const String path = '.well-known/core';
   //const String path = '/time';
   //const String path = '/hello';
   //const String path = '/mirror';
   //const String path = '/fibonacci';
   //const String path = '/separate';
-  //const String path = '/careless';
+  const String path = '/careless';
   //const String query = 'n=10';
 
-  final Uri uri = Uri(scheme: 'coap', host: host, port: conf.defaultPort);
+  final Uri uri = Uri(
+      scheme: 'coap', host: host, port: conf.defaultPort, path: path);
 
   // Create a default request
   final CoapRequest request = CoapRequest();
