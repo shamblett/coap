@@ -4,7 +4,7 @@
  * Date   : 06/06/2018
  * Copyright :  S.Hamblett
  *
- * A simple discover request using .well-known/core to discover a servers resource list
+ * A simple get request
  */
 
 import 'dart:async';
@@ -29,17 +29,13 @@ FutureOr<void> main(List<String> args) async {
   // Adjust the response timeout if needed, defaults to 32767 milliseconds
   client.timeout = 10000;
 
-  print(
-      'EXAMPLE - Discover client, sending discover request to $host, waiting for response....');
+  print('EXAMPLE - Sending get request to $host, waiting for response....');
 
-  // Do the discovery, note that using this method forces the path to be .well-known/core
-  final Iterable<CoapWebLink> links = await client.discover(null);
-
-  if (links == null) {
-    print('EXAMPLE - No resources discovered');
+  final CoapResponse response = await client.get();
+  if (response != null) {
+    print('EXAMPLE - ${response.payloadString}');
   } else {
-    print('EXAMPLE  - Discovered resources:');
-    links.forEach(print);
+    print('EXAMPLE - no response received');
   }
 
   // Clean up

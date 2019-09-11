@@ -130,7 +130,7 @@ class CoapUtil {
       sb.write(',');
     }
     final String ret = sb.toString();
-    return ret.substring(0, ret.length - 2);
+    return ret.substring(0, ret.length - 1);
   }
 
   /// Stringify options in a message.

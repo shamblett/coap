@@ -39,7 +39,7 @@ class CoapClient {
   int _type = CoapMessageType.con;
   int _blockwise = 0;
 
-  /// The request
+  /// The current request
   CoapRequest request;
 
   /// Timeout
@@ -47,7 +47,7 @@ class CoapClient {
 
   CoapEventBus _eventBus = CoapEventBus();
 
-  /// Let the client use Confirmable requests.
+  /// Tell the client to use Confirmable requests.
   CoapClient useCONs() {
     _type = CoapMessageType.con;
     return this;
@@ -88,7 +88,14 @@ class CoapClient {
   }
 
   /// Sends a GET request and blocks until the response is available.
-  Future<CoapResponse> get() => send(CoapRequest.newGet());
+  /// If no request has been set in the client a default one is used.
+  Future<CoapResponse> get() {
+    if (request == null) {
+      return send(CoapRequest.newGet());
+    } else {
+      return send(request);
+    }
+  }
 
   /// Sends a GET request with the specified Accept option and blocks
   /// until the response is available.
@@ -235,12 +242,14 @@ class CoapClient {
   void cancelRequest() {
     request?.stop();
   }
+
   /// Close the client, this effectively means this client is no longer usable
   void close() {
     _log.info('Close - closing client');
     cancelRequest();
     _eventBus.destroy();
   }
+
   /// Gets the effective endpoint that the specified request
   /// is supposed to be sent over.
   CoapIEndPoint _getEffectiveEndpoint(CoapRequest request) {

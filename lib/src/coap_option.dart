@@ -142,10 +142,10 @@ class CoapOption {
     switch (getFormatByType(_type)) {
       case optionFormat.integer:
         return (_type == optionTypeAccept || _type == optionTypeContentFormat)
-            ? ('\'${CoapMediaType.name(intValue)}\'')
+            ? ('${CoapMediaType.name(intValue)}')
             : intValue.toString();
       case optionFormat.string:
-        return '\'$stringValue\'';
+        return '$stringValue';
       default:
         return CoapByteArrayUtil.toHexString(valueBytes);
     }
