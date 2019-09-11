@@ -175,12 +175,11 @@ class CoapExchange {
 /// Key identifier
 class CoapKeyId {
   /// Construction
-  CoapKeyId(this._id, this._endpoint) {
-    _hash = _id * 31 + (_endpoint == null ? 0 : _endpoint.hashCode);
+  CoapKeyId(this._id) {
+    _hash = _id * 31;
   }
 
   int _id;
-  CoapInternetAddress _endpoint;
   int _hash;
 
   @override
@@ -189,13 +188,13 @@ class CoapKeyId {
   @override
   bool operator ==(Object other) {
     if (other is CoapKeyId) {
-      return (_id == other._id) && (_endpoint == other._endpoint);
+      return (_id == other._id) && (_hash == other._hash);
     }
     return false;
   }
 
   @override
-  String toString() => 'KeyID[$_id for endpoint: $_endpoint]';
+  String toString() => 'KeyID[$_id])';
 }
 
 /// Key token

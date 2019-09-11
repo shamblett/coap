@@ -63,7 +63,7 @@ class CoapMatcher implements CoapIMatcher {
       // If this request goes lost, we do not get anything back.
 
       // The MID is from the local namespace -- use blank address
-      final CoapKeyId keyId = CoapKeyId(request.id, null);
+      final CoapKeyId keyId = CoapKeyId(request.id);
       final CoapKeyToken keyToken = CoapKeyToken(request.token);
       _log.info('Stored open request by $keyId + $keyToken');
 
@@ -119,7 +119,7 @@ class CoapMatcher implements CoapIMatcher {
     // Do not insert ACKs and RSTs.
     if (response.type == CoapMessageType.con ||
         response.type == CoapMessageType.non) {
-      final CoapKeyId keyId = CoapKeyId(response.id, null);
+      final CoapKeyId keyId = CoapKeyId(response.id);
       _exchangesById[keyId] = exchange;
     }
 
@@ -149,7 +149,7 @@ class CoapMatcher implements CoapIMatcher {
     //		if nothing has been sent yet => do nothing
     // (Retransmission is supposed to be done by the retransm. layer)
 
-    CoapKeyId keyId = CoapKeyId(request.id, request.source);
+    CoapKeyId keyId = CoapKeyId(request.id);
 
     // The differentiation between the case where there is a Block1 or
     // Block2 option and the case where there is none has the advantage that
@@ -181,7 +181,7 @@ class CoapMatcher implements CoapIMatcher {
           // The exchange is continuing, we can (i.e., must) clean up the previous response
           if (ongoing.currentResponse.type != CoapMessageType.ack &&
               !ongoing.currentResponse.hasOption(optionTypeObserve)) {
-            keyId = CoapKeyId(ongoing.currentResponse.id, null);
+            keyId = CoapKeyId(ongoing.currentResponse.id);
             _log.info('Ongoing exchange got new request, cleaning up $keyId');
             _exchangesById.remove(keyId);
           }
@@ -219,14 +219,7 @@ class CoapMatcher implements CoapIMatcher {
     // Retransmitted CON (because client got no ACK)
     //	=> resend ACK
 
-    CoapKeyId keyId;
-    if (response.type == CoapMessageType.ack) {
-      // Own namespace
-      keyId = CoapKeyId(response.id, null);
-    } else {
-      // Remote namespace
-      keyId = CoapKeyId(response.id, response.source);
-    }
+    CoapKeyId keyId = CoapKeyId(response.id);
 
     final CoapKeyToken keyToken = CoapKeyToken(response.token);
 
@@ -239,7 +232,7 @@ class CoapMatcher implements CoapIMatcher {
         _log.info('Duplicate response for open exchange: $response');
         response.duplicate = true;
       } else {
-        keyId = CoapKeyId(exchange.currentRequest.id, null);
+        keyId = CoapKeyId(exchange.currentRequest.id);
         _log.info('Exchange got response: Cleaning up $keyId');
         _exchangesById.remove(keyId);
       }
@@ -274,7 +267,7 @@ class CoapMatcher implements CoapIMatcher {
   @override
   CoapExchange receiveEmptyMessage(CoapEmptyMessage message) {
     // Local namespace
-    final CoapKeyId keyId = CoapKeyId(message.id, null);
+    final CoapKeyId keyId = CoapKeyId(message.id);
     final CoapExchange exchange = _exchangesById[keyId];
     if (exchange != null) {
       _log.info('Exchange got reply: Cleaning up $keyId');
@@ -293,7 +286,7 @@ class CoapMatcher implements CoapIMatcher {
 
     if (exchange.origin == CoapOrigin.local) {
       // This endpoint created the Exchange by issuing a request
-      final CoapKeyId keyId = CoapKeyId(exchange.currentRequest.id, null);
+      final CoapKeyId keyId = CoapKeyId(exchange.currentRequest.id);
       final CoapKeyToken keyToken = CoapKeyToken(exchange.currentRequest.token);
       _log.info('Exchange completed: Cleaning up $keyToken');
 
@@ -306,7 +299,7 @@ class CoapMatcher implements CoapIMatcher {
       final CoapResponse response = exchange.currentResponse;
       if (response != null && response.type != CoapMessageType.ack) {
         // Only response MIDs are stored for ACK and RST, no reponse Tokens
-        final CoapKeyId midKey = CoapKeyId(response.id, null);
+        final CoapKeyId midKey = CoapKeyId(response.id);
         _exchangesById.remove(midKey);
       }
 
@@ -332,7 +325,7 @@ class CoapMatcher implements CoapIMatcher {
 
     for (CoapResponse previous in relation.clearNotifications()) {
       // Notifications are local MID namespace
-      final CoapKeyId keyId = CoapKeyId(previous.id, null);
+      final CoapKeyId keyId = CoapKeyId(previous.id);
       _exchangesById.remove(keyId);
     }
   }
