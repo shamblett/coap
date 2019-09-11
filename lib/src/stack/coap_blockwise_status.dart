@@ -22,13 +22,13 @@ class CoapBlockwiseStatus {
   static const int noObserve = -1;
 
   /// Current num
-  int currentNUM;
+  int currentNUM = 0;
 
   /// Vurrent SZX
-  int currentSZX;
+  int currentSZX = 0;
 
   /// Random access indicator
-  bool randomAccess;
+  bool randomAccess = false;
 
   /// Random access indicator
   bool get isRandomAccess => randomAccess;

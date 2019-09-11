@@ -270,8 +270,9 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     if (block2 != null) {
       final CoapBlockwiseStatus status =
           _findResponseBlockStatus(exchange, response);
+      final CoapBlockOption blockStatus = CoapBlockOption(optionTypeBlock2);
 
-      if (status != null && block2.num == status.currentNUM) {
+      if (status != null && block2.num == blockStatus.num) {
         // We got the block we expected :-)
         status.addBlock(response.payload);
         final int obs = response.observe;
@@ -431,11 +432,13 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
 
   CoapBlockwiseStatus _findResponseBlockStatus(
       CoapExchange exchange, CoapResponse response) {
-    final CoapBlockwiseStatus status = exchange.responseBlockStatus;
+    CoapBlockwiseStatus status = exchange.responseBlockStatus;
     if (status == null) {
-      final CoapBlockwiseStatus status =
-          CoapBlockwiseStatus(response.contentType);
+      status = CoapBlockwiseStatus(response.contentType);
       status.currentSZX = CoapBlockOption.encodeSZX(_defaultBlockSize);
+      final Iterable<CoapOption> blockOptions =
+      response.getOptions(optionTypeBlock2);
+      status.currentNUM = blockOptions.toList()[0].value;
       exchange.responseBlockStatus = status;
       _log.info(
           'There is no blockwise status yet. Create and set Block2 status: $status');
