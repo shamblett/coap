@@ -7,26 +7,6 @@
 
 part of coap;
 
-/// Events
-
-/// Completed event
-class CoapCompletedEvent {
-  /// Construction
-  CoapCompletedEvent(this.exchange);
-
-  /// The exchange
-  CoapExchange exchange;
-}
-
-/// The origin of an exchange.
-enum CoapOrigin {
-  /// Local
-  local,
-
-  /// Remote
-  remote
-}
-
 /// Represents the complete state of an exchange of one request
 /// and one or more responses. The lifecycle of an exchange ends
 /// when either the last response has arrived and is acknowledged,

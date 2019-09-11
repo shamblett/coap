@@ -7,18 +7,6 @@
 
 part of coap;
 
-/// Event classes
-class CoapAcknowledgedEvent {}
-
-/// Rejected event
-class CoapRejectedEvent {}
-
-/// Timed out event
-class CoapTimedOutEvent {}
-
-/// Cancelled event
-class CoapCancelledEvent {}
-
 typedef HookFunction = void Function();
 
 /// The class Message models the base class of all CoAP messages.

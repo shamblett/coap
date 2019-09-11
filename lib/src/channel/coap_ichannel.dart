@@ -7,18 +7,6 @@
 
 part of coap;
 
-/// Data received Event
-class CoapDataReceivedEvent {
-  /// Construction
-  CoapDataReceivedEvent(this.data, this.address);
-
-  /// The data
-  typed.Uint8Buffer data;
-
-  /// The address
-  CoapInternetAddress address;
-}
-
 /// Represents a channel where bytes data can flow through.
 abstract class CoapIChannel {
   /// Gets the address of this channel.

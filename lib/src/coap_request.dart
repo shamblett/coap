@@ -9,35 +9,6 @@
 
 part of coap;
 
-/// Event classes
-
-/// Resonse event
-class CoapRespondEvent {
-  /// Construction
-  CoapRespondEvent(this.resp);
-
-  /// Response
-  CoapResponse resp;
-}
-
-/// Responding event
-class CoapRespondingEvent {
-  /// Construction
-  CoapRespondingEvent(this.resp);
-
-  /// Response
-  CoapResponse resp;
-}
-
-/// Registering event
-class CoapReregisteringEvent {
-  /// Construction
-  CoapReregisteringEvent(this.resp);
-
-  /// Response
-  CoapRequest resp;
-}
-
 /// This class describes the functionality of a CoAP Request as
 /// a subclass of a CoAP Message. It provides:
 /// 1. operations to answer a request by a response using respond()

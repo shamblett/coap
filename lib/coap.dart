@@ -196,5 +196,7 @@ part 'src/channel/coap_network_udp.dart';
 
 part 'src/channel/coap_network_manager.dart';
 
+part 'src/event/coap_event_bus.dart';
+
 /// The global event bus
 events.EventBus clientEventBus = events.EventBus();
