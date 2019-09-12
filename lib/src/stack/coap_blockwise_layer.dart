@@ -242,6 +242,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     if (block1 != null) {
       _log.info('Blockwise block1 - response acknowledges block $block1');
       final CoapBlockwiseStatus status = exchange.requestBlockStatus;
+      _log.info('Blockwise exchange block1 status is - $status');
       if (!status.complete) {
         // Send next block
         final int currentSize = 1 << (4 + status.currentSZX);
@@ -270,6 +271,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       _log.info('Blockwise block2 - response acknowledges block $block2');
       final CoapBlockwiseStatus status =
       _findResponseBlockStatus(exchange, response);
+      _log.info('Blockwise exchange block2 status is - $status');
       final CoapBlockOption blockStatus = CoapBlockOption(optionTypeBlock2);
       blockStatus.rawValue = status.currentNUM;
       if (status != null && block2.num == blockStatus.num) {
@@ -306,14 +308,15 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           block.token = response.token;
           // Make sure not to use Observe for block retrieval
           block.removeOptions(optionTypeObserve);
-
-          status.currentNUM = num;
-
+          status.currentNUM = block2.value;
           exchange.currentRequest = block;
+          _log.info(
+              'Blockwise - requesting next response : $block');
           super.sendRequest(nextLayer, exchange, block);
         } else {
           _log.info(
-              'We have received all ${status.blockCount} blocks of the response. Assemble and deliver.');
+              'Blockweise - We have received all ${status
+                  .blockCount} blocks of the response. Assemble and deliver.');
           final CoapResponse assembled = CoapResponse(response.statusCode);
           _assembleMessage(status, assembled, response);
           assembled.type = response.type;
@@ -439,6 +442,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       final Iterable<CoapOption> blockOptions =
       response.getOptions(optionTypeBlock2);
       status.currentNUM = blockOptions.toList()[0].value;
+      status.complete = false;
       exchange.responseBlockStatus = status;
       _log.info(
           'There is no blockwise status yet. Create and set Block2 status: $status');

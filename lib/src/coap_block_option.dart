@@ -72,6 +72,10 @@ class CoapBlockOption extends CoapOption {
   /// Checks whether the given SZX is valid or not.
   static bool validSZX(int szx) => szx >= 0 && szx <= 6;
 
+  @override
+  String toString() =>
+      'Raw value: $intValue, num: $num, szx: $szx, more: m';
+
   static int _encode(int num, int szx, bool m) {
     int value = 0;
     value |= szx & 0x7;

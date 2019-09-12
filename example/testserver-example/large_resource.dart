@@ -27,7 +27,7 @@ FutureOr<void> main(List<String> args) async {
   final CoapClient client = CoapClient(uri, conf);
 
   // Adjust the response timeout if needed, defaults to 32767 milliseconds
-  client.timeout = 10000;
+  //client.timeout = 10000;
 
   // Create the request for the get request
   final CoapRequest request = CoapRequest.newGet();
