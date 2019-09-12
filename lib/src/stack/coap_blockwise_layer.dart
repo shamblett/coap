@@ -240,8 +240,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
 
     final CoapBlockOption block1 = response.block1;
     if (block1 != null) {
-      _log.info('Response acknowledges block $block1');
-
+      _log.info('Blockwise block1 - response acknowledges block $block1');
       final CoapBlockwiseStatus status = exchange.requestBlockStatus;
       if (!status.complete) {
         // Send next block
@@ -268,10 +267,11 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
 
     final CoapBlockOption block2 = response.block2;
     if (block2 != null) {
+      _log.info('Blockwise block2 - response acknowledges block $block2');
       final CoapBlockwiseStatus status =
-          _findResponseBlockStatus(exchange, response);
+      _findResponseBlockStatus(exchange, response);
       final CoapBlockOption blockStatus = CoapBlockOption(optionTypeBlock2);
-
+      blockStatus.rawValue = status.currentNUM;
       if (status != null && block2.num == blockStatus.num) {
         // We got the block we expected :-)
         status.addBlock(response.payload);
@@ -284,7 +284,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
         exchange.request.fireResponding(response);
 
         if (status.isRandomAccess) {
-          // The client has requested this specifc block and we deliver it
+          // The client has requested this specific block and we deliver it
           exchange.response = response;
           super.receiveResponse(nextLayer, exchange, response);
         } else if (block2.m) {

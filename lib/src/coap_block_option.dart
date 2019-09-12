@@ -17,7 +17,7 @@ class CoapBlockOption extends CoapOption {
   /// num - Block number
   /// szx - Block size
   /// m - More flag
-  CoapBlockOption.fromParts(int type, int num, int szx, {bool m})
+  CoapBlockOption.fromParts(int type, int num, int szx, {bool m = false})
       : super(type) {
     intValue = _encode(num, szx, m);
   }
@@ -29,6 +29,9 @@ class CoapBlockOption extends CoapOption {
   void setValue(int num, int szx, {bool m}) {
     intValue = _encode(num, szx, m);
   }
+
+  /// Set the raw value directly
+  set rawValue(int num) => intValue = num;
 
   /// Block number.
   int get num => intValue >> 4;
