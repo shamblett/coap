@@ -31,6 +31,9 @@ class CoapResponse extends CoapMessage {
   /// Response text
   String get responseText => payloadString;
 
+  @override
+  String toString() => '\n<<< Response Message >>> ${super.toString()}';
+
   /// Creates a response to the specified request with the specified response code.
   /// The destination endpoint of the response is the source endpoint of the request.
   /// The response has the same token as the request.

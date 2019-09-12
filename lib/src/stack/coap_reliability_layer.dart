@@ -41,12 +41,15 @@ class CoapTransmissionContext {
   /// Cancel
   void cancel() {
     _timer.cancel();
-
-    _log.info('Reliability - Cancel retransmission for');
     if (_exchange.origin == CoapOrigin.local) {
-      _log.info(_exchange.currentRequest.toString());
+      _log.info(
+          'Reliability - Cancel retransmission for token: ${_exchange
+              .currentRequest.tokenString} id: ${_exchange.currentRequest.id}');
     } else {
-      _log.info(_exchange.currentResponse.toString());
+      _log.info(
+          'Reliability - Cancel retransmission for token: ${_exchange
+              .currentResponse.tokenString} id: ${_exchange.currentResponse
+              .id}');
     }
   }
 
@@ -85,7 +88,8 @@ class CoapTransmissionContext {
             ? _message.maxRetransmit
             : _config.maxRetransmit)) {
       _log.warn(
-          'Reliability - Timeout: retransmit message, failed count: $failedCount message: $_message');
+          'Reliability - Timeout: retransmit message, failed count: $failedCount message: ${_message
+              .id}');
 
       _message.fireRetransmitting();
 
@@ -95,7 +99,8 @@ class CoapTransmissionContext {
       }
     } else {
       _log.warn(
-          'Reliability - Timeout: retransmission limit reached, exchange failed, message: $_message');
+          'Reliability - Timeout: retransmission limit reached, exchange failed, message: ${_message
+              .id}');
       _exchange.timedOut = true;
       _message.isTimedOut = true;
       _exchange.remove(CoapReliabilityLayer.transmissionContextKey);
@@ -128,7 +133,7 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
     }
 
     if (request.type == CoapMessageType.con) {
-      _log.info('Reliability - Scheduling retransmission for $request');
+      _log.info('Reliability - Scheduling transmission for $request');
       _prepareRetransmission(exchange, request,
           (dynamic ctx) => sendRequest(nextLayer, exchange, request));
     }

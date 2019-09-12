@@ -290,12 +290,12 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           exchange.response = response;
           super.receiveResponse(nextLayer, exchange, response);
         } else if (block2.m) {
-          _log.info('Request the next response block');
+          _log.info('Blockwise - Request the next response block');
 
           final CoapRequest request = exchange.request;
           final int num = block2.num + 1;
           final int szx = block2.szx;
-          const bool m = false;
+          bool m = block2.m;
 
           final CoapRequest block = CoapRequest.withType(request.method);
           // NON could make sense over SMS or similar transports
@@ -311,7 +311,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           status.currentNUM = block2.value;
           exchange.currentRequest = block;
           _log.info(
-              'Blockwise - requesting next response : $block');
+              'Blockwise - requesting next response - block number $num, szx: $szx');
           super.sendRequest(nextLayer, exchange, block);
         } else {
           _log.info(

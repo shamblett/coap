@@ -74,7 +74,7 @@ class CoapBlockOption extends CoapOption {
 
   @override
   String toString() =>
-      'Raw value: $intValue, num: $num, szx: $szx, more: m';
+      'Raw value: $intValue, num: $num, szx: $szx, more: $m';
 
   static int _encode(int num, int szx, bool m) {
     int value = 0;

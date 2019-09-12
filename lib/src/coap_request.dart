@@ -212,6 +212,9 @@ class CoapRequest extends CoapMessage {
     endPoint.stop();
   }
 
+  @override
+  String toString() => '\n<<< Request Message >>>${super.toString()}';
+
   /// Construct a GET request.
   static CoapRequest newGet() => CoapRequest.withType(CoapCode.methodGET);
 
