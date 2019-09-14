@@ -15,7 +15,9 @@ part of coap;
 /// 2. different ways to handle incoming responses: receiveResponse() or Response event
 class CoapRequest extends CoapMessage {
   /// Default
-  CoapRequest();
+  CoapRequest() {
+    accept = CoapMediaType.textPlain;
+  }
 
   /// Initializes a request message.
   /// Defaults to confirmable
@@ -27,6 +29,7 @@ class CoapRequest extends CoapMessage {
       : super.withCode(
             confirmable ? CoapMessageType.con : CoapMessageType.non, code) {
     _method = code;
+    accept = CoapMediaType.textPlain;
   }
 
   int _method;
