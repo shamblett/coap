@@ -27,7 +27,7 @@ class CoapMessage {
   static const int none = -1;
 
   /// Initial message id limit
-  static const initialIdLimit = 32767;
+  static const int initialIdLimit = 32767;
 
   /// Invalid message ID.
   static const int invalidID = none;
@@ -42,6 +42,7 @@ class CoapMessage {
   String get codeString => CoapCode.codeToString(code);
 
   static Random _initialId = Random();
+
   /// The ID of this CoAP message.
   int id = _initialId.nextInt(initialIdLimit) + 1;
 

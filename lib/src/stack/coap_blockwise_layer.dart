@@ -295,7 +295,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           final CoapRequest request = exchange.request;
           final int num = block2.num + 1;
           final int szx = block2.szx;
-          bool m = block2.m;
+          final bool m = block2.m;
 
           final CoapRequest block = CoapRequest.withType(request.method);
           // NON could make sense over SMS or similar transports
