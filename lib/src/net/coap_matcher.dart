@@ -57,20 +57,19 @@ class CoapMatcher implements CoapIMatcher {
   void sendRequest(CoapExchange exchange, CoapRequest request) {
     if (request.id == CoapMessage.none) {
       request.id = _currentId == null ? (1 << 16) : _currentId;
-
-      // The request is a CON or NON and must be prepared for these responses
-      // - CON => ACK / RST / ACK+response / CON+response / NON+response
-      // - NON => RST / CON+response / NON+response
-      // If this request goes lost, we do not get anything back.
-
-      // The MID is from the local namespace -- use blank address
-      final CoapKeyId keyId = CoapKeyId(request.id);
-      final CoapKeyToken keyToken = CoapKeyToken(request.token);
-      _log.info('Matcher - Stored open request by $keyId + $keyToken');
-
-      _exchangesById[keyId] = exchange;
-      _exchangesByToken[keyToken] = exchange;
     }
+
+    // The request is a CON or NON and must be prepared for these responses
+    // - CON => ACK / RST / ACK+response / CON+response / NON+response
+    // - NON => RST / CON+response / NON+response
+    // If this request goes lost, we do not get anything back.
+
+    // The MID is from the local namespace -- use blank address
+    final CoapKeyId keyId = CoapKeyId(request.id);
+    final CoapKeyToken keyToken = CoapKeyToken(request.token);
+    _log.info('Matcher - Stored open request by $keyId + $keyToken');
+    _exchangesById[keyId] = exchange;
+    _exchangesByToken[keyToken] = exchange;
   }
 
   @override
@@ -244,9 +243,7 @@ class CoapMatcher implements CoapIMatcher {
           exchange.currentRequest.id != response.id) {
         // The token matches but not the MID. This is a response for an older exchange
         _log.warn(
-            'Matcher - Possible MID reuse before lifetime end: ${response
-                .tokenString} expected MID ${exchange.currentRequest
-                .id} but received ${response.id}');
+            'Matcher - Possible MID reuse before lifetime end: ${response.tokenString} expected MID ${exchange.currentRequest.id} but received ${response.id}');
       }
 
       return exchange;
@@ -263,8 +260,7 @@ class CoapMatcher implements CoapIMatcher {
         }
       } else {
         _log.warn(
-            'Matcher - Ignoring unmatchable piggy-backed response from ${response
-                .source} : $response');
+            'Matcher - Ignoring unmatchable piggy-backed response from ${response.source.address.host} : $response');
       }
       // Ignore response
       return null;
@@ -282,8 +278,7 @@ class CoapMatcher implements CoapIMatcher {
       return exchange;
     } else {
       _log.warn(
-          'Matcher - Ignoring unmatchable empty message from ${message
-              .source} : $message');
+          'Matcher - Ignoring unmatchable empty message from ${message.source} : $message');
       return null;
     }
   }

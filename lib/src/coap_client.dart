@@ -73,7 +73,7 @@ class CoapClient {
     try {
       // Ping is a confirmable empty message
       CoapRequest request =
-      CoapRequest.isConfirmable(CoapCode.empty, confirmable: true);
+          CoapRequest.isConfirmable(CoapCode.empty, confirmable: true);
       request.token = CoapConstants.emptyToken;
       request.uri = uri;
       request = await prepare(request);

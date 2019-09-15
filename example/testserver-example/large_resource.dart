@@ -39,6 +39,7 @@ FutureOr<void> main(List<String> args) async {
   final CoapResponse response = await client.get();
   if (response != null) {
     print('EXAMPLE - response received');
+    print(response.payloadString);
   } else {
     print('EXAMPLE - no response received');
   }

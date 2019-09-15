@@ -73,8 +73,7 @@ class CoapBlockOption extends CoapOption {
   static bool validSZX(int szx) => szx >= 0 && szx <= 6;
 
   @override
-  String toString() =>
-      'Raw value: $intValue, num: $num, szx: $szx, more: $m';
+  String toString() => 'Raw value: $intValue, num: $num, szx: $szx, more: $m';
 
   static int _encode(int num, int szx, bool m) {
     int value = 0;

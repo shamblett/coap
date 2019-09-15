@@ -43,13 +43,10 @@ class CoapTransmissionContext {
     _timer.cancel();
     if (_exchange.origin == CoapOrigin.local) {
       _log.info(
-          'Reliability - Cancel retransmission for token: ${_exchange
-              .currentRequest.tokenString} id: ${_exchange.currentRequest.id}');
+          'Reliability - Cancel retransmission for token: ${_exchange.currentRequest.tokenString} id: ${_exchange.currentRequest.id}');
     } else {
       _log.info(
-          'Reliability - Cancel retransmission for token: ${_exchange
-              .currentResponse.tokenString} id: ${_exchange.currentResponse
-              .id}');
+          'Reliability - Cancel retransmission for token: ${_exchange.currentResponse.tokenString} id: ${_exchange.currentResponse.id}');
     }
   }
 
@@ -88,8 +85,7 @@ class CoapTransmissionContext {
             ? _message.maxRetransmit
             : _config.maxRetransmit)) {
       _log.warn(
-          'Reliability - Timeout: retransmit message, failed count: $failedCount message: ${_message
-              .id}');
+          'Reliability - Timeout: retransmit message, failed count: $failedCount message: ${_message.id}');
 
       _message.fireRetransmitting();
 
@@ -99,8 +95,7 @@ class CoapTransmissionContext {
       }
     } else {
       _log.warn(
-          'Reliability - Timeout: retransmission limit reached, exchange failed, message: ${_message
-              .id}');
+          'Reliability - Timeout: retransmission limit reached, exchange failed, message: ${_message.id}');
       _exchange.timedOut = true;
       _message.isTimedOut = true;
       _exchange.remove(CoapReliabilityLayer.transmissionContextKey);
@@ -294,12 +289,10 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
 
     if (ctx.failedTransmissionCount > 0) {
       _log.debug(
-          'Reliability - sending request, failed transmission count: ${ctx
-              .failedTransmissionCount}');
+          'Reliability - sending request, failed transmission count: ${ctx.failedTransmissionCount}');
     } else {
       _log.info(
-          'Reliability - sending request, failed transmission count: ${ctx
-              .failedTransmissionCount}');
+          'Reliability - sending request, failed transmission count: ${ctx.failedTransmissionCount}');
     }
 
     ctx.start();

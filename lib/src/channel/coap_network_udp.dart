@@ -99,8 +99,7 @@ class CoapNetworkUDP implements CoapINetwork {
       });
     } on SocketException catch (e) {
       _log.error(
-          'CoapNetworkUDP Recieve - severe error - socket exception failed to bind, address ${address
-              .address.host}, port $port with exception $e: $e');
+          'CoapNetworkUDP Recieve - severe error - socket exception failed to bind, address ${address.address.host}, port $port with exception $e: $e');
     } on Exception catch (e) {
       _log.error(
           'CoapNetworkUDP - severe error - Failed to bind, address ${address.address.host}, port $port with exception $e');

@@ -268,14 +268,15 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
 
     final CoapBlockOption block2 = response.block2;
     if (block2 != null) {
-      _log.info('Blockwise block2 - response acknowledges block $block2');
+      _log.info('Blockwise block2 - response acknowledges block: $block2');
       final CoapBlockwiseStatus status =
-      _findResponseBlockStatus(exchange, response);
+          _findResponseBlockStatus(exchange, response);
       _log.info('Blockwise exchange block2 status is - $status');
       final CoapBlockOption blockStatus = CoapBlockOption(optionTypeBlock2);
       blockStatus.rawValue = status.currentNUM;
       if (status != null && block2.num == blockStatus.num) {
-        // We got the block we expected :-)
+        // We got the block we expected
+        _log.info('Blockwise - Received expected block');
         status.addBlock(response.payload);
         final int obs = response.observe;
         if (obs != null) {
@@ -302,21 +303,22 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           block.type = request.type;
           block.destination = request.destination;
           block.setOptions(request.getSortedOptions());
-          block.setOption(
-              CoapBlockOption.fromParts(optionTypeBlock2, num, szx, m: m));
+          CoapBlockOption nextBlock =
+              CoapBlockOption.fromParts(optionTypeBlock2, num, szx, m: m);
+          block.setOption(nextBlock);
           // We use the same token to ease traceability (GET without Observe no longer cancels relations)
           block.token = response.token;
           // Make sure not to use Observe for block retrieval
           block.removeOptions(optionTypeObserve);
-          status.currentNUM = block2.value;
+          status.currentNUM = nextBlock.intValue;
           exchange.currentRequest = block;
+          exchange.responseBlockStatus = status;
           _log.info(
               'Blockwise - requesting next response - block number $num, szx: $szx');
           super.sendRequest(nextLayer, exchange, block);
         } else {
           _log.info(
-              'Blockweise - We have received all ${status
-                  .blockCount} blocks of the response. Assemble and deliver.');
+              'Blockwise - We have received all ${status.blockCount} blocks of the response. Assemble and deliver.');
           final CoapResponse assembled = CoapResponse(response.statusCode);
           _assembleMessage(status, assembled, response);
           assembled.type = response.type;
@@ -440,7 +442,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       status = CoapBlockwiseStatus(response.contentType);
       status.currentSZX = CoapBlockOption.encodeSZX(_defaultBlockSize);
       final Iterable<CoapOption> blockOptions =
-      response.getOptions(optionTypeBlock2);
+          response.getOptions(optionTypeBlock2);
       status.currentNUM = blockOptions.toList()[0].value;
       status.complete = false;
       exchange.responseBlockStatus = status;
