@@ -237,4 +237,21 @@ class CoapUtil {
       print('Resolved address : $address');
     }
   }
+
+  /// Time formatting for logging
+  static String formatTime(DateTime time) => df.formatDate(time, [
+        df.yyyy,
+        '-',
+        df.mm,
+        '-',
+        df.dd,
+        ' ',
+        df.HH,
+        ':',
+        df.nn,
+        ':',
+        df.ss,
+        '.',
+        df.SSS
+      ]);
 }
