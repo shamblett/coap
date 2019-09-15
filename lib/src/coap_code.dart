@@ -132,6 +132,9 @@ class CoapCode {
 
   /// Returns a string representation of the code
   static String codeToString(int code) {
+    if (code == null) {
+      return 'Null status code';
+    }
     switch (code) {
       case empty:
         return 'Empty Message';

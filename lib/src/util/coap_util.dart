@@ -239,7 +239,7 @@ class CoapUtil {
   }
 
   /// Time formatting for logging
-  static String formatTime(DateTime time) => df.formatDate(time, [
+  static String formatTime(DateTime time) => df.formatDate(time, <String>[
         df.yyyy,
         '-',
         df.mm,

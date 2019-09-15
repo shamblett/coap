@@ -22,6 +22,9 @@ class CoapResponse extends CoapMessage {
   /// The response status code.
   int get statusCode => _statusCode;
 
+  /// Status code as a string
+  String get statusCodeString => CoapCode.codeToString(_statusCode);
+
   /// The Round-Trip Time of this response.
   double rtt;
 

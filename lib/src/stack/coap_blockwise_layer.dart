@@ -303,7 +303,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           block.type = request.type;
           block.destination = request.destination;
           block.setOptions(request.getSortedOptions());
-          CoapBlockOption nextBlock =
+          final CoapBlockOption nextBlock =
               CoapBlockOption.fromParts(optionTypeBlock2, num, szx, m: m);
           block.setOption(nextBlock);
           // We use the same token to ease traceability (GET without Observe no longer cancels relations)
