@@ -32,11 +32,17 @@ abstract class CoapMessageEncoder implements CoapIMessageEncoder {
 
   @override
   typed.Uint8Buffer encodeMessage(CoapMessage message) {
-    if (message.isRequest || message.isEmpty) {
-      // A request could be an empty message, i.e ping
+    if (message.isRequest) {
       return encodeRequest(message);
     } else if (message.isResponse) {
       return encodeResponse(message);
+    } else if (message.isEmpty) {
+      //A ping message is empty, but it is a request message so check for this
+      if (message is CoapRequest) {
+        return encodeRequest(message);
+      } else {
+        return encodeEmpty(message);
+      }
     } else {
       return null;
     }
