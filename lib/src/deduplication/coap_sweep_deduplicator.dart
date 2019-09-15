@@ -66,7 +66,7 @@ class CoapSweepDeduplicator implements CoapIDeduplicator {
     final List<CoapKeyId> keysToRemove = List<CoapKeyId>();
     _incomingMessages.forEach((CoapKeyId key, CoapExchange value) {
       if (value.timestamp.isBefore(oldestAllowed)) {
-        _log.debug('Mark-And-Sweep removes $key');
+        _log.info('Mark-And-Sweep removes $key');
         keysToRemove.add(key);
       }
     });
