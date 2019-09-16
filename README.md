@@ -12,7 +12,8 @@ fine grained control however can be obtained by users directly constructing thei
 
 Configuration is achieved by editing a yaml based config file containing many of CoAP protocol configurations.
 
-This is a full implementation of the CoAP protocol including blockwise transfer, deduplication etc.
+This is a full implementation of the CoAP protocol including blockwise transfer, deduplication, transmission retries using
+ request/response matching etc.
 
 Many examples of usage are provided in the examples directory both using a .NET based CoAP server for local testing
 and testing using the coap.me (http://coap.me/) test server.
