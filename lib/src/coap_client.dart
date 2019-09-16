@@ -277,8 +277,6 @@ class CoapClient {
     if (endpoint != null) {
       request.endPoint = endpoint;
     }
-
-    return request;
   }
 
   CoapObserveClientRelation _observe(CoapRequest request,

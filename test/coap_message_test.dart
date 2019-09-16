@@ -4,6 +4,7 @@
  * Date   : 13/04/2017
  * Copyright :  S.Hamblett
  */
+import 'dart:io';
 import 'package:coap/coap.dart';
 import 'package:test/test.dart';
 import 'package:typed_data/typed_data.dart' as typed;
@@ -11,6 +12,7 @@ import 'package:collection/collection.dart';
 
 void main() {
   const ListEquality<dynamic> leq = ListEquality<dynamic>();
+  final CoapConfig conf = CoapConfig(File('test/config_logging.yaml'));
   group('COAP All', () {
     final Map<String, List<List<int>>> check = <String, List<List<int>>>{
       'draft-ietf-core-coap-03': <List<int>>[

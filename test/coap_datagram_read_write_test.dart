@@ -4,6 +4,8 @@
  * Date   : 18/05/2018
  * Copyright :  S.Hamblett
  */
+
+import 'dart:io';
 import 'package:coap/coap.dart';
 import 'package:test/test.dart';
 import 'package:typed_data/typed_data.dart' as typed;
@@ -11,6 +13,7 @@ import 'package:collection/collection.dart';
 
 void main() {
   const ListEquality<dynamic> leq = ListEquality<dynamic>();
+  final CoapConfig conf = CoapConfig(File('test/config_logging.yaml'));
 
   test('Test32BitInt', () {
     const int intIn = 0x87654321;

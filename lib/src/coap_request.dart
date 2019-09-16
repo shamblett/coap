@@ -16,6 +16,7 @@ part of coap;
 class CoapRequest extends CoapMessage {
   /// Default
   CoapRequest() {
+    // Set a default accept
     accept = CoapMediaType.textPlain;
   }
 
@@ -29,7 +30,6 @@ class CoapRequest extends CoapMessage {
       : super.withCode(
             confirmable ? CoapMessageType.con : CoapMessageType.non, code) {
     _method = code;
-    accept = CoapMediaType.textPlain;
   }
 
   int _method;
