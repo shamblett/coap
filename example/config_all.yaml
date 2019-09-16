@@ -9,10 +9,10 @@ deduplicator: "MarkAndSweep"
 
 # Logging section
 
-# Target is none, console or file
+# Target is none or console
 logTarget: "console"
 # Log levels
-logError: true
-logDebug: true
-logWarn: true
-logInfo: true
+logError: "true"
+logDebug: "true"
+logWarn: "true"
+logInfo: "true"

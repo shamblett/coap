@@ -43,16 +43,16 @@ class CoapConsoleLogger implements CoapILogger {
   set lastMessage(String message) {}
 
   @override
-  bool isDebugEnabled() => _logger.level.value >= logging.Level.SEVERE.value;
+  bool isDebugEnabled() => _logger.level.value <= logging.Level.SEVERE.value;
 
   @override
-  bool isErrorEnabled() => _logger.level.value >= logging.Level.SHOUT.value;
+  bool isErrorEnabled() => _logger.level.value <= logging.Level.SHOUT.value;
 
   @override
-  bool isInfoEnabled() => _logger.level.value >= logging.Level.INFO.value;
+  bool isInfoEnabled() => _logger.level.value <= logging.Level.INFO.value;
 
   @override
-  bool isWarnEnabled() => _logger.level.value >= logging.Level.WARNING.value;
+  bool isWarnEnabled() => _logger.level.value <= logging.Level.WARNING.value;
 
   @override
   void debug(String message) {

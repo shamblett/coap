@@ -155,6 +155,7 @@ void main() {
       logger.info('Information message');
       logger.error('Error message');
       logger.debug('Debug message');
+      logmanager.destroy();
     });
 
     test('Console', () {
@@ -175,6 +176,7 @@ void main() {
       expect(logger.lastMessage.contains('Error message'), isTrue);
       logger.debug('Debug message');
       expect(logger.lastMessage.contains('Debug message'), isTrue);
+      logmanager.destroy();
     });
   });
 }

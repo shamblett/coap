@@ -166,12 +166,11 @@ class CoapRequest extends CoapMessage {
     }
   }
 
-
   StreamController<CoapResponse> _responseStream =
       StreamController<CoapResponse>.broadcast();
 
   /// Response stream
-  Stream<CoapResponse>get responses => _responseStream.stream;
+  Stream<CoapResponse> get responses => _responseStream.stream;
 
   /// Wait for a response.
   /// Returns the response, or null if timeout occured.

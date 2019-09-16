@@ -12,7 +12,7 @@ class CoapLogManager {
   /// Construction
   factory CoapLogManager([String type]) {
     _type = type;
-    return _singleton;
+    return _singleton ??= CoapLogManager._internal(_type);
   }
 
   CoapLogManager._internal([String type]) {
@@ -26,24 +26,20 @@ class CoapLogManager {
     // Logging common configuration
     if (setCommon) {
       if (CoapConfig.inst.logDebug) {
-        if (logger.level >= logging.Level.INFO) {
-          logger.level = logging.Level.SEVERE;
-        }
+        // Debug maps to severe
+        logger.level = logging.Level.SEVERE;
       }
       if (CoapConfig.inst.logError) {
-        if (logger.level < logging.Level.SEVERE) {
-          logger.level = logging.Level.SHOUT;
-        }
+        // Error maps to shout, always sets
+        logger.level = logging.Level.SHOUT;
       }
       if (CoapConfig.inst.logWarn) {
-        if (logger.root.level < logging.Level.SHOUT) {
-          logger.level = logging.Level.WARNING;
-        }
+        // Warning is warning
+        logger.level = logging.Level.WARNING;
       }
       if (CoapConfig.inst.logInfo) {
-        if (logger.root.level < logging.Level.WARNING) {
-          logger.level = logging.Level.INFO;
-        }
+        // Info is info
+        logger.level = logging.Level.INFO;
       }
     }
   }
@@ -51,8 +47,12 @@ class CoapLogManager {
   /// Logger type
   static String _type;
 
-  static final CoapLogManager _singleton = CoapLogManager._internal(_type);
+  static CoapLogManager _singleton;
 
   /// The logger
   CoapILogger logger;
+
+  /// Destroys the instance, the log manager must be reconstructed before
+  /// use
+  void destroy() => _singleton = null;
 }
