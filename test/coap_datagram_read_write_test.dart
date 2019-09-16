@@ -13,6 +13,7 @@ import 'package:collection/collection.dart';
 
 void main() {
   const ListEquality<dynamic> leq = ListEquality<dynamic>();
+  // ignore: unused_local_variable
   final CoapConfig conf = CoapConfig(File('test/config_logging.yaml'));
 
   test('Test32BitInt', () {

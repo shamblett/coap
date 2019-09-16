@@ -266,8 +266,13 @@ class CoapMessage {
   /// The payload of this CoAP message in string representation.
   String get payloadString {
     if (payload != null && payload.isNotEmpty) {
-      final String ret = _utfDecoder.convert(payload);
-      return ret;
+      try {
+        final String ret = _utfDecoder.convert(payload);
+        return ret;
+      } on FormatException {
+        // The payload may be incomplete, if so and the conversion fails indicate this
+        return '<<<< Payload incomplete >>>>>';
+      }
     }
     return null;
   }

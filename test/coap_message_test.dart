@@ -12,6 +12,7 @@ import 'package:collection/collection.dart';
 
 void main() {
   const ListEquality<dynamic> leq = ListEquality<dynamic>();
+  // ignore: unused_local_variable
   final CoapConfig conf = CoapConfig(File('test/config_logging.yaml'));
   group('COAP All', () {
     final Map<String, List<List<int>>> check = <String, List<List<int>>>{

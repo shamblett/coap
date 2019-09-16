@@ -16,8 +16,13 @@ class CoapScanner extends scanner.StringScanner {
   /// to but not including the stop character and return as a string
   String takeUntil(String stopCharacter) {
     final StringBuffer buff = StringBuffer();
-    while (peekChar(0) != stopCharacter.codeUnitAt(0)) {
-      buff.write(String.fromCharCode(readChar()));
+    try {
+      while (peekChar(0) != stopCharacter.codeUnitAt(0)) {
+        buff.write(String.fromCharCode(readChar()));
+      }
+    } on scanner.StringScannerException {
+      // If we run out of string return what we have
+      return buff.toString();
     }
     return buff.toString();
   }
