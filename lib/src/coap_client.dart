@@ -128,8 +128,10 @@ class CoapClient {
 
   /// Sends a PUT request and blocks until the response is available.
   Future<CoapResponse> put(String payload,
-          [int format = CoapMediaType.textPlain]) =>
-      send(CoapRequest.newPut().setPayloadMedia(payload, format));
+      [int format = CoapMediaType.textPlain]) {
+    request ??= CoapRequest.newPut().setPayloadMedia(payload, format);
+    return send(request.setPayloadMedia(payload, format));
+  }
 
   /// Sends a PUT request with the specified Accept option and blocks
   /// until the response is available.
