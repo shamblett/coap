@@ -62,11 +62,13 @@ class CoapNetworkUDP implements CoapINetwork {
             final Datagram d = _socket?.receive();
             if (d != null) {
               final typed.Uint8Buffer buff = typed.Uint8Buffer();
-              _data.add(d.data.toList());
-              buff.addAll(d.data.toList());
-              final CoapDataReceivedEvent rxEvent =
-                  CoapDataReceivedEvent(buff, address);
-              _eventBus.fire(rxEvent);
+              if (d.data != null && d.data.isNotEmpty) {
+                _data.add(d.data.toList());
+                buff.addAll(d.data.toList());
+                final CoapDataReceivedEvent rxEvent =
+                CoapDataReceivedEvent(buff, address);
+                _eventBus.fire(rxEvent);
+              }
             }
             break;
           case RawSocketEvent.closed:

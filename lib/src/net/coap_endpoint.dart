@@ -93,8 +93,12 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   }
 
   void _receiveData(CoapDataReceivedEvent event) {
+    // Return if we have no data, should not happen but be defensive
+    if (event.data == null || event.data.isEmpty) {
+      return;
+    }
     final CoapIMessageDecoder decoder =
-        config.spec.newMessageDecoder(event.data);
+    config.spec.newMessageDecoder(event.data);
     if (decoder.isRequest) {
       CoapRequest request;
       try {
