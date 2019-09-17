@@ -264,19 +264,26 @@ class CoapClient {
     request.type = _type;
     request.uri = uri;
 
+    // Resolve the uri
     await request.resolveDestination(InternetAddressType.IPv4);
+    // Endpoint and channel
     CoapEndpointManager.getDefaultSpec();
     final CoapIChannel channel = CoapUDPChannel(request.destination, uri.port);
-    request.endPoint = CoapEndPoint(channel, _config);
+    if (endpoint != null) {
+      request.endPoint = endpoint;
+    } else {
+      request.endPoint = CoapEndPoint(channel, _config);
+    }
     request.endPoint.start();
-
+    // Set a default accept
+    if (request.accept == CoapMediaType.undefined) {
+      request.accept = CoapMediaType.textPlain;
+    }
+    // Other parameters
     if (_blockwise != 0) {
       request.setBlock2(CoapBlockOption.encodeSZX(_blockwise), 0, m: false);
     }
 
-    if (endpoint != null) {
-      request.endPoint = endpoint;
-    }
     return request;
   }
 

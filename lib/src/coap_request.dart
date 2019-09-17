@@ -15,10 +15,7 @@ part of coap;
 /// 2. different ways to handle incoming responses: receiveResponse() or Response event
 class CoapRequest extends CoapMessage {
   /// Default
-  CoapRequest() {
-    // Set a default accept
-    accept = CoapMediaType.textPlain;
-  }
+  CoapRequest();
 
   /// Initializes a request message.
   /// Defaults to confirmable
