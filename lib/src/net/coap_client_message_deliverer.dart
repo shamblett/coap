@@ -10,8 +10,7 @@ part of coap;
 /// Message deliverer
 class CoapClientMessageDeliverer implements CoapIMessageDeliverer {
   @override
-  void deliverRequest(CoapExchange exchange) {
-  }
+  void deliverRequest(CoapExchange exchange) {}
 
   @override
   void deliverResponse(CoapExchange exchange, CoapResponse response) {

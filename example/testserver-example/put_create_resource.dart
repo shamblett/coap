@@ -41,9 +41,9 @@ FutureOr<void> main(List<String> args) async {
     print('EXAMPLE - put response received, sending get');
     print(response.payloadString);
     // Now get and check the payload
-    final CoapRequest request = CoapRequest.newGet();
-    request.addUriPath('storage');
-    client.request = request;
+    final CoapRequest getRequest = CoapRequest.newGet();
+    getRequest.addUriPath('storage');
+    client.request = getRequest;
     response = await client.get();
     if (response != null) {
       print('EXAMPLE - get response received');

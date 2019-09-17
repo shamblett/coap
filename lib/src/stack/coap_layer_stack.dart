@@ -59,7 +59,7 @@ class CoapStackTopLayer extends CoapAbstractLayer {
     CoapExchange nexchange = exchange;
     if (exchange == null) {
       nexchange = CoapExchange(request, CoapOrigin.local);
-      nexchange.endpoint = request.endPoint;
+      nexchange.endpoint = request.endpoint;
     }
 
     nexchange.request = request;

@@ -92,7 +92,7 @@ class CoapRequest extends CoapMessage {
   }
 
   /// The endpoint for this request
-  CoapIEndPoint endPoint;
+  CoapIEndPoint endpoint;
 
   /// Uri
   CoapRequest setUri(String value) {
@@ -142,7 +142,7 @@ class CoapRequest extends CoapMessage {
   /// Sends this message.
   CoapRequest send() {
     _validateBeforeSending();
-    endPoint.sendEpRequest(this);
+    endpoint.sendEpRequest(this);
     // Clear the internal response stream
     _responseStream.stream.drain();
     return this;
@@ -151,8 +151,8 @@ class CoapRequest extends CoapMessage {
   /// Sends the request over the specified endpoint.
   CoapRequest sendWithEndpoint(CoapIEndPoint endpointIn) {
     _validateBeforeSending();
-    endPoint = endpointIn;
-    endPoint.sendEpRequest(this);
+    endpoint = endpointIn;
+    endpoint.sendEpRequest(this);
     return this;
   }
 
@@ -211,7 +211,7 @@ class CoapRequest extends CoapMessage {
 
   /// Stop a request, effectively cancels the request
   void stop() {
-    endPoint.stop();
+    endpoint.stop();
   }
 
   @override

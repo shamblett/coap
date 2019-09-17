@@ -56,10 +56,10 @@ abstract class CoapIResource {
   /// Gets the executor of this resource.
   CoapIExecutor get executor => _executor;
 
-  Iterable<CoapIEndPoint> _endPoints;
+  Iterable<CoapIEndPoint> _endpoints;
 
   /// Gets the endpoints this resource is bound to.
-  Iterable<CoapIEndPoint> get endPoints => _endPoints;
+  Iterable<CoapIEndPoint> get endpoints => _endpoints;
 
   /// The parent of this resource.
   CoapIResource parent;

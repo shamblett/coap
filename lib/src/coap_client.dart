@@ -34,8 +34,10 @@ class CoapClient {
   Uri uri;
   CoapConfig _config;
 
-  /// The endpoint
+  /// The endpoint. Once set, on the first request this endpoint is used throughout this client for all
+  /// subsequent requests.
   CoapIEndPoint endpoint;
+
   int _type = CoapMessageType.con;
   int _blockwise = 0;
 
@@ -258,7 +260,7 @@ class CoapClient {
     if (endpoint != null) {
       return endpoint;
     } else {
-      return CoapEndpointManager.getDefaultEndpoint(request.endPoint);
+      return CoapEndpointManager.getDefaultEndpoint(request.endpoint);
     }
   }
 
@@ -272,11 +274,13 @@ class CoapClient {
     CoapEndpointManager.getDefaultSpec();
     final CoapIChannel channel = CoapUDPChannel(request.destination, uri.port);
     if (endpoint != null) {
-      request.endPoint = endpoint;
+      request.endpoint = endpoint;
     } else {
-      request.endPoint = CoapEndPoint(channel, _config);
+      request.endpoint = CoapEndPoint(channel, _config);
+      request.endpoint.start();
+      endpoint = request.endpoint;
     }
-    request.endPoint.start();
+
     // Set a default accept
     if (request.accept == CoapMediaType.undefined) {
       request.accept = CoapMediaType.textPlain;

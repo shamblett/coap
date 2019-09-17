@@ -315,7 +315,9 @@ class CoapMessage {
 
   @override
   String toString() =>
-      '\n${type.toString()}-$codeString ID=${id.toString()}, Token=$tokenString, \nOptions=[${CoapUtil.optionsToString(this)}], \nPayload :\n$payloadString';
+      '\nType: ${type.toString()}, Code: $codeString, Id: ${id
+          .toString()}, Token: $tokenString, \nOptions=[${CoapUtil
+          .optionsToString(this)}], \nPayload :\n$payloadString';
 
   @override
   bool operator ==(Object other) {
