@@ -29,9 +29,11 @@ FutureOr<void> main(List<String> args) async {
   // Adjust the response timeout if needed, defaults to 32767 milliseconds
   //client.timeout = 10000;
 
-  // Create the request for the pu request
+  // Create the request for the put request
   final CoapRequest request = CoapRequest.newPut();
   request.addUriPath('storage');
+  // Add a title
+  request.addUriQuery('${CoapLinkFormat.title}=This is an SJH Put request');
   client.request = request;
 
   print('EXAMPLE - Sending put request to $host, waiting for response....');
@@ -48,6 +50,12 @@ FutureOr<void> main(List<String> args) async {
     if (response != null) {
       print('EXAMPLE - get response received');
       print(response.payloadString);
+      final Iterable<CoapOption> options = request.getSortedOptions();
+      for (CoapOption option in options) {
+        if (option.type == optionTypeUriQuery) {
+          print('Title is : ${option.stringValue.split('=')[1]}');
+        }
+      }
       if (response.payloadString == 'SJHTestPut') {
         print('EXAMPLE - Hoorah! the put has worked');
       } else {
