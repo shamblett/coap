@@ -22,9 +22,16 @@ enum FailReason {
 /// Much finer control of a request can be achieved by direct construction
 /// and manipulation of a CoapRequest itself, however this is more involved,
 /// for most cases the API in this class should suffice.
+///
+/// Note that currently a self constructed resource must be prepared by the prepare
+/// method in this class BEFORE calling any send methods on the resource.
+///
+/// In most cases a resource can be created outside of the client with the relevant parameters
+/// then set in the client.
 class CoapClient {
   /// Instantiates.
   /// A supplied request is optional depending on the API call being used.
+  /// If it is specified it will be prepared and used
   CoapClient(this.uri, this._config, [this.request]);
 
   CoapILogger _log = CoapLogManager().logger;
@@ -41,11 +48,11 @@ class CoapClient {
   int _type = CoapMessageType.con;
   int _blockwise = 0;
 
-  /// The current request
+  /// The current request being processed by the client.
   CoapRequest request;
 
   /// Timeout
-  int timeout = 32767;
+  int timeout = 32767; //ms
 
   CoapEventBus _eventBus = CoapEventBus();
 
@@ -92,41 +99,46 @@ class CoapClient {
   /// Sends a GET request and blocks until the response is available.
   /// If no request has been set in the client a default one is used.
   Future<CoapResponse> get() {
-    if (request == null) {
-      return send(CoapRequest.newGet());
-    } else {
-      return send(request);
-    }
+    request ??= CoapRequest.newGet();
+    return send(request);
   }
 
   /// Sends a GET request with the specified Accept option and blocks
   /// until the response is available.
-  Future<CoapResponse> getWithAccept(int acceptVal) =>
-      send(accept(CoapRequest.newGet(), acceptVal));
+  Future<CoapResponse> getWithAccept(int acceptVal) {
+    request ??= CoapRequest.newGet();
+    return send(accept(request, acceptVal));
+  }
 
   /// Sends a POST request and blocks until the response is available.
   Future<CoapResponse> post(String payload,
-          [int format = CoapMediaType.textPlain]) =>
-      send(CoapRequest.newPost().setPayloadMedia(payload, format));
+      [int format = CoapMediaType.textPlain]) {
+    request ??= CoapRequest.newPost().setPayloadMedia(payload, format);
+    return send(request.setPayloadMedia(payload, format));
+  }
 
   /// Sends a POST request with the specified Accept option and blocks
   /// until the response is available.
-  Future<CoapResponse> postWithAccept(
-          String payload, int format, int acceptVal) =>
-      send(accept(
-          CoapRequest.newPost().setPayloadMedia(payload, format), acceptVal));
+  Future<CoapResponse> postWithAccept(String payload, int format,
+      int acceptVal) {
+    request ??= CoapRequest.newPost().setPayloadMedia(payload, format);
+    return send(accept(request.setPayloadMedia(payload, format), acceptVal));
+  }
 
   /// Sends a POST request with the specified byte payload and blocks
   /// until the response is available.
-  Future<CoapResponse> postBytePayload(typed.Uint8Buffer payload, int format) =>
-      send(CoapRequest.newPost().setPayloadMediaRaw(payload, format));
+  Future<CoapResponse> postBytePayload(typed.Uint8Buffer payload, int format) {
+    request ??= CoapRequest.newPost().setPayloadMediaRaw(payload, format);
+    return send(request.setPayloadMediaRaw(payload, format));
+  }
 
   /// Sends a POST request with the specified Accept option and byte payload.
   /// Blocks until the response is available.
-  Future<CoapResponse> postBytePayloadWithAccept(
-          typed.Uint8Buffer payload, int format, int acceptVal) =>
-      send(accept(CoapRequest.newPost().setPayloadMediaRaw(payload, format),
-          acceptVal));
+  Future<CoapResponse> postBytePayloadWithAccept(typed.Uint8Buffer payload,
+      int format, int acceptVal) {
+    request ??= CoapRequest.newPost().setPayloadMediaRaw(payload, format);
+    return send(accept(request.setPayloadMediaRaw(payload, format), acceptVal));
+  }
 
   /// Sends a PUT request and blocks until the response is available.
   Future<CoapResponse> put(String payload,
@@ -137,52 +149,64 @@ class CoapClient {
 
   /// Sends a PUT request with the specified Accept option and blocks
   /// until the response is available.
-  Future<CoapResponse> putBytePayloadWithAccept(
-          typed.Uint8Buffer payload, int format, int acceptVal) =>
-      send(accept(
-          CoapRequest.newPut().setPayloadMediaRaw(payload, format), acceptVal));
+  Future<CoapResponse> putBytePayloadWithAccept(typed.Uint8Buffer payload,
+      int format, int acceptVal) {
+    request ??= CoapRequest.newPut().setPayloadMediaRaw(payload, format);
+    return send(accept(request.setPayloadMediaRaw(payload, format), acceptVal));
+  }
 
   /// If match
-  Future<CoapResponse> putIfMatch(
-          String payload, int format, List<typed.Uint8Buffer> etags) =>
-      send(ifMatch(
-          CoapRequest.newPut().setPayloadMedia(payload, format), etags));
+  Future<CoapResponse> putIfMatch(String payload, int format,
+      List<typed.Uint8Buffer> etags) {
+    request ??= CoapRequest.newPut().setPayloadMedia(payload, format);
+    return send(ifMatch(request.setPayloadMedia(payload, format), etags));
+  }
 
   /// If match byte payload
   Future<CoapResponse> putIfMatchBytePayload(typed.Uint8Buffer payload,
-          int format, List<typed.Uint8Buffer> etags) =>
-      send(ifMatch(
-          CoapRequest.newPut().setPayloadMediaRaw(payload, format), etags));
+      int format, List<typed.Uint8Buffer> etags) {
+    request ??= CoapRequest.newPut().setPayloadMediaRaw(payload, format);
+    return send(ifMatch(request.setPayloadMediaRaw(payload, format), etags));
+  }
 
   /// If none match
-  Future<CoapResponse> putIfNoneMatch(String payload, int format) =>
-      send(ifNoneMatch(CoapRequest.newPut().setPayloadMedia(payload, format)));
+  Future<CoapResponse> putIfNoneMatch(String payload, int format) {
+    request ??= CoapRequest.newPut().setPayloadMedia(payload, format);
+    return send(ifNoneMatch(request.setPayloadMedia(payload, format)));
+  }
 
   /// If none match byte payload
-  Future<CoapResponse> putIfNoneMatchBytePayload(
-          typed.Uint8Buffer payload, int format) =>
-      send(ifNoneMatch(
-          CoapRequest.newPut().setPayloadMediaRaw(payload, format)));
+  Future<CoapResponse> putIfNoneMatchBytePayload(typed.Uint8Buffer payload,
+      int format) {
+    request ??= CoapRequest.newPut().setPayloadMediaRaw(payload, format);
+    return send(ifNoneMatch(request.setPayloadMediaRaw(payload, format)));
+  }
 
   /// Delete
-  Future<CoapResponse> delete() => send(CoapRequest.newDelete());
+  Future<CoapResponse> delete() {
+    request ??= CoapRequest.newDelete();
+    return send(CoapRequest.newDelete());
+  }
 
   /// Validate
-  Future<CoapResponse> validate(List<typed.Uint8Buffer> etags) =>
-      send(eTags(CoapRequest.newGet(), etags));
+  Future<CoapResponse> validate(List<typed.Uint8Buffer> etags) {
+    request ??= CoapRequest.newGet();
+    return send(eTags(request, etags));
+  }
 
   /// Observe
   CoapObserveClientRelation observe(
-          [ActionGeneric<CoapResponse> notify,
-          ActionGeneric<FailReason> error]) =>
-      _observe(CoapRequest.newGet().markObserve(), notify, error);
+      [ActionGeneric<CoapResponse> notify, ActionGeneric<FailReason> error]) {
+    request ??= CoapRequest.newGet();
+    return _observe(request.markObserve(), notify, error);
+  }
 
   /// Observe with accept
   CoapObserveClientRelation observeWithAccept(int acceptVal,
-          [ActionGeneric<CoapResponse> notify,
-          ActionGeneric<FailReason> error]) =>
-      _observe(
-          accept(CoapRequest.newGet().markObserve(), acceptVal), notify, error);
+      [ActionGeneric<CoapResponse> notify, ActionGeneric<FailReason> error]) {
+    request ??= CoapRequest.newGet();
+    return _observe(accept(request.markObserve(), acceptVal), notify, error);
+  }
 
   /// Accept
   static CoapRequest accept(CoapRequest request, int accept) {
@@ -238,7 +262,9 @@ class CoapClient {
     return request.send().waitForResponse(timeout);
   }
 
-  /// Prepare
+  /// Prepare. If you wish to build and send your own resource, i.e not using the API in
+  /// this class this method MUST be called to prepare the resource BEFORE calling a
+  /// send method on the resource.
   Future<CoapRequest> prepare(CoapRequest request) async =>
       await _doPrepare(request);
 
