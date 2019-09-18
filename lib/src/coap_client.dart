@@ -54,6 +54,9 @@ class CoapClient {
   /// Timeout
   int timeout = 32767; //ms
 
+  /// Address type, set this if using IPV6
+  InternetAddressType addressType = InternetAddressType.IPv4;
+
   CoapEventBus _eventBus = CoapEventBus();
 
   /// Tell the client to use Confirmable requests.
@@ -295,7 +298,7 @@ class CoapClient {
     request.uri = uri;
 
     // Resolve the uri
-    await request.resolveDestination(InternetAddressType.IPv4);
+    await request.resolveDestination(addressType);
     // Endpoint and channel
     CoapEndpointManager.getDefaultSpec();
     final CoapIChannel channel = CoapUDPChannel(request.destination, uri.port);

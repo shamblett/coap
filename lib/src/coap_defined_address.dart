@@ -13,5 +13,5 @@ class CoapDefinedAddress {
   static const String allCOAPIPV4 = '224.0.1.187';
 
   /// Multicast IPV6
-  static const String allCOAPIPV6 = '[FF0X::FD]';
+  static const String allCOAPIPV6 = '[FF02::1]';
 }
