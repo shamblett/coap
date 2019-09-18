@@ -185,7 +185,7 @@ class CoapClient {
   /// Delete
   Future<CoapResponse> delete() {
     request ??= CoapRequest.newDelete();
-    return send(CoapRequest.newDelete());
+    return send(request);
   }
 
   /// Validate
