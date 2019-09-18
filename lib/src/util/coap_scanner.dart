@@ -23,6 +23,7 @@ class CoapScanner extends scanner.StringScanner {
     } on scanner.StringScannerException {
       // If we run out of string return what we have
       // TODO we are losing the last character, fix this
+      buff.write(String.fromCharCode(readChar()));
       return buff.toString();
     }
     return buff.toString();
