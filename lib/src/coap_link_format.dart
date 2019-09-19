@@ -107,8 +107,13 @@ class CoapLinkFormat {
           String attributeString = scanner.takeUntil(linkStart);
           if (attributeString != null) {
             // Condition the string before splitting
-            attributeString =
-                attributeString.substring(0, attributeString.length - 1);
+            if (attributeString.endsWith(delimiter)) {
+              attributeString =
+                  attributeString.substring(0, attributeString.length - 1);
+            } else {
+              attributeString =
+                  attributeString.substring(0, attributeString.length);
+            }
             // Split on delimiter
             final List<String> attrs = attributeString.split(separator);
             for (String attr in attrs) {
