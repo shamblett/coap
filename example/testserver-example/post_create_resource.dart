@@ -50,7 +50,7 @@ FutureOr<void> main(List<String> args) async {
     if (response != null) {
       print('EXAMPLE - get response received');
       print(response.payloadString);
-      final Iterable<CoapOption> options = request.getSortedOptions();
+      final Iterable<CoapOption> options = response.getSortedOptions();
       for (CoapOption option in options) {
         if (option.type == optionTypeUriQuery) {
           print('Title is : ${option.stringValue.split('=')[1]}');

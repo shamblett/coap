@@ -17,7 +17,7 @@ FutureOr<void> main(List<String> args) async {
 
   // Build the request uri, note that the request paths/query parameters can be changed
   // on the request anytime after this initial setup.
-  const String host = 'localhost';
+  const String host = 'coap.me';
 
   final Uri uri = Uri(scheme: 'coap', host: host, port: conf.defaultPort);
 
@@ -31,7 +31,7 @@ FutureOr<void> main(List<String> args) async {
 
   // Create the request for the put request
   final CoapRequest request = CoapRequest.newPut();
-  request.addUriPath('storage');
+  request.addUriPath('create1');
   // Add a title
   request.addUriQuery('${CoapLinkFormat.title}=This is an SJH Put request');
   client.request = request;
@@ -41,16 +41,17 @@ FutureOr<void> main(List<String> args) async {
   CoapResponse response = await client.put('SJHTestPut');
   if (response != null) {
     print('EXAMPLE - put response received, sending get');
-    print(response.payloadString);
+    print('EXAMPLE -  Payload: ${response.payloadString}');
     // Now get and check the payload
     final CoapRequest getRequest = CoapRequest.newGet();
-    getRequest.addUriPath('storage');
+    getRequest.addUriPath('create1');
     client.request = getRequest;
     response = await client.get();
     if (response != null) {
       print('EXAMPLE - get response received');
-      print(response.payloadString);
-      final Iterable<CoapOption> options = response.getSortedOptions();
+      print('EXAMPLE - Payload: ${response.payloadString}');
+      print('E-Tag : ${response.etags.toList().first.stringValue}');
+      final Iterable<CoapOption> options = request.getSortedOptions();
       for (CoapOption option in options) {
         if (option.type == optionTypeUriQuery) {
           print('Title is : ${option.stringValue.split('=')[1]}');
