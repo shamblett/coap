@@ -4,7 +4,7 @@
  * Date   : 06/06/2018
  * Copyright :  S.Hamblett
  *
- * A put request is used to create data on the clear1 coap.me resource
+ * A put request is used to create data on the storage testserver resource
  */
 
 import 'dart:async';
@@ -30,17 +30,17 @@ FutureOr<void> main(List<String> args) async {
   //client.timeout = 10000;
 
   // Create the request for the put request
-  final CoapRequest request = CoapRequest.newPost();
+  final CoapRequest request = CoapRequest.newPut();
   request.addUriPath('create1');
   // Add a title
-  request.addUriQuery('${CoapLinkFormat.title}=This is an SJH post request');
+  request.addUriQuery('${CoapLinkFormat.title}=This is an SJH Put request');
   client.request = request;
 
-  print('EXAMPLE - Sending post request to $host, waiting for response....');
+  print('EXAMPLE - Sending put request to $host, waiting for response....');
 
   CoapResponse response = await client.put('SJHTestPut');
   if (response != null) {
-    print('EXAMPLE - post response received, sending get');
+    print('EXAMPLE - put response received, sending get');
     print('EXAMPLE -  Payload: ${response.payloadString}');
     // Now get and check the payload
     final CoapRequest getRequest = CoapRequest.newGet();
@@ -55,7 +55,7 @@ FutureOr<void> main(List<String> args) async {
       print('EXAMPLE - no get response received');
     }
   } else {
-    print('EXAMPLE - no post response received');
+    print('EXAMPLE - no put response received');
   }
 
   // Clean up
