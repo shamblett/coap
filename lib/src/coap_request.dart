@@ -86,6 +86,7 @@ class CoapRequest extends CoapMessage {
 
   set response(CoapResponse value) {
     _currentResponse = value;
+    _currentResponse.timestamp = DateTime.now();
     _eventBus.fire(CoapRespondEvent(value));
     // Add to the internal response stream
     _responseStream.add(value);
@@ -143,6 +144,7 @@ class CoapRequest extends CoapMessage {
   CoapRequest send() {
     _validateBeforeSending();
     endpoint.sendEpRequest(this);
+    timestamp = DateTime.now();
     // Clear the internal response stream
     _responseStream.stream.drain();
     return this;
@@ -153,6 +155,7 @@ class CoapRequest extends CoapMessage {
     _validateBeforeSending();
     endpoint = endpointIn;
     endpoint.sendEpRequest(this);
+    timestamp = DateTime.now();
     return this;
   }
 
@@ -181,6 +184,7 @@ class CoapRequest extends CoapMessage {
       response
           .listen((CoapResponse resp) {
             _currentResponse = resp;
+            _currentResponse.timestamp = DateTime.now();
             completer.complete(_currentResponse);
           })
           .asFuture()

@@ -144,7 +144,8 @@ class CoapMessage {
   typed.Uint8Buffer get token => _token;
 
   /// As a string
-  String get tokenString => _token != null ? CoapByteArrayUtil.toHexString(_token) : null;
+  String get tokenString =>
+      _token != null ? CoapByteArrayUtil.toHexString(_token) : null;
 
   set token(typed.Uint8Buffer value) {
     if (value != null && value.length > 8) {
@@ -252,9 +253,10 @@ class CoapMessage {
   /// The default value is 0.
   int maxRetransmit = 0;
 
-  /// the amount of time in milliseconds after which this message will time out.
-  /// A value of 0 indicates that the time should be decided automatically,
-  /// while a negative that never time out. The default value is 0.
+  /// The amount of time in milliseconds after which this message will time out.
+  /// A value of 0 indicates that the time should be decided automatically from the
+  /// configuration.
+  /// The default value is 0.
   int ackTimeout = 0;
 
   /// UTF8 decoder and encoder helpers
@@ -281,10 +283,11 @@ class CoapMessage {
     return null;
   }
 
+  /// Sets the payload from a string with a default media type
   set payloadString(String value) =>
       setPayloadMedia(value, CoapMediaType.textPlain);
 
-  /// Sets the payload of this CoAP message.
+  /// Sets the payload.
   CoapMessage setPayload(String payload) {
     if (payload == null) {
       return this;
@@ -294,7 +297,7 @@ class CoapMessage {
     return this;
   }
 
-  /// Sets the payload of this CoAP message.
+  /// Sets the payload and media type of this CoAP message.
   CoapMessage setPayloadMedia(String payload, int mediaType) {
     if (payload == null) {
       return this;
@@ -320,41 +323,6 @@ class CoapMessage {
   @override
   String toString() =>
       '\nType: ${type.toString()}, Code: $codeString, Id: ${id.toString()}, Token: $tokenString, \nOptions=[${CoapUtil.optionsToString(this)}], \nPayload :\n$payloadString';
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if ((other is CoapMessage) && (type != other.type)) {
-      return false;
-    }
-    if ((other is CoapMessage) && (code != other.code)) {
-      return false;
-    }
-    if ((other is CoapMessage) && (id != other.id)) {
-      return false;
-    }
-    if (optionMap == null) {
-      if ((other is CoapMessage) && (other.optionMap != null)) {
-        return false;
-      }
-    } else if ((other is CoapMessage) && (optionMap != other.optionMap)) {
-      return false;
-    }
-    if (other == CoapMessage) {
-      final CoapMessage message = other;
-      if (!CoapUtil.areSequenceEqualTo(payload, message.payload)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  @override
-
-  /// Overridden hashcode for the == definition
-  int get hashCode => super.hashCode;
 
   /// Select options helper
   Iterable<CoapOption> _selectOptions(

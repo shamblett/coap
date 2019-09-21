@@ -4,12 +4,15 @@
  * Date   : 20/09/2019
  * Copyright :  S.Hamblett
  */
+
 import 'dart:io';
 import 'package:coap/coap.dart';
 import 'package:test/test.dart';
 import 'package:typed_data/typed_data.dart' as typed;
 import 'package:collection/collection.dart';
 
+// Note that nnot all API methods are tested here, some are tested in other unit test suites,
+// some in dynamic testing.
 void main() {
   // ignore: unused_local_variable
   final CoapConfig conf = CoapConfig(File('test/config_logging.yaml'));
@@ -32,6 +35,16 @@ void main() {
     expect(message.isRejected, isFalse);
     expect(message.isTimedOut, isFalse);
     expect(message.timedOutHook, isNull);
+    expect(message.retransmittingHook, isNull);
+    expect(message.isCancelled, isFalse);
+    expect(message.duplicate, isFalse);
+    expect(message.timestamp, isNull);
+    expect(message.maxRetransmit, 0);
+    expect(message.ackTimeout, 0);
+    expect(message.payload, isNull);
+    expect(message.payloadSize, 0);
+    expect(message.payloadString, isNull);
+
   });
 
   test('Options', () {
@@ -116,6 +129,37 @@ void main() {
     expect(message.isTimedOut, isFalse);
     expect(timedOut, isTrue);
     expect(eventBus.lastEvent, isNull);
+  });
+
+  test('Retransmitting', () {
+    final CoapMessage message = CoapMessage();
+    bool retrans = false;
+    void retransHook(){retrans = true;}
+    message.fireRetransmitting();
+    expect(retrans, isFalse);
+    message.retransmittingHook = retransHook;
+    message.fireRetransmitting();
+    expect(retrans, isTrue);
+  });
+
+  test('Cancelled', () {
+    final CoapMessage message = CoapMessage();
+    message.isCancelled = true;
+    expect(message.isCancelled, isTrue);
+    final CoapEventBus eventBus = CoapEventBus();
+    expect(eventBus.lastEvent is CoapCancelledEvent, isTrue);
+    message.isCancelled = false;
+    message.cancel();
+    expect(message.isCancelled, isTrue);
+  });
+
+  test('Payload', ()
+  {
+    final CoapMessage message = CoapMessage();
+    message.setPayload('This is the payload');
+    expect(message.payload, isNotNull);
+    expect(message.payloadString, 'This is the payload');
+    expect(message.payloadSize, 19);
   });
 
 }

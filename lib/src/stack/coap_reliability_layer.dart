@@ -87,10 +87,12 @@ class CoapTransmissionContext {
       _log.warn(
           'Reliability - Timeout: retransmit message, failed count: $failedCount message: ${_message.id}');
 
-      _message.fireRetransmitting();
-
       // Message might have canceled
-      if (!_message.isCancelled) {
+      if (_message.isCancelled || _message.maxRetransmit == CoapMessage.none) {
+        _log.warn(
+            'Reliability - not retransmitting, message is cancelled or is set to no retransmit');
+      } else {
+        _message.fireRetransmitting();
         _retransmit(this);
       }
     } else {
