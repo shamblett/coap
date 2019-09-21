@@ -101,7 +101,7 @@ class CoapMessage {
     return list;
   }
 
-  /// Sets an option.
+  /// Sets an option, removing all others of the option type
   void setOption(CoapOption opt) {
     if (opt != null) {
       removeOptions(opt.type);
@@ -109,7 +109,7 @@ class CoapMessage {
     }
   }
 
-  /// Sets all options with the specified option type.
+  /// Sets all options with the specified option type, removing all others of the same type
   void setOptions(Iterable<CoapOption> options) {
     if (options == null) {
       return;
@@ -120,27 +120,31 @@ class CoapMessage {
     addOptions(options);
   }
 
-  /// Gets the first option of the specified option type.
   /// Returns the first option of the specified type, or null
   CoapOption getFirstOption(int optionType) {
-    final List<CoapOption> list = getOptions(optionType);
-    if (list == null) {
+    final List<CoapOption> options = getOptions(optionType);
+    if (options == null) {
       return null;
     }
-    return list.isNotEmpty ? list.first : null;
+    for (CoapOption option in options) {
+      if (option.type == optionType) {
+        return option;
+      }
+    }
+    return null;
   }
 
   /// Checks if this CoAP message has options of the specified option type.
   /// Returns true if options of the specified type exists.
   bool hasOption(int type) => getFirstOption(type) != null;
 
-  typed.Uint8Buffer _token; //typed.Uint8Buffer();
+  typed.Uint8Buffer _token;
 
   /// The 0-8 byte token.
   typed.Uint8Buffer get token => _token;
 
   /// As a string
-  String get tokenString => CoapByteArrayUtil.toHexString(_token);
+  String get tokenString => _token != null ? CoapByteArrayUtil.toHexString(_token) : null;
 
   set token(typed.Uint8Buffer value) {
     if (value != null && value.length > 8) {
@@ -315,9 +319,7 @@ class CoapMessage {
 
   @override
   String toString() =>
-      '\nType: ${type.toString()}, Code: $codeString, Id: ${id
-          .toString()}, Token: $tokenString, \nOptions=[${CoapUtil
-          .optionsToString(this)}], \nPayload :\n$payloadString';
+      '\nType: ${type.toString()}, Code: $codeString, Id: ${id.toString()}, Token: $tokenString, \nOptions=[${CoapUtil.optionsToString(this)}], \nPayload :\n$payloadString';
 
   @override
   bool operator ==(Object other) {
