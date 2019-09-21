@@ -36,7 +36,7 @@ class CoapMessage {
   int type = CoapMessageType.unknown;
 
   /// The code of this CoAP message.
-  int code;
+  int code = CoapCode.notSet;
 
   /// The codestring
   String get codeString => CoapCode.codeToString(code);
@@ -177,7 +177,7 @@ class CoapMessage {
   /// Indicates whether this message has been acknowledged.
   bool get isAcknowledged => _acknowledged;
 
-  /// Acknowledged hook
+  /// Acknowledged hook for attaching a callback if needed
   HookFunction acknowledgedHook;
 
   set isAcknowledged(bool value) {
@@ -204,7 +204,7 @@ class CoapMessage {
   /// Indicates whether this message has been timed out.
   bool get isTimedOut => _timedOut;
 
-  /// Timed out hook function
+  /// Timed out hook function for attaching a callback if needed
   HookFunction timedOutHook;
 
   set isTimedOut(bool value) {

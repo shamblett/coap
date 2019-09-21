@@ -10,6 +10,9 @@ part of coap;
 /// This class describes the CoAP Code Registry as defined in
 /// draft-ietf-core-coap-08, section 11.1
 class CoapCode {
+  /// Not set
+  static const int notSet = -1;
+
   /// Empty
   static const int empty = 0;
 
@@ -136,6 +139,8 @@ class CoapCode {
       return 'Null status code';
     }
     switch (code) {
+      case notSet:
+        return 'Not Set';
       case empty:
         return 'Empty Message';
       case get:

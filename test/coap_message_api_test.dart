@@ -17,7 +17,7 @@ void main() {
   test('Construction', () {
     final CoapMessage message = CoapMessage();
     expect(message.type, CoapMessageType.unknown);
-    expect(message.code, isNull);
+    expect(message.code, CoapCode.notSet);
     expect(message.id >= 1, isTrue);
     expect(message.id <= CoapMessage.initialIdLimit, isTrue);
     expect(message.resolveHost == 'localhost', isTrue);
@@ -25,6 +25,13 @@ void main() {
     expect(message.bindAddress, isNull);
     expect(message.token, isNull);
     expect(message.tokenString, isNull);
+    expect(message.destination, isNull);
+    expect(message.source, isNull);
+    expect(message.isAcknowledged, isFalse);
+    expect(message.acknowledgedHook, isNull);
+    expect(message.isRejected, isFalse);
+    expect(message.isTimedOut, isFalse);
+    expect(message.timedOutHook, isNull);
   });
 
   test('Options', () {
@@ -58,6 +65,57 @@ void main() {
     expect(message.optionMap.length, 0);
     expect(message.getOptions(optionTypeUriHost), isNull);
     expect(message.getOptions(optionTypeReserved), isNull);
+  });
+
+  test('Message codes', () {
+    final CoapMessage message = CoapMessage();
+    expect(message.isRequest, isFalse);
+    expect(message.isResponse, isFalse);
+    expect(message.isEmpty, isFalse);
+    expect(message.isValid, isFalse);
+    expect(message.codeString, 'Not Set');
+  });
+
+  test('Acknowledged', () {
+    bool acked = false;
+    void ackHook(){acked = true;}
+    final CoapMessage message = CoapMessage();
+    message.isAcknowledged = true;
+    expect(message.isAcknowledged, isTrue);
+    expect(acked, isFalse);
+    final CoapEventBus eventBus = CoapEventBus();
+    expect(eventBus.lastEvent is CoapAcknowledgedEvent, isTrue);
+    eventBus.lastEvent = null;
+    message.acknowledgedHook = ackHook;
+    message.isAcknowledged = false;
+    expect(message.isAcknowledged, isFalse);
+    expect(acked, isTrue);
+    expect(eventBus.lastEvent, isNull);
+  });
+
+  test('Rejected', () {
+    final CoapMessage message = CoapMessage();
+    message.isRejected = true;
+    expect(message.isRejected, isTrue);
+    final CoapEventBus eventBus = CoapEventBus();
+    expect(eventBus.lastEvent is CoapRejectedEvent, isTrue);
+  });
+
+  test('Timed out', () {
+    bool timedOut = false;
+    void toHook(){timedOut = true;}
+    final CoapMessage message = CoapMessage();
+    message.isTimedOut = true;
+    expect(message.isTimedOut, isTrue);
+    expect(timedOut, isFalse);
+    final CoapEventBus eventBus = CoapEventBus();
+    expect(eventBus.lastEvent is CoapTimedOutEvent, isTrue);
+    eventBus.lastEvent = null;
+    message.timedOutHook = toHook;
+    message.isTimedOut = false;
+    expect(message.isTimedOut, isFalse);
+    expect(timedOut, isTrue);
+    expect(eventBus.lastEvent, isNull);
   });
 
 }

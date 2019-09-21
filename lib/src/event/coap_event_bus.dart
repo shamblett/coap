@@ -139,6 +139,9 @@ class CoapEventBus {
     _eventBus = events.EventBus();
   }
 
+  /// Last event fired, useful for testing
+  dynamic lastEvent;
+
   CoapILogger _log = CoapLogManager().logger;
   events.EventBus _eventBus;
   bool _destroyed = false;
@@ -146,6 +149,7 @@ class CoapEventBus {
   /// Fire
   void fire(dynamic event) {
     if (!_destroyed) {
+      lastEvent = event;
       _eventBus.fire(event);
     } else {
       _log.warn(
