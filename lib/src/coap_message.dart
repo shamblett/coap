@@ -87,9 +87,10 @@ class CoapMessage {
   }
 
   /// Gets all options of the given type.
-  Iterable<CoapOption> getOptions(int optionType) =>
-      getAllOptions().takeWhile((CoapOption x) => x.type == optionType);
-
+  Iterable<CoapOption> getOptions(int optionType) {
+    Iterable<CoapOption> opts = getAllOptions();
+    return opts.takeWhile((CoapOption x) => x.type == optionType);
+  }
   /// Gets a list of all options.
   Iterable<CoapOption> getAllOptions() {
     final List<CoapOption> list = List<CoapOption>();
@@ -360,12 +361,15 @@ class CoapMessage {
 
   /// Remove an opaque if match
   CoapMessage removeIfMatch(typed.Uint8Buffer opaque) {
-    final List<CoapOption> list = getOptions(optionTypeIfMatch);
+    final Iterable<CoapOption> list = getOptions(optionTypeIfMatch);
     if (list != null) {
       final CoapOption opt = CoapUtil.firstOrDefault(list,
           (CoapOption o) => CoapUtil.areSequenceEqualTo(opaque, o.valueBytes));
       if (opt != null) {
-        list.remove(opt);
+        _optionMap[optionTypeIfMatch].remove(opt);
+        if (_optionMap[optionTypeIfMatch].isEmpty) {
+          _optionMap.remove(optionTypeIfMatch);
+        }
       }
     }
     return this;

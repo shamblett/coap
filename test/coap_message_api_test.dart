@@ -172,14 +172,14 @@ void main() {
   test('If match', () {
     final CoapMessage message = CoapMessage();
     expect(message.ifMatches.length, 0);
-    message.addIfMatch('ETag-1').addIfMatch('Etag-2');
+    message.addIfMatch('ETag-1').addIfMatch('ETag-2');
     expect(message.ifMatches.length, 2);
     expect(message.ifMatches.toList()[0].stringValue, 'ETag-1');
     expect(message.ifMatches.toList()[1].stringValue, 'ETag-2');
-    message.removeETag(message.ifMatches.toList()[0].valueBytes);
+    message.removeIfMatch(message.ifMatches.toList()[0].valueBytes);
     expect(message.ifMatches.length, 1);
     expect(message.ifMatches.toList()[0].stringValue, 'ETag-2');
-    message.clearETags();
+    message.clearIfMatches();
     expect(message.ifMatches.length, 0);
   });
 }
