@@ -87,10 +87,8 @@ class CoapMessage {
   }
 
   /// Gets all options of the given type.
-  Iterable<CoapOption> getOptions(int optionType) {
-    Iterable<CoapOption> opts = getAllOptions();
-    return opts.takeWhile((CoapOption x) => x.type == optionType);
-  }
+  Iterable<CoapOption> getOptions(int optionType) => _optionMap[optionType];
+
   /// Gets a list of all options.
   Iterable<CoapOption> getAllOptions() {
     final List<CoapOption> list = List<CoapOption>();
