@@ -44,7 +44,6 @@ void main() {
     expect(message.payload, isNull);
     expect(message.payloadSize, 0);
     expect(message.payloadString, isNull);
-
   });
 
   test('Options', () {
@@ -91,7 +90,10 @@ void main() {
 
   test('Acknowledged', () {
     bool acked = false;
-    void ackHook(){acked = true;}
+    void ackHook() {
+      acked = true;
+    }
+
     final CoapMessage message = CoapMessage();
     message.isAcknowledged = true;
     expect(message.isAcknowledged, isTrue);
@@ -116,7 +118,10 @@ void main() {
 
   test('Timed out', () {
     bool timedOut = false;
-    void toHook(){timedOut = true;}
+    void toHook() {
+      timedOut = true;
+    }
+
     final CoapMessage message = CoapMessage();
     message.isTimedOut = true;
     expect(message.isTimedOut, isTrue);
@@ -134,7 +139,10 @@ void main() {
   test('Retransmitting', () {
     final CoapMessage message = CoapMessage();
     bool retrans = false;
-    void retransHook(){retrans = true;}
+    void retransHook() {
+      retrans = true;
+    }
+
     message.fireRetransmitting();
     expect(retrans, isFalse);
     message.retransmittingHook = retransHook;
@@ -153,8 +161,7 @@ void main() {
     expect(message.isCancelled, isTrue);
   });
 
-  test('Payload', ()
-  {
+  test('Payload', () {
     final CoapMessage message = CoapMessage();
     message.setPayload('This is the payload');
     expect(message.payload, isNotNull);
@@ -162,4 +169,17 @@ void main() {
     expect(message.payloadSize, 19);
   });
 
+  test('If match', () {
+    final CoapMessage message = CoapMessage();
+    expect(message.ifMatches.length, 0);
+    message.addIfMatch('ETag-1').addIfMatch('Etag-2');
+    expect(message.ifMatches.length, 2);
+    expect(message.ifMatches.toList()[0].stringValue, 'ETag-1');
+    expect(message.ifMatches.toList()[1].stringValue, 'ETag-2');
+    message.removeETag(message.ifMatches.toList()[0].valueBytes);
+    expect(message.ifMatches.length, 1);
+    expect(message.ifMatches.toList()[0].stringValue, 'ETag-2');
+    message.clearETags();
+    expect(message.ifMatches.length, 0);
+  });
 }

@@ -302,7 +302,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           // NON could make sense over SMS or similar transports
           block.type = request.type;
           block.destination = request.destination;
-          block.setOptions(request.getSortedOptions());
+          block.setOptions(request.getAllOptions());
           final CoapBlockOption nextBlock =
               CoapBlockOption.fromParts(optionTypeBlock2, num, szx, m: m);
           block.setOption(nextBlock);
@@ -387,7 +387,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     final int num = status.currentNUM;
     final int szx = status.currentSZX;
     final CoapRequest block = CoapRequest.withType(request.method);
-    block.setOptions(request.getSortedOptions());
+    block.setOptions(request.getAllOptions());
     block.destination = request.destination;
     block.token = request.token;
     block.type = CoapMessageType.con;
@@ -428,7 +428,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     message.source = last.source;
     message.token = last.token;
     message.type = last.type;
-    message.setOptions(last.getSortedOptions());
+    message.setOptions(last.getAllOptions());
 
     final typed.Uint8Buffer payload = typed.Uint8Buffer();
     status.blocks.forEach(payload.addAll);
@@ -470,7 +470,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       block = CoapResponse(response.statusCode);
       block.destination = response.destination;
       block.token = response.token;
-      block.setOptions(response.getSortedOptions());
+      block.setOptions(response.getAllOptions());
       block.isTimedOut = true;
     }
 

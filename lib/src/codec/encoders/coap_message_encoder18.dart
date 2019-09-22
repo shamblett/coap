@@ -25,7 +25,7 @@ class CoapMessageEncoder18 extends CoapMessageEncoder {
     writer.writeBytes(message.token);
 
     int lastOptionNumber = 0;
-    final List<CoapOption> options = message.getSortedOptions();
+    final List<CoapOption> options = message.getAllOptions();
     CoapUtil.insertionSort(
         options, (dynamic a, dynamic b) => a.type.compareTo(b.type));
 

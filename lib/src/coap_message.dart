@@ -88,10 +88,10 @@ class CoapMessage {
 
   /// Gets all options of the given type.
   Iterable<CoapOption> getOptions(int optionType) =>
-      optionMap.containsKey(optionType) ? optionMap[optionType] : null;
+      getAllOptions().takeWhile((CoapOption x) => x.type == optionType);
 
   /// Gets a list of all options.
-  Iterable<CoapOption> getSortedOptions() {
+  Iterable<CoapOption> getAllOptions() {
     final List<CoapOption> list = List<CoapOption>();
     for (Iterable<CoapOption> opts in _optionMap.values) {
       if (opts.isNotEmpty) {
@@ -325,30 +325,29 @@ class CoapMessage {
       '\nType: ${type.toString()}, Code: $codeString, Id: ${id.toString()}, Token: $tokenString, \nOptions=[${CoapUtil.optionsToString(this)}], \nPayload :\n$payloadString';
 
   /// Select options helper
-  Iterable<CoapOption> _selectOptions(
-      int optionType, func(CoapOption option)) sync* {
+  Iterable<CoapOption> _selectOptions(int optionType) {
+    final List<CoapOption> ret = List<CoapOption>();
     final Iterable<CoapOption> opts = getOptions(optionType);
     if (opts != null) {
-      for (CoapOption opt in opts) {
-        yield func(opt);
-      }
+      opts.forEach(ret.add);
     }
+    return ret;
   }
 
   /// If-Matches.
   Iterable<CoapOption> get ifMatches =>
-      _selectOptions(optionTypeIfMatch, (CoapOption o) => o.valueBytes);
+      _selectOptions(optionTypeIfMatch).toList();
 
-  /// If match
-  bool isIfMatch(typed.Uint8Buffer what) {
-    if (CoapUtil.areSequenceEqualTo(what, ifMatches)) {
-      return true;
+  /// Add an if match option, if a null string is passed the if match is not set
+  CoapMessage addIfMatch(String etag) {
+    if (etag == null) {
+      return this;
     }
-    return false;
+    return addOption(CoapOption.createString(optionTypeIfMatch, etag));
   }
 
-  /// Add an if match
-  CoapMessage addIfMatch(typed.Uint8Buffer opaque) {
+  /// Add an opaque if match
+  CoapMessage addIfMatchOpaque(typed.Uint8Buffer opaque) {
     if (opaque == null) {
       throw ArgumentError.notNull('Message::addIfMatch');
     }
@@ -359,7 +358,7 @@ class CoapMessage {
     return addOption(CoapOption.createRaw(optionTypeIfMatch, opaque));
   }
 
-  /// Remove an if match
+  /// Remove an opaque if match
   CoapMessage removeIfMatch(typed.Uint8Buffer opaque) {
     final List<CoapOption> list = getOptions(optionTypeIfMatch);
     if (list != null) {
@@ -379,8 +378,7 @@ class CoapMessage {
   }
 
   /// Etags
-  Iterable<CoapOption> get etags =>
-      _selectOptions(optionTypeETag, (CoapOption o) => o);
+  Iterable<CoapOption> get etags => _selectOptions(optionTypeETag);
 
   /// Contains an E-tag
   bool containsETag(typed.Uint8Buffer what) => CoapUtil.contains(
@@ -566,8 +564,8 @@ class CoapMessage {
       setOptions(CoapOption.split(optionTypeLocationPath, value, '/'));
 
   /// Location paths
-  dynamic get locationPaths =>
-      _selectOptions(optionTypeLocationPath, (CoapOption o) => o);
+  Iterable<CoapOption> get locationPaths =>
+      _selectOptions(optionTypeLocationPath);
 
   /// Location
   String get location {
@@ -623,8 +621,8 @@ class CoapMessage {
   }
 
   /// Location queries
-  Iterable<dynamic> get locationQueries =>
-      _selectOptions(optionTypeLocationQuery, (CoapOption o) => o.toString());
+  Iterable<CoapOption> get locationQueries =>
+      _selectOptions(optionTypeLocationQuery);
 
   /// Add a location query
   CoapMessage addLocationQuery(String query) {

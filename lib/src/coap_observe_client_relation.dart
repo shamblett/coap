@@ -49,7 +49,7 @@ class CoapObserveClientRelation {
   void proactiveCancel() {
     final CoapRequest cancel = CoapRequest.newGet();
     // Copy options, but set Observe to cancel
-    cancel.setOptions(_request.getSortedOptions());
+    cancel.setOptions(_request.getAllOptions());
     cancel.markObserveCancel();
     // Use same Token
     cancel.token = _request.token;

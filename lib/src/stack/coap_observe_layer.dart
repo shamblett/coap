@@ -38,7 +38,7 @@ class CoapReregistrationContext {
     final CoapRequest request = _exchange.request;
     if (!request.isCancelled) {
       final CoapRequest refresh = CoapRequest.newGet();
-      refresh.setOptions(request.getSortedOptions());
+      refresh.setOptions(request.getAllOptions());
       // Make sure Observe is set and zero
       refresh.markObserve();
       // Use same Token

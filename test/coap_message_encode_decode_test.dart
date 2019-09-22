@@ -782,7 +782,7 @@ void main() {
       expect(msg.code, convMsg.code);
       expect(msg.type, convMsg.type);
       expect(msg.id, convMsg.id);
-      expect(msg.getSortedOptions().length, convMsg.getSortedOptions().length);
+      expect(msg.getAllOptions().length, convMsg.getAllOptions().length);
       expect(
           leq.equals(msg.payload.toList(), convMsg.payload.toList()), isTrue);
       expect(msg.payloadString, convMsg.payloadString);
@@ -807,10 +807,10 @@ void main() {
       expect(msg.code, convMsg.code);
       expect(msg.type, convMsg.type);
       expect(msg.id, convMsg.id);
-      expect(msg.getSortedOptions().length, convMsg.getSortedOptions().length);
+      expect(msg.getAllOptions().length, convMsg.getAllOptions().length);
       expect(
-          leq.equals(msg.getSortedOptions().toList(),
-              convMsg.getSortedOptions().toList()),
+          leq.equals(msg.getAllOptions().toList(),
+              convMsg.getAllOptions().toList()),
           isTrue);
       expect(convMsg.getFirstOption(optionTypeContentType).stringValue,
           'text/plain');
@@ -837,10 +837,10 @@ void main() {
       expect(msg.code, convMsg.code);
       expect(msg.type, convMsg.type);
       expect(msg.id, convMsg.id);
-      expect(msg.getSortedOptions().length, convMsg.getSortedOptions().length);
+      expect(msg.getAllOptions().length, convMsg.getAllOptions().length);
       expect(
-          leq.equals(msg.getSortedOptions().toList(),
-              convMsg.getSortedOptions().toList()),
+          leq.equals(msg.getAllOptions().toList(),
+              convMsg.getAllOptions().toList()),
           isTrue);
       expect(convMsg.getFirstOption(12).stringValue, 'a');
       expect(
@@ -857,8 +857,8 @@ void main() {
       request.id = 7;
       request.token = typed.Uint8Buffer()..addAll(<int>[11, 82, 165, 77, 3]);
       request
-          .addIfMatch(typed.Uint8Buffer()..addAll(<int>[34, 239]))
-          .addIfMatch(typed.Uint8Buffer()..addAll(<int>[88, 12, 254, 157, 5]));
+          .addIfMatchOpaque(typed.Uint8Buffer()..addAll(<int>[34, 239]))
+          .addIfMatchOpaque(typed.Uint8Buffer()..addAll(<int>[88, 12, 254, 157, 5]));
       request.contentType = 40;
       request.accept = 40;
 
@@ -871,8 +871,8 @@ void main() {
       expect(request.id, result.id);
       expect(leq.equals(request.token.toList(), result.token.toList()), isTrue);
       expect(
-          leq.equals(request.getSortedOptions().toList(),
-              result.getSortedOptions().toList()),
+          leq.equals(request.getAllOptions().toList(),
+              result.getAllOptions().toList()),
           isTrue);
     }
 

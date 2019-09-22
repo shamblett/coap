@@ -17,7 +17,7 @@ class CoapMessageEncoder03 extends CoapMessageEncoder {
     int optionCount = 0;
     int lastOptionNumber = 0;
 
-    final List<CoapOption> options = message.getSortedOptions();
+    final List<CoapOption> options = message.getAllOptions();
     if (message.token != null &&
         message.token.isNotEmpty &&
         !message.hasOption(optionTypeToken)) {

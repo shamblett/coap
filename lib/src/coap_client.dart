@@ -220,7 +220,7 @@ class CoapClient {
   /// If match
   static CoapRequest ifMatch(
       CoapRequest request, List<typed.Uint8Buffer> etags) {
-    etags.forEach(request.addIfMatch);
+    etags.forEach(request.addIfMatchOpaque);
     return request;
   }
 
