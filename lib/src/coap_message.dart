@@ -75,7 +75,21 @@ class CoapMessage {
     return this;
   }
 
-  /// Adds all option to the list of options of this CoAP message.
+  /// Remove a specific option, returns true if the option has been removed.
+  bool removeOption(CoapOption option) {
+    bool ret = false;
+    final List<CoapOption> options = getOptions(option.type);
+    if (options == null) {
+      return ret;
+    }
+    ret = options.remove(option);
+    if (ret) {
+      setOptions(options);
+    }
+    return ret;
+  }
+
+  /// Adds options to the list of options of this CoAP message.
   void addOptions(Iterable<CoapOption> options) {
     options.forEach(addOption);
   }
@@ -132,6 +146,9 @@ class CoapMessage {
     }
     return null;
   }
+
+  /// Clear all options
+  void clearOptions() => _optionMap.clear();
 
   /// Checks if this CoAP message has options of the specified option type.
   /// Returns true if options of the specified type exists.
@@ -358,7 +375,7 @@ class CoapMessage {
   }
 
   /// Remove an opaque if match
-  CoapMessage removeIfMatch(typed.Uint8Buffer opaque) {
+  CoapMessage removeIfMatchOpaque(typed.Uint8Buffer opaque) {
     final Iterable<CoapOption> list = getOptions(optionTypeIfMatch);
     if (list != null) {
       final CoapOption opt = CoapUtil.firstOrDefault(list,
@@ -370,6 +387,16 @@ class CoapMessage {
         }
       }
     }
+    return this;
+  }
+
+  /// Remove an if match option
+  CoapMessage removeIfMatch(CoapOption option) {
+    if (option.type != optionTypeIfMatch) {
+      throw ArgumentError.value(option.type, 'Message::removeIfMatch',
+          'Not an if match option');
+    }
+    removeOption(option);
     return this;
   }
 

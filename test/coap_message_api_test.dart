@@ -77,6 +77,22 @@ void main() {
     expect(message.optionMap.length, 0);
     expect(message.getOptions(optionTypeUriHost), isNull);
     expect(message.getOptions(optionTypeReserved), isNull);
+    message.addOptions(options);
+    expect(message.optionMap.length, 2);
+    final CoapOption opt3 = CoapOption(optionTypeUriHost);
+    message.addOption(opt3);
+    expect(message.optionMap.length, 2);
+    expect(message
+        .getOptions(optionTypeUriHost)
+        .length, 2);
+    final bool ret = message.removeOption(opt1);
+    expect(ret, isTrue);
+    expect(message
+        .getOptions(optionTypeUriHost)
+        .length, 1);
+    expect(message.getOptions(optionTypeUriHost).toList()[0] == opt3, isTrue);
+    message.clearOptions();
+    expect(message.optionMap.length, 0);
   });
 
   test('Message codes', () {
@@ -176,10 +192,18 @@ void main() {
     expect(message.ifMatches.length, 2);
     expect(message.ifMatches.toList()[0].stringValue, 'ETag-1');
     expect(message.ifMatches.toList()[1].stringValue, 'ETag-2');
-    message.removeIfMatch(message.ifMatches.toList()[0].valueBytes);
+    message.removeIfMatchOpaque(message.ifMatches.toList()[0].valueBytes);
     expect(message.ifMatches.length, 1);
     expect(message.ifMatches.toList()[0].stringValue, 'ETag-2');
     message.clearIfMatches();
+    expect(message.ifMatches.length, 0);
+    final CoapOption opt1 = CoapOption(optionTypeUriHost);
+    expect(() => message.removeIfMatch(opt1), throwsArgumentError);
+    final CoapOption opt2 = CoapOption(optionTypeIfMatch);
+    opt2.stringValue = 'ETag-3';
+    message.addOption(opt2);
+    expect(message.ifMatches.length, 1);
+    message.removeIfMatch(opt2);
     expect(message.ifMatches.length, 0);
   });
 }
