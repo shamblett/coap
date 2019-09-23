@@ -553,17 +553,27 @@ class CoapMessage {
     return join += '/';
   }
 
-  set uriPath(String value) =>
-      setOptions(CoapOption.split(optionTypeUriPath, value, '/'));
+  /// Sets a number of Uri path options from a string, ignores any trailing / character
+  set uriPath(String value) {
+    String out = value;
+    if (out.endsWith('/')) {
+      out = out.substring(0, out.length - 1);
+    }
+    setOptions(CoapOption.split(optionTypeUriPath, out, '/'));
+  }
 
   /// URI paths
-  Iterable<String> get uriPaths sync* {
-    final Iterable<CoapOption> opts = getOptions(optionTypeUriPath);
-    if (opts != null) {
-      for (CoapOption opt in opts) {
-        yield opt.toString();
-      }
+  Iterable<CoapOption> get uriPaths =>
+      _selectOptions(optionTypeUriPath).toList();
+
+  /// URI paths as a string with no trailing '/'
+  String get uriPathsString {
+    final StringBuffer sb = StringBuffer();
+    for (CoapOption option in uriPaths) {
+      sb.write('${option.stringValue}/');
     }
+    final String out = sb.toString();
+    return out.substring(0, out.length - 1);
   }
 
   /// Add a URI path
@@ -580,12 +590,15 @@ class CoapMessage {
 
   /// Remove a URI path
   CoapMessage removeUriPath(String path) {
-    final List<CoapOption> list = getOptions(optionTypeUriPath);
+    final List<CoapOption> list = uriPaths;
     if (list != null) {
       final CoapOption opt =
-          CoapUtil.firstOrDefault(list, (CoapOption o) => path == o.toString());
+      CoapUtil.firstOrDefault(list, (CoapOption o) => path == o.stringValue);
       if (opt != null) {
-        list.remove(opt);
+        _optionMap[optionTypeUriPath].remove(opt);
+        if (_optionMap[optionTypeUriPath].isEmpty) {
+          _optionMap.remove(optionTypeUriPath);
+        }
       }
     }
     return this;
@@ -593,7 +606,7 @@ class CoapMessage {
 
   /// Clear URI paths
   CoapMessage clearUriPath() {
-    removeOptions(optionTypeUriPath);
+    _optionMap.remove(optionTypeUriPath);
     return this;
   }
 

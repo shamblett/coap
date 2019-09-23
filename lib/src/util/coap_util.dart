@@ -159,7 +159,7 @@ class CoapUtil {
       sb.writeln('None');
     }
     sb.writeln('Location Paths: ${iterableToString(msg.locationPaths)}');
-    sb.writeln('Uri Paths : ${iterableToString(msg.uriPaths)}');
+    sb.writeln('Uri Paths : ${msg.uriPathsString}');
     sb.write('Content-Type : ');
     sb.writeln(
         msg.contentType != CoapMediaType.undefined ? msg.contentType : 'None');

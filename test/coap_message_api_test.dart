@@ -254,4 +254,26 @@ void main() {
     message.clearIfNoneMatches();
     expect(message.ifNoneMatches.length, 0);
   });
+
+  test('Uri path', () {
+    final CoapMessage message = CoapMessage();
+    expect(message.uriPaths.length, 0);
+    message.uriPath = 'a/uri/path/';
+    expect(message.uriPaths.length, 3);
+    expect(message.uriPathsString, 'a/uri/path');
+    message.addUriPath('longer');
+    expect(message.uriPaths.length, 4);
+    expect(message.uriPathsString, 'a/uri/path/longer');
+    expect(() => message.addUriPath(null), throwsArgumentError);
+    const String tolong =
+        'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn'
+        'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+        'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn';
+    expect(() => message.addUriPath(tolong), throwsArgumentError);
+    message.removeUriPath('path');
+    expect(message.uriPaths.length, 3);
+    expect(message.uriPathsString, 'a/uri/longer');
+    message.clearUriPath();
+    expect(message.uriPaths.length, 0);
+  });
 }
