@@ -378,8 +378,12 @@ class CoapMessage {
   CoapMessage removeIfMatchOpaque(typed.Uint8Buffer opaque) {
     final Iterable<CoapOption> list = getOptions(optionTypeIfMatch);
     if (list != null) {
-      final CoapOption opt = CoapUtil.firstOrDefault(list,
-          (CoapOption o) => CoapUtil.areSequenceEqualTo(opaque, o.valueBytes));
+      const collection.Equality<typed.Uint8Buffer> equality =
+      collection.Equality<typed.Uint8Buffer>();
+      final CoapOption opt = CoapUtil.firstOrDefault(
+          list,
+              (CoapOption o) =>
+              CoapUtil.areSequenceEqualTo(opaque, o.valueBytes, equality));
       if (opt != null) {
         _optionMap[optionTypeIfMatch].remove(opt);
         if (_optionMap[optionTypeIfMatch].isEmpty) {
@@ -465,15 +469,65 @@ class CoapMessage {
     return this;
   }
 
-  /// IfNoneMatch
-  bool get ifNoneMatch => hasOption(optionTypeIfNoneMatch);
+  /// If-None Matches.
+  Iterable<CoapOption> get ifNoneMatches =>
+      _selectOptions(optionTypeIfNoneMatch).toList();
 
-  set ifNoneMatch(bool value) {
-    if (value) {
-      CoapOption.create(optionTypeIfNoneMatch);
-    } else {
-      removeOptions(optionTypeIfNoneMatch);
+  /// Add an if none match option
+  CoapMessage addIfNoneMatch(CoapOption option) {
+    if (option.type != optionTypeIfNoneMatch) {
+      throw ArgumentError.value(
+          'Message::addIfNoneMatch', 'Option is not an if none match');
     }
+    return addOption(option);
+  }
+
+  /// Add an opaque if none match
+  CoapMessage addIfNoneMatchOpaque(typed.Uint8Buffer opaque) {
+    if (opaque == null) {
+      throw ArgumentError.notNull('Message::addIfNoneMatch');
+    }
+    if (opaque.length > 8) {
+      throw ArgumentError.value(opaque.length, 'Message::addIfNoneMatch',
+          'Content of If-None Match option is too large');
+    }
+    return addOption(CoapOption.createRaw(optionTypeIfNoneMatch, opaque));
+  }
+
+  /// Remove an opaque if none match
+  CoapMessage removeIfNoneMatchOpaque(typed.Uint8Buffer opaque) {
+    final Iterable<CoapOption> list = getOptions(optionTypeIfNoneMatch);
+    if (list != null) {
+      const collection.Equality<typed.Uint8Buffer> equality =
+      collection.Equality<typed.Uint8Buffer>();
+      final CoapOption opt = CoapUtil.firstOrDefault(
+          list,
+              (CoapOption o) =>
+              CoapUtil.areSequenceEqualTo(opaque, o.valueBytes, equality));
+      if (opt != null) {
+        _optionMap[optionTypeIfNoneMatch].remove(opt);
+        if (_optionMap[optionTypeIfNoneMatch].isEmpty) {
+          _optionMap.remove(optionTypeIfNoneMatch);
+        }
+      }
+    }
+    return this;
+  }
+
+  /// Remove an if none match option
+  CoapMessage removeIfNoneMatch(CoapOption option) {
+    if (option.type != optionTypeIfNoneMatch) {
+      throw ArgumentError.value(option.type, 'Message::removeIfNoneMatch',
+          'Not an if none match option');
+    }
+    removeOption(option);
+    return this;
+  }
+
+  /// Clear the if none matches
+  CoapMessage clearIfNoneMatches() {
+    removeOptions(optionTypeIfNoneMatch);
+    return this;
   }
 
   /// Uri's

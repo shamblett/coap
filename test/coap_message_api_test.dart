@@ -232,4 +232,26 @@ void main() {
     expect(ret, isTrue);
     expect(message.etags.length, 0);
   });
+
+  test('If None match', () {
+    final CoapMessage message = CoapMessage();
+    expect(message.ifNoneMatches.length, 0);
+    final CoapOption none = CoapOption(optionTypeIfMatch);
+    final CoapOption inm1 = CoapOption(optionTypeIfNoneMatch);
+    inm1.stringValue = 'Inm1';
+    final CoapOption inm2 = CoapOption(optionTypeIfNoneMatch);
+    inm2.stringValue = 'Inm2';
+    message.addIfNoneMatch(inm1).addIfNoneMatch(inm2);
+    expect(message.ifNoneMatches.length, 2);
+    expect(() => message.addIfNoneMatch(none), throwsArgumentError);
+    final CoapOption inm3 = CoapOption(optionTypeIfNoneMatch);
+    inm3.stringValue = 'Inm3';
+    message.addIfNoneMatchOpaque(inm3.valueBytes);
+    expect(message.ifNoneMatches.length, 3);
+    message.removeIfNoneMatchOpaque(inm2.valueBytes);
+    expect(message.ifNoneMatches.length, 2);
+    expect(() => message.removeIfNoneMatch(none), throwsArgumentError);
+    message.clearIfNoneMatches();
+    expect(message.ifNoneMatches.length, 0);
+  });
 }

@@ -173,16 +173,18 @@ class CoapClient {
   }
 
   /// If none match
-  Future<CoapResponse> putIfNoneMatch(String payload, int format) {
+  Future<CoapResponse> putIfNoneMatch(String payload, int format,
+      List<typed.Uint8Buffer> etags) {
     request ??= CoapRequest.newPut().setPayloadMedia(payload, format);
-    return send(ifNoneMatch(request.setPayloadMedia(payload, format)));
+    return send(ifNoneMatch(request.setPayloadMedia(payload, format), etags));
   }
 
   /// If none match byte payload
   Future<CoapResponse> putIfNoneMatchBytePayload(typed.Uint8Buffer payload,
-      int format) {
+      int format, List<typed.Uint8Buffer> etags) {
     request ??= CoapRequest.newPut().setPayloadMediaRaw(payload, format);
-    return send(ifNoneMatch(request.setPayloadMediaRaw(payload, format)));
+    return send(
+        ifNoneMatch(request.setPayloadMediaRaw(payload, format), etags));
   }
 
   /// Delete
@@ -225,8 +227,9 @@ class CoapClient {
   }
 
   /// If none match
-  static CoapRequest ifNoneMatch(CoapRequest request) {
-    request.ifNoneMatch = true;
+  static CoapRequest ifNoneMatch(CoapRequest request,
+      List<typed.Uint8Buffer> etags) {
+    etags.forEach(request.addIfNoneMatchOpaque);
     return request;
   }
 

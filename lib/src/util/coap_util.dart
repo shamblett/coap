@@ -150,7 +150,7 @@ class CoapUtil {
         : sb.writeln('None');
     sb.writeln('E-tags : ${iterableToString(msg.etags)}');
     msg.hasOption(optionTypeIfNoneMatch)
-        ? sb.writeln(msg.ifNoneMatch)
+        ? sb.writeln('If-None Match : ${iterableToString(msg.ifNoneMatches)}')
         : sb.writeln('None');
     sb.write('Uri Port : ');
     if ((msg.uriPort != null) && (msg.uriPort > 0)) {
