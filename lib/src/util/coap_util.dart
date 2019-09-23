@@ -69,7 +69,11 @@ class CoapUtil {
       [collection.Equality<T> equality]) {
     final collection.IterableEquality<T> ie =
         collection.IterableEquality<T>(equality);
-    return ie.equals(first, second);
+    if (ie != null) {
+      return ie.equals(first, second);
+    } else {
+      return false;
+    }
   }
 
   /// Finds the first matched item.

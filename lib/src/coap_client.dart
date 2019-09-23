@@ -232,7 +232,7 @@ class CoapClient {
 
   /// Etags
   CoapRequest eTags(CoapRequest request, List<typed.Uint8Buffer> etags) {
-    etags.forEach(request.addETag);
+    etags.forEach(request.addETagOpaque);
     return request;
   }
 

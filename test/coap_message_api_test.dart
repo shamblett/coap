@@ -206,4 +206,30 @@ void main() {
     message.removeIfMatch(opt2);
     expect(message.ifMatches.length, 0);
   });
+
+  test('ETags', () {
+    final CoapMessage message = CoapMessage();
+    expect(message.etags.length, 0);
+    final CoapOption none = CoapOption(optionTypeIfMatch);
+    final CoapOption etag1 = CoapOption(optionTypeETag);
+    etag1.stringValue = 'Etag-1';
+    final CoapOption etag2 = CoapOption(optionTypeETag);
+    etag2.stringValue = 'Etag-2';
+    expect(() => message.addEtag(none), throwsArgumentError);
+    message.addEtag(etag1);
+    expect(message.etags.length, 1);
+    message.addETagOpaque(etag2.valueBytes);
+    expect(message.etags.length, 2);
+    message.removeETagOpaque(etag2.valueBytes);
+    expect(message.etags.length, 1);
+    expect(message.etags.toList()[0] == etag1, isTrue);
+    message.clearETags();
+    expect(message.etags.length, 0);
+    message.addEtag(etag1);
+    expect(message.etags.length, 1);
+    expect(() => message.removeEtag(none), throwsArgumentError);
+    final bool ret = message.removeEtag(etag1);
+    expect(ret, isTrue);
+    expect(message.etags.length, 0);
+  });
 }

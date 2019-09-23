@@ -393,8 +393,8 @@ class CoapMessage {
   /// Remove an if match option
   CoapMessage removeIfMatch(CoapOption option) {
     if (option.type != optionTypeIfMatch) {
-      throw ArgumentError.value(option.type, 'Message::removeIfMatch',
-          'Not an if match option');
+      throw ArgumentError.value(
+          option.type, 'Message::removeIfMatch', 'Not an if match option');
     }
     removeOption(option);
     return this;
@@ -407,29 +407,53 @@ class CoapMessage {
   }
 
   /// Etags
-  Iterable<CoapOption> get etags => _selectOptions(optionTypeETag);
+  Iterable<CoapOption> get etags => _selectOptions(optionTypeETag).toList();
 
-  /// Contains an E-tag
-  bool containsETag(typed.Uint8Buffer what) => CoapUtil.contains(
+  /// Contains an opaque E-tag
+  bool containsETagOpaque(typed.Uint8Buffer what) =>
+      CoapUtil.contains(
       getOptions(optionTypeETag),
       (CoapOption o) => CoapUtil.areSequenceEqualTo(what, o.valueBytes));
 
-  /// Add an ETag
-  CoapMessage addETag(typed.Uint8Buffer opaque) {
+  /// Add an opaque ETag
+  CoapMessage addETagOpaque(typed.Uint8Buffer opaque) {
     if (opaque == null) {
       throw ArgumentError.notNull('Message::addETag');
     }
     return addOption(CoapOption.createRaw(optionTypeETag, opaque));
   }
 
-  /// Remove an E tag
-  CoapMessage removeETag(typed.Uint8Buffer opaque) {
+  /// Adds an ETag option
+  CoapMessage addEtag(CoapOption option) {
+    if (option.type != optionTypeETag) {
+      throw ArgumentError.notNull('Message::addETag, option is not an etag');
+    }
+    return addOption(option);
+  }
+
+  /// Remove an ETag, true indicates success
+  bool removeEtag(CoapOption option) {
+    if (option.type != optionTypeETag) {
+      throw ArgumentError.notNull('Message::removeETag, option is not an etag');
+    }
+    return removeOption(option);
+  }
+
+  /// Remove an opaque ETag
+  CoapMessage removeETagOpaque(typed.Uint8Buffer opaque) {
     final List<CoapOption> list = getOptions(optionTypeETag);
     if (list != null) {
-      final CoapOption opt = CoapUtil.firstOrDefault(list,
-          (CoapOption o) => CoapUtil.areSequenceEqualTo(opaque, o.valueBytes));
+      const collection.Equality<typed.Uint8Buffer> equality =
+      collection.Equality<typed.Uint8Buffer>();
+      final CoapOption opt = CoapUtil.firstOrDefault(
+          list,
+              (CoapOption o) =>
+              CoapUtil.areSequenceEqualTo(opaque, o.valueBytes, equality));
       if (opt != null) {
-        list.remove(opt);
+        _optionMap[optionTypeETag].remove(opt);
+        if (_optionMap[optionTypeETag].isEmpty) {
+          _optionMap.remove(optionTypeETag);
+        }
       }
     }
     return this;
