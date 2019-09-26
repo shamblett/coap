@@ -276,4 +276,9 @@ void main() {
     message.clearUriPath();
     expect(message.uriPaths.length, 0);
   });
+
+  test('Uri query', () {
+    final CoapMessage message = CoapMessage();
+    expect(message.uriQueries.length, 0);
+  });
 }

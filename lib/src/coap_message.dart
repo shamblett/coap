@@ -592,8 +592,8 @@ class CoapMessage {
   CoapMessage removeUriPath(String path) {
     final List<CoapOption> list = uriPaths;
     if (list != null) {
-      final CoapOption opt =
-      CoapUtil.firstOrDefault(list, (CoapOption o) => path == o.stringValue);
+      final CoapOption opt = CoapUtil.firstOrDefault(
+          list, (CoapOption o) => path == o.stringValue);
       if (opt != null) {
         _optionMap[optionTypeUriPath].remove(opt);
         if (_optionMap[optionTypeUriPath].isEmpty) {
@@ -613,6 +613,7 @@ class CoapMessage {
   /// URI query
   String get uriQuery => CoapOption.join(getOptions(optionTypeUriQuery), '&');
 
+  /// Set a URI query
   set uriQuery(String value) {
     String tmp = value;
     if (value.isNotEmpty && value.startsWith('?')) {
@@ -622,13 +623,17 @@ class CoapMessage {
   }
 
   /// URI queries
-  Iterable<String> get uriQueries sync* {
-    final Iterable<CoapOption> opts = getOptions(optionTypeUriQuery);
-    if (opts != null) {
-      for (CoapOption opt in opts) {
-        yield opt.toString();
-      }
+  Iterable<CoapOption> get uriQueries =>
+      _selectOptions(optionTypeUriQuery).toList();
+
+  /// URI queries as a string with no trailing '/'
+  String get uriQueriesString {
+    final StringBuffer sb = StringBuffer();
+    for (CoapOption option in uriQueries) {
+      sb.write('${option.stringValue}&');
     }
+    final String out = sb.toString();
+    return '?${out.substring(0, out.length - 1)}';
   }
 
   /// Add a URI query
@@ -650,7 +655,10 @@ class CoapMessage {
       final CoapOption opt = CoapUtil.firstOrDefault(
           list, (CoapOption o) => query == o.toString());
       if (opt != null) {
-        list.remove(opt);
+        _optionMap[optionTypeUriQuery].remove(opt);
+        if (_optionMap[optionTypeUriQuery].isEmpty) {
+          _optionMap.remove(optionTypeUriQuery);
+        }
       }
     }
     return this;
