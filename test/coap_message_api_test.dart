@@ -275,10 +275,28 @@ void main() {
     expect(message.uriPathsString, 'a/uri/longer');
     message.clearUriPath();
     expect(message.uriPaths.length, 0);
+
   });
 
   test('Uri query', () {
     final CoapMessage message = CoapMessage();
+    expect(message.uriQueries.length, 0);
+    message.uriQuery = 'a&uri=1&query=2';
+    expect(message.uriQueries.length, 3);
+    expect(message.uriQueriesString, '?a&uri=1&query=2');
+    message.addUriQuery('longer=3');
+    expect(message.uriQueries.length, 4);
+    expect(message.uriQueriesString, '?a&uri=1&query=2&longer=3');
+    expect(() => message.addUriQuery(null), throwsArgumentError);
+    const String tolong =
+        'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn'
+        'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+        'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn';
+    expect(() => message.addUriQuery(tolong), throwsArgumentError);
+    message.removeUriQuery('query=2');
+    expect(message.uriQueries.length, 3);
+    expect(message.uriQueriesString, '?a&uri=1&longer=3');
+    message.clearUriQuery();
     expect(message.uriQueries.length, 0);
   });
 }
