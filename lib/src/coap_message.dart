@@ -653,7 +653,7 @@ class CoapMessage {
     final List<CoapOption> list = getOptions(optionTypeUriQuery);
     if (list != null) {
       final CoapOption opt = CoapUtil.firstOrDefault(
-          list, (CoapOption o) => query == o.toString());
+          list, (CoapOption o) => query == o.stringValue);
       if (opt != null) {
         _optionMap[optionTypeUriQuery].remove(opt);
         if (_optionMap[optionTypeUriQuery].isEmpty) {
