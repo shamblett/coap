@@ -275,6 +275,7 @@ void main() {
     expect(message.uriPathsString, 'a/uri/longer');
     message.clearUriPath();
     expect(message.uriPaths.length, 0);
+    expect(message.uriPathsString.isEmpty, isTrue);
   });
 
   test('Uri query', () {
@@ -306,5 +307,26 @@ void main() {
     expect(message.locationPaths.length, 3);
     expect(message.locationPathsString, 'a/location/path');
     expect(() => message.locationPath = '..', throwsArgumentError);
+    expect(() => message.locationPath = '.', throwsArgumentError);
+    message.addLocationPath('longer');
+    expect(message.locationPaths.length, 4);
+    expect(message.locationPathsString, 'a/location/path/longer');
+    expect(() => message.addLocationPath(null), throwsArgumentError);
+    const String tolong =
+        'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn'
+        'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+        'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn';
+    expect(() => message.addLocationPath(tolong), throwsArgumentError);
+    message.removelocationPath('path');
+    expect(message.locationPaths.length, 3);
+    expect(message.locationPathsString, 'a/location/longer');
+    message.clearLocationPath();
+    expect(message.locationPaths.length, 0);
+    expect(message.locationPathsString.isEmpty, isTrue);
+  });
+
+  test('Location query', () {
+    final CoapMessage message = CoapMessage();
+    expect(message.locationQueries.length, 0);
   });
 }

@@ -573,7 +573,11 @@ class CoapMessage {
       sb.write('${option.stringValue}/');
     }
     final String out = sb.toString();
-    return out.substring(0, out.length - 1);
+    if (out.isNotEmpty) {
+      return out.substring(0, out.length - 1);
+    } else {
+      return out;
+    }
   }
 
   /// Add a URI path
@@ -633,7 +637,11 @@ class CoapMessage {
       sb.write('${option.stringValue}&');
     }
     final String out = sb.toString();
-    return '?${out.substring(0, out.length - 1)}';
+    if (out.isNotEmpty) {
+      return '?${out.substring(0, out.length - 1)}';
+    } else {
+      return '?$out';
+    }
   }
 
   /// Add a URI query
@@ -691,7 +699,11 @@ class CoapMessage {
       sb.write('${option.stringValue}/');
     }
     final String out = sb.toString();
-    return out.substring(0, out.length - 1);
+    if (out.isNotEmpty) {
+      return out.substring(0, out.length - 1);
+    } else {
+      return out;
+    }
   }
 
   /// Set the location path from a string
