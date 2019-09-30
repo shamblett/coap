@@ -14,6 +14,8 @@ class CoapTokenLayer extends CoapAbstractLayer {
   CoapTokenLayer(CoapConfig config) {
     if (config.useRandomTokenStart) {
       _counter = Random().nextInt(32767);
+    } else {
+      _counter = 5000;
     }
   }
 
