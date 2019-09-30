@@ -8,8 +8,6 @@
 import 'dart:io';
 import 'package:coap/coap.dart';
 import 'package:test/test.dart';
-import 'package:typed_data/typed_data.dart' as typed;
-import 'package:collection/collection.dart';
 
 // Note that nnot all API methods are tested here, some are tested in other unit test suites,
 // some in dynamic testing.
