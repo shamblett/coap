@@ -809,8 +809,8 @@ void main() {
       expect(msg.id, convMsg.id);
       expect(msg.getAllOptions().length, convMsg.getAllOptions().length);
       expect(
-          leq.equals(msg.getAllOptions().toList(),
-              convMsg.getAllOptions().toList()),
+          leq.equals(
+              msg.getAllOptions().toList(), convMsg.getAllOptions().toList()),
           isTrue);
       expect(convMsg.getFirstOption(optionTypeContentType).stringValue,
           'text/plain');
@@ -839,8 +839,8 @@ void main() {
       expect(msg.id, convMsg.id);
       expect(msg.getAllOptions().length, convMsg.getAllOptions().length);
       expect(
-          leq.equals(msg.getAllOptions().toList(),
-              convMsg.getAllOptions().toList()),
+          leq.equals(
+              msg.getAllOptions().toList(), convMsg.getAllOptions().toList()),
           isTrue);
       expect(convMsg.getFirstOption(12).stringValue, 'a');
       expect(
@@ -858,7 +858,9 @@ void main() {
       request.token = typed.Uint8Buffer()..addAll(<int>[11, 82, 165, 77, 3]);
       request
           .addIfMatchOpaque(typed.Uint8Buffer()..addAll(<int>[34, 239]))
-          .addIfMatchOpaque(typed.Uint8Buffer()..addAll(<int>[88, 12, 254, 157, 5]));
+          .addIfMatchOpaque(
+          typed.Uint8Buffer()
+            ..addAll(<int>[88, 12, 254, 157, 5]));
       request.contentType = 40;
       request.accept = 40;
 
@@ -882,8 +884,9 @@ void main() {
       response.id = 9;
       response.token = typed.Uint8Buffer()
         ..addAll(<int>[22, 255, 0, 78, 100, 22]);
-      response.addETagOpaque(typed.Uint8Buffer()
-        ..addAll(<int>[1, 0, 0, 0, 0, 1]))
+      response.addETagOpaque(
+          typed.Uint8Buffer()
+            ..addAll(<int>[1, 0, 0, 0, 0, 1]))
         ..addLocationPath('/one/two/three/four/five/six/seven/eight/nine/ten')
         ..addOption(CoapOption.createVal(
             57453, 0x71ca949f)) // C# 'Arbitrary'.hashCode()

@@ -771,6 +771,7 @@ class CoapMessage {
   String get locationQuery =>
       CoapOption.join(getOptions(optionTypeLocationQuery), '&');
 
+  /// Set a location query
   set locationQuery(String value) {
     String tmp = value;
     if (value.isNotEmpty && value.startsWith('?')) {
@@ -781,7 +782,21 @@ class CoapMessage {
 
   /// Location queries
   Iterable<CoapOption> get locationQueries =>
-      _selectOptions(optionTypeLocationQuery);
+      _selectOptions(optionTypeLocationQuery).toList();
+
+  /// Location queries as a string with no trailing '/'
+  String get locationQueriesString {
+    final StringBuffer sb = StringBuffer();
+    for (CoapOption option in locationQueries) {
+      sb.write('${option.stringValue}&');
+    }
+    final String out = sb.toString();
+    if (out.isNotEmpty) {
+      return '?${out.substring(0, out.length - 1)}';
+    } else {
+      return '?$out';
+    }
+  }
 
   /// Add a location query
   CoapMessage addLocationQuery(String query) {
@@ -800,15 +815,18 @@ class CoapMessage {
     final List<CoapOption> list = getOptions(optionTypeLocationQuery);
     if (list != null) {
       final CoapOption opt = CoapUtil.firstOrDefault(
-          list, (CoapOption o) => query == o.toString());
+          list, (CoapOption o) => query == o.stringValue);
       if (opt != null) {
-        list.remove(opt);
+        _optionMap[optionTypeLocationQuery].remove(opt);
+        if (_optionMap[optionTypeLocationQuery].isEmpty) {
+          _optionMap.remove(optionTypeLocationQuery);
+        }
       }
     }
     return this;
   }
 
-  /// Clear location queries
+  /// Clear location  queries
   CoapMessage clearLocationQuery() {
     removeOptions(optionTypeLocationQuery);
     return this;
@@ -952,6 +970,7 @@ class CoapMessage {
   /// Block 1
   CoapBlockOption get block1 => getFirstOption(optionTypeBlock1);
 
+  /// Block 1
   set block1(CoapBlockOption value) {
     if (value == null) {
       removeOptions(optionTypeBlock1);

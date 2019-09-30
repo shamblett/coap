@@ -328,5 +328,22 @@ void main() {
   test('Location query', () {
     final CoapMessage message = CoapMessage();
     expect(message.locationQueries.length, 0);
+    message.locationQuery = 'a&uri=1&query=2';
+    expect(message.locationQueries.length, 3);
+    expect(message.locationQueriesString, '?a&uri=1&query=2');
+    message.addLocationQuery('longer=3');
+    expect(message.locationQueries.length, 4);
+    expect(message.locationQueriesString, '?a&uri=1&query=2&longer=3');
+    expect(() => message.addLocationQuery(null), throwsArgumentError);
+    const String tolong =
+        'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn'
+        'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+        'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn';
+    expect(() => message.addLocationQuery(tolong), throwsArgumentError);
+    message.removeLocationQuery('query=2');
+    expect(message.locationQueries.length, 3);
+    expect(message.locationQueriesString, '?a&uri=1&longer=3');
+    message.clearLocationQuery();
+    expect(message.locationQueries.length, 0);
   });
 }
