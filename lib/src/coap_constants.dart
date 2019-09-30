@@ -47,7 +47,7 @@ class CoapConstants {
   static const double ackRandomFactor = 1.5;
 
   ///
-  /// The max time that a message would be retransmitted
+  /// The max times that a message would be retransmitted
   ///
   static const int maxRetransmit = 8;
 

@@ -1,9 +1,29 @@
-# A test COAP config file
+# An example COAP config file
 # Syntax is YAML
 
 # Protocol section
 
 version: "RFC7252"
+defaultPort: 1
+defaultSecurePort: 2
+httpPort: 3
+ackTimeout: 4
+ackRandomFactor: 5.0
+ackTimeoutScale: 6.0
+maxRetransmit: 7
+maxMessageSize: 8
+defaultBlockSize: 9
+blockwiseStatusLifetime: 10
+useRandomIDStart: false
+useRandomTokenStart: false
+notificationMaxAge: 11
+notificationCheckIntervalTime: 12
+notificationCheckIntervalCount: 13
+notificationReregistrationBackoff: 14
+cropRotationPeriod: 15
+exchangeLifetime: 16
+markAndSweepInterval: 17
+channelReceivePacketSize: 18
 deduplicator: "MarkAndSweep"
 
 
