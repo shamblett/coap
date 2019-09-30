@@ -275,7 +275,6 @@ void main() {
     expect(message.uriPathsString, 'a/uri/longer');
     message.clearUriPath();
     expect(message.uriPaths.length, 0);
-
   });
 
   test('Uri query', () {
@@ -298,5 +297,14 @@ void main() {
     expect(message.uriQueriesString, '?a&uri=1&longer=3');
     message.clearUriQuery();
     expect(message.uriQueries.length, 0);
+  });
+
+  test('Location path', () {
+    final CoapMessage message = CoapMessage();
+    expect(message.locationPaths.length, 0);
+    message.locationPath = 'a/location/path/';
+    expect(message.locationPaths.length, 3);
+    expect(message.locationPathsString, 'a/location/path');
+    expect(() => message.locationPath = '..', throwsArgumentError);
   });
 }

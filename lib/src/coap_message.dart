@@ -684,12 +684,28 @@ class CoapMessage {
     }
   }
 
-  /// Location
-  String get locationPath =>
-      CoapOption.join(getOptions(optionTypeLocationPath), '/');
+  /// Location path as a string
+  String get locationPathsString {
+    final StringBuffer sb = StringBuffer();
+    for (CoapOption option in locationPaths) {
+      sb.write('${option.stringValue}/');
+    }
+    final String out = sb.toString();
+    return out.substring(0, out.length - 1);
+  }
 
-  set locationPath(String value) =>
-      setOptions(CoapOption.split(optionTypeLocationPath, value, '/'));
+  /// Set the location path from a string
+  set locationPath(String value) {
+    // Check for '..' or '.' are invalid values
+    if (value.contains('..') || value.contains('.')) {
+      throw ArgumentError.value('Message::locationPath');
+    }
+    String out = value;
+    if (out.endsWith('/')) {
+      out = out.substring(0, out.length - 1);
+    }
+    setOptions(CoapOption.split(optionTypeLocationPath, out, '/'));
+  }
 
   /// Location paths
   Iterable<CoapOption> get locationPaths =>
@@ -697,7 +713,7 @@ class CoapMessage {
 
   /// Location
   String get location {
-    String path = '/$locationPath';
+    String path = '/$locationPathsString';
     final String query = locationQuery;
     if (query.isNotEmpty) {
       path += '?$query';
@@ -721,10 +737,13 @@ class CoapMessage {
   CoapMessage removelocationPath(String path) {
     final List<CoapOption> list = getOptions(optionTypeLocationPath);
     if (list != null) {
-      final CoapOption opt =
-          CoapUtil.firstOrDefault(list, (CoapOption o) => path == o.toString());
+      final CoapOption opt = CoapUtil.firstOrDefault(
+          list, (CoapOption o) => path == o.stringValue);
       if (opt != null) {
-        list.remove(opt);
+        _optionMap[optionTypeLocationPath].remove(opt);
+        if (_optionMap[optionTypeLocationPath].isEmpty) {
+          _optionMap.remove(optionTypeLocationPath);
+        }
       }
     }
     return this;
@@ -732,7 +751,7 @@ class CoapMessage {
 
   /// Clear location path
   CoapMessage clearLocationPath() {
-    removeOptions(optionTypeLocationPath);
+    _optionMap.remove(optionTypeLocationPath);
     return this;
   }
 
