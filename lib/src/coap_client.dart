@@ -67,7 +67,7 @@ class CoapClient {
 
   /// Let the client use early negotiation for the blocksize
   /// (16, 32, 64, 128, 256, 512, or 1024). Other values will
-  /// be matched to the closest logarithm dualis.
+  /// be matched to the closest logarithm.
   CoapClient useEarlyNegotiation(int size) {
     _blockwise = size;
     return this;

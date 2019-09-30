@@ -31,9 +31,6 @@ class CoapResponse extends CoapMessage {
   /// A value indicating whether this response is the last response of an exchange.
   bool last = true;
 
-  /// Response text
-  String get responseText => payloadString;
-
   @override
   String toString() => '\n<<< Response Message >>> ${super.toString()}';
 

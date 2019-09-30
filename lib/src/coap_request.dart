@@ -95,16 +95,6 @@ class CoapRequest extends CoapMessage {
   /// The endpoint for this request
   CoapIEndPoint endpoint;
 
-  /// Uri
-  CoapRequest setUri(String value) {
-    String tmp = value;
-    if (!value.startsWith('coap://') && !value.startsWith('coaps://')) {
-      tmp = 'coap://$value';
-    }
-    uri = Uri.dataFromString(tmp);
-    return this;
-  }
-
   /// Resolves the destination internet address
   Future<CoapInternetAddress> resolveDestination(
           InternetAddressType addressType) async =>
@@ -123,21 +113,6 @@ class CoapRequest extends CoapMessage {
   CoapRequest markObserveCancel() {
     observe = 1;
     return this;
-  }
-
-  /// Gets the value of a query parameter as a String,
-  /// or null if the parameter does not exist.
-  String getParameter(String name) {
-    for (CoapOption query in getOptions(optionTypeUriQuery)) {
-      final String val = query.stringValue;
-      if (val.isEmpty) {
-        continue;
-      }
-      if (val.startsWith('$name=')) {
-        return val.substring(name.length + 1);
-      }
-    }
-    return null;
   }
 
   /// Sends this message.
@@ -196,11 +171,6 @@ class CoapRequest extends CoapMessage {
       return completer.future;
     }
     return completer.future;
-  }
-
-  /// Fire the respond event
-  void fireRespond(CoapResponse response) {
-    _eventBus.fire(CoapRespondEvent(response));
   }
 
   /// Fire the responding event
