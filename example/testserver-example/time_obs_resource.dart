@@ -32,8 +32,9 @@ FutureOr<void> main(List<String> args) async {
   // Create the request for the get request
   final CoapRequest request = CoapRequest.newGet();
   request.addUriPath('time');
-  request.markObserve();
   // Mark the request as observable
+  request.markObserve();
+
   client.request = request;
 
   print(

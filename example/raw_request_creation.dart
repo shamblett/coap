@@ -25,8 +25,43 @@ FutureOr<void> main(List<String> args) async {
   // Create the client.
   // Although we are not using the client API per se we still need a client to prepare the request
   final CoapClient client = CoapClient(uri, conf);
+  // You can set IPV6 here if needed using the client.addressType setter
+  // Your URI above must match the scheme you chose.
 
-  // Clean up
+  // Create the request, discovery is a get request to .well/known-core
+  final CoapRequest request = CoapRequest.newGet();
+  request.addUriPath(CoapConstants.defaultWellKnownURI);
+  // Do anything else you need here such as setting confirmable, setting for observation etc
+  //  request.markObserve();
+  //  request.type = CoapMessageType.con;
+
+  // You MUST prepare the request for transmission using the client, failing to do this will result
+  // in strange behaviour, the client API does this for you.
+  final CoapRequest preparedRequest = await client.prepare(request);
+
+  // Set the request in the client
+  client.request = preparedRequest;
+
+  // Ok, ready to send, you have two ways to do this, if you want/are expecting a single response you can wait for
+  // this with a specified timeout in ms. If the timeout is exceeded the response will be null, otherwise you can
+  // then interrogate the response.
+  final CoapResponse response =
+  await preparedRequest.send().waitForResponse(30000);
+  if (response != null) {
+    print('EXAMPLE - response received');
+    print(response.payloadString);
+  } else {
+    print('EXAMPLE - no response received');
+  }
+
+  // You can also listen for successive responses if you are observing, see the time_obs_resource.dart for further details.
+  //  request.responses.listen((CoapResponse response) {
+  //   print('EXAMPLE - payload: ${response.payloadString}');
+  //  });
+
+  // You can of course do both.
+
+  // Clean up when complete using the client
   client.close();
 
   exit(0);
