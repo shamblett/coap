@@ -1,13 +1,13 @@
 # coap
 
-A CoAP library for Dart developers.
+A CoAP client library for Dart developers.
 
-The Constrained Application Protocol (CoAP) (https://datatracker.ietf.org/doc/draft-ietf-core-coap/)
+The Constrained Application Protocol ([CoAP](https://datatracker.ietf.org/doc/draft-ietf-core-coap/)) 
 is a RESTful web transfer protocol for resource-constrained networks and nodes.
 
 COAP is an implementation in Dart providing CoAP-based services to Dart applications. 
 
-The code is a port from the C# .NET project CoAP.NET (https://github.com/smeshlink/CoAP.NET). The dart implementation is that
+The code is a port from the C# .NET project [CoAP.NET](https://github.com/smeshlink/CoAP.NET). The dart implementation is that
 of a CoAP client only, not a server although the CoAP.NET project does supply a server.
 
 The COAP client provides many high level functions to control the request/response nature of the CoAP protocol, 
