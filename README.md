@@ -1,5 +1,5 @@
 # coap
-
+[![Build Status](https://travis-ci.org/shamblett/coap.svg?branch=master)](https://travis-ci.org/shamblett/coap)
 A CoAP client library for Dart developers.
 
 The Constrained Application Protocol ([CoAP](https://datatracker.ietf.org/doc/draft-ietf-core-coap/)) 
