@@ -30,8 +30,14 @@ FutureOr<void> main(List<String> args) async {
 
   // Create the request, discovery is a get request to .well/known-core
   final CoapRequest request = CoapRequest.newGet();
-  request.addUriPath(CoapConstants.defaultWellKnownURI);
-  // Do anything else you need here such as setting confirmable, setting for observation etc
+  request.uri = uri;
+  request
+      .clearUriPath()
+      .clearUriQuery()
+      .uriPath =
+      CoapConstants.defaultWellKnownURI;
+  // Do anything else you need here such as setting confirmable, setting for observation, content type,
+  // if matches etc
   //  request.markObserve();
   //  request.type = CoapMessageType.con;
 
@@ -49,14 +55,14 @@ FutureOr<void> main(List<String> args) async {
   await preparedRequest.send().waitForResponse(30000);
   if (response != null) {
     print('EXAMPLE - response received');
-    print(response.payloadString);
+    CoapLinkFormat.parse(response.payloadString).forEach(print);
   } else {
     print('EXAMPLE - no response received');
   }
 
   // You can also listen for successive responses if you are observing, see the time_obs_resource.dart for further details.
   //  request.responses.listen((CoapResponse response) {
-  //   print('EXAMPLE - payload: ${response.payloadString}');
+  //   CoapLinkFormat.parse(response.payloadString).forEach(print);
   //  });
 
   // You can of course do both.

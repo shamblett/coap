@@ -338,7 +338,9 @@ class CoapMessage {
 
   @override
   String toString() =>
-      '\nType: ${type.toString()}, Code: $codeString, Id: ${id.toString()}, Token: $tokenString, \nOptions=[${CoapUtil.optionsToString(this)}], \nPayload :\n$payloadString';
+      '\nType: ${type.toString()}, Code: $codeString, Id: ${id
+          .toString()}, Token: $tokenString, \nOptions =\n[\n${CoapUtil
+          .optionsToString(this)}], \nPayload :\n$payloadString';
 
   /// Select options helper
   Iterable<CoapOption> _selectOptions(int optionType) {
