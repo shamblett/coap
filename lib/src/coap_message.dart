@@ -338,9 +338,7 @@ class CoapMessage {
 
   @override
   String toString() =>
-      '\nType: ${type.toString()}, Code: $codeString, Id: ${id
-          .toString()}, Token: $tokenString, \nOptions =\n[\n${CoapUtil
-          .optionsToString(this)}], \nPayload :\n$payloadString';
+      '\nType: ${type.toString()}, Code: $codeString, Id: ${id.toString()}, Token: $tokenString, \nOptions =\n[\n${CoapUtil.optionsToString(this)}], \nPayload :\n$payloadString';
 
   /// Select options helper
   Iterable<CoapOption> _selectOptions(int optionType) {
@@ -381,10 +379,10 @@ class CoapMessage {
     final Iterable<CoapOption> list = getOptions(optionTypeIfMatch);
     if (list != null) {
       const collection.Equality<typed.Uint8Buffer> equality =
-      collection.Equality<typed.Uint8Buffer>();
+          collection.Equality<typed.Uint8Buffer>();
       final CoapOption opt = CoapUtil.firstOrDefault(
           list,
-              (CoapOption o) =>
+          (CoapOption o) =>
               CoapUtil.areSequenceEqualTo(opaque, o.valueBytes, equality));
       if (opt != null) {
         _optionMap[optionTypeIfMatch].remove(opt);
@@ -416,8 +414,7 @@ class CoapMessage {
   Iterable<CoapOption> get etags => _selectOptions(optionTypeETag).toList();
 
   /// Contains an opaque E-tag
-  bool containsETagOpaque(typed.Uint8Buffer what) =>
-      CoapUtil.contains(
+  bool containsETagOpaque(typed.Uint8Buffer what) => CoapUtil.contains(
       getOptions(optionTypeETag),
       (CoapOption o) => CoapUtil.areSequenceEqualTo(what, o.valueBytes));
 
@@ -450,10 +447,10 @@ class CoapMessage {
     final List<CoapOption> list = getOptions(optionTypeETag);
     if (list != null) {
       const collection.Equality<typed.Uint8Buffer> equality =
-      collection.Equality<typed.Uint8Buffer>();
+          collection.Equality<typed.Uint8Buffer>();
       final CoapOption opt = CoapUtil.firstOrDefault(
           list,
-              (CoapOption o) =>
+          (CoapOption o) =>
               CoapUtil.areSequenceEqualTo(opaque, o.valueBytes, equality));
       if (opt != null) {
         _optionMap[optionTypeETag].remove(opt);
@@ -501,10 +498,10 @@ class CoapMessage {
     final Iterable<CoapOption> list = getOptions(optionTypeIfNoneMatch);
     if (list != null) {
       const collection.Equality<typed.Uint8Buffer> equality =
-      collection.Equality<typed.Uint8Buffer>();
+          collection.Equality<typed.Uint8Buffer>();
       final CoapOption opt = CoapUtil.firstOrDefault(
           list,
-              (CoapOption o) =>
+          (CoapOption o) =>
               CoapUtil.areSequenceEqualTo(opaque, o.valueBytes, equality));
       if (opt != null) {
         _optionMap[optionTypeIfNoneMatch].remove(opt);

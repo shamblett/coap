@@ -98,7 +98,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
       return;
     }
     final CoapIMessageDecoder decoder =
-    config.spec.newMessageDecoder(event.data);
+        config.spec.newMessageDecoder(event.data);
     if (decoder.isRequest) {
       CoapRequest request;
       try {

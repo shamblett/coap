@@ -122,8 +122,8 @@ class CoapClient {
 
   /// Sends a POST request with the specified Accept option and blocks
   /// until the response is available.
-  Future<CoapResponse> postWithAccept(String payload, int format,
-      int acceptVal) {
+  Future<CoapResponse> postWithAccept(
+      String payload, int format, int acceptVal) {
     request ??= CoapRequest.newPost().setPayloadMedia(payload, format);
     return send(accept(request.setPayloadMedia(payload, format), acceptVal));
   }
@@ -137,8 +137,8 @@ class CoapClient {
 
   /// Sends a POST request with the specified Accept option and byte payload.
   /// Blocks until the response is available.
-  Future<CoapResponse> postBytePayloadWithAccept(typed.Uint8Buffer payload,
-      int format, int acceptVal) {
+  Future<CoapResponse> postBytePayloadWithAccept(
+      typed.Uint8Buffer payload, int format, int acceptVal) {
     request ??= CoapRequest.newPost().setPayloadMediaRaw(payload, format);
     return send(accept(request.setPayloadMediaRaw(payload, format), acceptVal));
   }
@@ -152,36 +152,36 @@ class CoapClient {
 
   /// Sends a PUT request with the specified Accept option and blocks
   /// until the response is available.
-  Future<CoapResponse> putBytePayloadWithAccept(typed.Uint8Buffer payload,
-      int format, int acceptVal) {
+  Future<CoapResponse> putBytePayloadWithAccept(
+      typed.Uint8Buffer payload, int format, int acceptVal) {
     request ??= CoapRequest.newPut().setPayloadMediaRaw(payload, format);
     return send(accept(request.setPayloadMediaRaw(payload, format), acceptVal));
   }
 
   /// If match
-  Future<CoapResponse> putIfMatch(String payload, int format,
-      List<typed.Uint8Buffer> etags) {
+  Future<CoapResponse> putIfMatch(
+      String payload, int format, List<typed.Uint8Buffer> etags) {
     request ??= CoapRequest.newPut().setPayloadMedia(payload, format);
     return send(ifMatch(request.setPayloadMedia(payload, format), etags));
   }
 
   /// If match byte payload
-  Future<CoapResponse> putIfMatchBytePayload(typed.Uint8Buffer payload,
-      int format, List<typed.Uint8Buffer> etags) {
+  Future<CoapResponse> putIfMatchBytePayload(
+      typed.Uint8Buffer payload, int format, List<typed.Uint8Buffer> etags) {
     request ??= CoapRequest.newPut().setPayloadMediaRaw(payload, format);
     return send(ifMatch(request.setPayloadMediaRaw(payload, format), etags));
   }
 
   /// If none match
-  Future<CoapResponse> putIfNoneMatch(String payload, int format,
-      List<typed.Uint8Buffer> etags) {
+  Future<CoapResponse> putIfNoneMatch(
+      String payload, int format, List<typed.Uint8Buffer> etags) {
     request ??= CoapRequest.newPut().setPayloadMedia(payload, format);
     return send(ifNoneMatch(request.setPayloadMedia(payload, format), etags));
   }
 
   /// If none match byte payload
-  Future<CoapResponse> putIfNoneMatchBytePayload(typed.Uint8Buffer payload,
-      int format, List<typed.Uint8Buffer> etags) {
+  Future<CoapResponse> putIfNoneMatchBytePayload(
+      typed.Uint8Buffer payload, int format, List<typed.Uint8Buffer> etags) {
     request ??= CoapRequest.newPut().setPayloadMediaRaw(payload, format);
     return send(
         ifNoneMatch(request.setPayloadMediaRaw(payload, format), etags));
@@ -227,8 +227,8 @@ class CoapClient {
   }
 
   /// If none match
-  static CoapRequest ifNoneMatch(CoapRequest request,
-      List<typed.Uint8Buffer> etags) {
+  static CoapRequest ifNoneMatch(
+      CoapRequest request, List<typed.Uint8Buffer> etags) {
     etags.forEach(request.addIfNoneMatchOpaque);
     return request;
   }

@@ -66,7 +66,7 @@ class CoapNetworkUDP implements CoapINetwork {
                 _data.add(d.data.toList());
                 buff.addAll(d.data.toList());
                 final CoapDataReceivedEvent rxEvent =
-                CoapDataReceivedEvent(buff, address);
+                    CoapDataReceivedEvent(buff, address);
                 _eventBus.fire(rxEvent);
               }
             }
