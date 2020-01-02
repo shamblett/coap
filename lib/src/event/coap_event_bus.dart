@@ -7,6 +7,11 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: cascade_invocations
+// ignore_for_file: avoid_annotating_with_dynamic
+
 /// Acknowledged event
 class CoapAcknowledgedEvent {}
 
@@ -142,9 +147,9 @@ class CoapEventBus {
   /// Last event fired, useful for testing
   dynamic lastEvent;
 
-  CoapILogger _log = CoapLogManager().logger;
+  final CoapILogger _log = CoapLogManager().logger;
   events.EventBus _eventBus;
-  bool _destroyed = false;
+  final bool _destroyed = false;
 
   /// Fire
   void fire(dynamic event) {
@@ -153,7 +158,8 @@ class CoapEventBus {
       _eventBus.fire(event);
     } else {
       _log.warn(
-          'Event Bus - attempting to raise event on destroyed event bus : $event');
+          'Event Bus - attempting to raise event on '
+              'destroyed event bus : $event');
     }
   }
 

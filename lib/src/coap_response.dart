@@ -7,6 +7,15 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: cascade_invocations
+// ignore_for_file: avoid_print
+// ignore_for_file: avoid_types_on_closure_parameters
+// ignore_for_file: avoid_returning_this
+// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
+// ignore_for_file: prefer_null_aware_operators
+
 /// Represents a CoAP response to a CoAP request.
 /// A response is either a piggy-backed response with type ACK
 /// or a separate response with type CON or NON.
@@ -28,14 +37,17 @@ class CoapResponse extends CoapMessage {
   /// The Round-Trip Time of this response.
   double rtt;
 
-  /// A value indicating whether this response is the last response of an exchange.
+  /// A value indicating whether this response is the last
+  /// response of an exchange.
   bool last = true;
 
   @override
   String toString() => '\n<<< Response Message >>> ${super.toString()}';
 
-  /// Creates a response to the specified request with the specified response code.
-  /// The destination endpoint of the response is the source endpoint of the request.
+  /// Creates a response to the specified request with the
+  /// specified response code.
+  /// The destination endpoint of the response is the source
+  /// endpoint of the request.
   /// The response has the same token as the request.
   /// Type and ID are usually set automatically by the ReliabilityLayer>.
   // ignore: prefer_constructors_over_static_methods

@@ -7,6 +7,13 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: cascade_invocations
+// ignore_for_file: avoid_annotating_with_dynamic
+// ignore_for_file: avoid_types_on_closure_parameters
+// ignore_for_file: avoid_print
+
 /// EndPoint encapsulates the stack that executes the CoAP protocol.
 class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   /// Instantiates a new endpoint with the
@@ -24,8 +31,8 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
       CoapInternetAddress localEndpoint, int port, CoapConfig config)
       : this(newUDPChannel(localEndpoint, port), config);
 
-  CoapILogger _log = CoapLogManager().logger;
-  CoapEventBus _eventBus = CoapEventBus();
+  final CoapILogger _log = CoapLogManager().logger;
+  final CoapEventBus _eventBus = CoapEventBus();
 
   CoapConfig _config;
 
@@ -57,7 +64,8 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
       _localEndpoint = _channel.address;
     } on Exception catch (e) {
       _log.error(
-          'Cannot start endpoint at ${_localEndpoint.address}, exception is $e');
+          'Cannot start endpoint at ${_localEndpoint.address}, '
+              'exception is $e');
       stop();
       rethrow;
     }

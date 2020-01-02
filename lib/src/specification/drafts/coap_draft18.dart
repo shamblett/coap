@@ -7,6 +7,9 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+
 /// draft-ietf-core-coap-18
 class CoapDraft18 implements CoapISpec {
   /// Version
@@ -36,7 +39,7 @@ class CoapDraft18 implements CoapISpec {
   /// Payload marker
   static const int payloadMarker = 0xFF;
 
-  static CoapILogger _log = CoapLogManager().logger;
+  static final CoapILogger _log = CoapLogManager().logger;
 
   @override
   String get name => 'draft-ietf-core-coap-18';

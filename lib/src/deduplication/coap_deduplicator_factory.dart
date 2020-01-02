@@ -7,9 +7,13 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+
+// ignore: avoid_classes_with_only_static_members
 /// Deduplicator factory
 class CoapDeduplicatorFactory {
-  static CoapILogger _log = CoapLogManager().logger;
+  static final CoapILogger _log = CoapLogManager().logger;
 
   /// Mark and sweep
   static const String markAndSweepDeduplicator = 'MarkAndSweep';

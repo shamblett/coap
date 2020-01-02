@@ -7,6 +7,8 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+
 /// Allows selection and management of logging for the coap library.
 class CoapLogManager {
   /// Construction

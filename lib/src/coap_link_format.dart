@@ -7,6 +7,15 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: cascade_invocations
+// ignore_for_file: avoid_print
+// ignore_for_file: avoid_types_on_closure_parameters
+// ignore_for_file: avoid_returning_this
+// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
+
+// ignore: avoid_classes_with_only_static_members
 /// This class provides link format definitions as specified in
 /// draft-ietf-core-link-format-06
 class CoapLinkFormat {
@@ -60,7 +69,7 @@ class CoapLinkFormat {
   /// Equal
   static final RegExp equalRegex = RegExp('=');
 
-  static CoapILogger _log = CoapLogManager().logger;
+  static final CoapILogger _log = CoapLogManager().logger;
 
   /// Serialize
   static String serialize(CoapIResource root) => _serializeQueries(root, null);
@@ -69,7 +78,7 @@ class CoapLinkFormat {
       CoapIResource root, Iterable<String> queries) {
     final StringBuffer linkFormat = StringBuffer();
 
-    for (CoapIResource child in root.children) {
+    for (final CoapIResource child in root.children) {
       _serializeTree(child, queries, linkFormat);
     }
     String ret = linkFormat.toString();
@@ -81,7 +90,7 @@ class CoapLinkFormat {
 
   /// Parse
   static Iterable<CoapWebLink> parse(String linkFormat) {
-    final List<CoapWebLink> links = List<CoapWebLink>();
+    final List<CoapWebLink> links = <CoapWebLink>[];
     if (linkFormat.isNotEmpty) {
       final CoapScanner scanner = CoapScanner(linkFormat);
       String path;
@@ -116,7 +125,7 @@ class CoapLinkFormat {
             }
             // Split on delimiter
             final List<String> attrs = attributeString.split(separator);
-            for (String attr in attrs) {
+            for (final String attr in attrs) {
               final List<String> parts = attr.split(attrNameValueSeparator);
               if (parts.length == 1) {
                 link.attributes.addNoValue(parts[0]);
@@ -143,7 +152,7 @@ class CoapLinkFormat {
     final List<CoapIResource> children = resource.children;
     children.sort(
         (CoapIResource r1, CoapIResource r2) => r1.name.compareTo(r2.name));
-    for (CoapIResource child in children) {
+    for (final CoapIResource child in children) {
       _serializeTree(child, queries, sb);
     }
   }
@@ -160,7 +169,7 @@ class CoapLinkFormat {
       CoapResourceAttributes attributes, StringBuffer sb) {
     final List<String> keys = attributes.keys;
     keys.sort();
-    for (String name in keys) {
+    for (final String name in keys) {
       final List<String> values = attributes.getValues(name);
       if (values.isEmpty) {
         continue;
@@ -174,7 +183,7 @@ class CoapLinkFormat {
       String name, Iterable<String> values, StringBuffer sb) {
     const String delimiter = '=';
     sb.write(name);
-    for (String value in values) {
+    for (final String value in values) {
       sb.write(delimiter);
       sb.write('"');
       sb.write(value);
@@ -188,7 +197,8 @@ class CoapLinkFormat {
       {bool recursive}) {
     final StringBuffer linkFormat = StringBuffer();
 
-    // skip hidden and empty root in recursive mode, always skip non-matching resources
+    // Skip hidden and empty root in recursive mode,
+    // always skip non-matching resources.
     if ((!resource.hidden && (resource.name.isNotEmpty) || !recursive) &&
         _matchesOption(resource, query)) {
       linkFormat.write('<');
@@ -198,14 +208,14 @@ class CoapLinkFormat {
       // Reverse the attribute list to re-create the original
       final List<CoapLinkAttribute> attrs =
           resource.attributes.toList().reversed.toList();
-      for (CoapLinkAttribute attr in attrs) {
+      for (final CoapLinkAttribute attr in attrs) {
         linkFormat.write(separator);
         attr.serialize(linkFormat);
       }
     }
 
     if (recursive) {
-      for (CoapEndpointResource sub in resource.getSubResources()) {
+      for (final CoapEndpointResource sub in resource.getSubResources()) {
         final String next = serializeOptions(sub, query, recursive: true);
 
         if (next.isNotEmpty) {
@@ -286,7 +296,7 @@ class CoapLinkFormat {
     if (query == null) {
       return true;
     }
-    for (CoapOption q in query) {
+    for (final CoapOption q in query) {
       final String s = q.stringValue;
       final int delim = s.indexOf('=');
       if (delim == -1) {
@@ -306,7 +316,7 @@ class CoapLinkFormat {
           }
         }
 
-        for (CoapLinkAttribute attr in resource.getAttributes(attrName)) {
+        for (final CoapLinkAttribute attr in resource.getAttributes(attrName)) {
           String actual = attr.value.toString();
           // get prefix length according to '*'
           final int prefixLength = expected.indexOf('*');
@@ -317,7 +327,7 @@ class CoapLinkFormat {
           }
           // handle case like rt=[Type1 Type2]
           if (actual.contains(' ')) {
-            for (String part in actual.split(' ')) {
+            for (final String part in actual.split(' ')) {
               if (part == expected) {
                 return true;
               }
@@ -345,7 +355,7 @@ class CoapLinkFormat {
     if (query.isEmpty) {
       return true;
     }
-    for (String ie in query) {
+    for (final String ie in query) {
       final String s = ie;
 
       final int delim = s.indexOf('=');
@@ -366,7 +376,7 @@ class CoapLinkFormat {
           }
         } else if (attributes.contains(attrName)) {
           // lookup attribute value
-          for (String value in attributes.getValues(attrName)) {
+          for (final String value in attributes.getValues(attrName)) {
             String actual = value;
             // get prefix length according to '*'
             final int prefixLength = expected.indexOf('*');
@@ -378,7 +388,7 @@ class CoapLinkFormat {
 
             // handle case like rt=[Type1 Type2]
             if (actual.contains(' ')) {
-              for (String part in actual.split(' ')) {
+              for (final String part in actual.split(' ')) {
                 if (part == expected) {
                   return true;
                 }
@@ -399,10 +409,11 @@ class CoapLinkFormat {
   static bool addAttribute(
       HashSet<CoapLinkAttribute> attributes, CoapLinkAttribute attrToAdd) {
     if (isSingle(attrToAdd.name)) {
-      for (CoapLinkAttribute attr in attributes) {
+      for (final CoapLinkAttribute attr in attributes) {
         if (attr.name == attrToAdd.name) {
           _log.warn(
-              'CoapLinkFormat::addAttribute - Found existing singleton attribute: ${attr.name}');
+              'CoapLinkFormat::addAttribute - Found existing '
+                  'singleton attribute: ${attr.name}');
           return false;
         }
       }

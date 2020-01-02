@@ -7,6 +7,16 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: cascade_invocations
+// ignore_for_file: avoid_print
+// ignore_for_file: avoid_types_on_closure_parameters
+// ignore_for_file: avoid_returning_this
+// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
+// ignore_for_file: prefer_null_aware_operators
+// ignore_for_file: avoid_annotating_with_dynamic
+
 /// This class describes the options of the CoAP messages.
 class CoapOption {
   /// Construction
@@ -14,7 +24,7 @@ class CoapOption {
     valueBytes = typed.Uint8Buffer();
   }
 
-  int _type;
+  final int _type;
 
   /// Type
   int get type => _type;
@@ -23,6 +33,7 @@ class CoapOption {
   typed.Uint8Buffer valueBytes;
 
   /// From list
+  // ignore: avoid_setters_without_getters
   set valueBytesList(List<int> bytes) {
     valueBytes.clear();
     valueBytes.addAll(bytes);
@@ -124,7 +135,8 @@ class CoapOption {
     }
   }
 
-  /// Gets a value indicating whether the option has a default value according to the draft.
+  /// Gets a value indicating whether the option has a default value
+  /// according to the draft.
   bool isDefault() {
     switch (_type) {
       case optionTypeMaxAge:
@@ -256,7 +268,7 @@ class CoapOption {
   /// Splits a string into a set of options, e.g. a uri path.
   /// Remove any leading /
   static List<CoapOption> split(int type, String s, String delimiter) {
-    final List<CoapOption> opts = List<CoapOption>();
+    final List<CoapOption> opts = <CoapOption>[];
     final RegExp exp = RegExp(r'^\/*\/');
     final Match pos = exp.firstMatch(s);
     String tmp = s;
@@ -264,7 +276,7 @@ class CoapOption {
       tmp = s.substring(pos.end, s.length);
     }
     if (tmp.isNotEmpty) {
-      for (String str in tmp.split(delimiter)) {
+      for (final String str in tmp.split(delimiter)) {
         if (delimiter == '/' || str.isNotEmpty) {
           opts.add(CoapOption.createString(type, str));
         }
@@ -281,7 +293,7 @@ class CoapOption {
     } else {
       final StringBuffer sb = StringBuffer();
       bool append = false;
-      for (CoapOption opt in options) {
+      for (final CoapOption opt in options) {
         if (append) {
           sb.write(delimiter);
         } else {

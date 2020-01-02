@@ -7,6 +7,15 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: cascade_invocations
+// ignore_for_file: avoid_print
+// ignore_for_file: avoid_types_on_closure_parameters
+// ignore_for_file: avoid_returning_this
+// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
+// ignore_for_file: prefer_null_aware_operators
+
 typedef HookFunction = void Function();
 
 /// The class Message models the base class of all CoAP messages.
@@ -41,13 +50,13 @@ class CoapMessage {
   /// The codestring
   String get codeString => CoapCode.codeToString(code);
 
-  static Random _initialId = Random();
+  static final Random _initialId = Random();
 
   /// The ID of this CoAP message.
   int id = _initialId.nextInt(initialIdLimit) + 1;
 
-  Map<int, List<CoapOption>> _optionMap = Map<int, List<CoapOption>>();
-  CoapEventBus _eventBus = CoapEventBus();
+  final Map<int, List<CoapOption>> _optionMap = <int, List<CoapOption>>{};
+  final CoapEventBus _eventBus = CoapEventBus();
 
   /// Option map
   Map<int, List<CoapOption>> get optionMap => _optionMap;
@@ -69,7 +78,7 @@ class CoapMessage {
       return this;
     }
     if (!_optionMap.containsKey(option.type)) {
-      _optionMap[option.type] = List<CoapOption>();
+      _optionMap[option.type] = <CoapOption>[];
     }
     _optionMap[option.type].add(option);
     return this;
@@ -105,8 +114,8 @@ class CoapMessage {
 
   /// Gets a list of all options.
   Iterable<CoapOption> getAllOptions() {
-    final List<CoapOption> list = List<CoapOption>();
-    for (Iterable<CoapOption> opts in _optionMap.values) {
+    final List<CoapOption> list = <CoapOption>[];
+    for (final Iterable<CoapOption> opts in _optionMap.values) {
       if (opts.isNotEmpty) {
         list.addAll(opts);
       }
@@ -122,12 +131,13 @@ class CoapMessage {
     }
   }
 
-  /// Sets all options with the specified option type, removing all others of the same type
+  /// Sets all options with the specified option type, removing
+  /// all others of the same type.
   void setOptions(Iterable<CoapOption> options) {
     if (options == null) {
       return;
     }
-    for (CoapOption opt in options) {
+    for (final CoapOption opt in options) {
       removeOptions(opt.type);
     }
     addOptions(options);
@@ -139,7 +149,7 @@ class CoapMessage {
     if (options == null) {
       return null;
     }
-    for (CoapOption option in options) {
+    for (final CoapOption option in options) {
       if (option.type == optionType) {
         return option;
       }
@@ -171,16 +181,20 @@ class CoapMessage {
     _token = value;
   }
 
-  /// Gets a value that indicates whether this CoAP message is a request message.
+  /// Gets a value that indicates whether this CoAP message is a
+  /// request message.
   bool get isRequest => CoapCode.isRequest(code);
 
-  /// Gets a value that indicates whether this CoAP message is a response message.
+  /// Gets a value that indicates whether this CoAP message is a
+  /// response message.
   bool get isResponse => CoapCode.isResponse(code);
 
-  /// Gets a value that indicates whether this CoAP message is an empty message
+  /// Gets a value that indicates whether this CoAP message is
+  /// an empty message.
   bool get isEmpty => CoapCode.isEmpty(code);
 
-  /// Gets a value that indicates whether this CoAP message is a valid message
+  /// Gets a value that indicates whether this CoAP message is a
+  /// valid message.
   bool get isValid => CoapCode.isValid(code);
 
   /// The destination endpoint.
@@ -270,8 +284,8 @@ class CoapMessage {
   int maxRetransmit = 0;
 
   /// The amount of time in milliseconds after which this message will time out.
-  /// A value of 0 indicates that the time should be decided automatically from the
-  /// configuration.
+  /// A value of 0 indicates that the time should be decided
+  /// automatically from the configuration.
   /// The default value is 0.
   int ackTimeout = 0;
 
@@ -292,7 +306,8 @@ class CoapMessage {
         final String ret = _utfDecoder.convert(payload);
         return ret;
       } on FormatException {
-        // The payload may be incomplete, if so and the conversion fails indicate this
+        // The payload may be incomplete, if so and the conversion
+        // fails indicate this.
         return '<<<< Payload incomplete >>>>>';
       }
     }
@@ -337,12 +352,15 @@ class CoapMessage {
   }
 
   @override
-  String toString() =>
-      '\nType: ${type.toString()}, Code: $codeString, Id: ${id.toString()}, Token: $tokenString, \nOptions =\n[\n${CoapUtil.optionsToString(this)}], \nPayload :\n$payloadString';
+  String toString() => '\nType: ${type.toString()}, Code: $codeString, '
+      'Id: ${id.toString()}, '
+      'Token: $tokenString, '
+      '\nOptions =\n[\n${CoapUtil.optionsToString(this)}], '
+      '\nPayload :\n$payloadString';
 
   /// Select options helper
   Iterable<CoapOption> _selectOptions(int optionType) {
-    final List<CoapOption> ret = List<CoapOption>();
+    final List<CoapOption> ret = <CoapOption>[];
     final Iterable<CoapOption> opts = getOptions(optionType);
     if (opts != null) {
       opts.forEach(ret.add);
@@ -568,7 +586,7 @@ class CoapMessage {
   /// URI paths as a string with no trailing '/'
   String get uriPathsString {
     final StringBuffer sb = StringBuffer();
-    for (CoapOption option in uriPaths) {
+    for (final CoapOption option in uriPaths) {
       sb.write('${option.stringValue}/');
     }
     final String out = sb.toString();
@@ -632,7 +650,7 @@ class CoapMessage {
   /// URI queries as a string with no trailing '/'
   String get uriQueriesString {
     final StringBuffer sb = StringBuffer();
-    for (CoapOption option in uriQueries) {
+    for (final CoapOption option in uriQueries) {
       sb.write('${option.stringValue}&');
     }
     final String out = sb.toString();
@@ -694,7 +712,7 @@ class CoapMessage {
   /// Location path as a string
   String get locationPathsString {
     final StringBuffer sb = StringBuffer();
-    for (CoapOption option in locationPaths) {
+    for (final CoapOption option in locationPaths) {
       sb.write('${option.stringValue}/');
     }
     final String out = sb.toString();
@@ -706,6 +724,7 @@ class CoapMessage {
   }
 
   /// Set the location path from a string
+  // ignore: avoid_setters_without_getters
   set locationPath(String value) {
     // Check for '..' or '.' are invalid values
     if (value.contains('..') || value.contains('.')) {
@@ -786,7 +805,7 @@ class CoapMessage {
   /// Location queries as a string with no trailing '/'
   String get locationQueriesString {
     final StringBuffer sb = StringBuffer();
-    for (CoapOption option in locationQueries) {
+    for (final CoapOption option in locationQueries) {
       sb.write('${option.stringValue}&');
     }
     final String out = sb.toString();
@@ -804,7 +823,8 @@ class CoapMessage {
     }
     if (query.length > 255) {
       throw ArgumentError.value(query.length, 'Message::addLocationQuery',
-          'Location Query option\'s length must be between 0 and 255 inclusive');
+          'Location Query option\'s length must be between '
+              '0 and 255 inclusive');
     }
     return addOption(CoapOption.createString(optionTypeLocationQuery, query));
   }
@@ -860,7 +880,8 @@ class CoapMessage {
   set maxAge(int value) {
     if (value < 0 || value > 4294967295) {
       throw ArgumentError.value(value, 'Message::maxAge',
-          'Max-Age option must be between 0 and 4294967295 (4 bytes) inclusive');
+          'Max-Age option must be between 0 and 4294967295 '
+              '(4 bytes) inclusive');
     }
     setOption(CoapOption.createVal(optionTypeMaxAge, value));
   }
@@ -932,7 +953,8 @@ class CoapMessage {
       removeOptions(optionTypeObserve);
     } else if (value < 0 || ((1 << 24) - 1) < value) {
       throw ArgumentError.value(value, 'Message::observe',
-          'Observe option must be between 0 and ${(1 << 24) - 1} (3 bytes) inclusive');
+          'Observe option must be between 0 and '
+              '${(1 << 24) - 1} (3 bytes) inclusive');
     } else {
       setOption(CoapOption.createVal(optionTypeObserve, value));
     }

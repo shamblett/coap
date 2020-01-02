@@ -7,6 +7,13 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: cascade_invocations
+// ignore_for_file: avoid_print
+// ignore_for_file: avoid_types_on_closure_parameters
+// ignore_for_file: avoid_returning_this
+
 /// Request fail reason
 enum FailReason {
   /// The request has been rejected.
@@ -23,26 +30,28 @@ enum FailReason {
 /// and manipulation of a CoapRequest itself, however this is more involved,
 /// for most cases the API in this class should suffice.
 ///
-/// Note that currently a self constructed resource must be prepared by the prepare
-/// method in this class BEFORE calling any send methods on the resource.
+/// Note that currently a self constructed resource must be prepared
+/// by the prepare method in this class BEFORE calling any send
+/// methods on the resource.
 ///
-/// In most cases a resource can be created outside of the client with the relevant parameters
-/// then set in the client.
+/// In most cases a resource can be created outside of the client with
+/// the relevant parameters then set in the client.
 class CoapClient {
   /// Instantiates.
   /// A supplied request is optional depending on the API call being used.
   /// If it is specified it will be prepared and used
   CoapClient(this.uri, this._config, [this.request]);
 
-  CoapILogger _log = CoapLogManager().logger;
-  static Iterable<CoapWebLink> _emptyLinks = <CoapWebLink>[CoapWebLink('')];
+  final CoapILogger _log = CoapLogManager().logger;
+  static final Iterable<CoapWebLink> _emptyLinks =
+  <CoapWebLink>[CoapWebLink('')];
 
   /// The URI
   Uri uri;
-  CoapConfig _config;
+  final CoapConfig _config;
 
-  /// The endpoint. Once set, on the first request this endpoint is used throughout this client for all
-  /// subsequent requests.
+  /// The endpoint. Once set, on the first request this endpoint is used
+  /// throughout this client for all subsequent requests.
   CoapIEndPoint endpoint;
 
   int _type = CoapMessageType.con;
@@ -57,7 +66,7 @@ class CoapClient {
   /// Address type, set this if using IPV6
   InternetAddressType addressType = InternetAddressType.IPv4;
 
-  CoapEventBus _eventBus = CoapEventBus();
+  final CoapEventBus _eventBus = CoapEventBus();
 
   /// Tell the client to use Confirmable requests.
   CoapClient useCONs() {
@@ -90,6 +99,7 @@ class CoapClient {
       request.uri = uri;
       request = await prepare(request);
       this.request = request;
+      // ignore: prefer_if_null_operators
       final int timeoutToUse = timeout == null ? this.timeout : timeout;
       await request.send().waitForResponse(timeoutToUse);
       return request.isRejected;
@@ -268,11 +278,11 @@ class CoapClient {
     return request.send().waitForResponse(timeout);
   }
 
-  /// Prepare. If you wish to build and send your own resource, i.e not using the API in
-  /// this class this method MUST be called to prepare the resource BEFORE calling a
-  /// send method on the resource.
+  /// Prepare. If you wish to build and send your own resource,
+  /// i.e not using the API in this class this method MUST be called
+  /// to prepare the resource BEFORE calling a send method on the resource.
   Future<CoapRequest> prepare(CoapRequest request) async =>
-      await _doPrepare(request);
+      _doPrepare(request);
 
   /// Cancel the current request
   void cancelRequest() {

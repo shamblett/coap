@@ -7,6 +7,10 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: cascade_invocations
+
 /// This class describes the functionality of a CoAP endpoint resource.
 abstract class CoapEndpointResource {
   /// Initialize a resource.
@@ -15,18 +19,18 @@ abstract class CoapEndpointResource {
   /// Initialize a resource.
   CoapEndpointResource.hide(this.name, {this.hidden});
 
-  CoapILogger _log = CoapLogManager().logger;
+  final CoapILogger _log = CoapLogManager().logger;
 
   /// The name of the resource identifier
   String name;
 
-  HashSet<CoapLinkAttribute> _attributes = HashSet<CoapLinkAttribute>();
+  final HashSet<CoapLinkAttribute> _attributes = HashSet<CoapLinkAttribute>();
 
   /// Attributes
   Iterable<CoapLinkAttribute> get attributes => _attributes;
 
   CoapEndpointResource _parent;
-  SplayTreeMap<String, CoapEndpointResource> _subResources =
+  final SplayTreeMap<String, CoapEndpointResource> _subResources =
       SplayTreeMap<String, CoapEndpointResource>();
 
   /// Sub resources
@@ -34,7 +38,8 @@ abstract class CoapEndpointResource {
 
   int _totalSubResourceCount = 0;
 
-  /// Gets the total count of sub-resources, including children and children's children...
+  /// Gets the total count of sub-resources, including children
+  /// and children's children...
   int get totalSubResourceCount => _totalSubResourceCount;
 
   /// Gets the count of sub-resources of this resource.
@@ -129,8 +134,8 @@ abstract class CoapEndpointResource {
 
   /// Attributes
   List<CoapLinkAttribute> getAttributes(String name) {
-    final List<CoapLinkAttribute> list = List<CoapLinkAttribute>();
-    for (CoapLinkAttribute attr in attributes) {
+    final List<CoapLinkAttribute> list = <CoapLinkAttribute>[];
+    for (final CoapLinkAttribute attr in attributes) {
       if (attr.name == name) {
         list.add(attr);
       }
@@ -145,7 +150,7 @@ abstract class CoapEndpointResource {
   /// Clear an attribute
   bool clearAttribute(String name) {
     bool cleared = false;
-    for (CoapLinkAttribute attr in getAttributes(name)) {
+    for (final CoapLinkAttribute attr in getAttributes(name)) {
       cleared = cleared || _attributes.remove(attr);
     }
     return cleared;
@@ -154,8 +159,8 @@ abstract class CoapEndpointResource {
   /// Get string values
   static Iterable<String> getStringValues(
       Iterable<CoapLinkAttribute> attributes) {
-    final List<String> list = List<String>();
-    for (CoapLinkAttribute attr in attributes) {
+    final List<String> list = <String>[];
+    for (final CoapLinkAttribute attr in attributes) {
       list.add(attr.valueAsString);
     }
     return list;
@@ -163,8 +168,8 @@ abstract class CoapEndpointResource {
 
   /// Get integer values
   static Iterable<int> getIntValues(Iterable<CoapLinkAttribute> attributes) {
-    final List<int> list = List<int>();
-    for (CoapLinkAttribute attr in attributes) {
+    final List<int> list = <int>[];
+    for (final CoapLinkAttribute attr in attributes) {
       list.add(attr.valueAsInt);
     }
     return list;
@@ -183,7 +188,7 @@ abstract class CoapEndpointResource {
       return null;
     }
 
-    final List<CoapEndpointResource> resources = List<CoapEndpointResource>();
+    final List<CoapEndpointResource> resources = <CoapEndpointResource>[];
     resources.addAll(_subResources.values);
     return resources;
   }
@@ -252,7 +257,8 @@ abstract class CoapEndpointResource {
     while (resource.name.startsWith('/')) {
       if (_parent != null) {
         _log.warn(
-            'Adding absolute path only allowed for root: made relative ${resource.name}');
+            'Adding absolute path only allowed for root: '
+                'made relative ${resource.name}');
       }
       resource.name = resource.name.substring(1);
     }
@@ -274,7 +280,7 @@ abstract class CoapEndpointResource {
     if (path.isEmpty) {
       // resource replaces base
       _log.info('Replacing resource ${baseRes.path}');
-      for (CoapEndpointResource sub in baseRes.getSubResources()) {
+      for (final CoapEndpointResource sub in baseRes.getSubResources()) {
         sub._parent = resource;
         resource.subResources[sub.name] = sub;
       }

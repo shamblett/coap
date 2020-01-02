@@ -45,8 +45,6 @@ class CoapDraft08 implements CoapISpec {
   /// Fence post divisor position
   static const int fencepostDivisor = 14;
 
-  CoapILogger _log = CoapLogManager().logger;
-
   @override
   String get name => 'draft-ietf-core-coap-08';
 

@@ -7,9 +7,18 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: cascade_invocations
+// ignore_for_file: avoid_print
+// ignore_for_file: avoid_types_on_closure_parameters
+// ignore_for_file: avoid_returning_this
+// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
+// ignore_for_file: prefer_null_aware_operators
+// ignore_for_file: avoid_annotating_with_dynamic
+
 /// Message encoder 18
 class CoapMessageEncoder18 extends CoapMessageEncoder {
-  CoapILogger _log = CoapLogManager().logger;
 
   @override
   void serialize(CoapDatagramWriter writer, CoapMessage message, int code) {
@@ -29,7 +38,7 @@ class CoapMessageEncoder18 extends CoapMessageEncoder {
     CoapUtil.insertionSort(
         options, (dynamic a, dynamic b) => a.type.compareTo(b.type));
 
-    for (CoapOption opt in options) {
+    for (final CoapOption opt in options) {
       if (opt.type == optionTypeToken ||
           opt.type == optionTypeUriHost ||
           opt.type == optionTypeUriPort) {

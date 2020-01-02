@@ -7,13 +7,17 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: prefer_null_aware_operators
+
 /// Wraps different attributes that the CoAP protocol defines
 /// such as title, resource type or interface description. These attributes will
 /// also be included in the link description of the resource they belong to. For
-/// example, if a title was specified, the link description for a sensor resource
-/// might look like this &lt;/sensors&gt;;title="Sensor Index"
+/// example, if a title was specified, the link description
+/// for a sensor resource might look like this &lt;/sensors&gt;;title="Sensor Index"
 class CoapResourceAttributes {
-  Map<String, List<String>> _attributes = Map<String, List<String>>();
+  final Map<String, List<String>> _attributes = <String, List<String>>{};
 
   /// Gets the number of attributes.
   int get count => _attributes.length;
@@ -67,7 +71,7 @@ class CoapResourceAttributes {
 
   /// Clears all resource types.
   void clearResourceTypes() {
-    _attributes[CoapLinkFormat.resourceType] = List<String>();
+    _attributes[CoapLinkFormat.resourceType] = <String>[];
   }
 
   /// Adds an interface description.
@@ -81,7 +85,7 @@ class CoapResourceAttributes {
 
   /// Clears all interface descriptions.
   void clearInterfaceDescriptions() {
-    _attributes[CoapLinkFormat.interfaceDescription] = List<String>();
+    _attributes[CoapLinkFormat.interfaceDescription] = <String>[];
   }
 
   /// Adds a content type specified by an integer.
@@ -94,7 +98,7 @@ class CoapResourceAttributes {
 
   /// Clears all content types.
   void clearContentTypes() {
-    _attributes[CoapLinkFormat.contentType] = List<String>();
+    _attributes[CoapLinkFormat.contentType] = <String>[];
   }
 
   /// Returns true if this object contains the specified attribute.
@@ -103,7 +107,7 @@ class CoapResourceAttributes {
   /// Adds the specified value to the other values of the specified attribute.
   void add(String name, String value) {
     if (_attributes[name] == null) {
-      _attributes[name] = List<String>();
+      _attributes[name] = <String>[];
     }
     _attributes[name].add(value);
   }
@@ -127,6 +131,6 @@ class CoapResourceAttributes {
 
   /// Removes all values for the specified attribute.
   void clear(String name) {
-    _attributes[name] = List<String>();
+    _attributes[name] = <String>[];
   }
 }

@@ -7,14 +7,18 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+
+
 /// Crop rotation deduplicator
 class CoapCropRotationDeduplicator implements CoapIDeduplicator {
   /// Construction
   CoapCropRotationDeduplicator(CoapConfig config) {
     _maps = List<Map<CoapKeyId, CoapExchange>>(3);
-    _maps[0] = Map<CoapKeyId, CoapExchange>();
-    _maps[1] = Map<CoapKeyId, CoapExchange>();
-    _maps[2] = Map<CoapKeyId, CoapExchange>();
+    _maps[0] = <CoapKeyId, CoapExchange>{};
+    _maps[1] = <CoapKeyId, CoapExchange>{};
+    _maps[2] = <CoapKeyId, CoapExchange>{};
     _first = 0;
     _second = 1;
     _config = config;

@@ -7,7 +7,11 @@
 
 part of coap;
 
-/// Represents a relation between a client endpoint and a resource on this server.
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+
+/// Represents a relation between a client endpoint and a
+/// resource on this server.
 class CoapObserveRelation {
   /// Constructs a new observe relation.
   /// The observing endpoint
@@ -30,8 +34,7 @@ class CoapObserveRelation {
     _key = '$source#${exchange.request.tokenString}';
   }
 
-  CoapILogger _log = CoapLogManager().logger;
-  CoapConfig _config;
+  final CoapILogger _log = CoapLogManager().logger;
   CoapObservingEndpoint _endpoint;
 
   /// Source endpoint of the observing endpoint
@@ -60,13 +63,15 @@ class CoapObserveRelation {
   DateTime _interestCheckTime = DateTime.now();
   int _interestCheckCounter = 1;
 
-  /// The notifications that have been sent, so they can be removed from the Matcher
-  Queue<CoapResponse> _notifications = Queue<CoapResponse>();
+  /// The notifications that have been sent, so they can be
+  /// removed from the Matcher.
+  final Queue<CoapResponse> _notifications = Queue<CoapResponse>();
 
   /// Cancel this observe relation.
   void cancel() {
     _log.debug(
-        'CoapObserveRelation::Cancel observe relation from $_key with ${_resource.path}');
+        'CoapObserveRelation::Cancel observe relation from '
+            '$_key with ${_resource.path}');
     // Stop ongoing retransmissions
     if (_exchange.response != null) {
       _exchange.response.cancel();

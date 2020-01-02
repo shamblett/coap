@@ -11,8 +11,14 @@ import 'dart:async';
 import 'dart:io';
 import 'package:coap/coap.dart';
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: cascade_invocations
+// ignore_for_file: avoid_print
+
 FutureOr<void> main(List<String> args) async {
-  // Create a configuration class. Logging levels can be specified in the configuration file
+  // Create a configuration class. Logging levels can be specified
+  // in the configuration file.
   final CoapConfig conf = CoapConfig(File('example/config_all.yaml'));
 
   // Build the request uri, note that the request paths/query parameters can be changed
@@ -22,7 +28,8 @@ FutureOr<void> main(List<String> args) async {
   final Uri uri = Uri(scheme: 'coap', host: host, port: conf.defaultPort);
 
   // Create the client.
-  // The method we are using creates its own request so we do not need to supply one.
+  // The method we are using creates its own request so we do not
+  // need to supply one.
   // The current request is always available from the client.
   final CoapClient client = CoapClient(uri, conf);
 

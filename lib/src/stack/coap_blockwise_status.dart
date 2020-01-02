@@ -46,7 +46,7 @@ class CoapBlockwiseStatus {
   int observe = noObserve;
 
   /// Blocks
-  List<typed.Uint8Buffer> blocks = List<typed.Uint8Buffer>();
+  List<typed.Uint8Buffer> blocks = <typed.Uint8Buffer>[];
 
   /// Block count
   int get blockCount => blocks.length;
@@ -59,6 +59,6 @@ class CoapBlockwiseStatus {
   }
 
   @override
-  String toString() =>
-      '[CurrentNum=$currentNUM, CurrentSzx=$currentSZX, Complete=$complete, RandomAccess=$randomAccess]';
+  String toString() => '[CurrentNum=$currentNUM, CurrentSzx=$currentSZX, '
+      'Complete=$complete, RandomAccess=$randomAccess]';
 }

@@ -7,6 +7,9 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+
 /// This class holds the state of an observe relation such
 /// as the timeout of the last notification and the current number.
 class CoapObserveNotificationOrderer {

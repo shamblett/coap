@@ -7,7 +7,18 @@
 
 part of coap;
 
-/// This class describes the functionality to write raw network-ordered datagrams on bit-level.
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: cascade_invocations
+// ignore_for_file: avoid_print
+// ignore_for_file: avoid_types_on_closure_parameters
+// ignore_for_file: avoid_returning_this
+// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
+// ignore_for_file: prefer_null_aware_operators
+// ignore_for_file: avoid_annotating_with_dynamic
+
+/// This class describes the functionality to write raw network-ordered
+/// datagrams on bit-level.
 class CoapDatagramWriter {
   /// Initializes a new DatagramWriter object
   CoapDatagramWriter() {
@@ -16,7 +27,7 @@ class CoapDatagramWriter {
     _currentBitIndex = 7;
   }
 
-  CoapILogger _log = CoapLogManager().logger;
+  final CoapILogger _log = CoapLogManager().logger;
 
   typed.Uint8Buffer _buffer;
   ByteData _currentByte;

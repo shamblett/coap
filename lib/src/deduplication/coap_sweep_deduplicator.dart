@@ -7,6 +7,10 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: avoid_types_on_closure_parameters
+
 /// Sweep deduplicator
 class CoapSweepDeduplicator implements CoapIDeduplicator {
   /// Construction
@@ -14,10 +18,10 @@ class CoapSweepDeduplicator implements CoapIDeduplicator {
     _config = config;
   }
 
-  CoapILogger _log = CoapLogManager().logger;
+  final CoapILogger _log = CoapLogManager().logger;
 
-  Map<CoapKeyId, CoapExchange> _incomingMessages =
-      Map<CoapKeyId, CoapExchange>();
+  final Map<CoapKeyId, CoapExchange> _incomingMessages =
+      <CoapKeyId, CoapExchange>{};
   Timer _timer;
   CoapConfig _config;
 
@@ -63,7 +67,7 @@ class CoapSweepDeduplicator implements CoapIDeduplicator {
 
     final DateTime oldestAllowed = DateTime.now()
       ..add(Duration(milliseconds: _config.exchangeLifetime));
-    final List<CoapKeyId> keysToRemove = List<CoapKeyId>();
+    final List<CoapKeyId> keysToRemove = <CoapKeyId>[];
     _incomingMessages.forEach((CoapKeyId key, CoapExchange value) {
       if (value.timestamp.isBefore(oldestAllowed)) {
         _log.info('Mark-And-Sweep removes $key');

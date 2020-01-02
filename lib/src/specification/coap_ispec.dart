@@ -21,7 +21,8 @@ abstract class CoapISpec {
   typed.Uint8Buffer encode(CoapMessage msg);
 
   /// Decodes a CoAP message from a bytes array.
-  /// Returns the decoded message, or null if the bytes array can not be recognized.
+  /// Returns the decoded message, or null if the bytes array
+  /// can not be recognized.
   CoapMessage decode(typed.Uint8Buffer bytes);
 
   /// Gets an IMessageEncoder.

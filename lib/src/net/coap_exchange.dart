@@ -7,6 +7,15 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: cascade_invocations
+// ignore_for_file: avoid_annotating_with_dynamic
+// ignore_for_file: avoid_types_on_closure_parameters
+// ignore_for_file: avoid_print
+// ignore_for_file: prefer_null_aware_operators
+// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
+
 /// Represents the complete state of an exchange of one request
 /// and one or more responses. The lifecycle of an exchange ends
 /// when either the last response has arrived and is acknowledged,
@@ -19,10 +28,10 @@ class CoapExchange {
     _timestamp = DateTime.now();
   }
 
-  CoapEventBus _eventBus = CoapEventBus();
+  final CoapEventBus _eventBus = CoapEventBus();
 
-  Map<Object, Object> _attributes = Map<Object, Object>();
-  CoapOrigin _origin;
+  final Map<Object, Object> _attributes = <Object, Object>{};
+  final CoapOrigin _origin;
 
   /// The origin
   CoapOrigin get origin => _origin;
@@ -56,7 +65,8 @@ class CoapExchange {
   CoapBlockwiseStatus requestBlockStatus;
 
   /// The block option of the last block of a blockwise sent request.
-  /// When the server sends the response, this block option has to be acknowledged.
+  /// When the server sends the response, this block option has
+  /// to be acknowledged.
   CoapBlockOption block1ToAck;
 
   /// Observe relation
@@ -105,7 +115,7 @@ class CoapExchange {
   /// Reject this exchange and therefore the request.
   /// Sends an RST back to the client.
   void sendReject() {
-    assert(_origin == CoapOrigin.remote);
+    assert(_origin == CoapOrigin.remote, 'Origin must be remote');
     request.isRejected = true;
     final CoapEmptyMessage rst = CoapEmptyMessage.newRST(request);
     endpoint.sendEpEmptyMessage(this, rst);
@@ -115,7 +125,7 @@ class CoapExchange {
   /// type was a CON and the request has not been acknowledged
   /// yet, it sends an ACK to the client.
   void sendAccept() {
-    assert(_origin == CoapOrigin.remote);
+    assert(_origin == CoapOrigin.remote, 'Origin must be remote');
     if (request.type == CoapMessageType.con && !request.isAcknowledged) {
       request.isAcknowledged = true;
       final CoapEmptyMessage ack = CoapEmptyMessage.newACK(request);
@@ -161,7 +171,7 @@ class CoapKeyId {
     _hash = _id * 31;
   }
 
-  int _id;
+  final int _id;
   int _hash;
 
   @override
@@ -215,8 +225,8 @@ class CoapKeyUri {
     _hash = _uri.hashCode * 31 + (_endpoint == null ? 0 : _endpoint.hashCode);
   }
 
-  Uri _uri;
-  CoapInternetAddress _endpoint;
+  final Uri _uri;
+  final CoapInternetAddress _endpoint;
   int _hash;
 
   @override

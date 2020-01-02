@@ -7,14 +7,22 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: cascade_invocations
+// ignore_for_file: avoid_print
+// ignore_for_file: avoid_types_on_closure_parameters
+// ignore_for_file: avoid_annotating_with_dynamic
+// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
+
 /// UDP network
 class CoapNetworkUDP implements CoapINetwork {
   /// Initialize with an address and a port
   CoapNetworkUDP(this.address, this.port);
 
-  CoapILogger _log = CoapLogManager().logger;
+  final CoapILogger _log = CoapLogManager().logger;
 
-  CoapEventBus _eventBus = CoapEventBus();
+  final CoapEventBus _eventBus = CoapEventBus();
 
   /// The internet address
   @override
@@ -25,7 +33,8 @@ class CoapNetworkUDP implements CoapINetwork {
   int port;
 
   @override
-  StreamController<List<int>> _data = StreamController<List<int>>.broadcast();
+  final StreamController<List<int>> _data =
+  StreamController<List<int>>.broadcast();
 
   RawDatagramSocket _socket;
   bool _bound = false;
@@ -87,7 +96,7 @@ class CoapNetworkUDP implements CoapINetwork {
   @override
   void bind() {
     if (_bound) {
-      return null;
+      return;
     }
     try {
       // Use a port of 0 here as we are a client, this will generate
@@ -101,10 +110,13 @@ class CoapNetworkUDP implements CoapINetwork {
       });
     } on SocketException catch (e) {
       _log.error(
-          'CoapNetworkUDP Recieve - severe error - socket exception failed to bind, address ${address.address.host}, port $port with exception $e: $e');
+          'CoapNetworkUDP Recieve - severe error - socket exception '
+              'failed to bind, address ${address.address.host}, '
+              'port $port with exception $e: $e');
     } on Exception catch (e) {
       _log.error(
-          'CoapNetworkUDP - severe error - Failed to bind, address ${address.address.host}, port $port with exception $e');
+          'CoapNetworkUDP - severe error - Failed to bind, '
+              'address ${address.address.host}, port $port with exception $e');
     }
   }
 

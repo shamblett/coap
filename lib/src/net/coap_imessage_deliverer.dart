@@ -7,7 +7,8 @@
 
 part of coap;
 
-/// Provides methods for delivering inbound CoAP messages to an appropriate processor.
+/// Provides methods for delivering inbound CoAP messages
+/// to an appropriate processor.
 abstract class CoapIMessageDeliverer {
   /// Delivers an inbound CoAP request to an appropriate resource.
   void deliverRequest(CoapExchange exchange);

@@ -7,6 +7,9 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+
 /// draft-ietf-core-coap-13
 class CoapDraft13 implements CoapISpec {
   /// Version
@@ -36,7 +39,7 @@ class CoapDraft13 implements CoapISpec {
   /// Payload marker
   static const int payloadMarker = 0xFF;
 
-  static CoapILogger _log = CoapLogManager().logger;
+  static final CoapILogger _log = CoapLogManager().logger;
 
   @override
   String get name => 'draft-ietf-core-coap-13';
@@ -84,7 +87,8 @@ class CoapDraft13 implements CoapISpec {
       return 14;
     } else {
       _log.warn(
-          'The option value $optionValue is too large to be encoded; Max allowed is 65804.');
+          'The option value $optionValue is too large to be '
+              'encoded; Max allowed is 65804.');
       return 0;
     }
   }

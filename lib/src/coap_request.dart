@@ -9,10 +9,21 @@
 
 part of coap;
 
+// ignore: avoid_annotating_with_dynamic
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: cascade_invocations
+// ignore_for_file: avoid_print
+// ignore_for_file: avoid_types_on_closure_parameters
+// ignore_for_file: avoid_returning_this
+// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
+// ignore_for_file: prefer_null_aware_operators
+
 /// This class describes the functionality of a CoAP Request as
 /// a subclass of a CoAP Message. It provides:
 /// 1. operations to answer a request by a response using respond()
-/// 2. different ways to handle incoming responses: receiveResponse() or Response event
+/// 2. different ways to handle incoming responses:
+/// receiveResponse() or Response event.
 class CoapRequest extends CoapMessage {
   /// Default
   CoapRequest();
@@ -141,7 +152,7 @@ class CoapRequest extends CoapMessage {
     }
   }
 
-  StreamController<CoapResponse> _responseStream =
+  final StreamController<CoapResponse> _responseStream =
       StreamController<CoapResponse>.broadcast();
 
   /// Response stream

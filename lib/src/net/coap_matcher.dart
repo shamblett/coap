@@ -7,6 +7,16 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: cascade_invocations
+// ignore_for_file: avoid_annotating_with_dynamic
+// ignore_for_file: avoid_types_on_closure_parameters
+// ignore_for_file: avoid_print
+// ignore_for_file: prefer_null_aware_operators
+// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
+// ignore_for_file: prefer_if_null_operators
+
 /// Matcher class
 class CoapMatcher implements CoapIMatcher {
   /// Construction
@@ -18,19 +28,20 @@ class CoapMatcher implements CoapIMatcher {
     _eventBus.on<CoapCompletedEvent>().listen(onExchangeCompleted);
   }
 
-  CoapILogger _log = CoapLogManager().logger;
-  CoapEventBus _eventBus = CoapEventBus();
+  final CoapILogger _log = CoapLogManager().logger;
+  final CoapEventBus _eventBus = CoapEventBus();
 
   /// For all
-  Map<CoapKeyId, CoapExchange> _exchangesById = Map<CoapKeyId, CoapExchange>();
+  final Map<CoapKeyId, CoapExchange> _exchangesById =
+      <CoapKeyId, CoapExchange>{};
 
   /// For outgoing
-  Map<CoapKeyToken, CoapExchange> _exchangesByToken =
-      Map<CoapKeyToken, CoapExchange>();
+  final Map<CoapKeyToken, CoapExchange> _exchangesByToken =
+      <CoapKeyToken, CoapExchange>{};
 
   /// For blockwise
-  Map<CoapKeyUri, CoapExchange> _ongoingExchanges =
-      Map<CoapKeyUri, CoapExchange>();
+  final Map<CoapKeyUri, CoapExchange> _ongoingExchanges =
+      <CoapKeyUri, CoapExchange>{};
 
   int _currentId;
   CoapIDeduplicator _deduplicator;
@@ -86,7 +97,8 @@ class CoapMatcher implements CoapIMatcher {
     // CON/NON request with same MID again. We then find the corresponding
     // exchange and the ReliabilityLayer resends this response.
 
-    // If this is a CON notification we now can forget all previous NON notifications
+    // If this is a CON notification we now can forget all previous
+    // NON notifications.
     if (response.type == CoapMessageType.con ||
         response.type == CoapMessageType.ack) {
       final CoapObserveRelation relation = exchange.relation;
@@ -99,20 +111,21 @@ class CoapMatcher implements CoapIMatcher {
     if (response.hasOption(optionTypeBlock2)) {
       final CoapRequest request = exchange.currentRequest;
       final CoapKeyUri keyUri = CoapKeyUri(request.uri, response.destination);
-      // Observe notifications only send the first block, hence do not store them as ongoing
+      // Observe notifications only send the first block,
+      // hence do not store them as ongoing.
       if (exchange.responseBlockStatus != null &&
           !response.hasOption(optionTypeObserve)) {
         // Remember ongoing blockwise GET requests
         if (CoapUtil.put(_ongoingExchanges, keyUri, exchange) == null) {
-          _log.info(
-              'Matcher - Ongoing Block2 started late, storing $keyUri for $request');
+          _log.info('Matcher - Ongoing Block2 started late, '
+              'storing $keyUri for $request');
         } else {
-          _log.info(
-              'Matcher - Ongoing Block2 continued, storing $keyUri for $request');
+          _log.info('Matcher - Ongoing Block2 continued, '
+              'storing $keyUri for $request');
         }
       } else {
-        _log.info(
-            'Matcher - Ongoing Block2 completed, cleaning up $keyUri for $request');
+        _log.info('Matcher - Ongoing Block2 completed, '
+            'cleaning up $keyUri for $request');
         _ongoingExchanges.remove(keyUri);
       }
     }
@@ -144,7 +157,8 @@ class CoapMatcher implements CoapIMatcher {
     // This request could be
     //  - Complete origin request => deliver with new exchange
     //  - One origin block        => deliver with ongoing exchange
-    //  - Complete duplicate request or one duplicate block (because client got no ACK)
+    //  - Complete duplicate request or one duplicate block
+    //  (because client got no ACK)
     //     =>
     //		if ACK got lost => resend ACK
     //		if ACK+response got lost => resend ACK+response
@@ -180,12 +194,13 @@ class CoapMatcher implements CoapIMatcher {
           _log.info('Matcher - Duplicate ongoing request: $request');
           request.duplicate = true;
         } else {
-          // The exchange is continuing, we can (i.e., must) clean up the previous response
+          // The exchange is continuing, we can (i.e., must)
+          // clean up the previous response.
           if (ongoing.currentResponse.type != CoapMessageType.ack &&
               !ongoing.currentResponse.hasOption(optionTypeObserve)) {
             keyId = CoapKeyId(ongoing.currentResponse.id);
-            _log.info(
-                'Matcher - Ongoing exchange got new request, cleaning up $keyId');
+            _log.info('Matcher - Ongoing exchange got new request, '
+                'cleaning up $keyId');
             _exchangesById.remove(keyId);
           }
         }
@@ -241,9 +256,11 @@ class CoapMatcher implements CoapIMatcher {
 
       if (response.type == CoapMessageType.ack &&
           exchange.currentRequest.id != response.id) {
-        // The token matches but not the MID. This is a response for an older exchange
-        _log.warn(
-            'Matcher - Possible MID reuse before lifetime end: ${response.tokenString} expected MID ${exchange.currentRequest.id} but received ${response.id}');
+        // The token matches but not the MID. This is a
+        // response for an older exchange
+        _log.warn('Matcher - Possible MID reuse before lifetime end: '
+            '${response.tokenString} expected MID '
+            '${exchange.currentRequest.id} but received ${response.id}');
       }
 
       return exchange;
@@ -260,7 +277,8 @@ class CoapMatcher implements CoapIMatcher {
         }
       } else {
         _log.warn(
-            'Matcher - Ignoring unmatchable piggy-backed response from ${response.source.address.host} : $response');
+            'Matcher - Ignoring unmatchable piggy-backed '
+                'response from ${response.source.address.host} : $response');
       }
       // Ignore response
       return null;
@@ -278,7 +296,8 @@ class CoapMatcher implements CoapIMatcher {
       return exchange;
     } else {
       _log.warn(
-          'Matcher - Ignoring unmatchable empty message from ${message.source} : $message');
+          'Matcher - Ignoring unmatchable empty message '
+              'from ${message.source} : $message');
       return null;
     }
   }
@@ -315,7 +334,8 @@ class CoapMatcher implements CoapIMatcher {
         _ongoingExchanges.remove(uriKey);
       }
 
-      // Remove all remaining NON-notifications if this exchange is an observe relation
+      // Remove all remaining NON-notifications if this exchange is
+      // an observe relation.
       final CoapObserveRelation relation = exchange.relation;
       if (relation != null) {
         _removeNotificatoinsOf(relation);
@@ -327,7 +347,7 @@ class CoapMatcher implements CoapIMatcher {
     _log.info(
         'Matcher - Remove all remaining NON-notifications of observe relation');
 
-    for (CoapResponse previous in relation.clearNotifications()) {
+    for (final CoapResponse previous in relation.clearNotifications()) {
       // Notifications are local MID namespace
       final CoapKeyId keyId = CoapKeyId(previous.id);
       _exchangesById.remove(keyId);

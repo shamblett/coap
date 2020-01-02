@@ -7,6 +7,8 @@
 
 part of coap;
 
+// ignore_for_file: unnecessary_final
+
 /// Abstract networking class, allows different implementations for
 /// UDP, test etc.
 abstract class CoapINetwork {
@@ -16,7 +18,9 @@ abstract class CoapINetwork {
   /// The port
   int port;
 
-  StreamController<List<int>> _data = StreamController<List<int>>.broadcast();
+  // ignore: close_sinks
+  final StreamController<List<int>> _data =
+      StreamController<List<int>>.broadcast();
 
   /// Send, returns the number of bytes sent or null
   /// if not bound.
