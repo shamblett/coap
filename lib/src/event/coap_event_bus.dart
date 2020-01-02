@@ -157,9 +157,8 @@ class CoapEventBus {
       lastEvent = event;
       _eventBus.fire(event);
     } else {
-      _log.warn(
-          'Event Bus - attempting to raise event on '
-              'destroyed event bus : $event');
+      _log.warn('Event Bus - attempting to raise event on '
+          'destroyed event bus : $event');
     }
   }
 

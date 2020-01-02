@@ -256,9 +256,8 @@ abstract class CoapEndpointResource {
     // no absolute paths allowed, use root directly
     while (resource.name.startsWith('/')) {
       if (_parent != null) {
-        _log.warn(
-            'Adding absolute path only allowed for root: '
-                'made relative ${resource.name}');
+        _log.warn('Adding absolute path only allowed for root: '
+            'made relative ${resource.name}');
       }
       resource.name = resource.name.substring(1);
     }

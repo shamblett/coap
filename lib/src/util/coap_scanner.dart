@@ -7,6 +7,9 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+
 /// String scanner
 class CoapScanner extends scanner.StringScanner {
   /// Construction

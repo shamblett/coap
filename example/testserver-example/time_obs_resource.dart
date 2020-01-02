@@ -44,9 +44,8 @@ FutureOr<void> main(List<String> args) async {
 
   client.request = request;
 
-  print(
-      'EXAMPLE - Sending get observable request to '
-          '$host, waiting for responses ....');
+  print('EXAMPLE - Sending get observable request to '
+      '$host, waiting for responses ....');
   await client.get();
 
   // Getting responses form the observable resource

@@ -8,6 +8,13 @@ import 'dart:io';
 import 'package:coap/coap.dart';
 import 'package:test/test.dart';
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: cascade_invocations
+// ignore_for_file: avoid_annotating_with_dynamic
+// ignore_for_file: avoid_types_on_closure_parameters
+// ignore_for_file: flutter_style_todos
+
 void main() {
   group('Media types', () {
     test('Properties', () {
@@ -27,7 +34,7 @@ void main() {
     test('Negotiation Content', () {
       const int defaultContentType = 10;
       final List<int> supported = <int>[11, 5];
-      List<CoapOption> accepted = List<CoapOption>();
+      List<CoapOption> accepted = <CoapOption>[];
       final CoapOption opt1 = CoapOption.createVal(optionTypeMaxAge, 10);
       final CoapOption opt2 = CoapOption.createVal(optionTypeContentFormat, 5);
       accepted.add(opt1);

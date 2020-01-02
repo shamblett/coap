@@ -7,6 +7,11 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: cascade_invocations
+// ignore_for_file: avoid_annotating_with_dynamic
+
 /// Transmission context
 class CoapTransmissionContext {
   /// Construction
@@ -15,10 +20,10 @@ class CoapTransmissionContext {
     currentTimeout = _message.ackTimeout;
   }
 
-  CoapILogger _log = CoapLogManager().logger;
-  CoapConfig _config;
-  CoapExchange _exchange;
-  CoapMessage _message;
+  final CoapILogger _log = CoapLogManager().logger;
+  final CoapConfig _config;
+  final CoapExchange _exchange;
+  final CoapMessage _message;
 
   /// Current timeout
   int currentTimeout = 0;
@@ -26,7 +31,7 @@ class CoapTransmissionContext {
   /// Failed transmission count
   int failedTransmissionCount = 0;
   Timer _timer;
-  ActionGeneric<CoapTransmissionContext> _retransmit;
+  final ActionGeneric<CoapTransmissionContext> _retransmit;
 
   /// Start
   void start() {
@@ -42,11 +47,13 @@ class CoapTransmissionContext {
   void cancel() {
     _timer.cancel();
     if (_exchange.origin == CoapOrigin.local) {
-      _log.info(
-          'Reliability - Cancel retransmission for token: ${_exchange.currentRequest.tokenString} id: ${_exchange.currentRequest.id}');
+      _log.info('Reliability - Cancel retransmission for token: '
+          '${_exchange.currentRequest.tokenString} id: '
+          '${_exchange.currentRequest.id}');
     } else {
-      _log.info(
-          'Reliability - Cancel retransmission for token: ${_exchange.currentResponse.tokenString} id: ${_exchange.currentResponse.id}');
+      _log.info('Reliability - Cancel retransmission for token: '
+          '${_exchange.currentResponse.tokenString} id: '
+          '${_exchange.currentResponse.id}');
     }
   }
 
@@ -58,16 +65,16 @@ class CoapTransmissionContext {
     final int failedCount = ++failedTransmissionCount;
 
     if (_message.isAcknowledged) {
-      _log.info(
-          'Reliability - Timeout: message already acknowledged, cancel retransmission of $_message');
+      _log.info('Reliability - Timeout: message already acknowledged, cancel '
+          'retransmission of $_message');
       _exchange.timedOut = true;
       _message.isTimedOut = true;
       _exchange.remove(CoapReliabilityLayer.transmissionContextKey);
       cancel();
       return;
     } else if (_message.isRejected) {
-      _log.info(
-          'Reliability - Timeout: message already rejected, cancel retransmission of _message');
+      _log.info('Reliability - Timeout: message already rejected, '
+          'cancel retransmission of _message');
       _exchange.timedOut = true;
       _message.isTimedOut = true;
       _exchange.remove(CoapReliabilityLayer.transmissionContextKey);
@@ -84,20 +91,20 @@ class CoapTransmissionContext {
         (_message.maxRetransmit != 0
             ? _message.maxRetransmit
             : _config.maxRetransmit)) {
-      _log.warn(
-          'Reliability - Timeout: retransmit message, failed count: $failedCount message: ${_message.id}');
+      _log.warn('Reliability - Timeout: retransmit message, failed count: '
+          '$failedCount message: ${_message.id}');
 
       // Message might have canceled
       if (_message.isCancelled || _message.maxRetransmit == CoapMessage.none) {
-        _log.warn(
-            'Reliability - not retransmitting, message is cancelled or is set to no retransmit');
+        _log.warn('Reliability - not retransmitting, message is cancelled or '
+            'is set to no retransmit');
       } else {
         _message.fireRetransmitting();
         _retransmit(this);
       }
     } else {
-      _log.warn(
-          'Reliability - Timeout: retransmission limit reached, exchange failed, message: ${_message.id}');
+      _log.warn('Reliability - Timeout: retransmission limit reached, '
+          'exchange failed, message: ${_message.id}');
       _exchange.timedOut = true;
       _message.isTimedOut = true;
       _exchange.remove(CoapReliabilityLayer.transmissionContextKey);
@@ -113,13 +120,13 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
     _config = config;
   }
 
-  CoapILogger _log = CoapLogManager().logger;
+  final CoapILogger _log = CoapLogManager().logger;
 
   /// Context key
   static String transmissionContextKey = 'TransmissionContext';
 
   CoapConfig _config;
-  Random _rand = Random();
+  final Random _rand = Random();
 
   /// Schedules a retransmission for confirmable messages.
   @override
@@ -192,8 +199,8 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
         super.sendResponse(nextLayer, exchange, exchange.currentResponse);
       } else if (exchange.currentRequest != null) {
         if (exchange.currentRequest.isAcknowledged) {
-          _log.info(
-              'The duplicate request was acknowledged but no response computed yet. Retransmit ACK.');
+          _log.info('The duplicate request was acknowledged but no response '
+              'computed yet. Retransmit ACK.');
           final CoapEmptyMessage ack = CoapEmptyMessage.newACK(request);
           sendEmptyMessage(nextLayer, exchange, ack);
         } else if (exchange.currentRequest.isRejected) {
@@ -201,8 +208,8 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
           final CoapEmptyMessage rst = CoapEmptyMessage.newRST(request);
           sendEmptyMessage(nextLayer, exchange, rst);
         } else {
-          _log.info(
-              'Reliability - The server has not yet decided what to do with the request. Ignoring the duplicate.');
+          _log.info('Reliability - The server has not yet decided what to do '
+              'with the request. Ignoring the duplicate.');
           // The server has not yet decided, whether to acknowledge or
           // reject the request. We know for sure that the server has
           // received the request though and can drop this duplicate here.
@@ -290,11 +297,11 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
     }
 
     if (ctx.failedTransmissionCount > 0) {
-      _log.debug(
-          'Reliability - sending request, failed transmission count: ${ctx.failedTransmissionCount}');
+      _log.debug('Reliability - sending request, failed transmission count: '
+          '${ctx.failedTransmissionCount}');
     } else {
-      _log.info(
-          'Reliability - sending request, failed transmission count: ${ctx.failedTransmissionCount}');
+      _log.info('Reliability - sending request, failed transmission count: '
+          '${ctx.failedTransmissionCount}');
     }
 
     ctx.start();

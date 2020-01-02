@@ -10,6 +10,15 @@ import 'package:test/test.dart';
 import 'package:typed_data/typed_data.dart' as typed;
 import 'package:collection/collection.dart';
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: cascade_invocations
+// ignore_for_file: avoid_annotating_with_dynamic
+// ignore_for_file: avoid_types_on_closure_parameters
+// ignore_for_file: flutter_style_todos
+// ignore_for_file: lines_longer_than_80_chars
+// ignore_for_file: avoid_print
+
 void main() {
   const ListEquality<dynamic> leq = ListEquality<dynamic>();
   // ignore: unused_local_variable
@@ -859,8 +868,7 @@ void main() {
       request
           .addIfMatchOpaque(typed.Uint8Buffer()..addAll(<int>[34, 239]))
           .addIfMatchOpaque(
-          typed.Uint8Buffer()
-            ..addAll(<int>[88, 12, 254, 157, 5]));
+              typed.Uint8Buffer()..addAll(<int>[88, 12, 254, 157, 5]));
       request.contentType = 40;
       request.accept = 40;
 
@@ -885,8 +893,7 @@ void main() {
       response.token = typed.Uint8Buffer()
         ..addAll(<int>[22, 255, 0, 78, 100, 22]);
       response.addETagOpaque(
-          typed.Uint8Buffer()
-            ..addAll(<int>[1, 0, 0, 0, 0, 1]))
+          typed.Uint8Buffer()..addAll(<int>[1, 0, 0, 0, 0, 1]))
         ..addLocationPath('/one/two/three/four/five/six/seven/eight/nine/ten')
         ..addOption(CoapOption.createVal(
             57453, 0x71ca949f)) // C# 'Arbitrary'.hashCode()

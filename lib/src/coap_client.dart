@@ -43,8 +43,9 @@ class CoapClient {
   CoapClient(this.uri, this._config, [this.request]);
 
   final CoapILogger _log = CoapLogManager().logger;
-  static final Iterable<CoapWebLink> _emptyLinks =
-  <CoapWebLink>[CoapWebLink('')];
+  static final Iterable<CoapWebLink> _emptyLinks = <CoapWebLink>[
+    CoapWebLink('')
+  ];
 
   /// The URI
   Uri uri;
@@ -281,8 +282,7 @@ class CoapClient {
   /// Prepare. If you wish to build and send your own resource,
   /// i.e not using the API in this class this method MUST be called
   /// to prepare the resource BEFORE calling a send method on the resource.
-  Future<CoapRequest> prepare(CoapRequest request) async =>
-      _doPrepare(request);
+  Future<CoapRequest> prepare(CoapRequest request) async => _doPrepare(request);
 
   /// Cancel the current request
   void cancelRequest() {

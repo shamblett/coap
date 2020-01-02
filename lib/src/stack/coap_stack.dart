@@ -7,6 +7,9 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+
 /// Builds up the stack of CoAP layers
 /// that process the CoAP protocol.
 class CoapStack extends CoapLayerStack {
@@ -24,7 +27,7 @@ class CoapStack extends CoapLayerStack {
   CoapIExecutor get executor => _executor;
 
   set executor(CoapIExecutor value) {
-    for (CoapEntry<dynamic, dynamic> entry in getAll()) {
+    for (final CoapEntry<dynamic, dynamic> entry in getAll()) {
       entry.filter.executor = value;
     }
   }

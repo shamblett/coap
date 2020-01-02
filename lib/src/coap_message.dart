@@ -822,7 +822,9 @@ class CoapMessage {
       throw ArgumentError.notNull('Message::addLocationQuery');
     }
     if (query.length > 255) {
-      throw ArgumentError.value(query.length, 'Message::addLocationQuery',
+      throw ArgumentError.value(
+          query.length,
+          'Message::addLocationQuery',
           'Location Query option\'s length must be between '
               '0 and 255 inclusive');
     }
@@ -879,7 +881,9 @@ class CoapMessage {
 
   set maxAge(int value) {
     if (value < 0 || value > 4294967295) {
-      throw ArgumentError.value(value, 'Message::maxAge',
+      throw ArgumentError.value(
+          value,
+          'Message::maxAge',
           'Max-Age option must be between 0 and 4294967295 '
               '(4 bytes) inclusive');
     }
@@ -952,7 +956,9 @@ class CoapMessage {
     if (value == null) {
       removeOptions(optionTypeObserve);
     } else if (value < 0 || ((1 << 24) - 1) < value) {
-      throw ArgumentError.value(value, 'Message::observe',
+      throw ArgumentError.value(
+          value,
+          'Message::observe',
           'Observe option must be between 0 and '
               '${(1 << 24) - 1} (3 bytes) inclusive');
     } else {

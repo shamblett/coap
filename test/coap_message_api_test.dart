@@ -9,6 +9,14 @@ import 'dart:io';
 import 'package:coap/coap.dart';
 import 'package:test/test.dart';
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: cascade_invocations
+// ignore_for_file: avoid_annotating_with_dynamic
+// ignore_for_file: avoid_types_on_closure_parameters
+// ignore_for_file: flutter_style_todos
+// ignore_for_file: lines_longer_than_80_chars
+
 // Note that nnot all API methods are tested here, some are tested in other unit test suites,
 // some in dynamic testing.
 void main() {
@@ -80,14 +88,10 @@ void main() {
     final CoapOption opt3 = CoapOption(optionTypeUriHost);
     message.addOption(opt3);
     expect(message.optionMap.length, 2);
-    expect(message
-        .getOptions(optionTypeUriHost)
-        .length, 2);
+    expect(message.getOptions(optionTypeUriHost).length, 2);
     final bool ret = message.removeOption(opt1);
     expect(ret, isTrue);
-    expect(message
-        .getOptions(optionTypeUriHost)
-        .length, 1);
+    expect(message.getOptions(optionTypeUriHost).length, 1);
     expect(message.getOptions(optionTypeUriHost).toList()[0] == opt3, isTrue);
     message.clearOptions();
     expect(message.optionMap.length, 0);

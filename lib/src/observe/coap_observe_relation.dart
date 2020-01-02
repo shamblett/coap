@@ -69,9 +69,8 @@ class CoapObserveRelation {
 
   /// Cancel this observe relation.
   void cancel() {
-    _log.debug(
-        'CoapObserveRelation::Cancel observe relation from '
-            '$_key with ${_resource.path}');
+    _log.debug('CoapObserveRelation::Cancel observe relation from '
+        '$_key with ${_resource.path}');
     // Stop ongoing retransmissions
     if (_exchange.response != null) {
       _exchange.response.cancel();

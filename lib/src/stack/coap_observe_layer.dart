@@ -7,16 +7,21 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: cascade_invocations
+// ignore_for_file: avoid_annotating_with_dynamic
+
 /// Registration context
 class CoapReregistrationContext {
   /// Construction
   CoapReregistrationContext(this._exchange, this._timeout, this._reregister);
 
-  CoapILogger _log = CoapLogManager().logger;
-  CoapExchange _exchange;
-  ActionGeneric<CoapRequest> _reregister;
+  final CoapILogger _log = CoapLogManager().logger;
+  final CoapExchange _exchange;
+  final ActionGeneric<CoapRequest> _reregister;
   Timer _timer;
-  int _timeout;
+  final int _timeout;
 
   /// Start
   void start() {
@@ -61,7 +66,7 @@ class CoapObserveLayer extends CoapAbstractLayer {
     _backoff = config.notificationReregistrationBackoff;
   }
 
-  CoapILogger _log = CoapLogManager().logger;
+  final CoapILogger _log = CoapLogManager().logger;
 
   /// Context key
   static String reregistrationContextKey = 'ReregistrationContext';
@@ -78,15 +83,15 @@ class CoapObserveLayer extends CoapAbstractLayer {
           exchange.request.type == CoapMessageType.non) {
         // Transmit errors as CON
         if (!CoapCode.isSuccess(response.code)) {
-          _log.info(
-              'Response has error code ${response.code} and must be sent as CON');
+          _log.info('Response has error code ${response.code} '
+              'and must be sent as CON');
           response.type = CoapMessageType.con;
           relation.cancel();
         } else {
           // Make sure that every now and than a CON is mixed within
           if (relation.check()) {
-            _log.info(
-                'The observe relation check requires the notification to be sent as CON');
+            _log.info('The observe relation check requires the '
+                'notification to be sent as CON');
             response.type = CoapMessageType.con;
           } else {
             // By default use NON, but do not override resource decision
@@ -169,7 +174,8 @@ class CoapObserveLayer extends CoapAbstractLayer {
       final CoapObserveRelation relation = exchange.relation;
       if (relation != null) {
         relation.cancel();
-      } // Else there was no observe relation ship and this layer ignores the rst
+      } // Else there was no observe relation ship and this
+      // layer ignores the rst.
     }
     super.receiveEmptyMessage(nextLayer, exchange, message);
   }
@@ -193,7 +199,8 @@ class CoapObserveLayer extends CoapAbstractLayer {
         _log.info('Notification has been acknowledged, send the next one');
         // this is not a self replacement, hence a new ID
         next.id = CoapMessage.none;
-        // Create a new task for sending next response so that we can leave the sync-block
+        // Create a new task for sending next response so that we can
+        // leave the sync-block.
         executor.start(() => sendResponse(nextLayer, exchange, next));
       }
     };
@@ -202,9 +209,10 @@ class CoapObserveLayer extends CoapAbstractLayer {
       final CoapObserveRelation relation = exchange.relation;
       final CoapResponse next = relation.nextControlNotification;
       if (next != null) {
-        _log.info(
-            'The notification has timed out and there is a fresher notification for the retransmission.');
-        // Cancel the original retransmission and send the fresh notification here
+        _log.info('The notification has timed out and there is a fresher '
+            'notification for the retransmission.');
+        // Cancel the original retransmission and send the fresh
+        // notification here.
         response.isCancelled = true;
         // Use the same ID
         next.id = response.id;
@@ -215,15 +223,16 @@ class CoapObserveLayer extends CoapAbstractLayer {
         }
         relation.currentControlNotification = next;
         relation.nextControlNotification = null;
-        // Create a new task for sending next response so that we can leave the sync-block
+        // Create a new task for sending next response so that
+        // we can leave the sync-block.
         executor.start(() => sendResponse(nextLayer, exchange, next));
       }
     };
 
     response.timedOutHook = () {
       final CoapObserveRelation relation = exchange.relation;
-      _log.info(
-          'Notification ${relation.exchange.request.tokenString} timed out. Cancel all relations with source ${relation.source}');
+      _log.info('Notification ${relation.exchange.request.tokenString} '
+          'timed out. Cancel all relations with source ${relation.source}');
       relation.cancelAll();
     };
   }

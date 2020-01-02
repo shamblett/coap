@@ -7,19 +7,27 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: cascade_invocations
+// ignore_for_file: avoid_annotating_with_dynamic
+// ignore_for_file: avoid_types_on_closure_parameters
+// ignore_for_file: use_function_type_syntax_for_parameters
+// ignore_for_file: avoid_print
+
 /// Cancellable asynchronous sleep support class
 class CoapCancellableAsyncSleep {
   /// Timeout value in milliseconds
   CoapCancellableAsyncSleep(this._timeout);
 
   /// Millisecond timeout
-  int _timeout;
+  final int _timeout;
 
   /// Timeout
   int get timeout => _timeout;
 
   /// The completer
-  Completer<void> _completer = Completer<void>();
+  final Completer<void> _completer = Completer<void>();
 
   /// The timer
   Timer _timer;
@@ -55,10 +63,9 @@ class CoapCancellableAsyncSleep {
   }
 }
 
+// ignore: avoid_classes_with_only_static_members
 /// Utility methods
 class CoapUtil {
-  CoapILogger _log = CoapLogManager().logger;
-
   /// Insertion sort, to make the options list stably ordered.
   static void insertionSort<T>(List<T> list, Comparator<T> comparison) {
     collection.insertionSort(list, compare: comparison);
@@ -129,7 +136,7 @@ class CoapUtil {
       return '';
     }
     final StringBuffer sb = StringBuffer();
-    for (T item in source) {
+    for (final T item in source) {
       sb.write(item.toString());
       sb.write(',');
     }
@@ -237,7 +244,7 @@ class CoapUtil {
       print('No resolved addresses');
       return;
     }
-    for (InternetAddress address in addresses) {
+    for (final InternetAddress address in addresses) {
       print('Resolved address : $address');
     }
   }

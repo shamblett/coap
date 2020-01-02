@@ -8,6 +8,15 @@ import 'dart:io';
 import 'package:coap/coap.dart';
 import 'package:test/test.dart';
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: cascade_invocations
+// ignore_for_file: avoid_annotating_with_dynamic
+// ignore_for_file: avoid_types_on_closure_parameters
+// ignore_for_file: flutter_style_todos
+// ignore_for_file: lines_longer_than_80_chars
+// ignore_for_file: avoid_print
+
 void main() {
   final CoapConfig conf = CoapConfig(File('test/config_all.yaml'));
   print('Configuration version is ${conf.version}');
@@ -90,7 +99,7 @@ void main() {
       const String format = '$link1,$link2,$link3';
       final CoapRemoteResource res = CoapRemoteResource.newRoot(format);
       final String result =
-      CoapLinkFormat.serializeOptions(res, null, recursive: true);
+          CoapLinkFormat.serializeOptions(res, null, recursive: true);
       expect(result, '$link3,$link2,$link1');
     });
     test('Concrete test', () {
@@ -100,7 +109,7 @@ void main() {
           '</careless>;rt="SepararateResponseTester";title="This resource will ACK anything, but never send a separate response",</feedback>;rt="FeedbackMailSender";title="POST feedback using mail",</helloWorld>;rt="HelloWorldDisplayer";title="GET a friendly greeting!",</image>;title="GET an image with different content-types";rt="Image";sz=18029;ct=24;ct=23;ct=22;ct=21,</large>;rt="block";title="Large resource",</large_update>;rt="block";rt="observe";title="Large resource that can be updated using PUT method",</mirror>;rt="RequestMirroring";title="POST request to receive it back as echo",</obs>;obs;rt="observe";title="Observable resource which changes every 5 seconds",</query>;title="Resource accepting query parameters",</seg1/seg2/seg3>;title="Long path resource",</separate>;title="Resource which cannot be served immediately and which cannot be acknowledged in a piggy-backed way",</storage>;obs;rt="Storage";title="PUT your data here or POST resources!",</test>;title="Default test resource",</timeResource>;rt="CurrentTime";title="GET the current time",</toUpper>;rt="UppercaseConverter";title="POST text here to convert it to uppercase",</weatherResource>;rt="ZurichWeather";title="GET the current weather in zurich"';
       final CoapRemoteResource res = CoapRemoteResource.newRoot(link);
       final String result =
-      CoapLinkFormat.serializeOptions(res, null, recursive: true);
+          CoapLinkFormat.serializeOptions(res, null, recursive: true);
       expect(result, reco);
     });
     test('Match test', () {
@@ -111,11 +120,11 @@ void main() {
       const String format = '$link1,$link2,$link3';
       final CoapRemoteResource res = CoapRemoteResource.newRoot(format);
 
-      final List<CoapOption> query = List<CoapOption>();
+      final List<CoapOption> query = <CoapOption>[];
       query.add(CoapOption.createString(optionTypeUriQuery, 'rt=MyName'));
 
       final String queried =
-      CoapLinkFormat.serializeOptions(res, query, recursive: true);
+          CoapLinkFormat.serializeOptions(res, query, recursive: true);
       expect(queried, '$link2,$link1');
     });
   });

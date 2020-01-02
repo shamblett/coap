@@ -21,9 +21,8 @@ class CoapConsoleLogger implements CoapILogger {
     logging.hierarchicalLoggingEnabled = true;
     _logger.level = logging.Level.OFF;
     root.onRecord.listen((logging.LogRecord rec) {
-      print(
-          '${CoapUtil.formatTime(rec.time)}: '
-              '${rec.level.name}: ${rec.message}');
+      print('${CoapUtil.formatTime(rec.time)}: '
+          '${rec.level.name}: ${rec.message}');
     });
   }
 

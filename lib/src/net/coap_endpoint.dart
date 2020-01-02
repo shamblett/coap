@@ -63,9 +63,8 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
       _channel.start();
       _localEndpoint = _channel.address;
     } on Exception catch (e) {
-      _log.error(
-          'Cannot start endpoint at ${_localEndpoint.address}, '
-              'exception is $e');
+      _log.error('Cannot start endpoint at ${_localEndpoint.address}, '
+          'exception is $e');
       stop();
       rethrow;
     }

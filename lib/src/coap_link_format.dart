@@ -411,9 +411,8 @@ class CoapLinkFormat {
     if (isSingle(attrToAdd.name)) {
       for (final CoapLinkAttribute attr in attributes) {
         if (attr.name == attrToAdd.name) {
-          _log.warn(
-              'CoapLinkFormat::addAttribute - Found existing '
-                  'singleton attribute: ${attr.name}');
+          _log.warn('CoapLinkFormat::addAttribute - Found existing '
+              'singleton attribute: ${attr.name}');
           return false;
         }
       }

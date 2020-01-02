@@ -7,6 +7,10 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: cascade_invocations
+
 /// Utility methods for bytes array.
 class CoapByteArrayUtil {
   /// Hashing constants

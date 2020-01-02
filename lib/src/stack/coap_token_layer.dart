@@ -7,6 +7,9 @@
 
 part of coap;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+
 /// Doesn't do much yet except for setting a simple token. Notice that empty
 /// tokens must be represented as byte array of length 0 (not null).
 class CoapTokenLayer extends CoapAbstractLayer {
@@ -41,8 +44,8 @@ class CoapTokenLayer extends CoapAbstractLayer {
   void receiveRequest(
       CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
     if (exchange.currentRequest.token == null) {
-      throw StateError(
-          "Received requests's token cannot be null, use byte[0] for empty tokens");
+      throw StateError('Received requests\'s token cannot be null, use '
+          'byte[0] for empty tokens');
     }
     super.receiveRequest(nextLayer, exchange, request);
   }
@@ -51,8 +54,8 @@ class CoapTokenLayer extends CoapAbstractLayer {
   void receiveResponse(
       CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
     if (response.token == null) {
-      throw StateError(
-          "Received response's token cannot be null, use byte[0] for empty tokens");
+      throw StateError('Received response\'s token cannot be null, use '
+          'byte[0] for empty tokens');
     }
     super.receiveResponse(nextLayer, exchange, response);
   }

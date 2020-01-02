@@ -59,9 +59,8 @@ class CoapLinkAttribute {
         } else if (_value is int) {
           builder.write(_value);
         } else {
-          _log.error(
-              'Serializing attribute of unexpected type: '
-                  '$_name ${_value.runtimeType}');
+          _log.error('Serializing attribute of unexpected type: '
+              '$_name ${_value.runtimeType}');
         }
       }
     }

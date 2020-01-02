@@ -10,6 +10,15 @@ import 'package:coap/coap.dart';
 import 'package:test/test.dart';
 import 'package:typed_data/typed_data.dart' as typed;
 
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: cascade_invocations
+// ignore_for_file: avoid_annotating_with_dynamic
+// ignore_for_file: avoid_types_on_closure_parameters
+// ignore_for_file: flutter_style_todos
+// ignore_for_file: lines_longer_than_80_chars
+// ignore_for_file: avoid_print
+
 void main() {
   group('Options', () {
     const Utf8Encoder encoder = Utf8Encoder();

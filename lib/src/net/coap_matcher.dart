@@ -276,9 +276,8 @@ class CoapMatcher implements CoapIMatcher {
           return prev;
         }
       } else {
-        _log.warn(
-            'Matcher - Ignoring unmatchable piggy-backed '
-                'response from ${response.source.address.host} : $response');
+        _log.warn('Matcher - Ignoring unmatchable piggy-backed '
+            'response from ${response.source.address.host} : $response');
       }
       // Ignore response
       return null;
@@ -295,9 +294,8 @@ class CoapMatcher implements CoapIMatcher {
       _exchangesById.remove(keyId);
       return exchange;
     } else {
-      _log.warn(
-          'Matcher - Ignoring unmatchable empty message '
-              'from ${message.source} : $message');
+      _log.warn('Matcher - Ignoring unmatchable empty message '
+          'from ${message.source} : $message');
       return null;
     }
   }

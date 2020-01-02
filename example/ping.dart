@@ -33,9 +33,8 @@ FutureOr<void> main(List<String> args) async {
   // The current request is always available from the client.
   final CoapClient client = CoapClient(uri, conf);
 
-  print(
-      'EXAMPLE - Ping client, sending ping request to '
-          '$host, waiting for response....');
+  print('EXAMPLE - Ping client, sending ping request to '
+      '$host, waiting for response....');
 
   // Perform the ping
   final bool pingOk = await client.ping(10000);

@@ -86,9 +86,8 @@ class CoapDraft13 implements CoapISpec {
     } else if (optionValue <= 65535 + 269) {
       return 14;
     } else {
-      _log.warn(
-          'The option value $optionValue is too large to be '
-              'encoded; Max allowed is 65804.');
+      _log.warn('The option value $optionValue is too large to be '
+          'encoded; Max allowed is 65804.');
       return 0;
     }
   }

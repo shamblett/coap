@@ -36,9 +36,8 @@ FutureOr<void> main(List<String> args) async {
   // Adjust the response timeout if needed, defaults to 32767 milliseconds
   client.timeout = 10000;
 
-  print(
-      'EXAMPLE - Discover client, sending discover request to '
-          '$host, waiting for response....');
+  print('EXAMPLE - Discover client, sending discover request to '
+      '$host, waiting for response....');
 
   // Do the discovery, note that using this method forces the path to be .well-known/core
   final Iterable<CoapWebLink> links = await client.discover(null);

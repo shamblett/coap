@@ -38,10 +38,7 @@ FutureOr<void> main(List<String> args) async {
   // Create the request, discovery is a get request to .well/known-core
   final CoapRequest request = CoapRequest.newGet();
   request.uri = uri;
-  request
-      .clearUriPath()
-      .clearUriQuery()
-      .uriPath =
+  request.clearUriPath().clearUriQuery().uriPath =
       CoapConstants.defaultWellKnownURI;
   // Do anything else you need here such as setting confirmable,
   // setting for observation, content type, if matches etc.
@@ -58,7 +55,7 @@ FutureOr<void> main(List<String> args) async {
   // this with a specified timeout in ms. If the timeout is exceeded the
   // response will be null, otherwise you can then interrogate the response.
   final CoapResponse response =
-  await preparedRequest.send().waitForResponse(30000);
+      await preparedRequest.send().waitForResponse(30000);
   if (response != null) {
     print('EXAMPLE - response received');
     CoapLinkFormat.parse(response.payloadString).forEach(print);

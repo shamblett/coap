@@ -19,7 +19,6 @@ part of coap;
 
 /// Message encoder 18
 class CoapMessageEncoder18 extends CoapMessageEncoder {
-
   @override
   void serialize(CoapDatagramWriter writer, CoapMessage message, int code) {
     // Write fixed-size CoAP headers

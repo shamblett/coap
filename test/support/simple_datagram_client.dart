@@ -2,7 +2,16 @@ import 'dart:async';
 import 'dart:io';
 import 'package:hex/hex.dart';
 
-void main() async {
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: cascade_invocations
+// ignore_for_file: avoid_annotating_with_dynamic
+// ignore_for_file: avoid_types_on_closure_parameters
+// ignore_for_file: flutter_style_todos
+// ignore_for_file: lines_longer_than_80_chars
+// ignore_for_file: avoid_print
+
+Future<void> main() async {
   /// Create and bind to the first(and only!) IPV4 loopback interface
   final List<NetworkInterface> interfaces = await NetworkInterface.list(
       includeLoopback: false,
@@ -10,8 +19,8 @@ void main() async {
       type: InternetAddressType.IPv4);
   print(interfaces);
   InternetAddress ipAddress;
-  for (NetworkInterface interface in interfaces) {
-    for (InternetAddress address in interface.addresses) {
+  for (final NetworkInterface interface in interfaces) {
+    for (final InternetAddress address in interface.addresses) {
       if (!address.isLoopback) {
         ipAddress = address;
         break;
@@ -52,5 +61,5 @@ void main() async {
     });
   });
 
-  await Future<void>.delayed(Duration(milliseconds: 400000));
+  await Future<void>.delayed(const Duration(milliseconds: 400000));
 }
