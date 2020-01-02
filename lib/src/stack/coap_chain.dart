@@ -9,6 +9,10 @@ part of coap;
 
 // ignore_for_file: prefer_generic_function_type_aliases
 // ignore_for_file: public_member_api_docs
+// ignore_for_file: omit_local_variable_types
+// ignore_for_file: unnecessary_final
+// ignore_for_file: cascade_invocations
+// ignore_for_file: avoid_types_on_closure_parameters
 
 typedef TEqualsFunc = bool Function<TFilter>(TFilter a, TFilter b);
 typedef TEntryFactoryFunc
@@ -56,16 +60,20 @@ abstract class CoapIChain<TFilter, TNextFilter> {
   /// Checks if this chain contains a filter with the specified filterType.
   bool containsType(Type filterType);
 
-  /// Adds the specified filter with the specified name at the beginning of this chain.
+  /// Adds the specified filter with the specified name at the
+  /// beginning of this chain.
   void addFirst(String name, TFilter filter);
 
-  /// Adds the specified filter with the specified name at the end of this chain.
+  /// Adds the specified filter with the specified name at the
+  /// end of this chain.
   void addLast(String name, TFilter filter);
 
-  /// Adds the specified filter with the specified name just before the filter whose name is baseName in this chain.
+  /// Adds the specified filter with the specified name just before the
+  /// filter whose name is baseName in this chain.
   void addBefore(String baseName, String name, TFilter filter);
 
-  /// Adds the specified filter with the specified name just after the filter whose name is baseName in this chain.
+  /// Adds the specified filter with the specified name just after the
+  /// filter whose name is baseName in this chain.
   void addAfter(String baseName, String name, TFilter filter);
 
   /// Replace the filter with the specified name with the specified new filter.
@@ -99,7 +107,7 @@ class CoapEntry<TFilter, TNextFilter>
     nextFilter = nextFilterFactory(this);
   }
 
-  CoapChain<dynamic, dynamic, dynamic> _chain;
+  final CoapChain<dynamic, dynamic, dynamic> _chain;
 
   /// The chain
   CoapChain<dynamic, dynamic, dynamic> get chain => _chain;
@@ -232,8 +240,8 @@ class CoapChain<TChain, TFilter, TNextFilter>
             tailFilterFactory,
             <TFilter>(TFilter t1, TFilter t2) => t1 == t2);
 
-  Map<String, CoapIEntry<dynamic, dynamic>> _name2entry =
-      Map<String, CoapIEntry<dynamic, dynamic>>();
+  final Map<String, CoapIEntry<dynamic, dynamic>> _name2entry =
+      <String, CoapIEntry<dynamic, dynamic>>{};
   CoapEntry<dynamic, dynamic> _head;
 
   /// Head
