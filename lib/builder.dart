@@ -4,33 +4,38 @@ import 'package:build/build.dart';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as path;
 
-Builder configBuilder(BuilderOptions options) => ConfigBuilder();
+// ignore_for_file: omit_local_variable_types, unnecessary_final
+// ignore_for_file: public_member_api_docs, cascade_invocations
+// ignore_for_file: always_specify_types, avoid_print
 
-class ConfigBuilder extends Builder {
+Builder configBuilder(BuilderOptions options) => _ConfigBuilder();
+
+class _ConfigBuilder extends Builder {
 
   @override
-  Map<String, List<String>> get buildExtensions => {
+  Map<String, List<String>> get buildExtensions => <String, List<String>>{
     '.yaml': <String>['.dart']
   };
 
-  static const defaultConfigFileName = 'coap_config';
+  static const String _defaultConfigFileName = 'coap_config';
 
   @override
   FutureOr<void> build(BuildStep buildStep) async {
-    var id = buildStep.inputId;
+    final AssetId id = buildStep.inputId;
 
-    final fileName = path.basename(id.path);
-    if (!fileName.startsWith(defaultConfigFileName)) {
-      print('No $defaultConfigFileName file found!');
+    final String fileName = path.basename(id.path);
+    if (!fileName.startsWith(_defaultConfigFileName)) {
+      print('No $_defaultConfigFileName file found!');
       return;
     }
 
     final yamlConfig = await buildStep.readAsString(id);
-    YamlMap data = loadYaml(yamlConfig);
+    final YamlMap data = loadYaml(yamlConfig);
 
     if (!data.containsKey('version')) {
       throw Exception(
-          'Invalid CoAP configuration file, make sure to include the [version] key');
+          'Invalid CoAP configuration file, '
+              'make sure to include the [version] key');
     }
 
     final className = generateClassName(fileName);
@@ -68,27 +73,27 @@ ${_generateDataScript(data)}
 """;
 
 String _generateDataScript(YamlMap data) {
-  final buff = StringBuffer();
+  final StringBuffer buff = StringBuffer();
   data.forEach((k, v) {
-    buff.writeln("");
-    buff.writeln("  @override");
+    buff.writeln('');
+    buff.writeln('  @override');
     if (v is String) {
       if ('true' == v || 'false' == v) {
-        buff.writeln("  bool get $k => $v;");
+        buff.writeln('  bool get $k => $v;');
         return;
       }
       buff.writeln("  String get $k => '$v';");
     } else if (v is bool){
-      buff.writeln("  bool get $k => $v;");
+      buff.writeln('  bool get $k => $v;');
     } else if (v is int) {
-      buff.writeln("  int get $k => $v;");
+      buff.writeln('  int get $k => $v;');
     } else if (v is double) {
-      buff.writeln("  double get $k => $v;");
+      buff.writeln('  double get $k => $v;');
     }
   });
   return buff.toString();
 }
 
 extension StringExtension on String {
-  String capitalize() => '${this[0].toUpperCase()}${this.substring(1)}';
+  String capitalize() => '${this[0].toUpperCase()}${substring(1)}';
 }
