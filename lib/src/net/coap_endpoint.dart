@@ -18,7 +18,7 @@ part of coap;
 class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   /// Instantiates a new endpoint with the
   /// specified channel and configuration.
-  CoapEndPoint(CoapIChannel channel, CoapConfig config) {
+  CoapEndPoint(CoapIChannel channel, DefaultCoapConfig config) {
     _config = config;
     _channel = channel;
     _matcher = CoapMatcher(config);
@@ -28,16 +28,16 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
 
   /// Instantiates a new endpoint with internet address, port and configuration
   CoapEndPoint.address(
-      CoapInternetAddress localEndpoint, int port, CoapConfig config)
+      CoapInternetAddress localEndpoint, int port, DefaultCoapConfig config)
       : this(newUDPChannel(localEndpoint, port), config);
 
   final CoapILogger _log = CoapLogManager().logger;
   final CoapEventBus _eventBus = CoapEventBus();
 
-  CoapConfig _config;
+  DefaultCoapConfig _config;
 
   @override
-  CoapConfig get config => _config;
+  DefaultCoapConfig get config => _config;
   CoapIChannel _channel;
   CoapStack _coapStack;
   @override

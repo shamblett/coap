@@ -4,11 +4,11 @@
  * Date   : 13/04/2017
  * Copyright :  S.Hamblett
  */
-import 'dart:io';
 import 'package:coap/coap.dart';
+import 'package:coap/config/coap_config_logging.dart';
+import 'package:collection/collection.dart';
 import 'package:test/test.dart';
 import 'package:typed_data/typed_data.dart' as typed;
-import 'package:collection/collection.dart';
 
 // ignore_for_file: omit_local_variable_types
 // ignore_for_file: unnecessary_final
@@ -22,7 +22,7 @@ import 'package:collection/collection.dart';
 void main() {
   const ListEquality<dynamic> leq = ListEquality<dynamic>();
   // ignore: unused_local_variable
-  final CoapConfig conf = CoapConfig(File('test/config_logging.yaml'));
+  final DefaultCoapConfig conf = CoapConfigLogging();
   group('COAP All', () {
     final Map<String, List<List<int>>> check = <String, List<List<int>>>{
       'draft-ietf-core-coap-03': <List<int>>[

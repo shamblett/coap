@@ -20,7 +20,7 @@ part of coap;
 /// Matcher class
 class CoapMatcher implements CoapIMatcher {
   /// Construction
-  CoapMatcher(CoapConfig config) {
+  CoapMatcher(DefaultCoapConfig config) {
     _deduplicator = CoapDeduplicatorFactory.createDeduplicator(config);
     if (config.useRandomIDStart) {
       _currentId = Random().nextInt(1 << 16);

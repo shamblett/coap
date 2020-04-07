@@ -21,7 +21,7 @@ class CoapTransmissionContext {
   }
 
   final CoapILogger _log = CoapLogManager().logger;
-  final CoapConfig _config;
+  final DefaultCoapConfig _config;
   final CoapExchange _exchange;
   final CoapMessage _message;
 
@@ -116,7 +116,7 @@ class CoapTransmissionContext {
 /// The reliability layer
 class CoapReliabilityLayer extends CoapAbstractLayer {
   /// Constructs a new reliability layer.
-  CoapReliabilityLayer(CoapConfig config) {
+  CoapReliabilityLayer(DefaultCoapConfig config) {
     _config = config;
   }
 
@@ -125,7 +125,7 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
   /// Context key
   static String transmissionContextKey = 'TransmissionContext';
 
-  CoapConfig _config;
+  DefaultCoapConfig _config;
   final Random _rand = Random();
 
   /// Schedules a retransmission for confirmable messages.

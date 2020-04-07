@@ -25,7 +25,7 @@ class CoapDeduplicatorFactory {
   static const String noopDeduplicator = 'Noop';
 
   /// Create
-  static CoapIDeduplicator createDeduplicator(CoapConfig config) {
+  static CoapIDeduplicator createDeduplicator(DefaultCoapConfig config) {
     final String type = config.deduplicator;
     if (type == markAndSweepDeduplicator) {
       return CoapSweepDeduplicator(config);

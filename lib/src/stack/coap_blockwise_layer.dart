@@ -18,7 +18,7 @@ part of coap;
 /// Blockwise layer
 class CoapBlockwiseLayer extends CoapAbstractLayer {
   /// Constructs a blockwise layer.
-  CoapBlockwiseLayer(CoapConfig config) {
+  CoapBlockwiseLayer(DefaultCoapConfig config) {
     _maxMessageSize = config.maxMessageSize;
     _defaultBlockSize = config.defaultBlockSize;
     _blockTimeout = config.blockwiseStatusLifetime;

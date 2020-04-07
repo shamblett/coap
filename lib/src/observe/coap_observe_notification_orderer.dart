@@ -14,11 +14,11 @@ part of coap;
 /// as the timeout of the last notification and the current number.
 class CoapObserveNotificationOrderer {
   /// Construction
-  CoapObserveNotificationOrderer(CoapConfig config) {
+  CoapObserveNotificationOrderer(DefaultCoapConfig config) {
     _config = config;
   }
 
-  CoapConfig _config;
+  DefaultCoapConfig _config;
   int _number;
 
   /// Current number

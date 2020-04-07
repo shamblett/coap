@@ -14,7 +14,7 @@ part of coap;
 /// that process the CoAP protocol.
 class CoapStack extends CoapLayerStack {
   /// Instantiates.
-  CoapStack(CoapConfig config) {
+  CoapStack(DefaultCoapConfig config) {
     addLast('Observe', CoapObserveLayer(config));
     addLast('Blockwise', CoapBlockwiseLayer(config));
     addLast('Token', CoapTokenLayer(config));

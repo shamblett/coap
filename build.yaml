@@ -1,0 +1,11 @@
+
+builders:
+  config_builder:
+    import: "package:coap/builder.dart"
+    builder_factories: ["configBuilder"]
+    build_to: source
+    build_extensions: {".yaml": [".dart"]}
+    defaults:
+      options:
+        enabled: true
+    auto_apply: root_package

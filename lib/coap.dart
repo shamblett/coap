@@ -14,7 +14,6 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:typed_data/typed_data.dart' as typed;
-import 'package:safe_config/safe_config.dart' as config;
 import 'package:logging/logging.dart' as logging;
 import 'package:collection/collection.dart' as collection;
 import 'package:hex/hex.dart' as hex;

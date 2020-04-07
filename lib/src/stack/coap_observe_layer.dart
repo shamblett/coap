@@ -62,7 +62,7 @@ class CoapReregistrationContext {
 /// Observe layer
 class CoapObserveLayer extends CoapAbstractLayer {
   /// Constructs a new observe layer.
-  CoapObserveLayer(CoapConfig config) {
+  CoapObserveLayer(DefaultCoapConfig config) {
     _backoff = config.notificationReregistrationBackoff;
   }
 

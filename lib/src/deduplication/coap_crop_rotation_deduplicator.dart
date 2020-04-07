@@ -13,7 +13,7 @@ part of coap;
 /// Crop rotation deduplicator
 class CoapCropRotationDeduplicator implements CoapIDeduplicator {
   /// Construction
-  CoapCropRotationDeduplicator(CoapConfig config) {
+  CoapCropRotationDeduplicator(DefaultCoapConfig config) {
     _maps = List<Map<CoapKeyId, CoapExchange>>(3);
     _maps[0] = <CoapKeyId, CoapExchange>{};
     _maps[1] = <CoapKeyId, CoapExchange>{};
@@ -27,7 +27,7 @@ class CoapCropRotationDeduplicator implements CoapIDeduplicator {
   int _first;
   int _second;
   Timer _timer;
-  CoapConfig _config;
+  DefaultCoapConfig _config;
 
   @override
   void start() {
