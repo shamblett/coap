@@ -9,6 +9,7 @@ analyzer:
     - lib/src/coap_config.dart
     - lib/src/coap_option_type.dart
     - lib/src/stack/coap_chain.dart
+    - flutter_example
 
 linter:
   rules:
