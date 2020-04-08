@@ -1,0 +1,36 @@
+# An example COAP config file
+# Syntax is YAML
+
+# Protocol section
+version: "RFC7252"
+defaultPort: 5683
+defaultSecurePort: 5684
+httpPort: 8080
+ackTimeout: 3000 # ms
+ackRandomFactor: 1.5
+ackTimeoutScale: 2.0
+maxRetransmit: 8
+maxMessageSize: 1024
+defaultBlockSize: 512
+blockwiseStatusLifetime: 60000 # ms
+useRandomIDStart: true
+useRandomTokenStart: true
+notificationMaxAge: 128000 # ms
+notificationCheckIntervalTime: 86400000 # ms
+notificationCheckIntervalCount: 100 # ms
+notificationReregistrationBackoff: 2000 # ms
+cropRotationPeriod: 2000 # ms
+exchangeLifetime: 1247000 # ms
+markAndSweepInterval: 10000 # ms
+channelReceivePacketSize: 2048
+deduplicator: "MarkAndSweep" # CropRotayion or Noop
+
+# Logging section
+
+# Target is none or console
+logTarget: "console"
+# Log levels
+logError: "true"
+logDebug: "true"
+logWarn: "true"
+logInfo: "true"

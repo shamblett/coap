@@ -49,7 +49,7 @@ class CoapClient {
 
   /// The URI
   Uri uri;
-  final CoapConfig _config;
+  final DefaultCoapConfig _config;
 
   /// The endpoint. Once set, on the first request this endpoint is used
   /// throughout this client for all subsequent requests.

@@ -23,7 +23,7 @@ part of coap;
 class CoapObserveClientRelation {
   /// Construction
   CoapObserveClientRelation(
-      CoapRequest request, CoapIEndPoint endpoint, CoapConfig config) {
+      CoapRequest request, CoapIEndPoint endpoint, DefaultCoapConfig config) {
     _config = config;
     _request = request;
     _endpoint = endpoint;
@@ -31,7 +31,7 @@ class CoapObserveClientRelation {
     _eventBus.on<CoapReregisteringEvent>().listen(_onReregister);
   }
 
-  CoapConfig _config;
+  DefaultCoapConfig _config;
   CoapRequest _request;
   final CoapEventBus _eventBus = CoapEventBus();
 

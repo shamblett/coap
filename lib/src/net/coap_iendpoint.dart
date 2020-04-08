@@ -13,7 +13,7 @@ part of coap;
 /// between (potentially multiple) clients and servers.
 abstract class CoapIEndPoint {
   /// Gets this endpoint's configuration.
-  CoapConfig get config;
+  DefaultCoapConfig get config;
 
   /// Gets the local internetAddress this endpoint is associated with.
   CoapInternetAddress get localEndpoint;

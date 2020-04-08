@@ -17,13 +17,13 @@ part of coap;
 class CoapEndpointManager {
   /// Default spec
   static void getDefaultSpec() {
-    final CoapConfig config = CoapConfig.inst;
+    final DefaultCoapConfig config = DefaultCoapConfig.inst;
     config.spec ??= CoapDraft18();
   }
 
   /// Default endpoint
   static CoapIEndPoint getDefaultEndpoint(CoapIEndPoint endpoint) {
-    final CoapConfig config = CoapConfig.inst;
+    final DefaultCoapConfig config = DefaultCoapConfig.inst;
     config.spec ??= CoapDraft18();
     config.defaultPort = config.spec.defaultPort;
     final CoapIChannel channel =

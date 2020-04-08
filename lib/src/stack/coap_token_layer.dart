@@ -14,7 +14,7 @@ part of coap;
 /// tokens must be represented as byte array of length 0 (not null).
 class CoapTokenLayer extends CoapAbstractLayer {
   /// Constructs a new token layer.
-  CoapTokenLayer(CoapConfig config) {
+  CoapTokenLayer(DefaultCoapConfig config) {
     if (config.useRandomTokenStart) {
       _counter = Random().nextInt(32767);
     } else {

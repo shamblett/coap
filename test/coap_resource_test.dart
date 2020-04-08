@@ -4,8 +4,8 @@
  * Date   : 09/05/2018
  * Copyright :  S.Hamblett
  */
-import 'dart:io';
 import 'package:coap/coap.dart';
+import 'package:coap/config/coap_config_all.dart';
 import 'package:test/test.dart';
 
 // ignore_for_file: omit_local_variable_types
@@ -18,7 +18,7 @@ import 'package:test/test.dart';
 // ignore_for_file: avoid_print
 
 void main() {
-  final CoapConfig conf = CoapConfig(File('test/config_all.yaml'));
+  final DefaultCoapConfig conf = CoapConfigAll();
   print('Configuration version is ${conf.version}');
 
   group('Endpoint resource', () {

@@ -14,7 +14,7 @@ part of coap;
 /// Sweep deduplicator
 class CoapSweepDeduplicator implements CoapIDeduplicator {
   /// Construction
-  CoapSweepDeduplicator(CoapConfig config) {
+  CoapSweepDeduplicator(DefaultCoapConfig config) {
     _config = config;
   }
 
@@ -23,7 +23,7 @@ class CoapSweepDeduplicator implements CoapIDeduplicator {
   final Map<CoapKeyId, CoapExchange> _incomingMessages =
       <CoapKeyId, CoapExchange>{};
   Timer _timer;
-  CoapConfig _config;
+  DefaultCoapConfig _config;
 
   @override
   void start() {

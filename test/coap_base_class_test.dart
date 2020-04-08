@@ -4,8 +4,10 @@
  * Date   : 13/04/2017
  * Copyright :  S.Hamblett
  */
-import 'dart:io';
 import 'package:coap/coap.dart';
+import 'package:coap/config/coap_config_all.dart';
+import 'package:coap/config/coap_config_default.dart';
+import 'package:coap/config/coap_config_logging.dart';
 import 'package:test/test.dart';
 
 // ignore_for_file: omit_local_variable_types
@@ -81,7 +83,7 @@ void main() {
 
   group('Configuration', () {
     test('All', () {
-      final CoapConfig conf = CoapConfig(File('test/config_all.yaml'));
+      final DefaultCoapConfig conf = CoapConfigAll();
       conf.spec = CoapDraft18();
       expect(conf.version, 'RFC7252');
       expect(conf.defaultPort, 1);
@@ -113,7 +115,7 @@ void main() {
     });
 
     test('Default', () {
-      final CoapConfig conf = CoapConfig(File('test/config_default.yaml'));
+      final DefaultCoapConfig conf = CoapConfigDefault();
       conf.spec = CoapDraft18();
       expect(conf.version, 'RFC7252');
       expect(conf.defaultPort, CoapConstants.defaultPort);
@@ -145,8 +147,8 @@ void main() {
     });
 
     test('Instance', () {
-      final CoapConfig conf = CoapConfig(File('test/config_default.yaml'));
-      expect(conf == CoapConfig.inst, isTrue);
+      final CoapConfigDefault conf = CoapConfigDefault();
+      expect(conf == DefaultCoapConfig.inst, isTrue);
     });
   });
 
@@ -166,7 +168,7 @@ void main() {
     });
 
     test('Console', () {
-      final CoapConfig conf = CoapConfig(File('test/config_logging.yaml'));
+      final DefaultCoapConfig conf = CoapConfigLogging();
       expect(conf.logTarget, 'console');
       final CoapLogManager logmanager = CoapLogManager('console');
       final CoapILogger logger = logmanager.logger;
