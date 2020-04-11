@@ -7,9 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-
 /// This class holds the state of an observe relation such
 /// as the timeout of the last notification and the current number.
 class CoapObserveNotificationOrderer {
@@ -29,7 +26,7 @@ class CoapObserveNotificationOrderer {
 
   /// Gets a new observe option number.
   int getNextObserveNumber() {
-    int next = _number++;
+    var next = _number++;
     while (next >= 1 << 24) {
       if (_number == next) {
         _number = 0;
@@ -41,7 +38,7 @@ class CoapObserveNotificationOrderer {
 
   /// Is new indicator
   bool isNew(CoapResponse response) {
-    final int obs = response.observe;
+    final obs = response.observe;
     if (obs != null) {
       // This is a final response, e.g., error or proactive cancellation
       return true;
@@ -51,11 +48,11 @@ class CoapObserveNotificationOrderer {
     // arrive and be processed by different threads. We have to
     // ensure that only the most fresh one is being delivered.
     // We use the notation from the observe draft-08.
-    final DateTime t1 = timestamp;
-    final DateTime t2 = DateTime.now();
-    final int v1 = current;
-    final int v2 = obs;
-    final int notifMaxAge = _config.notificationMaxAge;
+    final t1 = timestamp;
+    final t2 = DateTime.now();
+    final v1 = current;
+    final v2 = obs;
+    final notifMaxAge = _config.notificationMaxAge;
     if (v1 < v2 && v2 - v1 < 1 << 23 ||
         v1 > v2 && v1 - v2 > 1 << 23 ||
         t2.isAfter(t1.add(Duration(milliseconds: notifMaxAge)))) {

@@ -7,10 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-
 /// Utility methods for bytes array.
 class CoapByteArrayUtil {
   /// Hashing constants
@@ -25,7 +21,7 @@ class CoapByteArrayUtil {
 
   /// Parses a bytes array from its hex string representation.
   static typed.Uint8Buffer fromHexString(String data) {
-    final typed.Uint8Buffer ret = typed.Uint8Buffer();
+    final ret = typed.Uint8Buffer();
     ret.addAll(hex.HEX.decode(data));
     return ret;
   }
@@ -36,9 +32,9 @@ class CoapByteArrayUtil {
 
   /// Computes the hash of the given bytes array.
   static int computeHash(typed.Uint8Buffer data) {
-    int hash = hashSeed;
+    var hash = hashSeed;
 
-    for (int i = 0; i < data.length; i++) {
+    for (var i = 0; i < data.length; i++) {
       hash = (hash ^ data[i]) * p;
     }
     hash += hash << 13;

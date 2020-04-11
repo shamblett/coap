@@ -7,15 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-// ignore_for_file: avoid_print
-// ignore_for_file: avoid_types_on_closure_parameters
-// ignore_for_file: avoid_returning_this
-// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
-// ignore_for_file: prefer_null_aware_operators
-
 /// Represents a CoAP observe relation between a CoAP client and a
 /// resource on a server.
 /// Provides a simple API to check whether a relation has successfully
@@ -57,7 +48,7 @@ class CoapObserveClientRelation {
 
   /// Cancel
   void proactiveCancel() {
-    final CoapRequest cancel = CoapRequest.newGet();
+    final cancel = CoapRequest.newGet();
     // Copy options, but set Observe to cancel
     cancel.setOptions(_request.getAllOptions());
     cancel.markObserveCancel();

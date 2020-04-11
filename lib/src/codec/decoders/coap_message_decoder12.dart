@@ -7,16 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-// ignore_for_file: avoid_print
-// ignore_for_file: avoid_types_on_closure_parameters
-// ignore_for_file: avoid_returning_this
-// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
-// ignore_for_file: prefer_null_aware_operators
-// ignore_for_file: avoid_annotating_with_dynamic
-
 /// Message decoder 012
 class CoapMessageDecoder12 extends CoapMessageDecoder {
   /// Construction
@@ -42,17 +32,17 @@ class CoapMessageDecoder12 extends CoapMessageDecoder {
   @override
   void parseMessage(CoapMessage message) {
     // Read options
-    int currentOption = 0;
-    bool hasMoreOptions = _optionCount == 15;
-    for (int i = 0;
+    var currentOption = 0;
+    var hasMoreOptions = _optionCount == 15;
+    for (var i = 0;
         (i < _optionCount || hasMoreOptions) && _reader.bytesAvailable;
         i++) {
       // first 4 option bits: either option jump or option delta
-      int optionDelta = _reader.read(CoapDraft12.optionDeltaBits);
+      var optionDelta = _reader.read(CoapDraft12.optionDeltaBits);
 
       if (optionDelta == 15) {
         // option jump or end-of-options marker
-        final int bits = _reader.read(4);
+        final bits = _reader.read(4);
         switch (bits) {
           case 0:
             // end-of-options marker read (0xF0), payload follows
@@ -78,9 +68,9 @@ class CoapMessageDecoder12 extends CoapMessageDecoder {
       }
 
       currentOption += optionDelta;
-      final int currentOptionType = CoapDraft12.getOptionType(currentOption);
+      final currentOptionType = CoapDraft12.getOptionType(currentOption);
 
-      int length = _reader.read(CoapDraft12.optionLengthBaseBits);
+      var length = _reader.read(CoapDraft12.optionLengthBaseBits);
       if (length == 15) {
         // When the Length field is set to 15, another byte is added as
         // an 8-bit unsigned integer whose value is added to the 15,
@@ -88,7 +78,7 @@ class CoapMessageDecoder12 extends CoapMessageDecoder {
         // lengths beyond 270 bytes, we reserve the value 255 of an
         // extension byte to mean
         // "add 255, read another extension byte".
-        int additionalLength = 0;
+        var additionalLength = 0;
         do {
           additionalLength = _reader.read(8);
           length += additionalLength;
@@ -96,7 +86,7 @@ class CoapMessageDecoder12 extends CoapMessageDecoder {
       }
 
       // read option
-      final CoapOption opt = CoapOption.create(currentOptionType);
+      final opt = CoapOption.create(currentOptionType);
       opt.valueBytes = _reader.readBytes(length);
 
       message.addOption(opt);

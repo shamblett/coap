@@ -7,16 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-// ignore_for_file: avoid_print
-// ignore_for_file: avoid_types_on_closure_parameters
-// ignore_for_file: avoid_returning_this
-// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
-// ignore_for_file: prefer_null_aware_operators
-// ignore_for_file: avoid_annotating_with_dynamic
-
 /// Message decoder 013
 class CoapMessageDecoder13 extends CoapMessageDecoder {
   /// Construction
@@ -47,9 +37,9 @@ class CoapMessageDecoder13 extends CoapMessageDecoder {
     }
 
     // Read options
-    int currentOption = 0;
+    var currentOption = 0;
     while (_reader.bytesAvailable) {
-      final int nextByte = _reader.readNextByte();
+      final nextByte = _reader.readNextByte();
       if (nextByte == CoapDraft13.payloadMarker) {
         if (!_reader.bytesAvailable) {
           // The presence of a marker followed by a zero-length payload
@@ -60,18 +50,18 @@ class CoapMessageDecoder13 extends CoapMessageDecoder {
         message.payload = _reader.readBytesLeft();
       } else {
         // The first 4 bits of the byte represent the option delta
-        final int optionDeltaNibble = (0xF0 & nextByte) >> 4;
+        final optionDeltaNibble = (0xF0 & nextByte) >> 4;
         currentOption +=
             CoapDraft13.getValueFromOptionNibble(optionDeltaNibble, _reader);
 
         // The second 4 bits represent the option length
-        final int optionLengthNibble = 0x0F & nextByte;
-        final int optionLength =
+        final optionLengthNibble = 0x0F & nextByte;
+        final optionLength =
             CoapDraft13.getValueFromOptionNibble(optionLengthNibble, _reader);
 
         // Read option
-        final int currentOptionType = CoapDraft13.getOptionType(currentOption);
-        final CoapOption opt = CoapOption.create(currentOptionType);
+        final currentOptionType = CoapDraft13.getOptionType(currentOption);
+        final opt = CoapOption.create(currentOptionType);
         opt.valueBytes = _reader.readBytes(optionLength);
         message.addOption(opt);
       }

@@ -7,16 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-// ignore_for_file: avoid_print
-// ignore_for_file: avoid_types_on_closure_parameters
-// ignore_for_file: avoid_returning_this
-// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
-// ignore_for_file: prefer_null_aware_operators
-// ignore_for_file: avoid_annotating_with_dynamic
-
 /// Message decoder 03
 class CoapMessageDecoder03 extends CoapMessageDecoder {
   /// Construction
@@ -42,31 +32,31 @@ class CoapMessageDecoder03 extends CoapMessageDecoder {
   @override
   void parseMessage(CoapMessage message) {
     // Read options
-    int currentOption = 0;
-    for (int i = 0; i < _optionCount; i++) {
+    var currentOption = 0;
+    for (var i = 0; i < _optionCount; i++) {
       // Read option delta bits
-      final int optionDelta = _reader.read(CoapDraft03.optionDeltaBits);
+      final optionDelta = _reader.read(CoapDraft03.optionDeltaBits);
 
       currentOption += optionDelta;
-      final int currentOptionType = CoapDraft03.getOptionType(currentOption);
+      final currentOptionType = CoapDraft03.getOptionType(currentOption);
 
       if (CoapDraft03.isFencepost(currentOption)) {
         // Read number of options
         _reader.read(CoapDraft03.optionLengthBaseBits);
       } else {
         // Read option length
-        int length = _reader.read(CoapDraft03.optionLengthBaseBits);
+        var length = _reader.read(CoapDraft03.optionLengthBaseBits);
         if (length > CoapDraft03.maxOptionLengthBase) {
           // Read extended option length
           length += _reader.read(CoapDraft03.optionLengthExtendedBits);
         }
         // Read option
-        CoapOption opt = CoapOption.create(currentOptionType);
+        var opt = CoapOption.create(currentOptionType);
         opt.valueBytes = _reader.readBytes(length);
 
         if (opt.type == optionTypeContentType) {
-          final int ct = opt.intValue;
-          final int ct2 = CoapDraft03.mapInMediaType(ct);
+          final ct = opt.intValue;
+          final ct2 = CoapDraft03.mapInMediaType(ct);
           if (ct != ct2) {
             opt = CoapOption.createVal(currentOptionType, ct2);
           }

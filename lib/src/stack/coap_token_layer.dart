@@ -7,9 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-
 /// Doesn't do much yet except for setting a simple token. Notice that empty
 /// tokens must be represented as byte array of length 0 (not null).
 class CoapTokenLayer extends CoapAbstractLayer {
@@ -61,8 +58,8 @@ class CoapTokenLayer extends CoapAbstractLayer {
   }
 
   typed.Uint8Buffer _newToken() {
-    final int token = _counter;
-    final typed.Uint8Buffer buff = typed.Uint8Buffer()
+    final token = _counter;
+    final buff = typed.Uint8Buffer()
       ..addAll(<int>[token >> 24, token >> 16, token >> 8, token]);
     return buff;
   }

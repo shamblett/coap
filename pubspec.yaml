@@ -16,12 +16,13 @@ dependencies:
  pedantic: '^1.5.0'
  string_scanner: '^1.0.5'
  date_format: '^1.0.6'
- build: ^1.2.2
- yaml:
- path: ^1.6.4
+ build: '^1.2.2'
+ yaml: '^2.2.0'
+ path: '^1.6.4'
 
 dev_dependencies:
   test: '^1.3.0'
-  build_runner:
+  build_runner: '^1.8.1'
+  pana: '^0.13.4'
 
 

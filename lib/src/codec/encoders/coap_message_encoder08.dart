@@ -7,25 +7,15 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-// ignore_for_file: avoid_print
-// ignore_for_file: avoid_types_on_closure_parameters
-// ignore_for_file: avoid_returning_this
-// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
-// ignore_for_file: prefer_null_aware_operators
-// ignore_for_file: avoid_annotating_with_dynamic
-
 /// Message encoder 8
 class CoapMessageEncoder08 extends CoapMessageEncoder {
   final CoapILogger _log = CoapLogManager().logger;
 
   @override
   void serialize(CoapDatagramWriter writer, CoapMessage message, int code) {
-    final CoapDatagramWriter optWriter = CoapDatagramWriter();
-    int optionCount = 0;
-    int lastOptionNumber = 0;
+    final optWriter = CoapDatagramWriter();
+    var optionCount = 0;
+    var lastOptionNumber = 0;
 
     final List<CoapOption> options = message.getAllOptions();
     if (message.token != null &&
@@ -36,24 +26,24 @@ class CoapMessageEncoder08 extends CoapMessageEncoder {
     CoapUtil.insertionSort(
         options, (dynamic a, dynamic b) => a.type.compareTo(b.type));
 
-    for (final CoapOption opt in options) {
+    for (final opt in options) {
       if (opt.isDefault()) {
         continue;
       }
-      final CoapOption opt2 = opt;
+      final opt2 = opt;
 
-      final int optNum = CoapDraft08.getOptionNumber(opt2.type);
-      int optionDelta = optNum - lastOptionNumber;
+      final optNum = CoapDraft08.getOptionNumber(opt2.type);
+      var optionDelta = optNum - lastOptionNumber;
 
       // ensure that option delta value can be encoded correctly
       while (optionDelta > CoapDraft08.maxOptionDelta) {
         // Option delta is too large to be encoded:
         // add fencepost options in order to reduce the option delta
         // get fencepost option that is next to the last option
-        final int fencepostNumber = CoapDraft08.nextFencepost(lastOptionNumber);
+        final fencepostNumber = CoapDraft08.nextFencepost(lastOptionNumber);
 
         // Calculate fencepost delta
-        final int fencepostDelta = fencepostNumber - lastOptionNumber;
+        final fencepostDelta = fencepostNumber - lastOptionNumber;
         if (fencepostDelta <= 0) {
           _log.warn('Fencepost liveness violated: delta = $fencepostDelta');
         }
@@ -75,7 +65,7 @@ class CoapMessageEncoder08 extends CoapMessageEncoder {
       optWriter.write(optionDelta, CoapDraft08.optionDeltaBits);
 
       // Write option length
-      final int length = opt2.length;
+      final length = opt2.length;
       if (length <= CoapDraft08.maxOptionLengthBase) {
         // Use option length base field only to encode
         // option lengths less or equal than MAX_OPTIONLENGTH_BASE
@@ -83,10 +73,10 @@ class CoapMessageEncoder08 extends CoapMessageEncoder {
       } else {
         // Use both option length base and extended field
         // to encode option lengths greater than MAX_OPTIONLENGTH_BASE
-        const int baseLength = CoapDraft08.maxOptionLengthBase + 1;
+        const baseLength = CoapDraft08.maxOptionLengthBase + 1;
         optWriter.write(baseLength, CoapDraft08.optionLengthBaseBits);
 
-        final int extLength = length - baseLength;
+        final extLength = length - baseLength;
         optWriter.write(extLength, CoapDraft08.optionLengthExtendedBits);
       }
 

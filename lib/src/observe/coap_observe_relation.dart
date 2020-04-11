@@ -7,9 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-
 /// Represents a relation between a client endpoint and a
 /// resource on this server.
 class CoapObserveRelation {
@@ -95,12 +92,13 @@ class CoapObserveRelation {
 
   /// Check
   bool check() {
-    bool check = false;
-    final DateTime now = DateTime.now();
+    var check = false;
+    final now = DateTime.now();
     check = check ||
         _interestCheckTime
             .add(Duration(
-                milliseconds: DefaultCoapConfig.inst.notificationCheckIntervalTime))
+                milliseconds:
+                    DefaultCoapConfig.inst.notificationCheckIntervalTime))
             .isBefore(now);
     check = check ||
         (++_interestCheckCounter >=

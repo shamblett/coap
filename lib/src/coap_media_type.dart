@@ -7,15 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-// ignore_for_file: avoid_print
-// ignore_for_file: avoid_types_on_closure_parameters
-// ignore_for_file: avoid_returning_this
-// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
-
-// ignore: avoid_classes_with_only_static_members
 /// This class describes the CoAP Media Type Registry as defined in
 /// RFC 7252, Section 12.3.
 class CoapMediaType {
@@ -172,9 +163,9 @@ class CoapMediaType {
     if (accepted == null) {
       return defaultContentType;
     }
-    bool hasAccept = false;
-    for (final CoapOption opt in accepted) {
-      for (final int ct in supported) {
+    var hasAccept = false;
+    for (final opt in accepted) {
+      for (final ct in supported) {
         if (ct == opt.intValue) {
           return ct;
         }
@@ -207,12 +198,12 @@ class CoapMediaType {
     if (regex == null) {
       return null;
     }
-    final List<int> res = <int>[];
-    String regex1 = regex.trim().substring(0, regex.indexOf('*')).trim();
+    final res = <int>[];
+    var regex1 = regex.trim().substring(0, regex.indexOf('*')).trim();
     regex1 += '.*';
-    final RegExp r = RegExp(regex1);
+    final r = RegExp(regex1);
     _registry.forEach((int key, List<String> value) {
-      final String mime = value[0];
+      final mime = value[0];
       if (r.hasMatch(mime)) {
         res.add(key);
       }

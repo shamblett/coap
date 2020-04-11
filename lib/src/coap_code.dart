@@ -7,7 +7,6 @@
 
 part of coap;
 
-// ignore: avoid_classes_with_only_static_members
 /// This class describes the CoAP Code Registry as defined in
 /// draft-ietf-core-coap-08, section 11.1
 class CoapCode {

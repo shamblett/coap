@@ -7,10 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-
-// ignore: avoid_classes_with_only_static_members
 /// Deduplicator factory
 class CoapDeduplicatorFactory {
   static final CoapILogger _log = CoapLogManager().logger;
@@ -26,7 +22,7 @@ class CoapDeduplicatorFactory {
 
   /// Create
   static CoapIDeduplicator createDeduplicator(DefaultCoapConfig config) {
-    final String type = config.deduplicator;
+    final type = config.deduplicator;
     if (type == markAndSweepDeduplicator) {
       return CoapSweepDeduplicator(config);
     } else if (type == cropRotationDeduplicator) {

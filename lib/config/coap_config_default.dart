@@ -7,11 +7,11 @@ import 'package:coap/coap.dart';
 /// the config file to contain only those entries that override the defaults.
 /// The file can't be empty, so version must as a minimum be present.
 class CoapConfigDefault extends DefaultCoapConfig {
-
   CoapConfigDefault() {
     DefaultCoapConfig.inst = this;
   }
- 
+
+  @override
   CoapISpec spec;
 
   @override
@@ -19,5 +19,4 @@ class CoapConfigDefault extends DefaultCoapConfig {
 
   @override
   String get deduplicator => 'MarkAndSweep';
-
 }

@@ -7,9 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-
 /// draft-ietf-core-coap-13
 class CoapDraft13 implements CoapISpec {
   /// Version

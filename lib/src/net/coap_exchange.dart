@@ -7,15 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-// ignore_for_file: avoid_annotating_with_dynamic
-// ignore_for_file: avoid_types_on_closure_parameters
-// ignore_for_file: avoid_print
-// ignore_for_file: prefer_null_aware_operators
-// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
-
 /// Represents the complete state of an exchange of one request
 /// and one or more responses. The lifecycle of an exchange ends
 /// when either the last response has arrived and is acknowledged,
@@ -117,7 +108,7 @@ class CoapExchange {
   void sendReject() {
     assert(_origin == CoapOrigin.remote, 'Origin must be remote');
     request.isRejected = true;
-    final CoapEmptyMessage rst = CoapEmptyMessage.newRST(request);
+    final rst = CoapEmptyMessage.newRST(request);
     endpoint.sendEpEmptyMessage(this, rst);
   }
 
@@ -128,7 +119,7 @@ class CoapExchange {
     assert(_origin == CoapOrigin.remote, 'Origin must be remote');
     if (request.type == CoapMessageType.con && !request.isAcknowledged) {
       request.isAcknowledged = true;
-      final CoapEmptyMessage ack = CoapEmptyMessage.newACK(request);
+      final ack = CoapEmptyMessage.newACK(request);
       endpoint.sendEpEmptyMessage(this, ack);
     }
   }

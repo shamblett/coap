@@ -7,13 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: prefer_generic_function_type_aliases
-// ignore_for_file: public_member_api_docs
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-// ignore_for_file: avoid_types_on_closure_parameters
-
 typedef TEqualsFunc = bool Function<TFilter>(TFilter a, TFilter b);
 typedef TEntryFactoryFunc
     = CoapEntry<dynamic, dynamic> Function<TChain, TFilter>(
@@ -22,8 +15,9 @@ typedef TEntryFactoryFunc
         CoapEntry<dynamic, dynamic> c,
         String d,
         TFilter e);
-typedef TNextFilter TNextFilterFactory<TNextFilter, TFilter>(TFilter v);
-typedef TFilter TFilterFactory<TFilter>();
+typedef TNextFilterFactory<TNextFilter, TFilter> = TNextFilter Function(
+    TFilter v);
+typedef TFilterFactory<TFilter> = TFilter Function();
 
 /// Represents a chain of filters.
 abstract class CoapIChain<TFilter, TNextFilter> {
@@ -159,7 +153,7 @@ class CoapEntry<TFilter, TNextFilter>
 
   @override
   String toString() {
-    final StringBuffer sb = StringBuffer();
+    final sb = StringBuffer();
 
     // Add the current filter
     sb.write('(');
@@ -229,7 +223,6 @@ class CoapChain<TChain, TFilter, TNextFilter>
                     String name,
                     TFilter filter) =>
                 CoapEntry<dynamic, dynamic>(
-                    // ignore: avoid_as
                     chain as CoapChain<dynamic, dynamic, dynamic>,
                     prev,
                     next,
@@ -259,7 +252,7 @@ class CoapChain<TChain, TFilter, TNextFilter>
 
   @override
   TFilter get(String name) {
-    final CoapIEntry<TFilter, TNextFilter> e = getEntryByName(name);
+    final e = getEntryByName(name);
     return e.filter;
   }
 
@@ -289,25 +282,25 @@ class CoapChain<TChain, TFilter, TNextFilter>
 
   @override
   TNextFilter getNextFilterByName(String name) {
-    final CoapIEntry<TFilter, TNextFilter> e = getEntryByName(name);
+    final e = getEntryByName(name);
     return e.nextFilter;
   }
 
   @override
   TNextFilter getNextFilterByFilter(TFilter filter) {
-    final CoapIEntry<TFilter, TNextFilter> e = getEntryByFilter(filter);
+    final e = getEntryByFilter(filter);
     return e.nextFilter;
   }
 
   @override
   TNextFilter getNextFilterByType(Object filterType) {
-    final CoapIEntry<TFilter, TNextFilter> e = getEntryByType(filterType);
+    final e = getEntryByType(filterType);
     return e.nextFilter;
   }
 
   @override
   Iterable<CoapEntry<dynamic, dynamic>> getAll() sync* {
-    final CoapEntry<dynamic, dynamic> e = _head.nextEntry;
+    final e = _head.nextEntry;
     while (e != _tail) {
       yield e;
     }
@@ -336,21 +329,21 @@ class CoapChain<TChain, TFilter, TNextFilter>
 
   @override
   void addAfter(String baseName, String name, TFilter filter) {
-    final CoapEntry<dynamic, dynamic> baseEntry = _checkOldName(baseName);
+    final baseEntry = _checkOldName(baseName);
     _checkAddable(name);
     _register(baseEntry, name, filter);
   }
 
   @override
   void addBefore(String baseName, String name, TFilter filter) {
-    final CoapEntry<dynamic, dynamic> baseEntry = _checkOldName(baseName);
+    final baseEntry = _checkOldName(baseName);
     _checkAddable(name);
     _register(baseEntry.prevEntry, name, filter);
   }
 
   @override
   TFilter replaceByName(String name, TFilter newFilter) {
-    final CoapEntry<dynamic, dynamic> entry = _checkOldName(name);
+    final entry = _checkOldName(name);
     final TFilter oldFilter = entry.filter;
     entry.filter = newFilter;
     return oldFilter;
@@ -358,7 +351,7 @@ class CoapChain<TChain, TFilter, TNextFilter>
 
   @override
   void replaceByFilter(TFilter oldFilter, TFilter newFilter) {
-    CoapEntry<dynamic, dynamic> e = _head.nextEntry;
+    var e = _head.nextEntry;
     while (e != _tail) {
       if (_equalsFunc(e.filter, oldFilter)) {
         e.filter = newFilter;
@@ -371,14 +364,14 @@ class CoapChain<TChain, TFilter, TNextFilter>
 
   @override
   TFilter removeByName(String name) {
-    final CoapEntry<dynamic, dynamic> entry = _checkOldName(name);
+    final entry = _checkOldName(name);
     _deregister(entry);
     return entry.filter;
   }
 
   @override
   void removeByFilter(TFilter filter) {
-    CoapEntry<dynamic, dynamic> e = _head.nextEntry;
+    var e = _head.nextEntry;
     while (e != _tail) {
       if (_equalsFunc(e.filter, filter)) {
         _deregister(e);
@@ -414,7 +407,7 @@ class CoapChain<TChain, TFilter, TNextFilter>
 
   void _register(
       CoapEntry<dynamic, dynamic> prevEntry, String name, TFilter filter) {
-    final CoapEntry<dynamic, dynamic> newEntry =
+    final newEntry =
         _entryFactory(this, prevEntry, prevEntry.nextEntry, name, filter);
 
     onPreAdd(newEntry);
@@ -435,8 +428,8 @@ class CoapChain<TChain, TFilter, TNextFilter>
 
   /// Deregister an entry from this chain.
   void _deregister0(CoapEntry<dynamic, dynamic> entry) {
-    final CoapEntry<dynamic, dynamic> prevEntry = entry.prevEntry;
-    final CoapEntry<dynamic, dynamic> nextEntry = entry.nextEntry;
+    final prevEntry = entry.prevEntry;
+    final nextEntry = entry.nextEntry;
     prevEntry.nextEntry = nextEntry;
     nextEntry.prevEntry = prevEntry;
     _name2entry.remove(entry.name);

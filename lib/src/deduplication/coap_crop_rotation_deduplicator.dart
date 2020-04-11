@@ -7,9 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-
 /// Crop rotation deduplicator
 class CoapCropRotationDeduplicator implements CoapIDeduplicator {
   /// Construction
@@ -75,7 +72,7 @@ class CoapCropRotationDeduplicator implements CoapIDeduplicator {
   }
 
   void _rotation(Timer timer) {
-    final int third = _first;
+    final third = _first;
     _first = _second;
     _second = (_second + 1) % 3;
     _maps[third].clear();

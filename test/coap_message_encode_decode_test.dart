@@ -10,21 +10,12 @@ import 'package:collection/collection.dart';
 import 'package:test/test.dart';
 import 'package:typed_data/typed_data.dart' as typed;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-// ignore_for_file: avoid_annotating_with_dynamic
-// ignore_for_file: avoid_types_on_closure_parameters
-// ignore_for_file: flutter_style_todos
-// ignore_for_file: lines_longer_than_80_chars
-// ignore_for_file: avoid_print
-
 void main() {
-  const ListEquality<dynamic> leq = ListEquality<dynamic>();
+  const leq = ListEquality<dynamic>();
   // ignore: unused_local_variable
   final DefaultCoapConfig conf = CoapConfigLogging();
   group('COAP All', () {
-    final Map<String, List<List<int>>> check = <String, List<List<int>>>{
+    final check = <String, List<List<int>>>{
       'draft-ietf-core-coap-03': <List<int>>[
         <int>[64, 1, 48, 57, 112, 97, 121, 108, 111, 97, 100],
         <int>[
@@ -785,9 +776,9 @@ void main() {
 
       msg.id = 12345;
       msg.payload = typed.Uint8Buffer()..addAll('payload'.codeUnits);
-      final typed.Uint8Buffer data = spec.encode(msg);
+      final data = spec.encode(msg);
       checkData(spec.name, data, testNo);
-      final CoapMessage convMsg = spec.decode(data);
+      final convMsg = spec.decode(data);
       expect(msg.code, convMsg.code);
       expect(msg.type, convMsg.type);
       expect(msg.id, convMsg.id);
@@ -809,9 +800,9 @@ void main() {
       expect(
           msg.getFirstOption(optionTypeContentType).stringValue, 'text/plain');
       expect(msg.getFirstOption(optionTypeMaxAge).value, 30);
-      final typed.Uint8Buffer data = spec.encode(msg);
+      final data = spec.encode(msg);
       checkData(spec.name, data, testNo);
-      final CoapMessage convMsg = spec.decode(data);
+      final convMsg = spec.decode(data);
 
       expect(msg.code, convMsg.code);
       expect(msg.type, convMsg.type);
@@ -839,9 +830,9 @@ void main() {
       expect(msg.getFirstOption(197).stringValue, 'extend option');
       msg.payload = typed.Uint8Buffer()..addAll('payload'.codeUnits);
 
-      final typed.Uint8Buffer data = spec.encode(msg);
+      final data = spec.encode(msg);
       checkData(spec.name, data, testNo);
-      final CoapMessage convMsg = spec.decode(data);
+      final convMsg = spec.decode(data);
 
       expect(msg.code, convMsg.code);
       expect(msg.type, convMsg.type);
@@ -855,13 +846,13 @@ void main() {
       expect(
           leq.equals(msg.payload.toList(), convMsg.payload.toList()), isTrue);
 
-      final CoapOption extendOpt = convMsg.getFirstOption(197);
+      final extendOpt = convMsg.getFirstOption(197);
       expect(extendOpt, isNotNull);
       expect(extendOpt.stringValue, 'extend option');
     }
 
     void testRequestParsing(CoapISpec spec, int testNo) {
-      final CoapRequest request =
+      final request =
           CoapRequest.isConfirmable(CoapCode.methodPOST, confirmable: false);
       request.id = 7;
       request.token = typed.Uint8Buffer()..addAll(<int>[11, 82, 165, 77, 3]);
@@ -872,12 +863,12 @@ void main() {
       request.contentType = 40;
       request.accept = 40;
 
-      final typed.Uint8Buffer bytes = spec.encode(request);
+      final bytes = spec.encode(request);
       checkData(spec.name, bytes, testNo);
-      final CoapIMessageDecoder decoder = spec.newMessageDecoder(bytes);
+      final decoder = spec.newMessageDecoder(bytes);
       expect(decoder.isRequest, isTrue);
 
-      final CoapRequest result = decoder.decodeRequest();
+      final result = decoder.decodeRequest();
       expect(request.id, result.id);
       expect(leq.equals(request.token.toList(), result.token.toList()), isTrue);
       expect(
@@ -887,7 +878,7 @@ void main() {
     }
 
     void testResponseParsing(CoapISpec spec, int testNo) {
-      final CoapResponse response = CoapResponse(CoapCode.content);
+      final response = CoapResponse(CoapCode.content);
       response.type = CoapMessageType.non;
       response.id = 9;
       response.token = typed.Uint8Buffer()
@@ -901,13 +892,13 @@ void main() {
         ..addOption(CoapOption.createString(19205, 'Arbitrary2'))
         ..addOption(CoapOption.createString(19205, 'Arbitrary3'));
 
-      final typed.Uint8Buffer bytes = spec.encode(response);
+      final bytes = spec.encode(response);
       checkData(spec.name, bytes, testNo);
 
-      final CoapIMessageDecoder decoder = spec.newMessageDecoder(bytes);
+      final decoder = spec.newMessageDecoder(bytes);
       expect(decoder.isResponse, isTrue);
 
-      final CoapResponse result = decoder.decodeResponse();
+      final result = decoder.decodeResponse();
       expect(response.id, result.id);
       expect(
           leq.equals(response.token.toList(), result.token.toList()), isTrue);

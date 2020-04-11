@@ -5,7 +5,6 @@
  * Copyright :  S.Hamblett
  */
 
-// ignore_for_file: public_member_api_docs
 part of coap;
 
 /// CoAP option types as defined in

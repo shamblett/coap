@@ -7,13 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-// ignore_for_file: avoid_annotating_with_dynamic
-// ignore_for_file: avoid_types_on_closure_parameters
-// ignore_for_file: avoid_print
-
 /// EndPoint encapsulates the stack that executes the CoAP protocol.
 class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   /// Instantiates a new endpoint with the
@@ -104,8 +97,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
     if (event.data == null || event.data.isEmpty) {
       return;
     }
-    final CoapIMessageDecoder decoder =
-        config.spec.newMessageDecoder(event.data);
+    final decoder = config.spec.newMessageDecoder(event.data);
     if (decoder.isRequest) {
       CoapRequest request;
       try {
@@ -115,7 +107,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
           _log.warn('Message format error caused by $e');
         } else {
           // Manually build RST from raw information
-          final CoapEmptyMessage rst = CoapEmptyMessage(CoapMessageType.rst);
+          final rst = CoapEmptyMessage(CoapMessageType.rst);
           rst.destination = event.address;
           rst.id = decoder.id;
           _eventBus.fire(CoapSendingEmptyMessageEvent(rst));
@@ -129,20 +121,20 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
       _eventBus.fire(CoapReceivingRequestEvent(request));
 
       if (!request.isCancelled) {
-        final CoapExchange exchange = _matcher.receiveRequest(request);
+        final exchange = _matcher.receiveRequest(request);
         if (exchange != null) {
           exchange.endpoint = this;
           _coapStack.receiveRequest(exchange, request);
         }
       }
     } else if (decoder.isResponse) {
-      final CoapResponse response = decoder.decodeResponse();
+      final response = decoder.decodeResponse();
       response.source = event.address;
 
       _eventBus.fire(CoapReceivingResponseEvent(response));
 
       if (!response.isCancelled) {
-        final CoapExchange exchange = _matcher.receiveResponse(response);
+        final exchange = _matcher.receiveResponse(response);
         if (exchange != null) {
           response.rtt =
               ((DateTime.now().difference(exchange.timestamp)).inMilliseconds)
@@ -155,7 +147,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
         }
       }
     } else if (decoder.isEmpty) {
-      final CoapEmptyMessage message = decoder.decodeEmptyMessage();
+      final message = decoder.decodeEmptyMessage();
       message.source = event.address;
 
       _eventBus.fire(CoapReceivingEmptyMessageEvent(message));
@@ -167,7 +159,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
           _log.debug('Responding to ping by ${event.address}');
           _reject(message);
         } else {
-          final CoapExchange exchange = _matcher.receiveEmptyMessage(message);
+          final exchange = _matcher.receiveEmptyMessage(message);
           if (exchange != null) {
             exchange.endpoint = this;
             _coapStack.receiveEmptyMessage(exchange, message);
@@ -210,7 +202,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   }
 
   void _reject(CoapMessage message) {
-    final CoapEmptyMessage rst = CoapEmptyMessage.newRST(message);
+    final rst = CoapEmptyMessage.newRST(message);
     _eventBus.fire(CoapSendingEmptyMessageEvent(rst));
 
     if (!rst.isCancelled) {
@@ -219,7 +211,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   }
 
   typed.Uint8Buffer _serializeEmpty(CoapEmptyMessage message) {
-    typed.Uint8Buffer bytes = message.bytes;
+    var bytes = message.bytes;
     if (bytes == null) {
       bytes = _config.spec.newMessageEncoder().encodeMessage(message);
       message.bytes = bytes;
@@ -228,7 +220,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   }
 
   typed.Uint8Buffer _serializeRequest(CoapMessage message) {
-    typed.Uint8Buffer bytes = message.bytes;
+    var bytes = message.bytes;
     if (bytes == null) {
       bytes = _config.spec.newMessageEncoder().encodeMessage(message);
       message.bytes = bytes;
@@ -237,7 +229,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   }
 
   typed.Uint8Buffer _serializeResponse(CoapMessage message) {
-    typed.Uint8Buffer bytes = message.bytes;
+    var bytes = message.bytes;
     if (bytes == null) {
       bytes = _config.spec.newMessageEncoder().encodeMessage(message);
       message.bytes = bytes;

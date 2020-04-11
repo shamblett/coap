@@ -7,14 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-// ignore_for_file: avoid_print
-// ignore_for_file: avoid_types_on_closure_parameters
-// ignore_for_file: avoid_annotating_with_dynamic
-// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
-
 /// Channel via UDP protocol.
 class CoapUDPChannel extends CoapIChannel {
   /// Initialise with a specific address and port
@@ -67,8 +59,7 @@ class CoapUDPChannel extends CoapIChannel {
 
   @override
   void receive() {
-    final CoapDataReceivedEvent rxEvent =
-        CoapDataReceivedEvent(_buff, _address);
+    final rxEvent = CoapDataReceivedEvent(_buff, _address);
     _eventBus.fire(rxEvent);
     _buff.clear();
   }

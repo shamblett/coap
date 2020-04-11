@@ -7,16 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-// ignore_for_file: avoid_print
-// ignore_for_file: avoid_types_on_closure_parameters
-// ignore_for_file: avoid_returning_this
-// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
-// ignore_for_file: prefer_null_aware_operators
-// ignore_for_file: avoid_annotating_with_dynamic
-
 /// This class describes the options of the CoAP messages.
 class CoapOption {
   /// Construction
@@ -33,7 +23,6 @@ class CoapOption {
   typed.Uint8Buffer valueBytes;
 
   /// From list
-  // ignore: avoid_setters_without_getters
   set valueBytesList(List<int> bytes) {
     valueBytes.clear();
     valueBytes.addAll(bytes);
@@ -53,10 +42,10 @@ class CoapOption {
     if (valueBytes.length == 1) {
       return valueBytes[0];
     } else if (valueBytes.length == 2) {
-      final Uint16List buff = Uint16List.view(valueBytes.buffer);
+      final buff = Uint16List.view(valueBytes.buffer);
       return buff[0];
     } else {
-      final Uint32List buff = Uint32List.view(valueBytes.buffer);
+      final buff = Uint32List.view(valueBytes.buffer);
       return buff[0];
     }
   }
@@ -69,11 +58,11 @@ class CoapOption {
       if (val <= 255) {
         valueBytes.add(val);
       } else if (val <= 65535) {
-        final Uint16List buff = Uint16List(1);
+        final buff = Uint16List(1);
         buff[0] = val;
         valueBytes.addAll(buff.buffer.asUint8List());
       } else {
-        final Uint32List buff = Uint32List(1);
+        final buff = Uint32List(1);
         buff[0] = val;
         valueBytes.addAll(buff.buffer.asUint8List());
       }
@@ -82,7 +71,7 @@ class CoapOption {
 
   /// Int64 representation of value bytes
   int get longValue {
-    final Uint64List buff = Uint64List.view(valueBytes.buffer);
+    final buff = Uint64List.view(valueBytes.buffer);
     return buff[0];
   }
 
@@ -90,7 +79,7 @@ class CoapOption {
     if (val == 0) {
       valueBytes.add(0);
     } else {
-      final Uint64List buff = Uint64List(1);
+      final buff = Uint64List(1);
       buff[0] = val;
       valueBytes.clear();
       valueBytes.addAll(buff.buffer.asUint8List());
@@ -203,8 +192,8 @@ class CoapOption {
 
   @override
   int get hashCode {
-    const int prime = 31;
-    int result = 1;
+    const prime = 31;
+    var result = 1;
     return result = prime * result + _type;
   }
 
@@ -226,7 +215,6 @@ class CoapOption {
   }
 
   /// Creates an option.
-  // ignore: prefer_constructors_over_static_methods
   static CoapOption create(int type) {
     switch (type) {
       case optionTypeBlock1:
@@ -239,28 +227,28 @@ class CoapOption {
 
   /// Creates an option.
   static CoapOption createRaw(int type, typed.Uint8Buffer raw) {
-    final CoapOption opt = create(type);
+    final opt = create(type);
     opt.valueBytes = raw;
     return opt;
   }
 
   /// Creates an option.
   static CoapOption createString(int type, String str) {
-    final CoapOption opt = create(type);
+    final opt = create(type);
     opt.stringValue = str;
     return opt;
   }
 
   /// Creates an option.
   static CoapOption createVal(int type, int val) {
-    final CoapOption opt = create(type);
+    final opt = create(type);
     opt.intValue = val;
     return opt;
   }
 
   /// Creates an option.
   static CoapOption createLongVal(int type, int val) {
-    final CoapOption opt = create(type);
+    final opt = create(type);
     opt.longValue = val;
     return opt;
   }
@@ -268,15 +256,15 @@ class CoapOption {
   /// Splits a string into a set of options, e.g. a uri path.
   /// Remove any leading /
   static List<CoapOption> split(int type, String s, String delimiter) {
-    final List<CoapOption> opts = <CoapOption>[];
-    final RegExp exp = RegExp(r'^\/*\/');
+    final opts = <CoapOption>[];
+    final exp = RegExp(r'^\/*\/');
     final Match pos = exp.firstMatch(s);
-    String tmp = s;
+    var tmp = s;
     if (pos != null) {
       tmp = s.substring(pos.end, s.length);
     }
     if (tmp.isNotEmpty) {
-      for (final String str in tmp.split(delimiter)) {
+      for (final str in tmp.split(delimiter)) {
         if (delimiter == '/' || str.isNotEmpty) {
           opts.add(CoapOption.createString(type, str));
         }
@@ -291,9 +279,9 @@ class CoapOption {
     if (null == options) {
       return s;
     } else {
-      final StringBuffer sb = StringBuffer();
-      bool append = false;
-      for (final CoapOption opt in options) {
+      final sb = StringBuffer();
+      var append = false;
+      for (final opt in options) {
         if (append) {
           sb.write(delimiter);
         } else {

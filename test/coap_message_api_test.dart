@@ -9,14 +9,6 @@ import 'package:coap/coap.dart';
 import 'package:coap/config/coap_config_logging.dart';
 import 'package:test/test.dart';
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-// ignore_for_file: avoid_annotating_with_dynamic
-// ignore_for_file: avoid_types_on_closure_parameters
-// ignore_for_file: flutter_style_todos
-// ignore_for_file: lines_longer_than_80_chars
-
 // Note that nnot all API methods are tested here, some are tested in other unit test suites,
 // some in dynamic testing.
 void main() {
@@ -24,7 +16,7 @@ void main() {
   final DefaultCoapConfig conf = CoapConfigLogging();
 
   test('Construction', () {
-    final CoapMessage message = CoapMessage();
+    final message = CoapMessage();
     expect(message.type, CoapMessageType.unknown);
     expect(message.code, CoapCode.notSet);
     expect(message.id >= 1, isTrue);
@@ -53,10 +45,10 @@ void main() {
   });
 
   test('Options', () {
-    final CoapMessage message = CoapMessage();
-    final CoapOption opt1 = CoapOption(optionTypeUriHost);
-    final CoapOption opt2 = CoapOption(optionTypeReserved);
-    final List<CoapOption> options = <CoapOption>[opt1, opt2];
+    final message = CoapMessage();
+    final opt1 = CoapOption(optionTypeUriHost);
+    final opt2 = CoapOption(optionTypeReserved);
+    final options = <CoapOption>[opt1, opt2];
     message.addOptions(options);
     expect(message.optionMap.length, 2);
     expect(message.getOptions(optionTypeUriHost).length, 1);
@@ -85,11 +77,11 @@ void main() {
     expect(message.getOptions(optionTypeReserved), isNull);
     message.addOptions(options);
     expect(message.optionMap.length, 2);
-    final CoapOption opt3 = CoapOption(optionTypeUriHost);
+    final opt3 = CoapOption(optionTypeUriHost);
     message.addOption(opt3);
     expect(message.optionMap.length, 2);
     expect(message.getOptions(optionTypeUriHost).length, 2);
-    final bool ret = message.removeOption(opt1);
+    final ret = message.removeOption(opt1);
     expect(ret, isTrue);
     expect(message.getOptions(optionTypeUriHost).length, 1);
     expect(message.getOptions(optionTypeUriHost).toList()[0] == opt3, isTrue);
@@ -98,7 +90,7 @@ void main() {
   });
 
   test('Message codes', () {
-    final CoapMessage message = CoapMessage();
+    final message = CoapMessage();
     expect(message.isRequest, isFalse);
     expect(message.isResponse, isFalse);
     expect(message.isEmpty, isFalse);
@@ -107,16 +99,16 @@ void main() {
   });
 
   test('Acknowledged', () {
-    bool acked = false;
+    var acked = false;
     void ackHook() {
       acked = true;
     }
 
-    final CoapMessage message = CoapMessage();
+    final message = CoapMessage();
     message.isAcknowledged = true;
     expect(message.isAcknowledged, isTrue);
     expect(acked, isFalse);
-    final CoapEventBus eventBus = CoapEventBus();
+    final eventBus = CoapEventBus();
     expect(eventBus.lastEvent is CoapAcknowledgedEvent, isTrue);
     eventBus.lastEvent = null;
     message.acknowledgedHook = ackHook;
@@ -127,24 +119,24 @@ void main() {
   });
 
   test('Rejected', () {
-    final CoapMessage message = CoapMessage();
+    final message = CoapMessage();
     message.isRejected = true;
     expect(message.isRejected, isTrue);
-    final CoapEventBus eventBus = CoapEventBus();
+    final eventBus = CoapEventBus();
     expect(eventBus.lastEvent is CoapRejectedEvent, isTrue);
   });
 
   test('Timed out', () {
-    bool timedOut = false;
+    var timedOut = false;
     void toHook() {
       timedOut = true;
     }
 
-    final CoapMessage message = CoapMessage();
+    final message = CoapMessage();
     message.isTimedOut = true;
     expect(message.isTimedOut, isTrue);
     expect(timedOut, isFalse);
-    final CoapEventBus eventBus = CoapEventBus();
+    final eventBus = CoapEventBus();
     expect(eventBus.lastEvent is CoapTimedOutEvent, isTrue);
     eventBus.lastEvent = null;
     message.timedOutHook = toHook;
@@ -155,8 +147,8 @@ void main() {
   });
 
   test('Retransmitting', () {
-    final CoapMessage message = CoapMessage();
-    bool retrans = false;
+    final message = CoapMessage();
+    var retrans = false;
     void retransHook() {
       retrans = true;
     }
@@ -169,10 +161,10 @@ void main() {
   });
 
   test('Cancelled', () {
-    final CoapMessage message = CoapMessage();
+    final message = CoapMessage();
     message.isCancelled = true;
     expect(message.isCancelled, isTrue);
-    final CoapEventBus eventBus = CoapEventBus();
+    final eventBus = CoapEventBus();
     expect(eventBus.lastEvent is CoapCancelledEvent, isTrue);
     message.isCancelled = false;
     message.cancel();
@@ -180,7 +172,7 @@ void main() {
   });
 
   test('Payload', () {
-    final CoapMessage message = CoapMessage();
+    final message = CoapMessage();
     message.setPayload('This is the payload');
     expect(message.payload, isNotNull);
     expect(message.payloadString, 'This is the payload');
@@ -188,7 +180,7 @@ void main() {
   });
 
   test('If match', () {
-    final CoapMessage message = CoapMessage();
+    final message = CoapMessage();
     expect(message.ifMatches.length, 0);
     message.addIfMatch('ETag-1').addIfMatch('ETag-2');
     expect(message.ifMatches.length, 2);
@@ -199,9 +191,9 @@ void main() {
     expect(message.ifMatches.toList()[0].stringValue, 'ETag-2');
     message.clearIfMatches();
     expect(message.ifMatches.length, 0);
-    final CoapOption opt1 = CoapOption(optionTypeUriHost);
+    final opt1 = CoapOption(optionTypeUriHost);
     expect(() => message.removeIfMatch(opt1), throwsArgumentError);
-    final CoapOption opt2 = CoapOption(optionTypeIfMatch);
+    final opt2 = CoapOption(optionTypeIfMatch);
     opt2.stringValue = 'ETag-3';
     message.addOption(opt2);
     expect(message.ifMatches.length, 1);
@@ -210,12 +202,12 @@ void main() {
   });
 
   test('ETags', () {
-    final CoapMessage message = CoapMessage();
+    final message = CoapMessage();
     expect(message.etags.length, 0);
-    final CoapOption none = CoapOption(optionTypeIfMatch);
-    final CoapOption etag1 = CoapOption(optionTypeETag);
+    final none = CoapOption(optionTypeIfMatch);
+    final etag1 = CoapOption(optionTypeETag);
     etag1.stringValue = 'Etag-1';
-    final CoapOption etag2 = CoapOption(optionTypeETag);
+    final etag2 = CoapOption(optionTypeETag);
     etag2.stringValue = 'Etag-2';
     expect(() => message.addEtag(none), throwsArgumentError);
     message.addEtag(etag1);
@@ -230,23 +222,23 @@ void main() {
     message.addEtag(etag1);
     expect(message.etags.length, 1);
     expect(() => message.removeEtag(none), throwsArgumentError);
-    final bool ret = message.removeEtag(etag1);
+    final ret = message.removeEtag(etag1);
     expect(ret, isTrue);
     expect(message.etags.length, 0);
   });
 
   test('If None match', () {
-    final CoapMessage message = CoapMessage();
+    final message = CoapMessage();
     expect(message.ifNoneMatches.length, 0);
-    final CoapOption none = CoapOption(optionTypeIfMatch);
-    final CoapOption inm1 = CoapOption(optionTypeIfNoneMatch);
+    final none = CoapOption(optionTypeIfMatch);
+    final inm1 = CoapOption(optionTypeIfNoneMatch);
     inm1.stringValue = 'Inm1';
-    final CoapOption inm2 = CoapOption(optionTypeIfNoneMatch);
+    final inm2 = CoapOption(optionTypeIfNoneMatch);
     inm2.stringValue = 'Inm2';
     message.addIfNoneMatch(inm1).addIfNoneMatch(inm2);
     expect(message.ifNoneMatches.length, 2);
     expect(() => message.addIfNoneMatch(none), throwsArgumentError);
-    final CoapOption inm3 = CoapOption(optionTypeIfNoneMatch);
+    final inm3 = CoapOption(optionTypeIfNoneMatch);
     inm3.stringValue = 'Inm3';
     message.addIfNoneMatchOpaque(inm3.valueBytes);
     expect(message.ifNoneMatches.length, 3);
@@ -258,7 +250,7 @@ void main() {
   });
 
   test('Uri path', () {
-    final CoapMessage message = CoapMessage();
+    final message = CoapMessage();
     expect(message.uriPaths.length, 0);
     message.uriPath = 'a/uri/path/';
     expect(message.uriPaths.length, 3);
@@ -267,7 +259,7 @@ void main() {
     expect(message.uriPaths.length, 4);
     expect(message.uriPathsString, 'a/uri/path/longer');
     expect(() => message.addUriPath(null), throwsArgumentError);
-    const String tolong =
+    const tolong =
         'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn'
         'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
         'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn';
@@ -281,7 +273,7 @@ void main() {
   });
 
   test('Uri query', () {
-    final CoapMessage message = CoapMessage();
+    final message = CoapMessage();
     expect(message.uriQueries.length, 0);
     message.uriQuery = 'a&uri=1&query=2';
     expect(message.uriQueries.length, 3);
@@ -290,7 +282,7 @@ void main() {
     expect(message.uriQueries.length, 4);
     expect(message.uriQueriesString, '?a&uri=1&query=2&longer=3');
     expect(() => message.addUriQuery(null), throwsArgumentError);
-    const String tolong =
+    const tolong =
         'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn'
         'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
         'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn';
@@ -303,7 +295,7 @@ void main() {
   });
 
   test('Location path', () {
-    final CoapMessage message = CoapMessage();
+    final message = CoapMessage();
     expect(message.locationPaths.length, 0);
     message.locationPath = 'a/location/path/';
     expect(message.locationPaths.length, 3);
@@ -314,7 +306,7 @@ void main() {
     expect(message.locationPaths.length, 4);
     expect(message.locationPathsString, 'a/location/path/longer');
     expect(() => message.addLocationPath(null), throwsArgumentError);
-    const String tolong =
+    const tolong =
         'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn'
         'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
         'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn';
@@ -328,7 +320,7 @@ void main() {
   });
 
   test('Location query', () {
-    final CoapMessage message = CoapMessage();
+    final message = CoapMessage();
     expect(message.locationQueries.length, 0);
     message.locationQuery = 'a&uri=1&query=2';
     expect(message.locationQueries.length, 3);
@@ -337,7 +329,7 @@ void main() {
     expect(message.locationQueries.length, 4);
     expect(message.locationQueriesString, '?a&uri=1&query=2&longer=3');
     expect(() => message.addLocationQuery(null), throwsArgumentError);
-    const String tolong =
+    const tolong =
         'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn'
         'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
         'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn';

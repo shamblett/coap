@@ -7,16 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-// ignore_for_file: avoid_print
-// ignore_for_file: avoid_types_on_closure_parameters
-// ignore_for_file: avoid_returning_this
-// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
-// ignore_for_file: prefer_null_aware_operators
-// ignore_for_file: avoid_annotating_with_dynamic
-
 /// Message encoder 18
 class CoapMessageEncoder18 extends CoapMessageEncoder {
   @override
@@ -32,12 +22,12 @@ class CoapMessageEncoder18 extends CoapMessageEncoder {
     // Write token, which may be 0 to 8 bytes, given by token length field
     writer.writeBytes(message.token);
 
-    int lastOptionNumber = 0;
+    var lastOptionNumber = 0;
     final List<CoapOption> options = message.getAllOptions();
     CoapUtil.insertionSort(
         options, (dynamic a, dynamic b) => a.type.compareTo(b.type));
 
-    for (final CoapOption opt in options) {
+    for (final opt in options) {
       if (opt.type == optionTypeToken ||
           opt.type == optionTypeUriHost ||
           opt.type == optionTypeUriPort) {
@@ -45,14 +35,14 @@ class CoapMessageEncoder18 extends CoapMessageEncoder {
       }
 
       // Write 4-bit option delta
-      final int optNum = opt.type;
-      final int optionDelta = optNum - lastOptionNumber;
-      final int optionDeltaNibble = CoapDraft18.getOptionNibble(optionDelta);
+      final optNum = opt.type;
+      final optionDelta = optNum - lastOptionNumber;
+      final optionDeltaNibble = CoapDraft18.getOptionNibble(optionDelta);
       writer.write(optionDeltaNibble, CoapDraft18.optionDeltaBits);
 
       // Write 4-bit option length
-      final int optionLength = opt.length;
-      final int optionLengthNibble = CoapDraft18.getOptionNibble(optionLength);
+      final optionLength = opt.length;
+      final optionLengthNibble = CoapDraft18.getOptionNibble(optionLength);
       writer.write(optionLengthNibble, CoapDraft18.optionLengthBits);
 
       // Write extended option delta field (0 - 2 bytes)

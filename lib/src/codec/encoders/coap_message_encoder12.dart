@@ -7,25 +7,15 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-// ignore_for_file: avoid_print
-// ignore_for_file: avoid_types_on_closure_parameters
-// ignore_for_file: avoid_returning_this
-// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
-// ignore_for_file: prefer_null_aware_operators
-// ignore_for_file: avoid_annotating_with_dynamic
-
 /// Message encoder 12
 class CoapMessageEncoder12 extends CoapMessageEncoder {
   final CoapILogger _log = CoapLogManager().logger;
 
   @override
   void serialize(CoapDatagramWriter writer, CoapMessage message, int code) {
-    final CoapDatagramWriter optWriter = CoapDatagramWriter();
-    int optionCount = 0;
-    int lastOptionNumber = 0;
+    final optWriter = CoapDatagramWriter();
+    var optionCount = 0;
+    var lastOptionNumber = 0;
 
     final List<CoapOption> options = message.getAllOptions();
     if (message.token != null &&
@@ -36,14 +26,14 @@ class CoapMessageEncoder12 extends CoapMessageEncoder {
     CoapUtil.insertionSort(
         options, (dynamic a, dynamic b) => a.type.compareTo(b.type));
 
-    for (final CoapOption opt in options) {
+    for (final opt in options) {
       if (opt.isDefault()) {
         continue;
       }
-      final CoapOption opt2 = opt;
+      final opt2 = opt;
 
-      final int optNum = CoapDraft12.getOptionNumber(opt2.type);
-      int optionDelta = optNum - lastOptionNumber;
+      final optNum = CoapDraft12.getOptionNumber(opt2.type);
+      var optionDelta = optNum - lastOptionNumber;
 
       // The Option Jump mechanism is used when the delta to the next option
       // number is larger than 14.
@@ -56,13 +46,13 @@ class CoapMessageEncoder12 extends CoapMessageEncoder {
           optWriter.write(0xF1, CoapDraft12.singleOptionJumpBits);
           optionDelta -= 15;
         } else if (optionDelta < 2064) {
-          final int optionJumpValue = (optionDelta ~/ 8) - 2;
+          final optionJumpValue = (optionDelta ~/ 8) - 2;
           optionDelta -= (optionJumpValue + 2) * 8;
           optWriter.write(0xF2, CoapDraft12.singleOptionJumpBits);
           optWriter.write(optionJumpValue, CoapDraft12.singleOptionJumpBits);
         } else if (optionDelta < 526359) {
           optionDelta = min(optionDelta, 526344); // Limit to avoid overflow
-          final int optionJumpValue = (optionDelta ~/ 8) - 258;
+          final optionJumpValue = (optionDelta ~/ 8) - 258;
           optionDelta -= (optionJumpValue + 258) * 8;
           optWriter.write(0xF3, CoapDraft12.singleOptionJumpBits);
           optWriter.write(
@@ -76,7 +66,7 @@ class CoapMessageEncoder12 extends CoapMessageEncoder {
       optWriter.write(optionDelta, CoapDraft12.optionDeltaBits);
 
       // Write option length
-      final int length = opt2.length;
+      final length = opt2.length;
       if (length <= CoapDraft12.maxOptionLengthBase) {
         // Use option length base field only to encode
         // option lengths less or equal than MAX_OPTIONLENGTH_BASE
@@ -91,11 +81,11 @@ class CoapMessageEncoder12 extends CoapMessageEncoder {
         // longer than 1034 bytes MUST NOT be sent
         optWriter.write(15, CoapDraft12.optionLengthBaseBits);
 
-        final int rounds = (length - 15) ~/ 255;
-        for (int i = 0; i < rounds; i++) {
+        final rounds = (length - 15) ~/ 255;
+        for (var i = 0; i < rounds; i++) {
           optWriter.write(255, CoapDraft12.optionLengthExtendedBits);
         }
-        final int remainingLength = length - ((rounds * 255) + 15);
+        final remainingLength = length - ((rounds * 255) + 15);
         optWriter.write(remainingLength, CoapDraft12.optionLengthExtendedBits);
       } else {
         _log.error(

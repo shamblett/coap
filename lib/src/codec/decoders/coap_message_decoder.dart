@@ -7,16 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-// ignore_for_file: avoid_print
-// ignore_for_file: avoid_types_on_closure_parameters
-// ignore_for_file: avoid_returning_this
-// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
-// ignore_for_file: prefer_null_aware_operators
-// ignore_for_file: avoid_annotating_with_dynamic
-
 /// Base class for message encoders.
 abstract class CoapMessageDecoder implements CoapIMessageDecoder {
   /// Instantiates.
@@ -68,7 +58,7 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
   @override
   CoapRequest decodeRequest() {
     if (isRequest) {
-      final CoapRequest request = CoapRequest.withType(_code);
+      final request = CoapRequest.withType(_code);
       request.type = _type;
       request.id = _id;
       parseMessage(request);
@@ -81,7 +71,7 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
   @override
   CoapResponse decodeResponse() {
     if (isResponse) {
-      final CoapResponse response = CoapResponse(_code);
+      final response = CoapResponse(_code);
       response.type = _type;
       response.id = _id;
       parseMessage(response);
@@ -94,7 +84,7 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
   @override
   CoapEmptyMessage decodeEmptyMessage() {
     if ((!isResponse) && (!isRequest)) {
-      final CoapEmptyMessage message = CoapEmptyMessage(_code);
+      final message = CoapEmptyMessage(_code);
       message.type = _type;
       message.id = _id;
       parseMessage(message);

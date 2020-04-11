@@ -5,19 +5,7 @@
  * Copyright :  S.Hamblett
  */
 
-// ignore_for_file: prefer_constructors_over_static_methods
-
 part of coap;
-
-// ignore: avoid_annotating_with_dynamic
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-// ignore_for_file: avoid_print
-// ignore_for_file: avoid_types_on_closure_parameters
-// ignore_for_file: avoid_returning_this
-// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
-// ignore_for_file: prefer_null_aware_operators
 
 /// This class describes the functionality of a CoAP Request as
 /// a subclass of a CoAP Message. It provides:
@@ -62,8 +50,8 @@ class CoapRequest extends CoapMessage {
     if (value == null) {
       return;
     }
-    final String host = value.host;
-    int port = value.port;
+    final host = value.host;
+    var port = value.port;
     if ((host.isNotEmpty) &&
         (!CoapUtil.regIP.hasMatch(host)) &&
         (host != 'localhost')) {
@@ -161,12 +149,12 @@ class CoapRequest extends CoapMessage {
   /// Wait for a response.
   /// Returns the response, or null if timeout occured.
   FutureOr<CoapResponse> waitForResponse(int millisecondsTimeout) {
-    final Completer<CoapResponse> completer = Completer<CoapResponse>();
+    final completer = Completer<CoapResponse>();
     if ((_currentResponse == null) &&
         (!isCancelled) &&
         (!isTimedOut) &&
         (!isRejected)) {
-      final Stream<CoapResponse> response = _responseStream.stream.take(1);
+      final response = _responseStream.stream.take(1);
       response
           .listen((CoapResponse resp) {
             _currentResponse = resp;

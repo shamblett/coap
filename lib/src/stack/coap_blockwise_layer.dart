@@ -7,14 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-// ignore_for_file: avoid_annotating_with_dynamic
-// ignore_for_file: avoid_types_on_closure_parameters
-// ignore_for_file: avoid_print
-// ignore_for_file: prefer_null_aware_operators
-
 /// Blockwise layer
 class CoapBlockwiseLayer extends CoapAbstractLayer {
   /// Constructs a blockwise layer.
@@ -43,9 +35,8 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       // size negotiation but actually wants to receive all blocks.
       _log.info('Request carries explicit defined block2 option: create random '
           'access blockwise status');
-      final CoapBlockwiseStatus status =
-          CoapBlockwiseStatus(request.contentFormat);
-      final CoapBlockOption block2 = request.block2;
+      final status = CoapBlockwiseStatus(request.contentFormat);
+      final block2 = request.block2;
       status.currentSZX = block2.szx;
       status.currentNUM = block2.num;
       status.randomAccess = true;
@@ -55,9 +46,8 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       // This must be a large POST or PUT request
       _log.info(
           'Request payload ${request.payloadSize} / $_maxMessageSize requires Blockwise.');
-      final CoapBlockwiseStatus status =
-          _findRequestBlockStatus(exchange, request);
-      final CoapRequest block = _getNextRequestBlock(request, status);
+      final status = _findRequestBlockStatus(exchange, request);
+      final block = _getNextRequestBlock(request, status);
       exchange.requestBlockStatus = status;
       exchange.currentRequest = block;
       super.sendRequest(nextLayer, exchange, block);
@@ -72,10 +62,10 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
     if (request.hasOption(optionTypeBlock1)) {
       // This must be a large POST or PUT request
-      final CoapBlockOption block1 = request.block1;
+      final block1 = request.block1;
       _log.info('Request contains block1 option $block1');
 
-      CoapBlockwiseStatus status = _findRequestBlockStatus(exchange, request);
+      var status = _findRequestBlockStatus(exchange, request);
       if (block1.num == 0 && status.currentNUM > 0) {
         // Reset the blockwise transfer
         _log.info('Block1 num is 0, the client has restarted the blockwise '
@@ -88,7 +78,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
         if (request.contentType == status.contentFormat) {
           status.addBlock(request.payload);
         } else {
-          final CoapResponse error = CoapResponse.createResponse(
+          final error = CoapResponse.createResponse(
               request, CoapCode.requestEntityIncomplete);
           error.addOption(CoapBlockOption.fromParts(
               optionTypeBlock1, block1.num, block1.szx,
@@ -104,7 +94,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
         if (block1.m) {
           _log.info('There are more blocks to come. Acknowledge this block.');
 
-          final CoapResponse piggybacked =
+          final piggybacked =
               CoapResponse.createResponse(request, CoapCode.continues);
           piggybacked.addOption(CoapBlockOption.fromParts(
               optionTypeBlock1, block1.num, block1.szx,
@@ -125,7 +115,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           _earlyBlock2Negotiation(exchange, request);
 
           // Assemble and deliver
-          final CoapRequest assembled = CoapRequest.withType(request.method);
+          final assembled = CoapRequest.withType(request.method);
           _assembleMessage(status, assembled, request);
 
           exchange.request = assembled;
@@ -136,7 +126,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
         _log.warn('Wrong block number. Expected ${status.currentNUM} '
             'but received ${block1.num} '
             'Respond with 4.08 (Request Entity Incomplete).');
-        final CoapResponse error = CoapResponse.createResponse(
+        final error = CoapResponse.createResponse(
             request, CoapCode.requestEntityIncomplete);
         error.addOption(CoapBlockOption.fromParts(
             optionTypeBlock1, block1.num, block1.szx,
@@ -149,14 +139,13 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
         request.hasOption(optionTypeBlock2)) {
       // The response has already been generated and the client just wants
       // the next block of it
-      final CoapBlockOption block2 = request.block2;
-      final CoapResponse response = exchange.response;
-      final CoapBlockwiseStatus status =
-          _findResponseBlockStatus(exchange, response);
+      final block2 = request.block2;
+      final response = exchange.response;
+      final status = _findResponseBlockStatus(exchange, response);
       status.currentNUM = block2.num;
       status.currentSZX = block2.szx;
 
-      final CoapResponse block = _getNextResponseBlock(response, status);
+      final block = _getNextResponseBlock(response, status);
       block.token = request.token;
       block.removeOptions(optionTypeObserve);
 
@@ -182,7 +171,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
   @override
   void sendResponse(
       CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
-    final CoapBlockOption block1 = exchange.block1ToAck;
+    final block1 = exchange.block1ToAck;
     if (block1 != null) {
       exchange.block1ToAck = null;
     }
@@ -191,10 +180,9 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       _log.info(
           'Response payload ${response.payloadSize} / $_maxMessageSize requires Blockwise');
 
-      final CoapBlockwiseStatus status =
-          _findResponseBlockStatus(exchange, response);
+      final status = _findResponseBlockStatus(exchange, response);
 
-      final CoapResponse block = _getNextResponseBlock(response, status);
+      final block = _getNextResponseBlock(response, status);
 
       if (block1 != null) {
         // In case we still have to ack the last block1
@@ -232,7 +220,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       // Reject (in particular for Block+Observe)
       if (response.type != CoapMessageType.ack) {
         _log.warn('Rejecting blockwise transfer for canceled Exchange');
-        final CoapEmptyMessage rst = CoapEmptyMessage.newRST(response);
+        final rst = CoapEmptyMessage.newRST(response);
         sendEmptyMessage(nextLayer, exchange, rst);
         // Matcher sets exchange as complete when RST is sent
       }
@@ -247,21 +235,20 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       return;
     }
 
-    final CoapBlockOption block1 = response.block1;
+    final block1 = response.block1;
     if (block1 != null) {
       _log.info('Blockwise block1 - response acknowledges block $block1');
-      final CoapBlockwiseStatus status = exchange.requestBlockStatus;
+      final status = exchange.requestBlockStatus;
       _log.info('Blockwise exchange block1 status is - $status');
       if (!status.complete) {
         // Send next block
-        final int currentSize = 1 << (4 + status.currentSZX);
-        final int nextNum =
+        final currentSize = 1 << (4 + status.currentSZX);
+        final nextNum =
             (status.currentNUM + currentSize / block1.size()).toInt();
         _log.info('Send next block num = $nextNum');
         status.currentNUM = nextNum;
         status.currentSZX = block1.szx;
-        final CoapRequest nextBlock =
-            _getNextRequestBlock(exchange.request, status);
+        final nextBlock = _getNextRequestBlock(exchange.request, status);
         nextBlock.token ??= response.token; // reuse same token
         exchange.currentRequest = nextBlock;
         super.sendRequest(nextLayer, exchange, nextBlock);
@@ -276,19 +263,18 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       }
     }
 
-    final CoapBlockOption block2 = response.block2;
+    final block2 = response.block2;
     if (block2 != null) {
       _log.info('Blockwise block2 - response acknowledges block: $block2');
-      final CoapBlockwiseStatus status =
-          _findResponseBlockStatus(exchange, response);
+      final status = _findResponseBlockStatus(exchange, response);
       _log.info('Blockwise exchange block2 status is - $status');
-      final CoapBlockOption blockStatus = CoapBlockOption(optionTypeBlock2);
+      final blockStatus = CoapBlockOption(optionTypeBlock2);
       blockStatus.rawValue = status.currentNUM;
       if (status != null && block2.num == blockStatus.num) {
         // We got the block we expected
         _log.info('Blockwise - Received expected block');
         status.addBlock(response.payload);
-        final int obs = response.observe;
+        final obs = response.observe;
         if (obs != null) {
           status.observe = obs;
         }
@@ -303,17 +289,17 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
         } else if (block2.m) {
           _log.info('Blockwise - Request the next response block');
 
-          final CoapRequest request = exchange.request;
-          final int num = block2.num + 1;
-          final int szx = block2.szx;
-          final bool m = block2.m;
+          final request = exchange.request;
+          final num = block2.num + 1;
+          final szx = block2.szx;
+          final m = block2.m;
 
-          final CoapRequest block = CoapRequest.withType(request.method);
+          final block = CoapRequest.withType(request.method);
           // NON could make sense over SMS or similar transports
           block.type = request.type;
           block.destination = request.destination;
           block.setOptions(request.getAllOptions());
-          final CoapBlockOption nextBlock =
+          final nextBlock =
               CoapBlockOption.fromParts(optionTypeBlock2, num, szx, m: m);
           block.setOption(nextBlock);
           // We use the same token to ease traceability
@@ -330,7 +316,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
         } else {
           _log.info('Blockwise - We have received all ${status.blockCount} '
               'blocks of the response. Assemble and deliver.');
-          final CoapResponse assembled = CoapResponse(response.statusCode);
+          final assembled = CoapResponse(response.statusCode);
           _assembleMessage(status, assembled, response);
           assembled.type = response.type;
 
@@ -340,7 +326,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
               .toDouble();
 
           // Check if this response is a notification
-          final int observe = status.observe;
+          final observe = status.observe;
           if (observe != CoapBlockwiseStatus.noObserve) {
             assembled
                 .addOption(CoapOption.createVal(optionTypeObserve, observe));
@@ -360,7 +346,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
             'but received ${block2.num}. Reject response; '
             'exchange has failed.');
         if (response.type == CoapMessageType.con) {
-          final CoapEmptyMessage rst = CoapEmptyMessage.newRST(response);
+          final rst = CoapEmptyMessage.newRST(response);
           super.sendEmptyMessage(nextLayer, exchange, rst);
         }
         exchange.request.isCancelled = true;
@@ -379,7 +365,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
 
   CoapBlockwiseStatus _findRequestBlockStatus(
       CoapExchange exchange, CoapRequest request) {
-    CoapBlockwiseStatus status = exchange.requestBlockStatus;
+    var status = exchange.requestBlockStatus;
     if (status == null) {
       status = CoapBlockwiseStatus(request.contentType);
       status.currentSZX = CoapBlockOption.encodeSZX(_defaultBlockSize);
@@ -396,23 +382,23 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
 
   CoapRequest _getNextRequestBlock(
       CoapRequest request, CoapBlockwiseStatus status) {
-    final int num = status.currentNUM;
-    final int szx = status.currentSZX;
-    final CoapRequest block = CoapRequest.withType(request.method);
+    final num = status.currentNUM;
+    final szx = status.currentSZX;
+    final block = CoapRequest.withType(request.method);
     block.setOptions(request.getAllOptions());
     block.destination = request.destination;
     block.token = request.token;
     block.type = CoapMessageType.con;
 
-    final int currentSize = 1 << (4 + szx);
-    final int from = num * currentSize;
-    final int to = min((num + 1) * currentSize, request.payloadSize);
-    final int length = to - from;
-    final typed.Uint8Buffer blockPayload = typed.Uint8Buffer()
+    final currentSize = 1 << (4 + szx);
+    final from = num * currentSize;
+    final to = min((num + 1) * currentSize, request.payloadSize);
+    final length = to - from;
+    final blockPayload = typed.Uint8Buffer()
       ..addAll(request.payload.getRange(from, from + length));
     block.payload = blockPayload;
 
-    final bool m = to < request.payloadSize;
+    final m = to < request.payloadSize;
     block
         .addOption(CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m: m));
 
@@ -424,8 +410,8 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     // Call this method when a request has completely arrived (might have
     // been sent in one piece without blockwise).
     if (request.hasOption(optionTypeBlock2)) {
-      final CoapBlockOption block2 = request.block2;
-      final CoapBlockwiseStatus status2 = CoapBlockwiseStatus.withSize(
+      final block2 = request.block2;
+      final status2 = CoapBlockwiseStatus.withSize(
           request.contentType, block2.num, block2.szx);
       _log.info('Request with early block negotiation $block2. '
           'Create and set Block2 status: $status2');
@@ -442,19 +428,18 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     message.type = last.type;
     message.setOptions(last.getAllOptions());
 
-    final typed.Uint8Buffer payload = typed.Uint8Buffer();
+    final payload = typed.Uint8Buffer();
     status.blocks.forEach(payload.addAll);
     message.payload = payload;
   }
 
   CoapBlockwiseStatus _findResponseBlockStatus(
       CoapExchange exchange, CoapResponse response) {
-    CoapBlockwiseStatus status = exchange.responseBlockStatus;
+    var status = exchange.responseBlockStatus;
     if (status == null) {
       status = CoapBlockwiseStatus(response.contentType);
       status.currentSZX = CoapBlockOption.encodeSZX(_defaultBlockSize);
-      final Iterable<CoapOption> blockOptions =
-          response.getOptions(optionTypeBlock2);
+      final blockOptions = response.getOptions(optionTypeBlock2);
       status.currentNUM = blockOptions.toList()[0].value;
       status.complete = false;
       exchange.responseBlockStatus = status;
@@ -472,8 +457,8 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
   CoapResponse _getNextResponseBlock(
       CoapResponse response, CoapBlockwiseStatus status) {
     CoapResponse block;
-    final int szx = status.currentSZX;
-    final int num = status.currentNUM;
+    final szx = status.currentSZX;
+    final num = status.currentNUM;
 
     if (response.hasOption(optionTypeObserve)) {
       // A blockwise notification transmits the first block only
@@ -486,14 +471,14 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       block.isTimedOut = true;
     }
 
-    final int payloadSize = response.payloadSize;
-    final int currentSize = 1 << (4 + szx);
-    final int from = num * currentSize;
+    final payloadSize = response.payloadSize;
+    final currentSize = 1 << (4 + szx);
+    final from = num * currentSize;
     if (payloadSize > 0 && payloadSize > from) {
-      final int to = min((num + 1) * currentSize, response.payloadSize);
-      final int length = to - from;
-      final typed.Uint8Buffer blockPayload = typed.Uint8Buffer();
-      final bool m = to < response.payloadSize;
+      final to = min((num + 1) * currentSize, response.payloadSize);
+      final length = to - from;
+      final blockPayload = typed.Uint8Buffer();
+      final m = to < response.payloadSize;
       block.setBlock2(szx, num, m: m);
 
       // Crop payload -- do after calculation of m in case block==response
@@ -516,9 +501,9 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
 
   /// Schedules a clean-up task.
   void _prepareBlockCleanup(CoapExchange exchange) {
-    final Timer timer = Timer(Duration(milliseconds: _blockTimeout),
+    final timer = Timer(Duration(milliseconds: _blockTimeout),
         () => _blockwiseTimeout(exchange));
-    final Timer old = exchange.set('BlockCleanupTimer', timer);
+    final old = exchange.set('BlockCleanupTimer', timer);
     old?.cancel();
   }
 

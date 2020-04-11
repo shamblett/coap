@@ -7,10 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: prefer_null_aware_operators
-
 /// Wraps different attributes that the CoAP protocol defines
 /// such as title, resource type or interface description. These attributes will
 /// also be included in the link description of the resource they belong to. For

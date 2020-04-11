@@ -8,22 +8,13 @@ import 'package:coap/coap.dart';
 import 'package:coap/config/coap_config_all.dart';
 import 'package:test/test.dart';
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-// ignore_for_file: avoid_annotating_with_dynamic
-// ignore_for_file: avoid_types_on_closure_parameters
-// ignore_for_file: flutter_style_todos
-// ignore_for_file: lines_longer_than_80_chars
-// ignore_for_file: avoid_print
-
 void main() {
   final DefaultCoapConfig conf = CoapConfigAll();
   print('Configuration version is ${conf.version}');
 
   group('Endpoint resource', () {
     test('Construction', () {
-      CoapRemoteResource res = CoapRemoteResource('billy');
+      var res = CoapRemoteResource('billy');
       expect(res.name, 'billy');
       expect(res.hidden, isFalse);
       res = CoapRemoteResource.hide('fred', hidden: true);
@@ -32,9 +23,9 @@ void main() {
     });
 
     test('Simple test - rt first', () {
-      const String input = '</sensors/temp>;rt="TemperatureC";ct=41';
-      final CoapRemoteResource root = CoapRemoteResource.newRoot(input);
-      final CoapRemoteResource res = root.getResourcePath('/sensors/temp');
+      const input = '</sensors/temp>;rt="TemperatureC";ct=41';
+      final root = CoapRemoteResource.newRoot(input);
+      final res = root.getResourcePath('/sensors/temp');
       expect(res, isNotNull);
       expect(res.name, 'temp');
       expect(res.contentTypeCode, 41);
@@ -42,9 +33,9 @@ void main() {
       expect(res.observable, isFalse);
     });
     test('Simple test - ct first', () {
-      const String input = '</sensors/temp>;ct=42;rt="TemperatureF"';
-      final CoapRemoteResource root = CoapRemoteResource.newRoot(input);
-      final CoapRemoteResource res = root.getResourcePath('/sensors/temp');
+      const input = '</sensors/temp>;ct=42;rt="TemperatureF"';
+      final root = CoapRemoteResource.newRoot(input);
+      final res = root.getResourcePath('/sensors/temp');
       expect(res, isNotNull);
       expect(res.name, 'temp');
       expect(res.contentTypeCode, 42);
@@ -52,9 +43,9 @@ void main() {
       expect(res.observable, isFalse);
     });
     test('Simple test - boolean value', () {
-      const String input = '</sensors/temp>;ct=42;rt="TemperatureF";obs';
-      final CoapRemoteResource root = CoapRemoteResource.newRoot(input);
-      final CoapRemoteResource res = root.getResourcePath('/sensors/temp');
+      const input = '</sensors/temp>;ct=42;rt="TemperatureF";obs';
+      final root = CoapRemoteResource.newRoot(input);
+      final res = root.getResourcePath('/sensors/temp');
       expect(res, isNotNull);
       expect(res.name, 'temp');
       expect(res.contentTypeCode, 42);
@@ -62,11 +53,10 @@ void main() {
       expect(res.observable, isTrue);
     });
     test('Extended test', () {
-      const String input =
-          '</my/Päth>;rt="MyName";if="/someRef/path";ct=42;obs;sz=20';
-      final CoapRemoteResource root = CoapRemoteResource.newRoot(input);
+      const input = '</my/Päth>;rt="MyName";if="/someRef/path";ct=42;obs;sz=20';
+      final root = CoapRemoteResource.newRoot(input);
 
-      final CoapRemoteResource my = CoapRemoteResource('my');
+      final my = CoapRemoteResource('my');
       my.resourceType = 'replacement';
       root.addSubResource(my);
 
@@ -92,38 +82,38 @@ void main() {
       expect(res.resourceTypes.toList()[0], 'replacement');
     });
     test('Conversion test', () {
-      const String link1 =
+      const link1 =
           '</myUri/something>;ct=42;if="/someRef/path";obs;rt="MyName";sz=10';
-      const String link2 = '</myUri>;rt="NonDefault"';
-      const String link3 = '</a>';
-      const String format = '$link1,$link2,$link3';
-      final CoapRemoteResource res = CoapRemoteResource.newRoot(format);
-      final String result =
+      const link2 = '</myUri>;rt="NonDefault"';
+      const link3 = '</a>';
+      const format = '$link1,$link2,$link3';
+      final res = CoapRemoteResource.newRoot(format);
+      final result =
           CoapLinkFormat.serializeOptions(res, null, recursive: true);
       expect(result, '$link3,$link2,$link1');
     });
     test('Concrete test', () {
-      const String link =
+      const link =
           '</careless>;rt="SepararateResponseTester";title="This resource will ACK anything, but never send a separate response",</feedback>;rt="FeedbackMailSender";title="POST feedback using mail",</helloWorld>;rt="HelloWorldDisplayer";title="GET a friendly greeting!",</image>;ct=21;ct=22;ct=23;ct=24;rt="Image";sz=18029;title="GET an image with different content-types",</large>;rt="block";title="Large resource",</large_update>;rt="block";rt="observe";title="Large resource that can be updated using PUT method",</mirror>;rt="RequestMirroring";title="POST request to receive it back as echo",</obs>;obs;rt="observe";title="Observable resource which changes every 5 seconds",</query>;title="Resource accepting query parameters",</seg1/seg2/seg3>;title="Long path resource",</separate>;title="Resource which cannot be served immediately and which cannot be acknowledged in a piggy-backed way",</storage>;obs;rt="Storage";title="PUT your data here or POST resources!",</test>;title="Default test resource",</timeResource>;rt="CurrentTime";title="GET the current time",</toUpper>;rt="UppercaseConverter";title="POST text here to convert it to uppercase",</weatherResource>;rt="ZurichWeather";title="GET the current weather in zurich"';
-      const String reco =
+      const reco =
           '</careless>;rt="SepararateResponseTester";title="This resource will ACK anything, but never send a separate response",</feedback>;rt="FeedbackMailSender";title="POST feedback using mail",</helloWorld>;rt="HelloWorldDisplayer";title="GET a friendly greeting!",</image>;title="GET an image with different content-types";rt="Image";sz=18029;ct=24;ct=23;ct=22;ct=21,</large>;rt="block";title="Large resource",</large_update>;rt="block";rt="observe";title="Large resource that can be updated using PUT method",</mirror>;rt="RequestMirroring";title="POST request to receive it back as echo",</obs>;obs;rt="observe";title="Observable resource which changes every 5 seconds",</query>;title="Resource accepting query parameters",</seg1/seg2/seg3>;title="Long path resource",</separate>;title="Resource which cannot be served immediately and which cannot be acknowledged in a piggy-backed way",</storage>;obs;rt="Storage";title="PUT your data here or POST resources!",</test>;title="Default test resource",</timeResource>;rt="CurrentTime";title="GET the current time",</toUpper>;rt="UppercaseConverter";title="POST text here to convert it to uppercase",</weatherResource>;rt="ZurichWeather";title="GET the current weather in zurich"';
-      final CoapRemoteResource res = CoapRemoteResource.newRoot(link);
-      final String result =
+      final res = CoapRemoteResource.newRoot(link);
+      final result =
           CoapLinkFormat.serializeOptions(res, null, recursive: true);
       expect(result, reco);
     });
     test('Match test', () {
-      const String link1 =
+      const link1 =
           '</myUri/something>;ct=42;if="/someRef/path\";obs;rt=\"MyName";sz=10';
-      const String link2 = '</myUri>;ct=50;rt="MyName"';
-      const String link3 = '</a>;sz=10;rt="MyNope"';
-      const String format = '$link1,$link2,$link3';
-      final CoapRemoteResource res = CoapRemoteResource.newRoot(format);
+      const link2 = '</myUri>;ct=50;rt="MyName"';
+      const link3 = '</a>;sz=10;rt="MyNope"';
+      const format = '$link1,$link2,$link3';
+      final res = CoapRemoteResource.newRoot(format);
 
-      final List<CoapOption> query = <CoapOption>[];
+      final query = <CoapOption>[];
       query.add(CoapOption.createString(optionTypeUriQuery, 'rt=MyName'));
 
-      final String queried =
+      final queried =
           CoapLinkFormat.serializeOptions(res, query, recursive: true);
       expect(queried, '$link2,$link1');
     });

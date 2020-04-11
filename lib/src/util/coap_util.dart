@@ -7,14 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-// ignore_for_file: avoid_annotating_with_dynamic
-// ignore_for_file: avoid_types_on_closure_parameters
-// ignore_for_file: use_function_type_syntax_for_parameters
-// ignore_for_file: avoid_print
-
 /// Cancellable asynchronous sleep support class
 class CoapCancellableAsyncSleep {
   /// Timeout value in milliseconds
@@ -63,7 +55,6 @@ class CoapCancellableAsyncSleep {
   }
 }
 
-// ignore: avoid_classes_with_only_static_members
 /// Utility methods
 class CoapUtil {
   /// Insertion sort, to make the options list stably ordered.
@@ -74,8 +65,7 @@ class CoapUtil {
   /// Checks if all items in both of the two enumerables are equal.
   static bool areSequenceEqualTo<T>(Iterable<T> first, Iterable<T> second,
       [collection.Equality<T> equality]) {
-    final collection.IterableEquality<T> ie =
-        collection.IterableEquality<T>(equality);
+    final ie = collection.IterableEquality<T>(equality);
     if (ie != null) {
       return ie.equals(first, second);
     } else {
@@ -85,12 +75,12 @@ class CoapUtil {
 
   /// Finds the first matched item.
   /// Returns the item found, or null if none is matched.
-  static T firstOrDefault<T>(Iterable<T> source, bool condition(T element)) =>
+  static T firstOrDefault<T>(Iterable<T> source, bool Function(T) condition) =>
       source.firstWhere(condition, orElse: () => null);
 
   /// Checks if matched item exists.
   /// Returns true if exists any matched item, otherwise false.
-  static bool contains<T>(Iterable<T> source, bool condition(T element)) {
+  static bool contains<T>(Iterable<T> source, bool Function(T) condition) {
     final dynamic res = source.takeWhile(condition);
     if (res.isNotEmpty) {
       return true;
@@ -100,8 +90,8 @@ class CoapUtil {
 
   /// Stringify a message.
   static String messageToString(CoapMessage msg) {
-    final StringBuffer sb = StringBuffer();
-    String kind = 'Message';
+    final sb = StringBuffer();
+    var kind = 'Message';
     if (msg.isRequest) {
       kind = 'Request';
     } else if (msg.isResponse) {
@@ -135,12 +125,12 @@ class CoapUtil {
     if ((source == null) || (source.isEmpty)) {
       return '';
     }
-    final StringBuffer sb = StringBuffer();
-    for (final T item in source) {
+    final sb = StringBuffer();
+    for (final item in source) {
       sb.write(item.toString());
       sb.write(',');
     }
-    final String ret = sb.toString();
+    final ret = sb.toString();
     return ret.substring(0, ret.length - 1);
   }
 
@@ -149,7 +139,7 @@ class CoapUtil {
     if (msg == null) {
       return 'Message is null - no options';
     }
-    final StringBuffer sb = StringBuffer();
+    final sb = StringBuffer();
     sb.writeln('If-Match : ${iterableToString(msg.ifMatches)}');
     sb.write('Uri Host : ');
     msg.hasOption(optionTypeUriHost)
@@ -223,13 +213,10 @@ class CoapUtil {
   /// Host lookup
   static Future<CoapInternetAddress> lookupHost(String host,
       InternetAddressType addressType, InternetAddress bindAddress) async {
-    final Completer<CoapInternetAddress> completer =
-        Completer<CoapInternetAddress>();
-    final List<InternetAddress> addresses =
-        await InternetAddress.lookup(host, type: addressType);
+    final completer = Completer<CoapInternetAddress>();
+    final addresses = await InternetAddress.lookup(host, type: addressType);
     if (addresses != null && addresses.isNotEmpty) {
-      final CoapInternetAddress coapAddress =
-          CoapInternetAddress(addressType, addresses[0]);
+      final coapAddress = CoapInternetAddress(addressType, addresses[0]);
       coapAddress.bindAddress = bindAddress;
       completer.complete(coapAddress);
     } else {
@@ -244,7 +231,7 @@ class CoapUtil {
       print('No resolved addresses');
       return;
     }
-    for (final InternetAddress address in addresses) {
+    for (final address in addresses) {
       print('Resolved address : $address');
     }
   }

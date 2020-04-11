@@ -7,13 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-// ignore_for_file: avoid_print
-// ignore_for_file: avoid_types_on_closure_parameters
-// ignore_for_file: avoid_returning_this
-
 /// Request fail reason
 enum FailReason {
   /// The request has been rejected.
@@ -94,14 +87,13 @@ class CoapClient {
   Future<bool> ping(int timeout) async {
     try {
       // Ping is a confirmable empty message
-      CoapRequest request =
+      var request =
           CoapRequest.isConfirmable(CoapCode.empty, confirmable: true);
       request.token = CoapConstants.emptyToken;
       request.uri = uri;
       request = await prepare(request);
       this.request = request;
-      // ignore: prefer_if_null_operators
-      final int timeoutToUse = timeout == null ? this.timeout : timeout;
+      final timeoutToUse = timeout ?? this.timeout;
       await request.send().waitForResponse(timeoutToUse);
       return request.isRejected;
     } on Exception catch (e) {
@@ -253,16 +245,16 @@ class CoapClient {
   /// Discovers remote resources.
   /// Creates its own request to do this.
   Future<Iterable<CoapWebLink>> discover(String query) async {
-    final CoapRequest request = CoapRequest.newGet();
+    final request = CoapRequest.newGet();
     request.uri = uri;
-    final CoapRequest discover = await prepare(request);
+    final discover = await prepare(request);
     discover.clearUriPath().clearUriQuery().uriPath =
         CoapConstants.defaultWellKnownURI;
     if (query != null && query.isNotEmpty) {
       discover.uriQuery = query;
     }
     this.request = discover;
-    final CoapResponse links = await discover.send().waitForResponse(timeout);
+    final links = await discover.send().waitForResponse(timeout);
     if (links == null) {
       // If no response, return null (e.g., timeout)
       return null;
@@ -337,8 +329,7 @@ class CoapClient {
 
   CoapObserveClientRelation _observe(CoapRequest request,
       ActionGeneric<CoapResponse> notify, ActionGeneric<FailReason> error) {
-    final CoapObserveClientRelation relation =
-        _observeAsync(request, notify, error);
+    final relation = _observeAsync(request, notify, error);
     final CoapResponse response = relation.request.waitForResponse(timeout);
     if (response == null || !response.hasOption(optionTypeObserve)) {
       relation.cancelled = true;
@@ -349,9 +340,8 @@ class CoapClient {
 
   CoapObserveClientRelation _observeAsync(CoapRequest request,
       ActionGeneric<CoapResponse> notify, ActionGeneric<FailReason> error) {
-    final CoapIEndPoint endpoint = _getEffectiveEndpoint(request);
-    final CoapObserveClientRelation relation =
-        CoapObserveClientRelation(request, endpoint, _config);
+    final endpoint = _getEffectiveEndpoint(request);
+    final relation = CoapObserveClientRelation(request, endpoint, _config);
     _doPrepare(request);
     request.send();
     return relation;

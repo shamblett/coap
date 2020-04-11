@@ -7,14 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-// ignore_for_file: avoid_print
-// ignore_for_file: avoid_types_on_closure_parameters
-// ignore_for_file: avoid_annotating_with_dynamic
-// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
-
 /// UDP network
 class CoapNetworkUDP implements CoapINetwork {
   /// Initialize with an address and a port
@@ -68,14 +60,13 @@ class CoapNetworkUDP implements CoapINetwork {
       _socket?.listen((RawSocketEvent e) {
         switch (e) {
           case RawSocketEvent.read:
-            final Datagram d = _socket?.receive();
+            final d = _socket?.receive();
             if (d != null) {
-              final typed.Uint8Buffer buff = typed.Uint8Buffer();
+              final buff = typed.Uint8Buffer();
               if (d.data != null && d.data.isNotEmpty) {
                 _data.add(d.data.toList());
                 buff.addAll(d.data.toList());
-                final CoapDataReceivedEvent rxEvent =
-                    CoapDataReceivedEvent(buff, address);
+                final rxEvent = CoapDataReceivedEvent(buff, address);
                 _eventBus.fire(rxEvent);
               }
             }
@@ -101,7 +92,7 @@ class CoapNetworkUDP implements CoapINetwork {
     try {
       // Use a port of 0 here as we are a client, this will generate
       // a random source port.
-      final String bindAddress = address.bind;
+      final bindAddress = address.bind;
       _log.info('CoapNetworkUDP - binding to $bindAddress');
       RawDatagramSocket.bind(bindAddress, 0).then((RawDatagramSocket socket) {
         _socket = socket;
@@ -139,7 +130,7 @@ class CoapNetworkUDP implements CoapINetwork {
   // Hash code
   @override
   int get hashCode {
-    int result = 17;
+    var result = 17;
     result = 37 * result + port.hashCode;
     result = 37 * result + address.hashCode;
     return result;

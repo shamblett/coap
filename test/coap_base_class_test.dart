@@ -10,23 +10,16 @@ import 'package:coap/config/coap_config_default.dart';
 import 'package:coap/config/coap_config_logging.dart';
 import 'package:test/test.dart';
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-// ignore_for_file: avoid_annotating_with_dynamic
-// ignore_for_file: avoid_types_on_closure_parameters
-// ignore_for_file: flutter_style_todos
-
 void main() {
   group('Media types', () {
     test('Properties', () {
-      const int type = CoapMediaType.applicationJson;
+      const type = CoapMediaType.applicationJson;
       expect(CoapMediaType.name(type), 'application/json');
       expect(CoapMediaType.fileExtension(type), 'json');
       expect(CoapMediaType.isPrintable(type), true);
       expect(CoapMediaType.isImage(type), false);
 
-      const int unknownType = 200;
+      const unknownType = 200;
       expect(CoapMediaType.name(unknownType), 'unknown/200');
       expect(CoapMediaType.fileExtension(unknownType), 'unknown/200');
       expect(CoapMediaType.isPrintable(unknownType), false);
@@ -34,11 +27,11 @@ void main() {
     });
 
     test('Negotiation Content', () {
-      const int defaultContentType = 10;
-      final List<int> supported = <int>[11, 5];
-      List<CoapOption> accepted = <CoapOption>[];
-      final CoapOption opt1 = CoapOption.createVal(optionTypeMaxAge, 10);
-      final CoapOption opt2 = CoapOption.createVal(optionTypeContentFormat, 5);
+      const defaultContentType = 10;
+      final supported = <int>[11, 5];
+      var accepted = <CoapOption>[];
+      final opt1 = CoapOption.createVal(optionTypeMaxAge, 10);
+      final opt2 = CoapOption.createVal(optionTypeContentFormat, 5);
       accepted.add(opt1);
       accepted.add(opt2);
       expect(
@@ -58,7 +51,7 @@ void main() {
     });
 
     test('Parse', () {
-      int res = CoapMediaType.parse(null);
+      var res = CoapMediaType.parse(null);
       expect(res, CoapMediaType.undefined);
 
       res = CoapMediaType.parse('application/xml');
@@ -66,7 +59,7 @@ void main() {
     });
 
     test('Parse wild card', () {
-      List<int> res = CoapMediaType.parseWildcard(null);
+      var res = CoapMediaType.parseWildcard(null);
       expect(res, isNull);
 
       res = CoapMediaType.parseWildcard('xml*');
@@ -147,15 +140,15 @@ void main() {
     });
 
     test('Instance', () {
-      final CoapConfigDefault conf = CoapConfigDefault();
+      final conf = CoapConfigDefault();
       expect(conf == DefaultCoapConfig.inst, isTrue);
     });
   });
 
   group('Logging', () {
     test('Null', () {
-      final CoapLogManager logmanager = CoapLogManager('none');
-      final CoapILogger logger = logmanager.logger;
+      final logmanager = CoapLogManager('none');
+      final logger = logmanager.logger;
       expect(logger.isDebugEnabled(), isFalse);
       expect(logger.isErrorEnabled(), isFalse);
       expect(logger.isInfoEnabled(), isFalse);
@@ -168,10 +161,10 @@ void main() {
     });
 
     test('Console', () {
-      final DefaultCoapConfig conf = CoapConfigLogging();
+      final conf = CoapConfigLogging();
       expect(conf.logTarget, 'console');
-      final CoapLogManager logmanager = CoapLogManager('console');
-      final CoapILogger logger = logmanager.logger;
+      final logmanager = CoapLogManager('console');
+      final logger = logmanager.logger;
       // Add a string appender to test correct log strings
       expect(logger.isDebugEnabled(), isTrue);
       expect(logger.isErrorEnabled(), isTrue);

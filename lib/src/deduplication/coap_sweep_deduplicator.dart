@@ -7,10 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: avoid_types_on_closure_parameters
-
 /// Sweep deduplicator
 class CoapSweepDeduplicator implements CoapIDeduplicator {
   /// Construction
@@ -65,9 +61,9 @@ class CoapSweepDeduplicator implements CoapIDeduplicator {
   void _sweep(Timer timer) {
     _log.info('Start Mark-And-Sweep with ${_incomingMessages.length} entries');
 
-    final DateTime oldestAllowed = DateTime.now()
+    final oldestAllowed = DateTime.now()
       ..add(Duration(milliseconds: _config.exchangeLifetime));
-    final List<CoapKeyId> keysToRemove = <CoapKeyId>[];
+    final keysToRemove = <CoapKeyId>[];
     _incomingMessages.forEach((CoapKeyId key, CoapExchange value) {
       if (value.timestamp.isBefore(oldestAllowed)) {
         _log.info('Mark-And-Sweep removes $key');

@@ -7,11 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: avoid_annotating_with_dynamic
-// ignore_for_file: cascade_invocations
-
 /// The next processing layer
 class CoapNextLayer implements CoapINextLayer {
   /// Construction
@@ -61,7 +56,7 @@ class CoapStackTopLayer extends CoapAbstractLayer {
   @override
   void sendRequest(
       CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
-    CoapExchange nexchange = exchange;
+    var nexchange = exchange;
     if (exchange == null) {
       nexchange = CoapExchange(request, CoapOrigin.local);
       nexchange.endpoint = request.endpoint;

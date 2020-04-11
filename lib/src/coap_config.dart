@@ -7,14 +7,11 @@
 
 part of coap;
 
-// ignore_for_file: public_member_api_docs
-
 /// Configuration loading class. The config file itself is a YAML
 /// file. The configuration items below are marked as optional to allow
 /// the config file to contain only those entries that override the defaults.
 /// The file can't be empty, so version must as a minimum be present.
 abstract class DefaultCoapConfig {
-
   /// Instance
   static DefaultCoapConfig inst;
 
@@ -46,52 +43,52 @@ abstract class DefaultCoapConfig {
   double get ackTimeoutScale => 2.0;
 
   /// The max time that a message would be retransmitted
-  
+
   int get maxRetransmit => CoapConstants.maxRetransmit;
 
   int get maxMessageSize => 1024;
 
   /// The default preferred size of block in blockwise transfer.
-  
+
   int get defaultBlockSize => CoapConstants.defaultBlockSize;
 
   int get blockwiseStatusLifetime => 10 * 60 * 1000; // ms
-  
+
   bool get useRandomIDStart => true;
-  
+
   bool get useRandomTokenStart => true;
 
   int get notificationMaxAge => 128 * 1000; // ms
-  
+
   int get notificationCheckIntervalTime => 24 * 60 * 60 * 1000; // ms
-  
+
   int get notificationCheckIntervalCount => 100; // ms
-  
+
   int get notificationReregistrationBackoff => 2000; // ms
 
   String get deduplicator => CoapDeduplicatorFactory.markAndSweepDeduplicator;
-  
+
   int get cropRotationPeriod => 2000; // ms
-  
+
   int get exchangeLifetime => 247 * 1000; // ms
-  
+
   int get markAndSweepInterval => 10 * 1000; // ms
-  
+
   int get channelReceivePacketSize => 2048;
 
   /// Logging options
 
   /// Log to null, console or file
-  
+
   String get logTarget => 'none';
 
   /// Log level options
-  
+
   bool get logError => true;
-  
+
   bool get logWarn => false;
-  
+
   bool get logDebug => false;
-  
+
   bool get logInfo => false;
 }

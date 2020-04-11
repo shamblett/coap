@@ -10,37 +10,25 @@ import 'package:coap/coap.dart';
 import 'package:test/test.dart';
 import 'package:typed_data/typed_data.dart' as typed;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-// ignore_for_file: avoid_annotating_with_dynamic
-// ignore_for_file: avoid_types_on_closure_parameters
-// ignore_for_file: flutter_style_todos
-// ignore_for_file: lines_longer_than_80_chars
-// ignore_for_file: avoid_print
-
 void main() {
   group('Options', () {
-    const Utf8Encoder encoder = Utf8Encoder();
+    const encoder = Utf8Encoder();
 
     test('Raw', () {
-      final typed.Uint8Buffer raw = typed.Uint8Buffer(3);
+      final raw = typed.Uint8Buffer(3);
       raw.addAll(encoder.convert('raw'));
-      final CoapOption opt = CoapOption.createRaw(optionTypeContentType, raw);
+      final opt = CoapOption.createRaw(optionTypeContentType, raw);
       expect(opt.valueBytes, raw);
       expect(opt.type, optionTypeContentType);
     });
 
     test('IntValue', () {
-      const int oneByteValue = 255;
-      const int twoByteValue = oneByteValue + 1;
-      const int fourByteValue = 65535 + 1;
-      final CoapOption opt1 =
-          CoapOption.createVal(optionTypeContentType, oneByteValue);
-      final CoapOption opt2 =
-          CoapOption.createVal(optionTypeContentType, twoByteValue);
-      final CoapOption opt3 =
-          CoapOption.createVal(optionTypeContentType, fourByteValue);
+      const oneByteValue = 255;
+      const twoByteValue = oneByteValue + 1;
+      const fourByteValue = 65535 + 1;
+      final opt1 = CoapOption.createVal(optionTypeContentType, oneByteValue);
+      final opt2 = CoapOption.createVal(optionTypeContentType, twoByteValue);
+      final opt3 = CoapOption.createVal(optionTypeContentType, fourByteValue);
       expect(opt1.length, 1);
       expect(opt2.length, 2);
       expect(opt3.length, 4);
@@ -53,11 +41,11 @@ void main() {
     });
 
     test('LongValue', () {
-      final int fourByteValue = pow(2, 32) - 1;
-      final int fiveByteValue = fourByteValue + 1;
-      final CoapOption opt1 =
+      final fourByteValue = pow(2, 32) - 1;
+      final fiveByteValue = fourByteValue + 1;
+      final opt1 =
           CoapOption.createLongVal(optionTypeContentType, fourByteValue);
-      final CoapOption opt2 =
+      final opt2 =
           CoapOption.createLongVal(optionTypeContentType, fiveByteValue);
       expect(opt1.length, 8);
       expect(opt2.length, 8);
@@ -68,47 +56,46 @@ void main() {
     });
 
     test('String', () {
-      const String s = 'hello world';
-      final CoapOption opt = CoapOption.createString(optionTypeContentType, s);
+      const s = 'hello world';
+      final opt = CoapOption.createString(optionTypeContentType, s);
       expect(opt.length, 11);
       expect(s, opt.stringValue);
       expect(opt.type, optionTypeContentType);
     });
 
     test('Name', () {
-      final CoapOption opt = CoapOption.create(optionTypeUriQuery);
+      final opt = CoapOption.create(optionTypeUriQuery);
       expect(opt.name, 'Uri-Query');
     });
 
     test('Value', () {
-      final CoapOption opt = CoapOption.createVal(optionTypeMaxAge, 10);
+      final opt = CoapOption.createVal(optionTypeMaxAge, 10);
       expect(opt.value, 10);
-      final CoapOption opt1 =
-          CoapOption.createString(optionTypeUriQuery, 'Hello');
+      final opt1 = CoapOption.createString(optionTypeUriQuery, 'Hello');
       expect(opt1.value, 'Hello');
-      final CoapOption opt2 = CoapOption.create(optionTypeReserved);
+      final opt2 = CoapOption.create(optionTypeReserved);
       expect(opt2.value, isNull);
-      final CoapOption opt3 = CoapOption.create(1000);
+      final opt3 = CoapOption.create(1000);
       expect(opt3.value, isNull);
     });
 
     test('Long value', () {
-      final CoapOption opt = CoapOption.createLongVal(optionTypeMaxAge, 10);
+      final opt = CoapOption.createLongVal(optionTypeMaxAge, 10);
       expect(opt.value, 10);
     });
 
     test('Is default', () {
-      final CoapOption opt =
+      final opt =
           CoapOption.createVal(optionTypeMaxAge, CoapConstants.defaultMaxAge);
       expect(opt.isDefault(), isTrue);
-      final CoapOption opt1 = CoapOption.create(optionTypeToken);
+      final opt1 = CoapOption.create(optionTypeToken);
       expect(opt1.isDefault(), isTrue);
-      final CoapOption opt2 = CoapOption.create(optionTypeReserved);
+      final opt2 = CoapOption.create(optionTypeReserved);
       expect(opt2.isDefault(), isFalse);
     });
 
     test('To string', () {
-      final CoapOption opt =
+      final opt =
           CoapOption.createVal(optionTypeMaxAge, CoapConstants.defaultMaxAge);
       expect(opt.toString(), 'Max-Age: 60');
     });
@@ -123,20 +110,17 @@ void main() {
     });
 
     test('Hash code', () {
-      final CoapOption opt = CoapOption.createVal(optionTypeMaxAge, 10);
+      final opt = CoapOption.createVal(optionTypeMaxAge, 10);
       expect(opt.hashCode, 45);
     });
 
     test('Equality', () {
-      const int oneByteValue = 255;
-      const int twoByteValue = 256;
+      const oneByteValue = 255;
+      const twoByteValue = 256;
 
-      final CoapOption opt1 =
-          CoapOption.createVal(optionTypeContentType, oneByteValue);
-      final CoapOption opt2 =
-          CoapOption.createVal(optionTypeContentType, twoByteValue);
-      final CoapOption opt22 =
-          CoapOption.createVal(optionTypeContentType, twoByteValue);
+      final opt1 = CoapOption.createVal(optionTypeContentType, oneByteValue);
+      final opt2 = CoapOption.createVal(optionTypeContentType, twoByteValue);
+      final opt22 = CoapOption.createVal(optionTypeContentType, twoByteValue);
 
       expect(opt1 == opt2, isFalse);
       expect(opt2 == opt22, isTrue);
@@ -144,9 +128,9 @@ void main() {
     });
 
     test('Empty token', () {
-      final CoapOption opt1 = CoapOption.create(optionTypeToken);
-      final CoapOption opt2 = CoapOption.create(optionTypeToken);
-      final CoapOption opt22 = CoapOption.createString(optionTypeToken, 'full');
+      final opt1 = CoapOption.create(optionTypeToken);
+      final opt2 = CoapOption.create(optionTypeToken);
+      final opt22 = CoapOption.createString(optionTypeToken, 'full');
 
       expect(opt1 == opt2, isTrue);
       expect(opt2 == opt22, isFalse);
@@ -154,9 +138,9 @@ void main() {
     });
 
     test('1 Byte token', () {
-      final CoapOption opt1 = CoapOption.createVal(optionTypeToken, 0xCD);
-      final CoapOption opt2 = CoapOption.createVal(optionTypeToken, 0xCD);
-      final CoapOption opt22 = CoapOption.createVal(optionTypeToken, 0xCE);
+      final opt1 = CoapOption.createVal(optionTypeToken, 0xCD);
+      final opt2 = CoapOption.createVal(optionTypeToken, 0xCD);
+      final opt22 = CoapOption.createVal(optionTypeToken, 0xCE);
 
       expect(opt1 == opt2, isTrue);
       expect(opt2 == opt22, isFalse);
@@ -164,9 +148,9 @@ void main() {
     });
 
     test('2 Byte token', () {
-      final CoapOption opt1 = CoapOption.createVal(optionTypeToken, 0xABCD);
-      final CoapOption opt2 = CoapOption.createVal(optionTypeToken, 0xABCD);
-      final CoapOption opt22 = CoapOption.createVal(optionTypeToken, 0xABCE);
+      final opt1 = CoapOption.createVal(optionTypeToken, 0xABCD);
+      final opt2 = CoapOption.createVal(optionTypeToken, 0xABCD);
+      final opt22 = CoapOption.createVal(optionTypeToken, 0xABCE);
 
       expect(opt1 == opt2, isTrue);
       expect(opt2 == opt22, isFalse);
@@ -174,10 +158,9 @@ void main() {
     });
 
     test('4 Byte token', () {
-      final CoapOption opt1 = CoapOption.createVal(optionTypeToken, 0x1234ABCD);
-      final CoapOption opt2 = CoapOption.createVal(optionTypeToken, 0x1234ABCD);
-      final CoapOption opt22 =
-          CoapOption.createVal(optionTypeToken, 0x1234ABCE);
+      final opt1 = CoapOption.createVal(optionTypeToken, 0x1234ABCD);
+      final opt2 = CoapOption.createVal(optionTypeToken, 0x1234ABCD);
+      final opt22 = CoapOption.createVal(optionTypeToken, 0x1234ABCE);
 
       expect(opt1 == opt2, isTrue);
       expect(opt2 == opt22, isFalse);
@@ -185,7 +168,7 @@ void main() {
     });
 
     test('Set value', () {
-      final CoapOption option = CoapOption.create(optionTypeReserved);
+      final option = CoapOption.create(optionTypeReserved);
 
       option.valueBytes = typed.Uint8Buffer(4);
       expect(option.length, 4);
@@ -195,7 +178,7 @@ void main() {
     });
 
     test('Set string value', () {
-      final CoapOption option = CoapOption.create(optionTypeReserved);
+      final option = CoapOption.create(optionTypeReserved);
 
       option.stringValue = '';
       expect(option.length, 0);
@@ -205,7 +188,7 @@ void main() {
     });
 
     test('Set int value', () {
-      final CoapOption option = CoapOption.create(optionTypeReserved);
+      final option = CoapOption.create(optionTypeReserved);
 
       option.intValue = 0;
       expect(option.valueBytes[0], 0);
@@ -243,7 +226,7 @@ void main() {
     });
 
     test('Set long value', () {
-      final CoapOption option = CoapOption.create(optionTypeReserved);
+      final option = CoapOption.create(optionTypeReserved);
 
       option.longValue = 0;
       expect(option.valueBytes[0], 0);
@@ -279,7 +262,6 @@ void main() {
       expect(option.valueBytes[2], 0xFF);
       expect(option.valueBytes[3], 0xFF);
 
-      // ignore: avoid_js_rounded_ints
       option.longValue = 0x9823749837239845;
       expect(option.valueBytes.toList(),
           <int>[69, 152, 35, 55, 152, 116, 35, 152]);
@@ -296,15 +278,14 @@ void main() {
     });
 
     test('Split', () {
-      final List<CoapOption> opts =
-          CoapOption.split(optionTypeUriPath, 'hello/from/me', '/');
+      final opts = CoapOption.split(optionTypeUriPath, 'hello/from/me', '/');
       expect(opts.length, 3);
       expect(opts[0].stringValue, 'hello');
       expect(opts[0].type, optionTypeUriPath);
       expect(opts[1].stringValue, 'from');
       expect(opts[2].stringValue, 'me');
 
-      final List<CoapOption> opts1 =
+      final opts1 =
           CoapOption.split(optionTypeUriPath, '///hello/from/me/again', '/');
       expect(opts1.length, 4);
       expect(opts1[0].stringValue, 'hello');
@@ -315,12 +296,10 @@ void main() {
     });
 
     test('Join', () {
-      final CoapOption opt1 =
-          CoapOption.createString(optionTypeUriPath, 'Hello');
-      final CoapOption opt2 =
-          CoapOption.createString(optionTypeUriPath, 'from');
-      final CoapOption opt3 = CoapOption.createString(optionTypeUriPath, 'me');
-      final String str = CoapOption.join(<CoapOption>[opt1, opt2, opt3], '/');
+      final opt1 = CoapOption.createString(optionTypeUriPath, 'Hello');
+      final opt2 = CoapOption.createString(optionTypeUriPath, 'from');
+      final opt3 = CoapOption.createString(optionTypeUriPath, 'me');
+      final str = CoapOption.join(<CoapOption>[opt1, opt2, opt3], '/');
       expect(str, 'Hello/from/me');
     });
 
@@ -350,8 +329,7 @@ void main() {
       /// Helper function that creates a BlockOption with the specified parameters
       /// and serializes them to a byte array.
       typed.Uint8Buffer toBytes(int szx, int num, {bool m}) {
-        final CoapBlockOption opt =
-            CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m: m);
+        final opt = CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m: m);
         return opt.blockValueBytes;
       }
 
@@ -372,9 +350,9 @@ void main() {
       /// Converts a BlockOption with the specified parameters to a byte array and
       /// back and checks that the result is the same as the original.
       void testCombined(int szx, int num, {bool m}) {
-        final CoapBlockOption block =
+        final block =
             CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m: m);
-        final CoapBlockOption copy = CoapBlockOption(optionTypeBlock1);
+        final copy = CoapBlockOption(optionTypeBlock1);
         copy.valueBytes = block.valueBytes;
         expect(block.szx, copy.szx);
         expect(block.m, copy.m);

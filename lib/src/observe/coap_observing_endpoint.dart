@@ -7,9 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-
 /// Represents an observing endpoint. It holds all observe relations
 /// that the endpoint has to this server. If a confirmable notification timeouts
 /// for the maximum times allowed the server assumes the client is no longer
@@ -38,7 +35,7 @@ class CoapObservingEndpoint {
 
   /// Finds the observe relation by token.
   CoapObserveRelation getObserveRelation(typed.Uint8Buffer token) {
-    for (final CoapObserveRelation relation in _relations) {
+    for (final relation in _relations) {
       if (CoapByteArrayUtil.equals(token, relation.exchange.request.token)) {
         return relation;
       }
@@ -49,7 +46,7 @@ class CoapObservingEndpoint {
   /// Cancels all observe relations that this endpoint has established with
   /// resources from this server.
   void cancelAll() {
-    for (final CoapObserveRelation relation in _relations) {
+    for (final relation in _relations) {
       relation.cancel();
     }
   }

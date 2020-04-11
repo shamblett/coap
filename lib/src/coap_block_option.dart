@@ -7,9 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: avoid_setters_without_getters
-
 /// This class describes the block options of the CoAP messages
 class CoapBlockOption extends CoapOption {
   /// Base construction
@@ -79,7 +76,7 @@ class CoapBlockOption extends CoapOption {
   String toString() => 'Raw value: $intValue, num: $num, szx: $szx, more: $m';
 
   static int _encode(int num, int szx, bool m) {
-    int value = 0;
+    var value = 0;
     value |= szx & 0x7;
     value |= (m ? 1 : 0) << 3;
     value |= num << 4;

@@ -7,8 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: public_member_api_docs
-
 /// Defines standard addresses from RFC7252
 class CoapDefinedAddress {
   /// Multicast IPV4

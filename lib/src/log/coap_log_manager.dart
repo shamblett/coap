@@ -7,8 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-
 /// Allows selection and management of logging for the coap library.
 class CoapLogManager {
   /// Construction
@@ -18,7 +16,7 @@ class CoapLogManager {
   }
 
   CoapLogManager._internal([String type]) {
-    bool setCommon = true;
+    var setCommon = true;
     if (type == null || type == 'console') {
       logger = CoapConsoleLogger();
     } else {

@@ -7,16 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-// ignore_for_file: avoid_print
-// ignore_for_file: avoid_types_on_closure_parameters
-// ignore_for_file: avoid_returning_this
-// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
-// ignore_for_file: prefer_null_aware_operators
-// ignore_for_file: avoid_annotating_with_dynamic
-
 /// This class describes the functionality to write raw network-ordered
 /// datagrams on bit-level.
 class CoapDatagramWriter {
@@ -39,9 +29,9 @@ class CoapDatagramWriter {
       _log.warn('Truncating value {$data} to {$numBits}-bit integer');
     }
 
-    for (int i = numBits - 1; i >= 0; i--) {
+    for (var i = numBits - 1; i >= 0; i--) {
       // Test bit
-      final bool bit = (data >> i & 1) != 0;
+      final bit = (data >> i & 1) != 0;
       if (bit) {
         // Set bit in current byte
         _currentByte.setUint8(
@@ -67,7 +57,7 @@ class CoapDatagramWriter {
 
     // Are there bits left to write in buffer?
     if (_currentBitIndex < 7) {
-      for (int i = 0; i < bytes.length; i++) {
+      for (var i = 0; i < bytes.length; i++) {
         write(bytes[i], 8);
       }
     } else {
@@ -79,7 +69,7 @@ class CoapDatagramWriter {
 
   /// Writes one byte to the stream.
   void writeByte(int b) {
-    final typed.Uint8Buffer buff = typed.Uint8Buffer()..add(b);
+    final buff = typed.Uint8Buffer()..add(b);
     writeBytes(buff);
   }
 

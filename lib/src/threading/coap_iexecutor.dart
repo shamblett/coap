@@ -11,7 +11,6 @@ typedef Action = void Function();
 typedef ActionGeneric<T> = void Function(T);
 
 /// Provides methods to execute tasks.
-// ignore: one_member_abstracts
 abstract class CoapIExecutor {
   /// Starts a task.
   void start(Action task);

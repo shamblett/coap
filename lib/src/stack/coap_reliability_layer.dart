@@ -7,11 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-// ignore_for_file: avoid_annotating_with_dynamic
-
 /// Transmission context
 class CoapTransmissionContext {
   /// Construction
@@ -62,7 +57,7 @@ class CoapTransmissionContext {
     // rejected, canceled or already been retransmitted for the maximum
     // number of times.
     _log.warn('Reliability - Retransmission timeout elapsed');
-    final int failedCount = ++failedTransmissionCount;
+    final failedCount = ++failedTransmissionCount;
 
     if (_message.isAcknowledged) {
       _log.info('Reliability - Timeout: message already acknowledged, cancel '
@@ -152,9 +147,9 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
   @override
   void sendResponse(
       CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
-    final int mt = response.type;
+    final mt = response.type;
     if (mt == CoapMessageType.unknown) {
-      final int reqType = exchange.currentRequest.type;
+      final reqType = exchange.currentRequest.type;
       if (reqType == CoapMessageType.con) {
         if (exchange.currentRequest.isAcknowledged) {
           // Send separate response
@@ -201,11 +196,11 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
         if (exchange.currentRequest.isAcknowledged) {
           _log.info('The duplicate request was acknowledged but no response '
               'computed yet. Retransmit ACK.');
-          final CoapEmptyMessage ack = CoapEmptyMessage.newACK(request);
+          final ack = CoapEmptyMessage.newACK(request);
           sendEmptyMessage(nextLayer, exchange, ack);
         } else if (exchange.currentRequest.isRejected) {
           _log.info('The duplicate request was rejected. Reject again.');
-          final CoapEmptyMessage rst = CoapEmptyMessage.newRST(request);
+          final rst = CoapEmptyMessage.newRST(request);
           sendEmptyMessage(nextLayer, exchange, rst);
         } else {
           _log.info('Reliability - The server has not yet decided what to do '
@@ -238,7 +233,7 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
 
     if (response.type == CoapMessageType.con && !exchange.request.isCancelled) {
       _log.info('Reliability - Response is confirmable, send ACK.');
-      final CoapEmptyMessage ack = CoapEmptyMessage.newACK(response);
+      final ack = CoapEmptyMessage.newACK(response);
       sendEmptyMessage(nextLayer, exchange, ack);
     }
 
@@ -284,9 +279,9 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
 
   void _prepareRetransmission(CoapExchange exchange, CoapMessage msg,
       ActionGeneric<CoapTransmissionContext> retransmit) {
-    final CoapTransmissionContext ctx =
-        exchange.getOrAdd<CoapTransmissionContext>(transmissionContextKey,
-            CoapTransmissionContext(_config, exchange, msg, retransmit));
+    final ctx = exchange.getOrAdd<CoapTransmissionContext>(
+        transmissionContextKey,
+        CoapTransmissionContext(_config, exchange, msg, retransmit));
 
     if (ctx.failedTransmissionCount > 0) {
       ctx.currentTimeout =

@@ -7,10 +7,6 @@
 
 part of coap;
 
-// ignore_for_file: omit_local_variable_types
-// ignore_for_file: unnecessary_final
-// ignore_for_file: cascade_invocations
-
 /// This class describes the functionality of a CoAP endpoint resource.
 abstract class CoapEndpointResource {
   /// Initialize a resource.
@@ -117,14 +113,14 @@ abstract class CoapEndpointResource {
 
   /// Gets the URI of this resource.
   String get path {
-    StringBuffer sb = StringBuffer();
+    var sb = StringBuffer();
     sb.write(name);
     if (_parent == null) {
       sb.write('/');
     } else {
-      CoapEndpointResource res = _parent;
+      var res = _parent;
       while (res != null) {
-        final StringBuffer tmp = StringBuffer('${res.name}/${sb.toString()}');
+        final tmp = StringBuffer('${res.name}/${sb.toString()}');
         sb = tmp;
         res = res._parent;
       }
@@ -134,8 +130,8 @@ abstract class CoapEndpointResource {
 
   /// Attributes
   List<CoapLinkAttribute> getAttributes(String name) {
-    final List<CoapLinkAttribute> list = <CoapLinkAttribute>[];
-    for (final CoapLinkAttribute attr in attributes) {
+    final list = <CoapLinkAttribute>[];
+    for (final attr in attributes) {
       if (attr.name == name) {
         list.add(attr);
       }
@@ -149,8 +145,8 @@ abstract class CoapEndpointResource {
 
   /// Clear an attribute
   bool clearAttribute(String name) {
-    bool cleared = false;
-    for (final CoapLinkAttribute attr in getAttributes(name)) {
+    var cleared = false;
+    for (final attr in getAttributes(name)) {
       cleared = cleared || _attributes.remove(attr);
     }
     return cleared;
@@ -159,8 +155,8 @@ abstract class CoapEndpointResource {
   /// Get string values
   static Iterable<String> getStringValues(
       Iterable<CoapLinkAttribute> attributes) {
-    final List<String> list = <String>[];
-    for (final CoapLinkAttribute attr in attributes) {
+    final list = <String>[];
+    for (final attr in attributes) {
       list.add(attr.valueAsString);
     }
     return list;
@@ -168,8 +164,8 @@ abstract class CoapEndpointResource {
 
   /// Get integer values
   static Iterable<int> getIntValues(Iterable<CoapLinkAttribute> attributes) {
-    final List<int> list = <int>[];
-    for (final CoapLinkAttribute attr in attributes) {
+    final list = <int>[];
+    for (final attr in attributes) {
       list.add(attr.valueAsInt);
     }
     return list;
@@ -188,7 +184,7 @@ abstract class CoapEndpointResource {
       return null;
     }
 
-    final List<CoapEndpointResource> resources = <CoapEndpointResource>[];
+    final resources = <CoapEndpointResource>[];
     resources.addAll(_subResources.values);
     return resources;
   }
@@ -199,7 +195,7 @@ abstract class CoapEndpointResource {
       return;
     }
     if ((_subResources.remove(resource.name)) != null) {
-      CoapEndpointResource p = resource._parent;
+      var p = resource._parent;
       while (p != null) {
         p._totalSubResourceCount--;
         p = p._parent;
@@ -220,15 +216,15 @@ abstract class CoapEndpointResource {
     }
     // find root for absolute path
     if (path.startsWith('/')) {
-      CoapEndpointResource root = this;
+      var root = this;
       while (root._parent != null) {
         root = root._parent;
       }
-      final String path1 = path == '/' ? null : path.substring(1);
+      final path1 = path == '/' ? null : path.substring(1);
       return root.getResourcePath(path1);
     }
 
-    final int pos = path.indexOf('/');
+    final pos = path.indexOf('/');
     String head, tail;
 
     // note: 'some/resource/' addresses a resource '' under 'resource'
@@ -263,9 +259,9 @@ abstract class CoapEndpointResource {
     }
 
     // Get last existing resource along path
-    CoapEndpointResource baseRes = getResource(resource.name, last: true);
+    var baseRes = getResource(resource.name, last: true);
 
-    String path = this.path;
+    var path = this.path;
     if (!path.endsWith('/')) {
       path += '/';
     }
@@ -279,7 +275,7 @@ abstract class CoapEndpointResource {
     if (path.isEmpty) {
       // resource replaces base
       _log.info('Replacing resource ${baseRes.path}');
-      for (final CoapEndpointResource sub in baseRes.getSubResources()) {
+      for (final sub in baseRes.getSubResources()) {
         sub._parent = resource;
         resource.subResources[sub.name] = sub;
       }
@@ -288,14 +284,14 @@ abstract class CoapEndpointResource {
     } else {
       // resource is added to base
 
-      final List<String> segments = path.split('/');
+      final segments = path.split('/');
       if (segments.length > 1) {
         _log.info('Splitting up compound resource ${resource.name}');
         resource.name = segments[segments.length - 1];
 
         // insert middle segments
         CoapEndpointResource sub;
-        for (int i = 0; i < segments.length - 1; i++) {
+        for (var i = 0; i < segments.length - 1; i++) {
           sub = baseRes.createInstance(segments[i]);
           sub.hidden = true;
           baseRes.addSubResource(sub);
@@ -312,7 +308,7 @@ abstract class CoapEndpointResource {
     }
 
     // update number of sub-resources in the tree
-    CoapEndpointResource p = resource._parent;
+    var p = resource._parent;
     while (p != null) {
       p._totalSubResourceCount++;
       p = p._parent;
