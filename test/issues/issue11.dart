@@ -26,16 +26,41 @@ Future<int> main() async {
 
   client.request = request;
 
-// Send get request
   print('ISSUE: Sending GET request...');
   final response = await client.get();
   if (response != null) {
-    print('ISSUE: - response received');
+    print('ISSUE: - GET response received');
     print(response.payloadString);
+  } else {
+    print('ISSUE: - no response received');
+    client.cancelRequest();
+    client.close();
+    return 0;
+  }
+
+  final pathPut = 'inline';
+  final queryPut = 'lamp';
+
+  // Create the request for the Put request
+  final requestPut = CoapRequest.newPut();
+
+  requestPut.addUriPath(pathPut);
+  requestPut.addUriQuery(queryPut);
+
+  client.request = requestPut;
+
+  print('ISSUE: Sending PUT request...');
+  final responsePut = await client.put('The PUT payload');
+
+  if (responsePut != null) {
+    print('ISSUE: - PUT response received');
+    print(responsePut.payloadString);
     client.cancelRequest();
   } else {
     print('ISSUE: - no response received');
     client.cancelRequest();
+    client.close();
+    return 0;
   }
 
   print('ISSUE: closing client and exiting....');
