@@ -7,5 +7,4 @@ include: package:pedantic/analysis_options.yaml
 
 analyzer:
   exclude:
-    - test/issues/**
     - example/flutter/lib/main.dart
