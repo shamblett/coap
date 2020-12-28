@@ -28,14 +28,15 @@ FutureOr main() async {
 // Mark the request as observable
   request.markObserve();
 
+  // Getting responses form the observable resource
+  request.responses.listen((CoapResponse response) {
+    print('EXAMPLE - payload: ${response.payloadString}');
+  });
+
   client.request = request;
 
   print('EXAMPLE - Sending get observable request to '
       '$host, waiting for responses ....');
   await client.get();
-
-// Getting responses form the observable resource
-  request.responses.listen((CoapResponse response) {
-    print('EXAMPLE - payload: ${response.payloadString}');
-  });
+  await Timer(Duration(seconds:30), () => {});
 }
