@@ -145,11 +145,12 @@ class CoapObserveLayer extends CoapAbstractLayer {
         // The request was canceled and we no longer want notifications
         _log.warn('ObserveLayer rejecting notification for canceled Exchange');
         final rst = CoapEmptyMessage.newRST(response);
-        sendEmptyMessage(nextLayer, exchange, rst);
         // Matcher sets exchange as complete when RST is sent
-      } else {
+        sendEmptyMessage(nextLayer, exchange, rst);
         _prepareReregistration(exchange, response,
-            (dynamic msg) => sendRequest(nextLayer, exchange, msg));
+                (dynamic msg) => sendRequest(nextLayer, exchange, msg));
+
+      } else {
         super.receiveResponse(nextLayer, exchange, response);
       }
     } else {
