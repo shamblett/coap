@@ -45,7 +45,7 @@ class CoapOption {
       final buff = Uint16List.view(valueBytes.buffer);
       return buff[0];
     } else {
-      final buff = Uint32List.view(valueBytes.buffer);
+      final buff = Uint16List.view(valueBytes.buffer);
       return buff[0];
     }
   }
