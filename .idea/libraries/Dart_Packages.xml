@@ -207,13 +207,6 @@
             </list>
           </value>
         </entry>
-        <entry key="file">
-          <value>
-            <list>
-              <option value="$PROJECT_DIR$/../../cache/hosted/pub.dartlang.org/file-5.2.1/lib" />
-            </list>
-          </value>
-        </entry>
         <entry key="fixnum">
           <value>
             <list>
@@ -267,13 +260,6 @@
           <value>
             <list>
               <option value="$PROJECT_DIR$/../../cache/hosted/pub.dartlang.org/http_parser-3.1.4/lib" />
-            </list>
-          </value>
-        </entry>
-        <entry key="intl">
-          <value>
-            <list>
-              <option value="$PROJECT_DIR$/../../cache/hosted/pub.dartlang.org/intl-0.16.1/lib" />
             </list>
           </value>
         </entry>

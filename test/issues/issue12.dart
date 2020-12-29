@@ -38,5 +38,4 @@ FutureOr main() async {
   print('EXAMPLE - Sending get observable request to '
       '$host, waiting for responses ....');
   await client.get();
-  await Timer(Duration(seconds:30), () => {});
 }
