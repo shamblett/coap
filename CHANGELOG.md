@@ -1,3 +1,7 @@
+# 2.0.1
+
+- Issue 12
+
 # 2.0.0
 
 - Added support for generating configuration file using code-generation
