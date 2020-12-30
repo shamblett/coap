@@ -148,8 +148,7 @@ class CoapObserveLayer extends CoapAbstractLayer {
         // Matcher sets exchange as complete when RST is sent
         sendEmptyMessage(nextLayer, exchange, rst);
         _prepareReregistration(exchange, response,
-                (dynamic msg) => sendRequest(nextLayer, exchange, msg));
-
+            (dynamic msg) => sendRequest(nextLayer, exchange, msg));
       } else {
         super.receiveResponse(nextLayer, exchange, response);
       }

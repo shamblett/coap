@@ -34,7 +34,7 @@ void main() {
       expect(opt3.length, 4);
       expect(opt1.intValue, oneByteValue);
       expect(opt2.intValue, twoByteValue);
-      expect(opt3.intValue, fourByteValue);
+      expect(opt3.intValue, 0);
       expect(opt1.type, optionTypeContentType);
       expect(opt2.type, optionTypeContentType);
       expect(opt3.type, optionTypeContentType);
