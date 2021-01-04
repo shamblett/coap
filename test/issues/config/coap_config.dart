@@ -36,7 +36,7 @@ class CoapConfig extends DefaultCoapConfig {
   double get ackTimeoutScale => 2.0;
 
   @override
-  int get maxRetransmit => 1;
+  int get maxRetransmit => 3;
 
   @override
   int get maxMessageSize => 1024;

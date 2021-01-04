@@ -137,7 +137,9 @@ class CoapExchange {
 
   /// Get or add an attribute
   T getOrAdd<T>(Object key, Object value) {
-    _attributes[key] = value;
+    if (!_attributes.containsKey(key)) {
+      _attributes[key] = value;
+    }
     return _attributes[key];
   }
 

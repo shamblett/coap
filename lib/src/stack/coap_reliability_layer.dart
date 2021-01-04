@@ -57,7 +57,6 @@ class CoapTransmissionContext {
     // rejected, canceled or already been retransmitted for the maximum
     // number of times.
     _log.warn('Reliability - Retransmission timeout elapsed');
-    final failedCount = ++failedTransmissionCount;
 
     if (_message.isAcknowledged) {
       _log.info('Reliability - Timeout: message already acknowledged, cancel '
@@ -82,12 +81,12 @@ class CoapTransmissionContext {
       _exchange.remove(CoapReliabilityLayer.transmissionContextKey);
       cancel();
       return;
-    } else if (failedCount <=
+    } else if (failedTransmissionCount <=
         (_message.maxRetransmit != 0
             ? _message.maxRetransmit
             : _config.maxRetransmit)) {
       _log.warn('Reliability - Timeout: retransmit message, failed count: '
-          '$failedCount message: ${_message.id}');
+          '$failedTransmissionCount message: ${_message.id}');
 
       // Message might have canceled
       if (_message.isCancelled || _message.maxRetransmit == CoapMessage.none) {
@@ -290,15 +289,11 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
       ctx.currentTimeout =
           _initialTimeout(_config.ackTimeout, _config.ackRandomFactor);
     }
+    _log.info('Reliability - sending request, failed transmission count: '
+        '${ctx.failedTransmissionCount}');
+    ctx.failedTransmissionCount++;
 
-    if (ctx.failedTransmissionCount > 0) {
-      _log.debug('Reliability - sending request, failed transmission count: '
-          '${ctx.failedTransmissionCount}');
-    } else {
-      _log.info('Reliability - sending request, failed transmission count: '
-          '${ctx.failedTransmissionCount}');
-    }
-
+    exchange.set<CoapTransmissionContext>(transmissionContextKey, ctx);
     ctx.start();
   }
 
