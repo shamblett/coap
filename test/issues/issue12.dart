@@ -27,7 +27,7 @@ FutureOr main() async {
     // Mark the request as observable
     request.markObserve();
 
-    // Getting responses form the observable resource
+    // Getting responses from the observable resource
     request.responses.listen((CoapResponse response) {
       print('ISSUE: - payload: ${response.payloadString}');
     });
@@ -37,5 +37,5 @@ FutureOr main() async {
     print('ISSUE: - Sending get observable request to '
         '$host, waiting for responses ....');
     await client.get();
-  }, timeout: Timeout.factor(4));
+  }, timeout: Timeout.factor(8));
 }
