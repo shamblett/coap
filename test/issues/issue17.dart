@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 import 'config/coap_config.dart';
 
 FutureOr main() async {
-  test('Transmission', () async {
+  test('Issue 17', () async {
     // Create a configuration class. Logging levels can be specified in the
     // configuration file.
     final conf = CoapConfig();
