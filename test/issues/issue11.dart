@@ -1,7 +1,8 @@
+import 'dart:async';
 import 'package:coap/coap.dart';
 import 'config/coap_config.dart';
 
-Future<int> main() async {
+FutureOr main() async {
   const host = 'coap.me';
   final conf = CoapConfig();
 
@@ -16,14 +17,12 @@ Future<int> main() async {
   final queryPut = 'lamp';
   var count = 1;
 
-// Adjust the response timeout if needed, defaults to 32767 milliseconds
+  // Adjust the response timeout if needed, defaults to 32767 milliseconds
   client.timeout = 10000;
 
   void getPut(int count) async {
-// Create the request for the get request
+    // Create the request for the get request
     final request = CoapRequest.newGet();
-// request =
-//     CoapRequest.isConfirmable(CoapCode.methodGET, confirmable: false);
 
     request.addUriPath(path);
     request.addUriQuery(query);
@@ -73,5 +72,4 @@ Future<int> main() async {
   print('ISSUE: closing client');
   client.close();
   print('ISSUE: exiting test....');
-  return 0;
 }
