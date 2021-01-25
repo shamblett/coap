@@ -42,24 +42,16 @@ FutureOr<void> main(List<String> args) async {
   print('EXAMPLE - Sending put request to $host, waiting for response....');
 
   var response = await client.put('SJHTestPut');
-  if (response != null) {
-    print('EXAMPLE - put response received, sending get');
-    print('EXAMPLE -  Payload: ${response.payloadString}');
-    // Now get and check the payload
-    final getRequest = CoapRequest.newGet();
-    getRequest.addUriPath('create1');
-    client.request = getRequest;
-    response = await client.get();
-    if (response != null) {
-      print('EXAMPLE - get response received');
-      print('EXAMPLE - Payload: ${response.payloadString}');
-      print('EXAMPLE - E-Tags : ${CoapUtil.iterableToString(response.etags)}');
-    } else {
-      print('EXAMPLE - no get response received');
-    }
-  } else {
-    print('EXAMPLE - no put response received');
-  }
+  print('EXAMPLE - put response received, sending get');
+  print('EXAMPLE -  Payload: ${response.payloadString}');
+  // Now get and check the payload
+  final getRequest = CoapRequest.newGet();
+  getRequest.addUriPath('create1');
+  client.request = getRequest;
+  response = await client.get();
+  print('EXAMPLE - get response received');
+  print('EXAMPLE - Payload: ${response.payloadString}');
+  print('EXAMPLE - E-Tags : ${CoapUtil.iterableToString(response.etags)}');
 
   // Clean up
   client.close();

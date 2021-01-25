@@ -41,13 +41,9 @@ FutureOr<void> main(List<String> args) async {
   print('EXAMPLE - Sending delete request to $host, waiting for response....');
 
   final response = await client.delete();
-  if (response != null) {
-    print('EXAMPLE - delete response received, sending get');
-    print('EXAMPLE - Payload: ${response.payloadString}');
-    print('EXAMPLE - response code is ${response.codeString}');
-  } else {
-    print('EXAMPLE - no delete response received');
-  }
+  print('EXAMPLE - delete response received, sending get');
+  print('EXAMPLE - Payload: ${response.payloadString}');
+  print('EXAMPLE - response code is ${response.codeString}');
 
   // Clean up
   client.close();

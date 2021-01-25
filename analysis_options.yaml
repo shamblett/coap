@@ -8,3 +8,4 @@ include: package:pedantic/analysis_options.yaml
 analyzer:
   exclude:
     - example/flutter/lib/main.dart
+    - example/flutter/

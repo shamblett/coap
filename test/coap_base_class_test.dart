@@ -43,7 +43,6 @@ void main() {
           CoapMediaType.negotiationContent(
               defaultContentType, supported, accepted),
           CoapMediaType.undefined);
-      accepted = null;
       expect(
           CoapMediaType.negotiationContent(
               defaultContentType, supported, accepted),

@@ -37,13 +37,8 @@ FutureOr<void> main(List<String> args) async {
 
   // Do the discovery, note that using this method forces the path to be .well-known/core
   final links = await client.discover(null);
-
-  if (links == null) {
-    print('EXAMPLE - No resources discovered');
-  } else {
-    print('EXAMPLE  - Discovered resources:');
-    links.forEach(print);
-  }
+  print('EXAMPLE  - Discovered resources:');
+  links.forEach(print);
 
   // Clean up
   client.close();

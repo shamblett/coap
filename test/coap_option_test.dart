@@ -124,7 +124,6 @@ void main() {
 
       expect(opt1 == opt2, isFalse);
       expect(opt2 == opt22, isTrue);
-      expect(opt1 == null, isFalse);
     });
 
     test('Empty token', () {

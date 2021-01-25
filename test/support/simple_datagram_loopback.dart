@@ -40,7 +40,7 @@ Future<void> main() async {
   /// Send some data
   const message = 'Hello from client';
   for (var count = 0; count <= 9; count++) {
-    final sent = theSocket?.send(
+    final sent = theSocket.send(
         const Utf8Codec().encode(message), loopbackAddress!, 5683);
     if (sent != message.length) {
       print('Boo, we didnt send 4 ints, we sent $sent');

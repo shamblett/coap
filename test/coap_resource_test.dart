@@ -60,8 +60,7 @@ void main() {
       my.resourceType = 'replacement';
       root.addSubResource(my);
 
-      CoapRemoteResource? res =
-          root.getResourcePath('/my/Päth') as CoapRemoteResource?;
+      var res = root.getResourcePath('/my/Päth') as CoapRemoteResource?;
       expect(res, isNotNull);
       res = root.getResourcePath('my/Päth') as CoapRemoteResource?;
       expect(res, isNotNull);

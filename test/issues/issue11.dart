@@ -20,7 +20,7 @@ FutureOr main() async {
   // Adjust the response timeout if needed, defaults to 32767 milliseconds
   client.timeout = 10000;
 
-  void getPut(int count) async {
+  FutureOr getPut(int count) async {
     // Create the request for the get request
     final request = CoapRequest.newGet();
 
@@ -31,15 +31,8 @@ FutureOr main() async {
 
     print('ISSUE: Sending GET request  - $count...');
     final response = await client.get();
-    if (response != null) {
-      print('ISSUE: - GET response received  - $count');
-      print(response.payloadString);
-    } else {
-      print('ISSUE: - no response received  - $count');
-      client.cancelRequest();
-      client.close();
-      return;
-    }
+    print('ISSUE: - GET response received  - $count');
+    print(response.payloadString);
 
     // Create the request for the Put request
     final requestPut = CoapRequest.newPut();
@@ -52,16 +45,9 @@ FutureOr main() async {
     print('ISSUE: Sending PUT request  - $count...');
     final responsePut = await client.put('The PUT payload');
 
-    if (responsePut != null) {
-      print('ISSUE: - PUT response received  - $count');
-      print(responsePut.payloadString);
-      client.cancelRequest();
-    } else {
-      print('ISSUE: - no response received  - $count');
-      client.cancelRequest();
-      client.close();
-      return;
-    }
+    print('ISSUE: - PUT response received  - $count');
+    print(responsePut.payloadString);
+    client.cancelRequest();
   }
 
   print('ISSUE: First getPut');
