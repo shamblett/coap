@@ -12,7 +12,7 @@ class CoapConfigLogging extends DefaultCoapConfig {
   }
 
   @override
-  CoapISpec spec;
+  CoapISpec? spec;
 
   @override
   String get logTarget => 'console';

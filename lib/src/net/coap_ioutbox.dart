@@ -15,7 +15,7 @@ abstract class CoapIOutbox {
 
   /// Sends the specified response over the connector that the
   /// stack is connected to.
-  void sendResponse(CoapExchange exchange, CoapResponse response);
+  void sendResponse(CoapExchange exchange, CoapResponse? response);
 
   /// Sends the specified empty message over the connector that the
   /// stack is connected to.

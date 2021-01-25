@@ -25,20 +25,20 @@ abstract class CoapIMessageDecoder {
   bool get isEmpty;
 
   /// Gets the version of the decoding message.
-  int get version;
+  int? get version;
 
   /// Gets the id of the decoding message.
-  int get id;
+  int? get id;
 
   /// Decodes as a Request.
-  CoapRequest decodeRequest();
+  CoapRequest? decodeRequest();
 
   /// Decodes as a Response.
-  CoapResponse decodeResponse();
+  CoapResponse? decodeResponse();
 
   /// Decodes as an EmptyMessage.
-  CoapEmptyMessage decodeEmptyMessage();
+  CoapEmptyMessage? decodeEmptyMessage();
 
   /// Decodes as a CoAP message.
-  CoapMessage decodeMessage();
+  CoapMessage? decodeMessage();
 }

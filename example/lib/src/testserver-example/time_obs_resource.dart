@@ -45,7 +45,7 @@ FutureOr<void> main(List<String> args) async {
   await client.get();
 
   // Getting responses form the observable resource
-  request.responses.listen((CoapResponse response) {
-    print('EXAMPLE - payload: ${response.payloadString}');
+  request.responses.listen((CoapResponse? response) {
+    print('EXAMPLE - payload: ${response!.payloadString}');
   });
 }

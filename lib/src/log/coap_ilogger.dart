@@ -10,7 +10,7 @@ part of coap;
 /// Provides methods to log messages.
 abstract class CoapILogger {
   /// The root logger
-  logging.Logger root;
+  logging.Logger? root;
 
   /// The level
   logging.Level level;
@@ -40,5 +40,5 @@ abstract class CoapILogger {
   void warn(String message);
 
   /// The last log message logged, fully formatted
-  String lastMessage;
+  String? lastMessage;
 }

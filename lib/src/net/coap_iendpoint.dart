@@ -13,13 +13,13 @@ part of coap;
 /// between (potentially multiple) clients and servers.
 abstract class CoapIEndPoint {
   /// Gets this endpoint's configuration.
-  DefaultCoapConfig get config;
+  DefaultCoapConfig? get config;
 
   /// Gets the local internetAddress this endpoint is associated with.
-  CoapInternetAddress get localEndpoint;
+  CoapInternetAddress? get localEndpoint;
 
   /// Gets or sets the message deliverer.
-  CoapIMessageDeliverer deliverer;
+  CoapIMessageDeliverer? deliverer;
 
   /// Gets the outbox.
   CoapIOutbox get outbox;
@@ -37,7 +37,7 @@ abstract class CoapIEndPoint {
   void sendEpRequest(CoapRequest request);
 
   /// Sends the specified response.
-  void sendEpResponse(CoapExchange exchange, CoapResponse response);
+  void sendEpResponse(CoapExchange exchange, CoapResponse? response);
 
   /// Sends the specified empty message.
   void sendEpEmptyMessage(CoapExchange exchange, CoapEmptyMessage message);

@@ -25,7 +25,7 @@ void main() {
     test('Simple test - rt first', () {
       const input = '</sensors/temp>;rt="TemperatureC";ct=41';
       final root = CoapRemoteResource.newRoot(input);
-      final res = root.getResourcePath('/sensors/temp');
+      final res = root.getResourcePath('/sensors/temp')!;
       expect(res, isNotNull);
       expect(res.name, 'temp');
       expect(res.contentTypeCode, 41);
@@ -35,7 +35,7 @@ void main() {
     test('Simple test - ct first', () {
       const input = '</sensors/temp>;ct=42;rt="TemperatureF"';
       final root = CoapRemoteResource.newRoot(input);
-      final res = root.getResourcePath('/sensors/temp');
+      final res = root.getResourcePath('/sensors/temp')!;
       expect(res, isNotNull);
       expect(res.name, 'temp');
       expect(res.contentTypeCode, 42);
@@ -45,7 +45,7 @@ void main() {
     test('Simple test - boolean value', () {
       const input = '</sensors/temp>;ct=42;rt="TemperatureF";obs';
       final root = CoapRemoteResource.newRoot(input);
-      final res = root.getResourcePath('/sensors/temp');
+      final res = root.getResourcePath('/sensors/temp')!;
       expect(res, isNotNull);
       expect(res.name, 'temp');
       expect(res.contentTypeCode, 42);
@@ -60,16 +60,17 @@ void main() {
       my.resourceType = 'replacement';
       root.addSubResource(my);
 
-      CoapRemoteResource res = root.getResourcePath('/my/Päth');
+      CoapRemoteResource? res =
+          root.getResourcePath('/my/Päth') as CoapRemoteResource?;
       expect(res, isNotNull);
-      res = root.getResourcePath('my/Päth');
+      res = root.getResourcePath('my/Päth') as CoapRemoteResource?;
       expect(res, isNotNull);
-      res = root.getResourcePath('my');
-      res = res.getResourcePath('Päth');
+      res = root.getResourcePath('my') as CoapRemoteResource?;
+      res = res!.getResourcePath('Päth') as CoapRemoteResource?;
       expect(res, isNotNull);
-      res = res.getResourcePath('/my/Päth');
+      res = res!.getResourcePath('/my/Päth') as CoapRemoteResource?;
       expect(res, isNotNull);
-      expect(res.name, 'Päth');
+      expect(res!.name, 'Päth');
       expect(res.path, '/my/Päth');
       expect(res.resourceType, 'MyName');
       expect(res.interfaceDescriptions[0], '/someRef/path');
@@ -77,9 +78,9 @@ void main() {
       expect(res.maximumSizeEstimate, 20);
       expect(res.observable, isTrue);
 
-      res = root.getResourcePath('my');
+      res = root.getResourcePath('my') as CoapRemoteResource?;
       expect(res, isNotNull);
-      expect(res.resourceTypes.toList()[0], 'replacement');
+      expect(res!.resourceTypes.toList()[0], 'replacement');
     });
     test('Conversion test', () {
       const link1 =

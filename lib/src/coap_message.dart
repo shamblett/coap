@@ -33,10 +33,10 @@ class CoapMessage {
   static const int invalidID = none;
 
   /// The type of this CoAP message.
-  int type = CoapMessageType.unknown;
+  int? type = CoapMessageType.unknown;
 
   /// The code of this CoAP message.
-  int code = CoapCode.notSet;
+  int? code = CoapCode.notSet;
 
   /// The codestring
   String get codeString => CoapCode.codeToString(code);
@@ -44,7 +44,7 @@ class CoapMessage {
   static final Random _initialId = Random();
 
   /// The ID of this CoAP message.
-  int id = _initialId.nextInt(initialIdLimit) + 1;
+  int? id = _initialId.nextInt(initialIdLimit) + 1;
 
   final Map<int, List<CoapOption>> _optionMap = <int, List<CoapOption>>{};
   final CoapEventBus _eventBus = CoapEventBus();
@@ -56,7 +56,7 @@ class CoapMessage {
   String resolveHost = 'localhost';
 
   /// Bind address if not using the default
-  InternetAddress bindAddress;
+  InternetAddress? bindAddress;
 
   /// Adds an option to the list of options of this CoAP message.
   CoapMessage addOption(CoapOption option) {
@@ -71,14 +71,15 @@ class CoapMessage {
     if (!_optionMap.containsKey(option.type)) {
       _optionMap[option.type] = <CoapOption>[];
     }
-    _optionMap[option.type].add(option);
+    _optionMap[option.type]!.add(option);
     return this;
   }
 
   /// Remove a specific option, returns true if the option has been removed.
   bool removeOption(CoapOption option) {
     var ret = false;
-    final List<CoapOption> options = getOptions(option.type);
+    final List<CoapOption>? options =
+        getOptions(option.type) as List<CoapOption>?;
     if (options == null) {
       return ret;
     }
@@ -101,7 +102,7 @@ class CoapMessage {
   }
 
   /// Gets all options of the given type.
-  Iterable<CoapOption> getOptions(int optionType) => _optionMap[optionType];
+  Iterable<CoapOption>? getOptions(int optionType) => _optionMap[optionType];
 
   /// Gets a list of all options.
   Iterable<CoapOption> getAllOptions() {
@@ -135,8 +136,9 @@ class CoapMessage {
   }
 
   /// Returns the first option of the specified type, or null
-  CoapOption getFirstOption(int optionType) {
-    final List<CoapOption> options = getOptions(optionType);
+  CoapOption? getFirstOption(int optionType) {
+    final List<CoapOption>? options =
+        getOptions(optionType) as List<CoapOption>?;
     if (options == null) {
       return null;
     }
@@ -155,16 +157,16 @@ class CoapMessage {
   /// Returns true if options of the specified type exists.
   bool hasOption(int type) => getFirstOption(type) != null;
 
-  typed.Uint8Buffer _token;
+  typed.Uint8Buffer? _token;
 
   /// The 0-8 byte token.
-  typed.Uint8Buffer get token => _token;
+  typed.Uint8Buffer? get token => _token;
 
   /// As a string
-  String get tokenString =>
-      _token != null ? CoapByteArrayUtil.toHexString(_token) : null;
+  String? get tokenString =>
+      _token != null ? CoapByteArrayUtil.toHexString(_token!) : null;
 
-  set token(typed.Uint8Buffer value) {
+  set token(typed.Uint8Buffer? value) {
     if (value != null && value.length > 8) {
       throw ArgumentError.value(value, 'Message::token',
           'Token length must be between 0 and 8 inclusive.');
@@ -174,11 +176,11 @@ class CoapMessage {
 
   /// Gets a value that indicates whether this CoAP message is a
   /// request message.
-  bool get isRequest => CoapCode.isRequest(code);
+  bool get isRequest => CoapCode.isRequest(code!);
 
   /// Gets a value that indicates whether this CoAP message is a
   /// response message.
-  bool get isResponse => CoapCode.isResponse(code);
+  bool get isResponse => CoapCode.isResponse(code!);
 
   /// Gets a value that indicates whether this CoAP message is
   /// an empty message.
@@ -186,13 +188,13 @@ class CoapMessage {
 
   /// Gets a value that indicates whether this CoAP message is a
   /// valid message.
-  bool get isValid => CoapCode.isValid(code);
+  bool get isValid => CoapCode.isValid(code!);
 
   /// The destination endpoint.
-  CoapInternetAddress destination;
+  CoapInternetAddress? destination;
 
   /// The source endpoint.
-  CoapInternetAddress source;
+  CoapInternetAddress? source;
 
   bool _acknowledged = false;
 
@@ -200,14 +202,14 @@ class CoapMessage {
   bool get isAcknowledged => _acknowledged;
 
   /// Acknowledged hook for attaching a callback if needed
-  HookFunction acknowledgedHook;
+  HookFunction? acknowledgedHook;
 
   set isAcknowledged(bool value) {
     _acknowledged = value;
     if (acknowledgedHook == null) {
       _eventBus.fire(CoapAcknowledgedEvent());
     } else {
-      acknowledgedHook();
+      acknowledgedHook!();
     }
   }
 
@@ -227,24 +229,24 @@ class CoapMessage {
   bool get isTimedOut => _timedOut;
 
   /// Timed out hook function for attaching a callback if needed
-  HookFunction timedOutHook;
+  HookFunction? timedOutHook;
 
   set isTimedOut(bool value) {
     _timedOut = value;
     if (timedOutHook == null) {
       _eventBus.fire(CoapTimedOutEvent());
     } else {
-      timedOutHook();
+      timedOutHook!();
     }
   }
 
   /// Retransmit hook function
-  HookFunction retransmittingHook;
+  HookFunction? retransmittingHook;
 
   /// Fire retransmitting event
   void fireRetransmitting() {
     if (retransmittingHook != null) {
-      retransmittingHook();
+      retransmittingHook!();
     }
   }
 
@@ -262,11 +264,11 @@ class CoapMessage {
   bool duplicate = false;
 
   /// The serialized message as byte array, or null if not serialized yet.
-  typed.Uint8Buffer bytes;
+  typed.Uint8Buffer? bytes;
 
   /// The timestamp when this message has been received or sent,
   /// or null if neither has happened yet.
-  DateTime timestamp;
+  DateTime? timestamp;
 
   /// The max times this message should be retransmitted if no ACK received.
   /// A value of 0 means that the CoapConstants.maxRetransmit time
@@ -285,16 +287,16 @@ class CoapMessage {
   final convertor.Utf8Encoder _utfEncoder = const convertor.Utf8Encoder();
 
   /// The payload of this CoAP message.
-  typed.Uint8Buffer payload;
+  typed.Uint8Buffer? payload;
 
   /// The size of the payload of this CoAP message.
-  int get payloadSize => null == payload ? 0 : payload.length;
+  int get payloadSize => null == payload ? 0 : payload!.length;
 
   /// The payload of this CoAP message in string representation.
-  String get payloadString {
-    if (payload != null && payload.isNotEmpty) {
+  String? get payloadString {
+    if (payload != null && payload!.isNotEmpty) {
       try {
-        final ret = _utfDecoder.convert(payload);
+        final ret = _utfDecoder.convert(payload!);
         return ret;
       } on FormatException {
         // The payload may be incomplete, if so and the conversion
@@ -306,7 +308,7 @@ class CoapMessage {
   }
 
   /// Sets the payload from a string with a default media type
-  set payloadString(String value) =>
+  set payloadString(String? value) =>
       setPayloadMedia(value, CoapMediaType.textPlain);
 
   /// Sets the payload.
@@ -315,17 +317,17 @@ class CoapMessage {
       return this;
     }
     this.payload ??= typed.Uint8Buffer();
-    this.payload.addAll(_utfEncoder.convert(payload));
+    this.payload!.addAll(_utfEncoder.convert(payload));
     return this;
   }
 
   /// Sets the payload and media type of this CoAP message.
-  CoapMessage setPayloadMedia(String payload, int mediaType) {
+  CoapMessage setPayloadMedia(String? payload, int mediaType) {
     if (payload == null) {
       return this;
     }
     this.payload ??= typed.Uint8Buffer();
-    this.payload.addAll(_utfEncoder.convert(payload));
+    this.payload!.addAll(_utfEncoder.convert(payload));
     contentType = mediaType;
     return this;
   }
@@ -384,7 +386,7 @@ class CoapMessage {
   }
 
   /// Remove an opaque if match
-  CoapMessage removeIfMatchOpaque(typed.Uint8Buffer opaque) {
+  CoapMessage removeIfMatchOpaque(typed.Uint8Buffer? opaque) {
     final list = getOptions(optionTypeIfMatch);
     if (list != null) {
       const equality = collection.Equality<typed.Uint8Buffer>();
@@ -393,8 +395,8 @@ class CoapMessage {
           (CoapOption o) =>
               CoapUtil.areSequenceEqualTo(opaque, o.valueBytes, equality));
       if (opt != null) {
-        _optionMap[optionTypeIfMatch].remove(opt);
-        if (_optionMap[optionTypeIfMatch].isEmpty) {
+        _optionMap[optionTypeIfMatch]!.remove(opt);
+        if (_optionMap[optionTypeIfMatch]!.isEmpty) {
           _optionMap.remove(optionTypeIfMatch);
         }
       }
@@ -423,11 +425,11 @@ class CoapMessage {
 
   /// Contains an opaque E-tag
   bool containsETagOpaque(typed.Uint8Buffer what) => CoapUtil.contains(
-      getOptions(optionTypeETag),
+      getOptions(optionTypeETag)!,
       (CoapOption o) => CoapUtil.areSequenceEqualTo(what, o.valueBytes));
 
   /// Add an opaque ETag
-  CoapMessage addETagOpaque(typed.Uint8Buffer opaque) {
+  CoapMessage addETagOpaque(typed.Uint8Buffer? opaque) {
     if (opaque == null) {
       throw ArgumentError.notNull('Message::addETag');
     }
@@ -451,8 +453,9 @@ class CoapMessage {
   }
 
   /// Remove an opaque ETag
-  CoapMessage removeETagOpaque(typed.Uint8Buffer opaque) {
-    final List<CoapOption> list = getOptions(optionTypeETag);
+  CoapMessage removeETagOpaque(typed.Uint8Buffer? opaque) {
+    final List<CoapOption>? list =
+        getOptions(optionTypeETag) as List<CoapOption>?;
     if (list != null) {
       const equality = collection.Equality<typed.Uint8Buffer>();
       final opt = CoapUtil.firstOrDefault(
@@ -460,8 +463,8 @@ class CoapMessage {
           (CoapOption o) =>
               CoapUtil.areSequenceEqualTo(opaque, o.valueBytes, equality));
       if (opt != null) {
-        _optionMap[optionTypeETag].remove(opt);
-        if (_optionMap[optionTypeETag].isEmpty) {
+        _optionMap[optionTypeETag]!.remove(opt);
+        if (_optionMap[optionTypeETag]!.isEmpty) {
           _optionMap.remove(optionTypeETag);
         }
       }
@@ -489,7 +492,7 @@ class CoapMessage {
   }
 
   /// Add an opaque if none match
-  CoapMessage addIfNoneMatchOpaque(typed.Uint8Buffer opaque) {
+  CoapMessage addIfNoneMatchOpaque(typed.Uint8Buffer? opaque) {
     if (opaque == null) {
       throw ArgumentError.notNull('Message::addIfNoneMatch');
     }
@@ -501,7 +504,7 @@ class CoapMessage {
   }
 
   /// Remove an opaque if none match
-  CoapMessage removeIfNoneMatchOpaque(typed.Uint8Buffer opaque) {
+  CoapMessage removeIfNoneMatchOpaque(typed.Uint8Buffer? opaque) {
     final list = getOptions(optionTypeIfNoneMatch);
     if (list != null) {
       const equality = collection.Equality<typed.Uint8Buffer>();
@@ -510,8 +513,8 @@ class CoapMessage {
           (CoapOption o) =>
               CoapUtil.areSequenceEqualTo(opaque, o.valueBytes, equality));
       if (opt != null) {
-        _optionMap[optionTypeIfNoneMatch].remove(opt);
-        if (_optionMap[optionTypeIfNoneMatch].isEmpty) {
+        _optionMap[optionTypeIfNoneMatch]!.remove(opt);
+        if (_optionMap[optionTypeIfNoneMatch]!.isEmpty) {
           _optionMap.remove(optionTypeIfNoneMatch);
         }
       }
@@ -536,12 +539,12 @@ class CoapMessage {
   }
 
   /// Uri's
-  String get uriHost {
+  String? get uriHost {
     final host = getFirstOption(optionTypeUriHost);
     return host == null ? null : host.toString();
   }
 
-  set uriHost(String value) {
+  set uriHost(String? value) {
     if (value == null) {
       throw ArgumentError.notNull('Message::uriHost');
     }
@@ -554,7 +557,8 @@ class CoapMessage {
 
   /// URI path
   String get uriPath {
-    var join = CoapOption.join(getOptions(optionTypeUriPath), '/');
+    var join = CoapOption.join(
+        getOptions(optionTypeUriPath) as List<CoapOption>?, '/')!;
     return join += '/';
   }
 
@@ -586,7 +590,7 @@ class CoapMessage {
   }
 
   /// Add a URI path
-  CoapMessage addUriPath(String path) {
+  CoapMessage addUriPath(String? path) {
     if (path == null) {
       throw ArgumentError.notNull('Message::addUriPath');
     }
@@ -599,13 +603,13 @@ class CoapMessage {
 
   /// Remove a URI path
   CoapMessage removeUriPath(String path) {
-    final List<CoapOption> list = uriPaths;
+    final List<CoapOption> list = uriPaths as List<CoapOption>;
     if (list != null) {
       final opt = CoapUtil.firstOrDefault(
           list, (CoapOption o) => path == o.stringValue);
       if (opt != null) {
-        _optionMap[optionTypeUriPath].remove(opt);
-        if (_optionMap[optionTypeUriPath].isEmpty) {
+        _optionMap[optionTypeUriPath]!.remove(opt);
+        if (_optionMap[optionTypeUriPath]!.isEmpty) {
           _optionMap.remove(optionTypeUriPath);
         }
       }
@@ -620,7 +624,8 @@ class CoapMessage {
   }
 
   /// URI query
-  String get uriQuery => CoapOption.join(getOptions(optionTypeUriQuery), '&');
+  String get uriQuery => CoapOption.join(
+      getOptions(optionTypeUriQuery) as List<CoapOption>?, '&')!;
 
   /// Set a URI query
   set uriQuery(String value) {
@@ -650,7 +655,7 @@ class CoapMessage {
   }
 
   /// Add a URI query
-  CoapMessage addUriQuery(String query) {
+  CoapMessage addUriQuery(String? query) {
     if (query == null) {
       throw ArgumentError.notNull('Message::addUriQuery');
     }
@@ -663,13 +668,14 @@ class CoapMessage {
 
   /// Remove a URI query
   CoapMessage removeUriQuery(String query) {
-    final List<CoapOption> list = getOptions(optionTypeUriQuery);
+    final List<CoapOption>? list =
+        getOptions(optionTypeUriQuery) as List<CoapOption>?;
     if (list != null) {
       final opt = CoapUtil.firstOrDefault(
           list, (CoapOption o) => query == o.stringValue);
       if (opt != null) {
-        _optionMap[optionTypeUriQuery].remove(opt);
-        if (_optionMap[optionTypeUriQuery].isEmpty) {
+        _optionMap[optionTypeUriQuery]!.remove(opt);
+        if (_optionMap[optionTypeUriQuery]!.isEmpty) {
           _optionMap.remove(optionTypeUriQuery);
         }
       }
@@ -684,12 +690,12 @@ class CoapMessage {
   }
 
   /// Uri port
-  int get uriPort {
+  int? get uriPort {
     final opt = getFirstOption(optionTypeUriPort);
     return opt == null ? null : opt.value;
   }
 
-  set uriPort(int value) {
+  set uriPort(int? value) {
     if (value == 0) {
       removeOptions(optionTypeUriPort);
     } else {
@@ -739,7 +745,7 @@ class CoapMessage {
   }
 
   /// Add a location path
-  CoapMessage addLocationPath(String path) {
+  CoapMessage addLocationPath(String? path) {
     if (path == null) {
       throw ArgumentError.notNull('Message::addLocationPath');
     }
@@ -752,13 +758,14 @@ class CoapMessage {
 
   /// Remove a location path
   CoapMessage removelocationPath(String path) {
-    final List<CoapOption> list = getOptions(optionTypeLocationPath);
+    final List<CoapOption>? list =
+        getOptions(optionTypeLocationPath) as List<CoapOption>?;
     if (list != null) {
       final opt = CoapUtil.firstOrDefault(
           list, (CoapOption o) => path == o.stringValue);
       if (opt != null) {
-        _optionMap[optionTypeLocationPath].remove(opt);
-        if (_optionMap[optionTypeLocationPath].isEmpty) {
+        _optionMap[optionTypeLocationPath]!.remove(opt);
+        if (_optionMap[optionTypeLocationPath]!.isEmpty) {
           _optionMap.remove(optionTypeLocationPath);
         }
       }
@@ -773,8 +780,8 @@ class CoapMessage {
   }
 
   /// Location query
-  String get locationQuery =>
-      CoapOption.join(getOptions(optionTypeLocationQuery), '&');
+  String get locationQuery => CoapOption.join(
+      getOptions(optionTypeLocationQuery) as List<CoapOption>?, '&')!;
 
   /// Set a location query
   set locationQuery(String value) {
@@ -804,7 +811,7 @@ class CoapMessage {
   }
 
   /// Add a location query
-  CoapMessage addLocationQuery(String query) {
+  CoapMessage addLocationQuery(String? query) {
     if (query == null) {
       throw ArgumentError.notNull('Message::addLocationQuery');
     }
@@ -820,13 +827,14 @@ class CoapMessage {
 
   /// Remove a location query
   CoapMessage removeLocationQuery(String query) {
-    final List<CoapOption> list = getOptions(optionTypeLocationQuery);
+    final List<CoapOption>? list =
+        getOptions(optionTypeLocationQuery) as List<CoapOption>?;
     if (list != null) {
       final opt = CoapUtil.firstOrDefault(
           list, (CoapOption o) => query == o.stringValue);
       if (opt != null) {
-        _optionMap[optionTypeLocationQuery].remove(opt);
-        if (_optionMap[optionTypeLocationQuery].isEmpty) {
+        _optionMap[optionTypeLocationQuery]!.remove(opt);
+        if (_optionMap[optionTypeLocationQuery]!.isEmpty) {
           _optionMap.remove(optionTypeLocationQuery);
         }
       }
@@ -841,12 +849,12 @@ class CoapMessage {
   }
 
   /// Content type
-  int get contentType {
+  int? get contentType {
     final opt = getFirstOption(optionTypeContentType);
     return (null == opt) ? CoapMediaType.undefined : opt.value;
   }
 
-  set contentType(int value) {
+  set contentType(int? value) {
     if (value == CoapMediaType.undefined) {
       removeOptions(optionTypeContentType);
     } else {
@@ -856,9 +864,9 @@ class CoapMessage {
 
   /// The content-format of this CoAP message,
   /// Same as ContentType, only another name.
-  int get contentFormat => contentType;
+  int? get contentFormat => contentType;
 
-  set contentFormat(int value) => contentType = value;
+  set contentFormat(int? value) => contentType = value;
 
   /// The max-age of this CoAP message.
   int get maxAge {
@@ -878,12 +886,12 @@ class CoapMessage {
   }
 
   /// Accept
-  int get accept {
+  int? get accept {
     final opt = getFirstOption(optionTypeAccept);
     return (null == opt) ? CoapMediaType.undefined : opt.value;
   }
 
-  set accept(int value) {
+  set accept(int? value) {
     if (value == CoapMediaType.undefined) {
       removeOptions(optionTypeAccept);
     } else {
@@ -892,7 +900,7 @@ class CoapMessage {
   }
 
   /// Proxy uri
-  Uri get proxyUri {
+  Uri? get proxyUri {
     final opt = getFirstOption(optionTypeProxyUri);
     if (opt == null) {
       return null;
@@ -907,7 +915,7 @@ class CoapMessage {
     return Uri.dataFromString(proxyUriString);
   }
 
-  set proxyUri(Uri value) {
+  set proxyUri(Uri? value) {
     if (value == null) {
       removeOptions(optionTypeProxyUri);
     } else {
@@ -916,12 +924,12 @@ class CoapMessage {
   }
 
   /// Proxy scheme
-  String get proxyScheme {
+  String? get proxyScheme {
     final opt = getFirstOption(optionTypeProxyScheme);
     return opt == null ? null : opt.toString();
   }
 
-  set proxyScheme(String value) {
+  set proxyScheme(String? value) {
     if (value == null) {
       removeOptions(optionTypeProxyScheme);
     } else {
@@ -930,7 +938,7 @@ class CoapMessage {
   }
 
   /// Observe
-  int get observe {
+  int? get observe {
     final opt = getFirstOption(optionTypeObserve);
     if (opt == null) {
       return -1;
@@ -939,7 +947,7 @@ class CoapMessage {
     }
   }
 
-  set observe(int value) {
+  set observe(int? value) {
     if (value == null) {
       removeOptions(optionTypeObserve);
     } else if (value < 0 || ((1 << 24) - 1) < value) {
@@ -954,12 +962,12 @@ class CoapMessage {
   }
 
   /// Size 1
-  int get size1 {
+  int? get size1 {
     final opt = getFirstOption(optionTypeSize1);
     return opt == null ? 0 : opt.value;
   }
 
-  set size1(int value) {
+  set size1(int? value) {
     if (value == null) {
       removeOptions(optionTypeSize1);
     } else {
@@ -968,12 +976,12 @@ class CoapMessage {
   }
 
   /// Size 2
-  int get size2 {
+  int? get size2 {
     final opt = getFirstOption(optionTypeSize2);
     return opt == null ? 0 : opt.value;
   }
 
-  set size2(int value) {
+  set size2(int? value) {
     if (value == null) {
       removeOptions(optionTypeSize2);
     } else {
@@ -982,10 +990,11 @@ class CoapMessage {
   }
 
   /// Block 1
-  CoapBlockOption get block1 => getFirstOption(optionTypeBlock1);
+  CoapBlockOption? get block1 =>
+      getFirstOption(optionTypeBlock1) as CoapBlockOption?;
 
   /// Block 1
-  set block1(CoapBlockOption value) {
+  set block1(CoapBlockOption? value) {
     if (value == null) {
       removeOptions(optionTypeBlock1);
     } else {
@@ -994,14 +1003,15 @@ class CoapMessage {
   }
 
   /// Block 1
-  void setBlock1(int szx, int num, {bool m}) {
+  void setBlock1(int szx, int num, {required bool m}) {
     setOption(CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m: m));
   }
 
   /// Block 2
-  CoapBlockOption get block2 => getFirstOption(optionTypeBlock2);
+  CoapBlockOption? get block2 =>
+      getFirstOption(optionTypeBlock2) as CoapBlockOption?;
 
-  set block2(CoapBlockOption value) {
+  set block2(CoapBlockOption? value) {
     if (value == null) {
       removeOptions(optionTypeBlock2);
     } else {
@@ -1010,7 +1020,7 @@ class CoapMessage {
   }
 
   /// Block 2
-  void setBlock2(int szx, int num, {bool m}) {
+  void setBlock2(int szx, int num, {required bool m}) {
     setOption(CoapBlockOption.fromParts(optionTypeBlock2, num, szx, m: m));
   }
 

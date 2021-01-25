@@ -12,7 +12,7 @@ Future<void> main() async {
       includeLinkLocal: true,
       type: InternetAddressType.IPv4);
   print(interfaces);
-  InternetAddress loopbackAddress;
+  InternetAddress? loopbackAddress;
   for (final interface in interfaces) {
     for (final address in interface.addresses) {
       if (address.isLoopback) {
@@ -41,7 +41,7 @@ Future<void> main() async {
   const message = 'Hello from client';
   for (var count = 0; count <= 9; count++) {
     final sent = theSocket?.send(
-        const Utf8Codec().encode(message), loopbackAddress, 5683);
+        const Utf8Codec().encode(message), loopbackAddress!, 5683);
     if (sent != message.length) {
       print('Boo, we didnt send 4 ints, we sent $sent');
     } else {

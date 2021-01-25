@@ -20,69 +20,69 @@ class CoapOption {
   int get type => _type;
 
   /// Value bytes
-  typed.Uint8Buffer valueBytes;
+  typed.Uint8Buffer? valueBytes;
 
   /// From list
   set valueBytesList(List<int> bytes) {
-    valueBytes.clear();
-    valueBytes.addAll(bytes);
+    valueBytes!.clear();
+    valueBytes!.addAll(bytes);
   }
 
   /// String representation of value bytes
   String get stringValue =>
-      const convertor.Utf8Decoder().convert(valueBytes.toList());
+      const convertor.Utf8Decoder().convert(valueBytes!.toList());
 
-  set stringValue(String val) => valueBytes.addAll(val.codeUnits);
+  set stringValue(String val) => valueBytes!.addAll(val.codeUnits);
 
   /// Integer value
   int get intValue {
-    if (valueBytes.isEmpty) {
+    if (valueBytes!.isEmpty) {
       return 0;
     }
-    if (valueBytes.length == 1) {
-      return valueBytes[0];
-    } else if (valueBytes.length == 2) {
-      final buff = Uint16List.view(valueBytes.buffer);
+    if (valueBytes!.length == 1) {
+      return valueBytes![0];
+    } else if (valueBytes!.length == 2) {
+      final buff = Uint16List.view(valueBytes!.buffer);
       return buff[0];
     } else {
-      final buff = Uint16List.view(valueBytes.buffer);
+      final buff = Uint16List.view(valueBytes!.buffer);
       return buff[0];
     }
   }
 
-  set intValue(int val) {
+  set intValue(int? val) {
     if (val == 0) {
-      valueBytes.add(0);
+      valueBytes!.add(0);
     } else {
-      valueBytes.clear();
-      if (val <= 255) {
-        valueBytes.add(val);
+      valueBytes!.clear();
+      if (val! <= 255) {
+        valueBytes!.add(val);
       } else if (val <= 65535) {
         final buff = Uint16List(1);
         buff[0] = val;
-        valueBytes.addAll(buff.buffer.asUint8List());
+        valueBytes!.addAll(buff.buffer.asUint8List());
       } else {
         final buff = Uint32List(1);
         buff[0] = val;
-        valueBytes.addAll(buff.buffer.asUint8List());
+        valueBytes!.addAll(buff.buffer.asUint8List());
       }
     }
   }
 
   /// Int64 representation of value bytes
   int get longValue {
-    final buff = Uint64List.view(valueBytes.buffer);
+    final buff = Uint64List.view(valueBytes!.buffer);
     return buff[0];
   }
 
   set longValue(int val) {
     if (val == 0) {
-      valueBytes.add(0);
+      valueBytes!.add(0);
     } else {
       final buff = Uint64List(1);
       buff[0] = val;
-      valueBytes.clear();
-      valueBytes.addAll(buff.buffer.asUint8List());
+      valueBytes!.clear();
+      valueBytes!.addAll(buff.buffer.asUint8List());
     }
   }
 
@@ -90,7 +90,7 @@ class CoapOption {
   String get name => CoapOption.stringify(_type);
 
   /// Gets the value's length in bytes of the option.
-  int get length => valueBytes.lengthInBytes;
+  int get length => valueBytes!.lengthInBytes;
 
   /// Gets the value of the option according to its type.
   dynamic get value {
@@ -132,7 +132,7 @@ class CoapOption {
         return intValue == CoapConstants.defaultMaxAge;
         break;
       case optionTypeToken:
-        return valueBytes.lengthInBytes == 0;
+        return valueBytes!.lengthInBytes == 0;
         break;
       default:
         return false;
@@ -148,7 +148,7 @@ class CoapOption {
       case optionFormat.string:
         return '$stringValue';
       default:
-        return CoapByteArrayUtil.toHexString(valueBytes);
+        return CoapByteArrayUtil.toHexString(valueBytes!);
     }
   }
 
@@ -226,7 +226,7 @@ class CoapOption {
   }
 
   /// Creates an option.
-  static CoapOption createRaw(int type, typed.Uint8Buffer raw) {
+  static CoapOption createRaw(int type, typed.Uint8Buffer? raw) {
     final opt = create(type);
     opt.valueBytes = raw;
     return opt;
@@ -240,7 +240,7 @@ class CoapOption {
   }
 
   /// Creates an option.
-  static CoapOption createVal(int type, int val) {
+  static CoapOption createVal(int type, int? val) {
     final opt = create(type);
     opt.intValue = val;
     return opt;
@@ -258,7 +258,7 @@ class CoapOption {
   static List<CoapOption> split(int type, String s, String delimiter) {
     final opts = <CoapOption>[];
     final exp = RegExp(r'^\/*\/');
-    final Match pos = exp.firstMatch(s);
+    final Match? pos = exp.firstMatch(s);
     var tmp = s;
     if (pos != null) {
       tmp = s.substring(pos.end, s.length);
@@ -274,8 +274,8 @@ class CoapOption {
   }
 
   /// Joins the string values of a set of options.
-  static String join(List<CoapOption> options, String delimiter) {
-    String s;
+  static String? join(List<CoapOption>? options, String delimiter) {
+    String? s;
     if (null == options) {
       return s;
     } else {

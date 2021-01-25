@@ -9,17 +9,18 @@ part of coap;
 
 /// Message encoder 12
 class CoapMessageEncoder12 extends CoapMessageEncoder {
-  final CoapILogger _log = CoapLogManager().logger;
+  final CoapILogger? _log = CoapLogManager().logger;
 
   @override
-  void serialize(CoapDatagramWriter writer, CoapMessage message, int code) {
+  void serialize(CoapDatagramWriter writer, CoapMessage message, int? code) {
     final optWriter = CoapDatagramWriter();
     var optionCount = 0;
     var lastOptionNumber = 0;
 
-    final List<CoapOption> options = message.getAllOptions();
+    final List<CoapOption> options =
+        message.getAllOptions() as List<CoapOption>;
     if (message.token != null &&
-        message.token.isNotEmpty &&
+        message.token!.isNotEmpty &&
         !message.hasOption(optionTypeToken)) {
       options.add(CoapOption.createRaw(optionTypeToken, message.token));
     }
@@ -58,7 +59,7 @@ class CoapMessageEncoder12 extends CoapMessageEncoder {
           optWriter.write(
               optionJumpValue, 2 * CoapDraft12.singleOptionJumpBits);
         } else {
-          _log.error('Option delta too large. Actual delta: $optionDelta');
+          _log!.error('Option delta too large. Actual delta: $optionDelta');
         }
       }
 
@@ -88,7 +89,7 @@ class CoapMessageEncoder12 extends CoapMessageEncoder {
         final remainingLength = length - ((rounds * 255) + 15);
         optWriter.write(remainingLength, CoapDraft12.optionLengthExtendedBits);
       } else {
-        _log.error(
+        _log!.error(
             'Option length larger than allowed 1034. Actual length: $length');
       }
 

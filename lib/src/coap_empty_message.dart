@@ -11,7 +11,7 @@ part of coap;
 /// the MessageType ACK or RST.
 class CoapEmptyMessage extends CoapMessage {
   /// Instantiates a new empty message.
-  CoapEmptyMessage(int type) : super.withCode(type, CoapCode.empty);
+  CoapEmptyMessage(int? type) : super.withCode(type, CoapCode.empty);
 
   /// Create a new acknowledgment for the specified message.
   /// Returns the acknowledgment.

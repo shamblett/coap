@@ -18,25 +18,25 @@ class CoapRequest extends CoapMessage {
 
   /// Initializes a request message.
   /// Defaults to confirmable
-  CoapRequest.withType(int code) : this.isConfirmable(code, confirmable: true);
+  CoapRequest.withType(int? code) : this.isConfirmable(code, confirmable: true);
 
   /// Initializes a request message.
   /// True if the request is Confirmable
-  CoapRequest.isConfirmable(int code, {bool confirmable})
+  CoapRequest.isConfirmable(int? code, {required bool confirmable})
       : super.withCode(
             confirmable ? CoapMessageType.con : CoapMessageType.non, code) {
     _method = code;
   }
 
-  int _method;
+  int? _method;
 
   /// The request method(code)
-  int get method => _method;
+  int? get method => _method;
 
   /// Indicates whether this request is a multicast request or not.
-  bool multicast;
+  bool? multicast;
 
-  Uri _uri;
+  Uri? _uri;
 
   /// The URI of this CoAP message.
   Uri get uri => _uri ??= Uri(
@@ -78,21 +78,21 @@ class CoapRequest extends CoapMessage {
     _uri = value;
   }
 
-  CoapResponse _currentResponse;
+  CoapResponse? _currentResponse;
 
   /// The response to this request.
-  CoapResponse get response => _currentResponse;
+  CoapResponse? get response => _currentResponse;
 
-  set response(CoapResponse value) {
+  set response(CoapResponse? value) {
     _currentResponse = value;
-    _currentResponse.timestamp = DateTime.now();
+    _currentResponse!.timestamp = DateTime.now();
     _eventBus.fire(CoapRespondEvent(value));
     // Add to the internal response stream
     _responseStream.add(value);
   }
 
   /// The endpoint for this request
-  CoapIEndPoint endpoint;
+  CoapIEndPoint? endpoint;
 
   /// Resolves the destination internet address
   Future<CoapInternetAddress> resolveDestination(
@@ -117,7 +117,7 @@ class CoapRequest extends CoapMessage {
   /// Sends this message.
   CoapRequest send() {
     _validateBeforeSending();
-    endpoint.sendEpRequest(this);
+    endpoint!.sendEpRequest(this);
     timestamp = DateTime.now();
     // Clear the internal response stream
     _responseStream.stream.drain();
@@ -125,10 +125,10 @@ class CoapRequest extends CoapMessage {
   }
 
   /// Sends the request over the specified endpoint.
-  CoapRequest sendWithEndpoint(CoapIEndPoint endpointIn) {
+  CoapRequest sendWithEndpoint(CoapIEndPoint? endpointIn) {
     _validateBeforeSending();
     endpoint = endpointIn;
-    endpoint.sendEpRequest(this);
+    endpoint!.sendEpRequest(this);
     timestamp = DateTime.now();
     return this;
   }
@@ -140,11 +140,11 @@ class CoapRequest extends CoapMessage {
     }
   }
 
-  final StreamController<CoapResponse> _responseStream =
-      StreamController<CoapResponse>.broadcast();
+  final StreamController<CoapResponse?> _responseStream =
+      StreamController<CoapResponse?>.broadcast();
 
   /// Response stream
-  Stream<CoapResponse> get responses => _responseStream.stream;
+  Stream<CoapResponse?> get responses => _responseStream.stream;
 
   /// Wait for a response.
   /// Returns the response, or null if timeout occured.
@@ -156,9 +156,9 @@ class CoapRequest extends CoapMessage {
         (!isRejected)) {
       final response = _responseStream.stream.take(1);
       response
-          .listen((CoapResponse resp) {
+          .listen((CoapResponse? resp) {
             _currentResponse = resp;
-            _currentResponse.timestamp = DateTime.now();
+            _currentResponse!.timestamp = DateTime.now();
             completer.complete(_currentResponse);
           })
           .asFuture()
@@ -184,7 +184,7 @@ class CoapRequest extends CoapMessage {
 
   /// Stop a request, effectively cancels the request
   void stop() {
-    endpoint.stop();
+    endpoint!.stop();
   }
 
   @override

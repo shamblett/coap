@@ -10,28 +10,28 @@ part of coap;
 /// Class for linkformat attributes.
 class CoapLinkAttribute {
   /// Initializes an attribute.
-  CoapLinkAttribute(String name, Object value) {
+  CoapLinkAttribute(String? name, Object? value) {
     _name = name;
     _value = value;
   }
 
-  final CoapILogger _log = CoapLogManager().logger;
+  final CoapILogger? _log = CoapLogManager().logger;
 
-  String _name;
+  String? _name;
 
   /// Name
-  String get name => _name;
+  String? get name => _name;
 
-  Object _value;
+  Object? _value;
 
   /// Value
-  Object get value => _value;
+  Object? get value => _value;
 
   /// Value as integer
-  int get valueAsInt => _value is int ? _value : -1;
+  int? get valueAsInt => _value is int ? _value as int? : -1;
 
   /// Value as String
-  String get valueAsString => _value is String ? _value : null;
+  String? get valueAsString => _value is String ? _value as String? : null;
 
   /// Serializes this attribute into its string representation.
   void serialize(StringBuffer builder) {
@@ -51,7 +51,7 @@ class CoapLinkAttribute {
         } else if (_value is int) {
           builder.write(_value);
         } else {
-          _log.error('Serializing attribute of unexpected type: '
+          _log!.error('Serializing attribute of unexpected type: '
               '$_name ${_value.runtimeType}');
         }
       }

@@ -18,12 +18,12 @@ class CoapStack extends CoapLayerStack {
     addLast('Reliability', CoapReliabilityLayer(config));
   }
 
-  CoapIExecutor _executor;
+  CoapIExecutor? _executor;
 
   /// The IExecutor for all layers.
-  CoapIExecutor get executor => _executor;
+  CoapIExecutor? get executor => _executor;
 
-  set executor(CoapIExecutor value) {
+  set executor(CoapIExecutor? value) {
     for (final entry in getAll()) {
       entry.filter.executor = value;
     }

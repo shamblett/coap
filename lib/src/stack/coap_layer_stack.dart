@@ -16,38 +16,38 @@ class CoapNextLayer implements CoapINextLayer {
 
   @override
   void sendRequest(CoapExchange exchange, CoapRequest request) {
-    _entry.nextEntry.filter
-        .sendRequest(_entry.nextEntry.nextFilter, exchange, request);
+    _entry.nextEntry!.filter
+        .sendRequest(_entry.nextEntry!.nextFilter, exchange, request);
   }
 
   @override
-  void sendResponse(CoapExchange exchange, CoapResponse response) {
-    _entry.nextEntry.filter
-        .sendResponse(_entry.nextEntry.nextFilter, exchange, response);
+  void sendResponse(CoapExchange exchange, CoapResponse? response) {
+    _entry.nextEntry!.filter
+        .sendResponse(_entry.nextEntry!.nextFilter, exchange, response);
   }
 
   @override
   void sendEmptyMessage(CoapExchange exchange, CoapEmptyMessage message) {
-    _entry.nextEntry.filter
-        .sendEmptyMessage(_entry.nextEntry.nextFilter, exchange, message);
+    _entry.nextEntry!.filter
+        .sendEmptyMessage(_entry.nextEntry!.nextFilter, exchange, message);
   }
 
   @override
   void receiveRequest(CoapExchange exchange, CoapRequest request) {
-    _entry.prevEntry.filter
-        .receiveRequest(_entry.prevEntry.nextFilter, exchange, request);
+    _entry.prevEntry!.filter
+        .receiveRequest(_entry.prevEntry!.nextFilter, exchange, request);
   }
 
   @override
   void receiveResponse(CoapExchange exchange, CoapResponse response) {
-    _entry.prevEntry.filter
-        .receiveResponse(_entry.prevEntry.nextFilter, exchange, response);
+    _entry.prevEntry!.filter
+        .receiveResponse(_entry.prevEntry!.nextFilter, exchange, response);
   }
 
   @override
   void receiveEmptyMessage(CoapExchange exchange, CoapEmptyMessage message) {
-    _entry.prevEntry.filter
-        .receiveEmptyMessage(_entry.prevEntry.nextFilter, exchange, message);
+    _entry.prevEntry!.filter
+        .receiveEmptyMessage(_entry.prevEntry!.nextFilter, exchange, message);
   }
 }
 
@@ -68,7 +68,7 @@ class CoapStackTopLayer extends CoapAbstractLayer {
 
   @override
   void sendResponse(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse? response) {
     exchange.response = response;
     super.sendResponse(nextLayer, exchange, response);
   }
@@ -79,7 +79,7 @@ class CoapStackTopLayer extends CoapAbstractLayer {
     // If there is no BlockwiseLayer we still have to set it
     exchange.request ??= request;
     if (exchange.deliverer != null) {
-      exchange.deliverer.deliverRequest(exchange);
+      exchange.deliverer!.deliverRequest(exchange);
     }
   }
 
@@ -91,7 +91,7 @@ class CoapStackTopLayer extends CoapAbstractLayer {
     }
     if (exchange.deliverer != null) {
       // Notify request that response has arrived
-      exchange.deliverer.deliverResponse(exchange, response);
+      exchange.deliverer!.deliverResponse(exchange, response);
     }
   }
 
@@ -107,19 +107,19 @@ class CoapStackBottomLayer extends CoapAbstractLayer {
   @override
   Future<void> sendRequest(CoapINextLayer nextLayer, CoapExchange exchange,
       CoapRequest request) async {
-    exchange.outbox.sendRequest(exchange, request);
+    exchange.outbox!.sendRequest(exchange, request);
   }
 
   @override
   void sendResponse(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
-    exchange.outbox.sendResponse(exchange, response);
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse? response) {
+    exchange.outbox!.sendResponse(exchange, response);
   }
 
   @override
   void sendEmptyMessage(CoapINextLayer nextLayer, CoapExchange exchange,
       CoapEmptyMessage message) {
-    exchange.outbox.sendEmptyMessage(exchange, message);
+    exchange.outbox!.sendEmptyMessage(exchange, message);
   }
 }
 
@@ -133,31 +133,31 @@ class CoapLayerStack
 
   /// Sends a request into the layer stack.
   void sendRequest(CoapRequest request) {
-    head.filter.sendRequest(head.nextFilter, null, request);
+    head!.filter.sendRequest(head!.nextFilter, null, request);
   }
 
   /// Sends a response into the layer stack.
-  void sendResponse(CoapExchange exchange, CoapResponse response) {
-    head.filter.sendResponse(head.nextFilter, exchange, response);
+  void sendResponse(CoapExchange exchange, CoapResponse? response) {
+    head!.filter.sendResponse(head!.nextFilter, exchange, response);
   }
 
   /// Sends an empty message into the layer stack.
   void sendEmptyMessage(CoapExchange exchange, CoapEmptyMessage message) {
-    head.filter.sendEmptyMessage(head.nextFilter, exchange, message);
+    head!.filter.sendEmptyMessage(head!.nextFilter, exchange, message);
   }
 
   /// Receives a request into the layer stack.
-  void receiveRequest(CoapExchange exchange, CoapRequest request) {
-    tail.filter.receiveRequest(tail.nextFilter, exchange, request);
+  void receiveRequest(CoapExchange exchange, CoapRequest? request) {
+    tail!.filter.receiveRequest(tail!.nextFilter, exchange, request);
   }
 
   /// Receives a response into the layer stack.
   void receiveResponse(CoapExchange exchange, CoapResponse response) {
-    tail.filter.receiveResponse(tail.nextFilter, exchange, response);
+    tail!.filter.receiveResponse(tail!.nextFilter, exchange, response);
   }
 
   /// Receives an empty message into the layer stack.
   void receiveEmptyMessage(CoapExchange exchange, CoapEmptyMessage message) {
-    tail.filter.receiveEmptyMessage(tail.nextFilter, exchange, message);
+    tail!.filter.receiveEmptyMessage(tail!.nextFilter, exchange, message);
   }
 }

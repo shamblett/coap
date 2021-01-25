@@ -28,42 +28,42 @@ class CoapExchange {
   CoapOrigin get origin => _origin;
 
   /// The request
-  CoapRequest request;
+  CoapRequest? request;
 
   /// The current request
-  CoapRequest currentRequest;
+  CoapRequest? currentRequest;
 
   /// The response
-  CoapResponse response;
+  CoapResponse? response;
 
   /// The current response
-  CoapResponse currentResponse;
+  CoapResponse? currentResponse;
 
   /// The endpoint which has created and processed this exchange.
-  CoapIEndPoint endpoint;
+  CoapIEndPoint? endpoint;
 
-  DateTime _timestamp;
+  DateTime? _timestamp;
 
   /// Time
-  DateTime get timestamp => _timestamp;
+  DateTime? get timestamp => _timestamp;
 
   /// the status of the blockwise transfer of the response,
   /// or null in case of a normal transfer,
-  CoapBlockwiseStatus responseBlockStatus;
+  CoapBlockwiseStatus? responseBlockStatus;
 
   /// The status of the blockwise transfer of the request,
   /// or null in case of a normal transfer
-  CoapBlockwiseStatus requestBlockStatus;
+  CoapBlockwiseStatus? requestBlockStatus;
 
   /// The block option of the last block of a blockwise sent request.
   /// When the server sends the response, this block option has
   /// to be acknowledged.
-  CoapBlockOption block1ToAck;
+  CoapBlockOption? block1ToAck;
 
   /// Observe relation
-  CoapObserveRelation relation;
+  CoapObserveRelation? relation;
 
-  bool _timedOut;
+  late bool _timedOut;
 
   /// Timed out
   bool get timedOut => _timedOut;
@@ -75,7 +75,7 @@ class CoapExchange {
     }
   }
 
-  bool _complete;
+  late bool _complete;
 
   /// Complete
   bool get complete => _complete;
@@ -87,29 +87,29 @@ class CoapExchange {
     }
   }
 
-  CoapIOutbox _outbox;
+  CoapIOutbox? _outbox;
 
   /// Outbox
-  CoapIOutbox get outbox =>
-      _outbox ?? (endpoint == null ? null : endpoint.outbox);
+  CoapIOutbox? get outbox =>
+      _outbox ?? (endpoint == null ? null : endpoint!.outbox);
 
-  set outbox(CoapIOutbox value) => _outbox = value;
+  set outbox(CoapIOutbox? value) => _outbox = value;
 
-  CoapIMessageDeliverer _deliverer;
+  CoapIMessageDeliverer? _deliverer;
 
   /// Deliverer
-  CoapIMessageDeliverer get deliverer =>
-      _deliverer ?? (endpoint == null ? null : endpoint.deliverer);
+  CoapIMessageDeliverer? get deliverer =>
+      _deliverer ?? (endpoint == null ? null : endpoint!.deliverer);
 
-  set deliverer(CoapIMessageDeliverer value) => _deliverer = value;
+  set deliverer(CoapIMessageDeliverer? value) => _deliverer = value;
 
   /// Reject this exchange and therefore the request.
   /// Sends an RST back to the client.
   void sendReject() {
     assert(_origin == CoapOrigin.remote, 'Origin must be remote');
-    request.isRejected = true;
-    final rst = CoapEmptyMessage.newRST(request);
-    endpoint.sendEpEmptyMessage(this, rst);
+    request!.isRejected = true;
+    final rst = CoapEmptyMessage.newRST(request!);
+    endpoint!.sendEpEmptyMessage(this, rst);
   }
 
   /// Accept this exchange and therefore the request. Only if the request's
@@ -117,58 +117,58 @@ class CoapExchange {
   /// yet, it sends an ACK to the client.
   void sendAccept() {
     assert(_origin == CoapOrigin.remote, 'Origin must be remote');
-    if (request.type == CoapMessageType.con && !request.isAcknowledged) {
-      request.isAcknowledged = true;
-      final ack = CoapEmptyMessage.newACK(request);
-      endpoint.sendEpEmptyMessage(this, ack);
+    if (request!.type == CoapMessageType.con && !request!.isAcknowledged) {
+      request!.isAcknowledged = true;
+      final ack = CoapEmptyMessage.newACK(request!);
+      endpoint!.sendEpEmptyMessage(this, ack);
     }
   }
 
   /// Sends the specified response over the same endpoint
   /// as the request has arrived.
   void sendResponse(CoapResponse resp) {
-    resp.destination = request.source;
+    resp.destination = request!.source;
     response = resp;
-    endpoint.sendEpResponse(this, response);
+    endpoint!.sendEpResponse(this, response);
   }
 
   /// Attributes
-  T get<T>(Object key) => _attributes[key];
+  T? get<T>(Object key) => _attributes[key] as T?;
 
   /// Get or add an attribute
-  T getOrAdd<T>(Object key, Object value) {
+  T? getOrAdd<T>(Object key, Object value) {
     if (!_attributes.containsKey(key)) {
       _attributes[key] = value;
     }
-    return _attributes[key];
+    return _attributes[key] as T?;
   }
 
   /// Set an attribute
-  T set<T>(Object key, Object value) {
-    Object oldValue;
+  T? set<T>(Object key, Object value) {
+    Object? oldValue;
     if (_attributes.containsKey(key)) {
       oldValue = _attributes[key];
     }
     _attributes[key] = value;
-    return oldValue;
+    return oldValue as T?;
   }
 
   /// Remove
-  Object remove(Object key) => _attributes.remove(key);
+  Object? remove(Object key) => _attributes.remove(key);
 }
 
 /// Key identifier
 class CoapKeyId {
   /// Construction
   CoapKeyId(this._id) {
-    _hash = _id * 31;
+    _hash = _id! * 31;
   }
 
-  final int _id;
-  int _hash;
+  final int? _id;
+  int? _hash;
 
   @override
-  int get hashCode => _hash;
+  int get hashCode => _hash!;
 
   @override
   bool operator ==(Object other) {
@@ -185,7 +185,7 @@ class CoapKeyId {
 /// Key token
 class CoapKeyToken {
   /// Construction
-  CoapKeyToken(typed.Uint8Buffer token) {
+  CoapKeyToken(typed.Uint8Buffer? token) {
     if (token == null) {
       throw ArgumentError.notNull('CoapKeyToken::token');
     }
@@ -193,11 +193,11 @@ class CoapKeyToken {
     _hash = CoapByteArrayUtil.computeHash(_token);
   }
 
-  typed.Uint8Buffer _token;
-  int _hash;
+  late typed.Uint8Buffer _token;
+  int? _hash;
 
   @override
-  int get hashCode => _hash;
+  int get hashCode => _hash!;
 
   @override
   bool operator ==(Object other) {
@@ -219,8 +219,8 @@ class CoapKeyUri {
   }
 
   final Uri _uri;
-  final CoapInternetAddress _endpoint;
-  int _hash;
+  final CoapInternetAddress? _endpoint;
+  late int _hash;
 
   @override
   int get hashCode => _hash;

@@ -117,7 +117,7 @@ class CoapMediaType {
       mediaType >= imageGif && mediaType <= imageTiff;
 
   /// Is the media type printable
-  static bool isPrintable(int mediaType) {
+  static bool isPrintable(int? mediaType) {
     switch (mediaType) {
       case textPlain:
       case textXml:
@@ -142,7 +142,7 @@ class CoapMediaType {
   /// Returns a string representation of the media type.
   static String name(int mediaType) {
     if (_registry.containsKey(mediaType)) {
-      return _registry[mediaType][0];
+      return _registry[mediaType]![0];
     } else {
       return 'unknown/$mediaType';
     }
@@ -151,7 +151,7 @@ class CoapMediaType {
   /// Gets the file extension of the given media type.
   static String fileExtension(int mediaType) {
     if (_registry.containsKey(mediaType)) {
-      return _registry[mediaType][1];
+      return _registry[mediaType]![1];
     } else {
       return 'unknown/$mediaType';
     }
@@ -159,7 +159,7 @@ class CoapMediaType {
 
   /// Negotiation content
   static int negotiationContent(
-      int defaultContentType, List<int> supported, List<CoapOption> accepted) {
+      int defaultContentType, List<int> supported, List<CoapOption>? accepted) {
     if (accepted == null) {
       return defaultContentType;
     }
@@ -176,11 +176,11 @@ class CoapMediaType {
   }
 
   /// Parse
-  static int parse(String type) {
+  static int? parse(String? type) {
     if (type == null) {
       return CoapMediaType.undefined;
     }
-    int keyRet;
+    int? keyRet;
     _registry.forEach((int key, List<String> value) {
       if (value[0].toLowerCase() == type.toLowerCase()) {
         keyRet = key;
@@ -194,7 +194,7 @@ class CoapMediaType {
   }
 
   /// Wildcard parse
-  static List<int> parseWildcard(String regex) {
+  static List<int>? parseWildcard(String? regex) {
     if (regex == null) {
       return null;
     }

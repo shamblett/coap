@@ -62,11 +62,11 @@ class CoapDraft12 implements CoapISpec {
       CoapMessageDecoder12(data);
 
   @override
-  typed.Uint8Buffer encode(CoapMessage msg) =>
+  typed.Uint8Buffer? encode(CoapMessage msg) =>
       newMessageEncoder().encodeMessage(msg);
 
   @override
-  CoapMessage decode(typed.Uint8Buffer bytes) =>
+  CoapMessage? decode(typed.Uint8Buffer bytes) =>
       newMessageDecoder(bytes).decodeMessage();
 
   /// Option number

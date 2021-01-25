@@ -12,10 +12,10 @@ class CoapNullLogger implements CoapILogger {
   static final logging.Logger _logger = logging.Logger('NullLogger');
 
   @override
-  logging.Logger get root => null;
+  logging.Logger? get root => null;
 
   @override
-  set root(logging.Logger root) {}
+  set root(logging.Logger? root) {}
 
   @override
   logging.Level get level => _logger.level;
@@ -24,10 +24,10 @@ class CoapNullLogger implements CoapILogger {
   set level(logging.Level level) => _logger.level = level;
 
   @override
-  String get lastMessage => null;
+  String? get lastMessage => null;
 
   @override
-  set lastMessage(String message) {}
+  set lastMessage(String? message) {}
 
   @override
   bool isDebugEnabled() => false;

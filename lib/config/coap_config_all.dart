@@ -12,7 +12,7 @@ class CoapConfigAll extends DefaultCoapConfig {
   }
 
   @override
-  CoapISpec spec;
+  CoapISpec? spec;
 
   @override
   bool get useRandomIDStart => false;

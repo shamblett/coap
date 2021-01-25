@@ -23,6 +23,6 @@ class CoapClientMessageDeliverer implements CoapIMessageDeliverer {
     if (exchange.request == null) {
       throw ArgumentError.notNull('request');
     }
-    exchange.request.response = response;
+    exchange.request!.response = response;
   }
 }

@@ -22,17 +22,17 @@ abstract class CoapIMatcher {
   void sendRequest(CoapExchange exchange, CoapRequest request);
 
   /// Send a response
-  void sendResponse(CoapExchange exchange, CoapResponse response);
+  void sendResponse(CoapExchange exchange, CoapResponse? response);
 
   /// Send an empty message
   void sendEmptyMessage(CoapExchange exchange, CoapEmptyMessage message);
 
   /// Received request
-  CoapExchange receiveRequest(CoapRequest request);
+  CoapExchange receiveRequest(CoapRequest? request);
 
   /// Received response
-  CoapExchange receiveResponse(CoapResponse response);
+  CoapExchange? receiveResponse(CoapResponse response);
 
   /// Received empty message
-  CoapExchange receiveEmptyMessage(CoapEmptyMessage message);
+  CoapExchange? receiveEmptyMessage(CoapEmptyMessage message);
 }

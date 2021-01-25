@@ -25,7 +25,7 @@ class CoapConsoleLogger implements CoapILogger {
   logging.Logger get root => logging.Logger.root;
 
   @override
-  set root(logging.Logger root) {}
+  set root(logging.Logger? root) {}
 
   @override
   logging.Level get level => _logger.level;
@@ -34,13 +34,13 @@ class CoapConsoleLogger implements CoapILogger {
   set level(logging.Level level) => _logger.level = level;
 
   /// Last message
-  String _lastMessage;
+  String? _lastMessage;
 
   @override
-  String get lastMessage => _lastMessage;
+  String? get lastMessage => _lastMessage;
 
   @override
-  set lastMessage(String message) {}
+  set lastMessage(String? message) {}
 
   @override
   bool isDebugEnabled() => _logger.level.value <= logging.Level.SEVERE.value;

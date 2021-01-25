@@ -148,7 +148,7 @@ void main() {
   group('Logging', () {
     test('Null', () {
       final logmanager = CoapLogManager('none');
-      final logger = logmanager.logger;
+      final logger = logmanager.logger!;
       expect(logger.isDebugEnabled(), isFalse);
       expect(logger.isErrorEnabled(), isFalse);
       expect(logger.isInfoEnabled(), isFalse);
@@ -164,20 +164,20 @@ void main() {
       final conf = CoapConfigLogging();
       expect(conf.logTarget, 'console');
       final logmanager = CoapLogManager('console');
-      final logger = logmanager.logger;
+      final logger = logmanager.logger!;
       // Add a string appender to test correct log strings
       expect(logger.isDebugEnabled(), isTrue);
       expect(logger.isErrorEnabled(), isTrue);
       expect(logger.isInfoEnabled(), isTrue);
       expect(logger.isWarnEnabled(), isTrue);
       logger.warn('Warning message');
-      expect(logger.lastMessage.contains('Warning message'), isTrue);
+      expect(logger.lastMessage!.contains('Warning message'), isTrue);
       logger.info('Information message');
-      expect(logger.lastMessage.contains('Information message'), isTrue);
+      expect(logger.lastMessage!.contains('Information message'), isTrue);
       logger.error('Error message');
-      expect(logger.lastMessage.contains('Error message'), isTrue);
+      expect(logger.lastMessage!.contains('Error message'), isTrue);
       logger.debug('Debug message');
-      expect(logger.lastMessage.contains('Debug message'), isTrue);
+      expect(logger.lastMessage!.contains('Debug message'), isTrue);
       logmanager.destroy();
     });
   });

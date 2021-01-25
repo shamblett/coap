@@ -60,16 +60,16 @@ class CoapLinkFormat {
   /// Equal
   static final RegExp equalRegex = RegExp('=');
 
-  static final CoapILogger _log = CoapLogManager().logger;
+  static final CoapILogger? _log = CoapLogManager().logger;
 
   /// Serialize
   static String serialize(CoapIResource root) => _serializeQueries(root, null);
 
   static String _serializeQueries(
-      CoapIResource root, Iterable<String> queries) {
+      CoapIResource root, Iterable<String>? queries) {
     final linkFormat = StringBuffer();
 
-    for (final child in root.children) {
+    for (final child in root.children!) {
       _serializeTree(child, queries, linkFormat);
     }
     var ret = linkFormat.toString();
@@ -84,12 +84,12 @@ class CoapLinkFormat {
     final links = <CoapWebLink>[];
     if (linkFormat.isNotEmpty) {
       final scanner = CoapScanner(linkFormat);
-      String path;
+      String? path;
       // Scan for paths
       while (scanner.scan(resourceNameRegex)) {
-        final matched = scanner.lastMatch;
+        final matched = scanner.lastMatch!;
         path = matched.group(0);
-        path = path.substring(1, path.length - 1);
+        path = path!.substring(1, path.length - 1);
         final link = CoapWebLink(path);
         links.add(link);
         // Check for the end of the link format string
@@ -134,15 +134,16 @@ class CoapLinkFormat {
   }
 
   static void _serializeTree(
-      CoapIResource resource, Iterable<String> queries, StringBuffer sb) {
-    if (resource.visible && _matchesString(resource, queries)) {
+      CoapIResource resource, Iterable<String>? queries, StringBuffer sb) {
+    if (resource.visible! && _matchesString(resource, queries)) {
       _serializeResource(resource, sb);
       sb.write(',');
     }
     // sort by resource name
-    final List<CoapIResource> children = resource.children;
+    final List<CoapIResource> children =
+        resource.children as List<CoapIResource>;
     children.sort(
-        (CoapIResource r1, CoapIResource r2) => r1.name.compareTo(r2.name));
+        (CoapIResource r1, CoapIResource r2) => r1.name!.compareTo(r2.name!));
     for (final child in children) {
       _serializeTree(child, queries, sb);
     }
@@ -153,15 +154,15 @@ class CoapLinkFormat {
     sb.write(resource.path);
     sb.write(resource.name);
     sb.write('>');
-    _serializeAttributes(resource.attributes, sb);
+    _serializeAttributes(resource.attributes!, sb);
   }
 
   static void _serializeAttributes(
       CoapResourceAttributes attributes, StringBuffer sb) {
-    final List<String> keys = attributes.keys;
+    final List<String> keys = attributes.keys as List<String>;
     keys.sort();
     for (final name in keys) {
-      final List<String> values = attributes.getValues(name);
+      final List<String?> values = attributes.getValues(name) as List<String?>;
       if (values.isEmpty) {
         continue;
       }
@@ -171,7 +172,7 @@ class CoapLinkFormat {
   }
 
   static void _serializeAttribute(
-      String name, Iterable<String> values, StringBuffer sb) {
+      String name, Iterable<String?> values, StringBuffer sb) {
     const delimiter = '=';
     sb.write(name);
     for (final value in values) {
@@ -184,13 +185,13 @@ class CoapLinkFormat {
 
   /// Serialize options
   static String serializeOptions(
-      CoapEndpointResource resource, Iterable<CoapOption> query,
-      {bool recursive}) {
+      CoapEndpointResource resource, Iterable<CoapOption>? query,
+      {required bool recursive}) {
     final linkFormat = StringBuffer();
 
     // Skip hidden and empty root in recursive mode,
     // always skip non-matching resources.
-    if ((!resource.hidden && (resource.name.isNotEmpty) || !recursive) &&
+    if ((!resource.hidden! && (resource.name.isNotEmpty) || !recursive) &&
         _matchesOption(resource, query)) {
       linkFormat.write('<');
       linkFormat.write(resource.path);
@@ -225,8 +226,8 @@ class CoapLinkFormat {
     final root = CoapRemoteResource('');
     final scanner = CoapScanner(linkFormat);
     while (scanner.scan(resourceNameRegex)) {
-      final matched = scanner.lastMatch;
-      var path = matched.group(0);
+      final matched = scanner.lastMatch!;
+      var path = matched.group(0)!;
       path = path.substring(1, path.length - 1);
       // Retrieve specified resource, create if necessary
       final resource = CoapRemoteResource(path);
@@ -234,10 +235,10 @@ class CoapLinkFormat {
         root.addSubResource(resource);
         break;
       }
-      CoapLinkAttribute attr;
+      CoapLinkAttribute? attr;
       while (scanner.readChar() == separator.codeUnitAt(0)) {
         attr = parseAttribute(scanner);
-        addAttribute(resource.attributes, attr);
+        addAttribute(resource.attributes as HashSet<CoapLinkAttribute>, attr!);
         if (scanner.position == linkFormat.length) {
           break;
         }
@@ -248,11 +249,11 @@ class CoapLinkFormat {
   }
 
   /// Parse attribute
-  static CoapLinkAttribute parseAttribute(CoapScanner scanner) {
+  static CoapLinkAttribute? parseAttribute(CoapScanner scanner) {
     if (scanner.scan(wordRegex)) {
-      final matched = scanner.lastMatch;
+      final matched = scanner.lastMatch!;
       final name = matched.group(0);
-      Object value;
+      Object? value;
       value = true;
       // check for name-value-pair
       if (!scanner.scan(equalRegex)) {
@@ -261,13 +262,13 @@ class CoapLinkFormat {
       } else {
         if (scanner.matches(quotedStringRegex)) {
           scanner.scan(quotedStringRegex);
-          final matched = scanner.lastMatch;
-          final s = matched.group(0);
+          final matched = scanner.lastMatch!;
+          final s = matched.group(0)!;
           value = s.substring(1, s.length - 1);
         } else if (scanner.matches(cardinalRegex)) {
           scanner.scan(cardinalRegex);
-          final matched = scanner.lastMatch;
-          final num = matched.group(0);
+          final matched = scanner.lastMatch!;
+          final num = matched.group(0)!;
           value = int.tryParse(num);
           value ??= 0;
         }
@@ -278,7 +279,7 @@ class CoapLinkFormat {
   }
 
   static bool _matchesOption(
-      CoapEndpointResource resource, Iterable<CoapOption> query) {
+      CoapEndpointResource resource, Iterable<CoapOption>? query) {
     if (resource == null) {
       return false;
     }
@@ -331,7 +332,7 @@ class CoapLinkFormat {
     return false;
   }
 
-  static bool _matchesString(CoapIResource resource, Iterable<String> query) {
+  static bool _matchesString(CoapIResource resource, Iterable<String>? query) {
     if (resource == null) {
       return false;
     }
@@ -340,7 +341,7 @@ class CoapLinkFormat {
     }
 
     final attributes = resource.attributes;
-    final path = resource.path + resource.name;
+    final path = resource.path! + resource.name!;
     if (query.isEmpty) {
       return true;
     }
@@ -350,7 +351,7 @@ class CoapLinkFormat {
       final delim = s.indexOf('=');
       if (delim == -1) {
         // flag attribute
-        if (attributes.contains(s)) {
+        if (attributes!.contains(s)) {
           return true;
         }
       } else {
@@ -363,20 +364,20 @@ class CoapLinkFormat {
           } else {
             return path == expected;
           }
-        } else if (attributes.contains(attrName)) {
+        } else if (attributes!.contains(attrName)) {
           // lookup attribute value
-          for (final value in attributes.getValues(attrName)) {
+          for (final value in attributes.getValues(attrName)!) {
             var actual = value;
             // get prefix length according to '*'
             final prefixLength = expected.indexOf('*');
-            if (prefixLength >= 0 && prefixLength < actual.length) {
+            if (prefixLength >= 0 && prefixLength < actual!.length) {
               // reduce to prefixes
               expected = expected.substring(0, prefixLength);
               actual = actual.substring(0, prefixLength);
             }
 
             // handle case like rt=[Type1 Type2]
-            if (actual.contains(' ')) {
+            if (actual!.contains(' ')) {
               for (final part in actual.split(' ')) {
                 if (part == expected) {
                   return true;
@@ -400,17 +401,17 @@ class CoapLinkFormat {
     if (isSingle(attrToAdd.name)) {
       for (final attr in attributes) {
         if (attr.name == attrToAdd.name) {
-          _log.warn('CoapLinkFormat::addAttribute - Found existing '
+          _log!.warn('CoapLinkFormat::addAttribute - Found existing '
               'singleton attribute: ${attr.name}');
           return false;
         }
       }
     }
     // Special rules
-    if ((attrToAdd.name == contentType) && (attrToAdd.valueAsInt < 0)) {
+    if ((attrToAdd.name == contentType) && (attrToAdd.valueAsInt! < 0)) {
       return false;
     }
-    if ((attrToAdd.name == maxSizeEstimate) && (attrToAdd.valueAsInt < 0)) {
+    if ((attrToAdd.name == maxSizeEstimate) && (attrToAdd.valueAsInt! < 0)) {
       return false;
     }
     attributes.add(attrToAdd);
@@ -418,6 +419,6 @@ class CoapLinkFormat {
   }
 
   /// Single
-  static bool isSingle(String name) =>
+  static bool isSingle(String? name) =>
       name == title || name == maxSizeEstimate || name == observable;
 }

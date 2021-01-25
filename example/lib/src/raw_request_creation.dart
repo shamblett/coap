@@ -53,7 +53,7 @@ FutureOr<void> main(List<String> args) async {
   final response = await preparedRequest.send().waitForResponse(30000);
   if (response != null) {
     print('EXAMPLE - response received');
-    CoapLinkFormat.parse(response.payloadString).forEach(print);
+    CoapLinkFormat.parse(response.payloadString!).forEach(print);
   } else {
     print('EXAMPLE - no response received');
   }

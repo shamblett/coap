@@ -14,7 +14,7 @@ part of coap;
 class CoapObserveClientRelation {
   /// Construction
   CoapObserveClientRelation(
-      CoapRequest request, CoapIEndPoint endpoint, DefaultCoapConfig config) {
+      CoapRequest request, CoapIEndPoint? endpoint, DefaultCoapConfig config) {
     _config = config;
     _request = request;
     _endpoint = endpoint;
@@ -22,27 +22,27 @@ class CoapObserveClientRelation {
     _eventBus.on<CoapReregisteringEvent>().listen(_onReregister);
   }
 
-  DefaultCoapConfig _config;
-  CoapRequest _request;
+  DefaultCoapConfig? _config;
+  CoapRequest? _request;
   final CoapEventBus _eventBus = CoapEventBus();
 
   /// Request
-  CoapRequest get request => _request;
-  CoapIEndPoint _endpoint;
+  CoapRequest? get request => _request;
+  CoapIEndPoint? _endpoint;
 
   /// Cancelled
-  bool cancelled;
+  bool? cancelled;
 
   /// Current response
-  CoapResponse current;
-  CoapObserveNotificationOrderer _orderer;
+  CoapResponse? current;
+  CoapObserveNotificationOrderer? _orderer;
 
   /// Orderer
-  CoapObserveNotificationOrderer get orderer => _orderer;
+  CoapObserveNotificationOrderer? get orderer => _orderer;
 
   /// Cancel after the fact
   void reactiveCancel() {
-    _request.isCancelled = true;
+    _request!.isCancelled = true;
     cancelled = true;
   }
 
@@ -50,18 +50,18 @@ class CoapObserveClientRelation {
   void proactiveCancel() {
     final cancel = CoapRequest.newGet();
     // Copy options, but set Observe to cancel
-    cancel.setOptions(_request.getAllOptions());
+    cancel.setOptions(_request!.getAllOptions());
     cancel.markObserveCancel();
     // Use same Token
-    cancel.token = _request.token;
-    cancel.destination = _request.destination;
+    cancel.token = _request!.token;
+    cancel.destination = _request!.destination;
 
     // Dispatch final response to the same message observers
-    cancel.copyEventHandler(_request);
+    cancel.copyEventHandler(_request!);
 
     cancel.sendWithEndpoint(_endpoint);
     // Cancel old ongoing request
-    _request.isCancelled = true;
+    _request!.isCancelled = true;
     cancelled = true;
   }
 

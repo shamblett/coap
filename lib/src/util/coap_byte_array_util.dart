@@ -27,7 +27,7 @@ class CoapByteArrayUtil {
   }
 
   /// Checks if the two bytes arrays are equal.
-  static bool equals(typed.Uint8Buffer bytes1, typed.Uint8Buffer bytes2) =>
+  static bool equals(typed.Uint8Buffer bytes1, typed.Uint8Buffer? bytes2) =>
       bytes1 == bytes2;
 
   /// Computes the hash of the given bytes array.

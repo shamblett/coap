@@ -13,7 +13,7 @@ class CoapRemoteResource extends CoapEndpointResource {
   CoapRemoteResource(String resourceIdentifier) : super(resourceIdentifier);
 
   /// Hidden
-  CoapRemoteResource.hide(String resourceIdentifier, {bool hidden})
+  CoapRemoteResource.hide(String resourceIdentifier, {bool? hidden})
       : super.hide(resourceIdentifier, hidden: hidden);
 
   /// New root

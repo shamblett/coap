@@ -9,7 +9,7 @@ Future<void> main() async {
       includeLinkLocal: false,
       type: InternetAddressType.IPv4);
   print(interfaces);
-  InternetAddress ipAddress;
+  InternetAddress? ipAddress;
   for (final interface in interfaces) {
     for (final address in interface.addresses) {
       if (!address.isLoopback) {

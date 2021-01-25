@@ -15,59 +15,59 @@ abstract class CoapIResource {
   /// Note that the parent of this resource must be notified
   /// that the name has changed so that it finds the
   /// resource under the correct new URI when another request arrives.
-  String name;
+  String? name;
 
   /// the path to the resource which is equal to
   /// the URI of its parent plus a slash.
   /// Note that changing the path of a resource also changes
   /// the path of all its children.
-  String path;
+  String? path;
 
-  String _uri;
+  String? _uri;
 
   /// The uri of the resource.
-  String get uri => _uri;
+  String? get uri => _uri;
 
-  bool _visible;
+  bool? _visible;
 
   /// Indicates if the resource is visible to remote CoAP clients.
-  bool get visible => _visible;
+  bool? get visible => _visible;
 
-  bool _cachable;
+  bool? _cachable;
 
   /// Indicates if is the URI of the resource can be cached.
   /// If another request with the same destination URI arrives,
   /// it can be forwarded to this resource right away instead of
   /// traveling through the resource tree looking for it.
-  bool get cachable => _cachable;
+  bool? get cachable => _cachable;
 
-  bool _observable;
+  bool? _observable;
 
   /// Indicates if this resource is observable by remote CoAP clients.
-  bool get observable => _observable;
+  bool? get observable => _observable;
 
-  CoapResourceAttributes _attributes;
+  CoapResourceAttributes? _attributes;
 
   /// Gets the attributes of this resource.
-  CoapResourceAttributes get attributes => _attributes;
+  CoapResourceAttributes? get attributes => _attributes;
 
-  CoapIExecutor _executor;
+  CoapIExecutor? _executor;
 
   /// Gets the executor of this resource.
-  CoapIExecutor get executor => _executor;
+  CoapIExecutor? get executor => _executor;
 
-  Iterable<CoapIEndPoint> _endpoints;
+  Iterable<CoapIEndPoint>? _endpoints;
 
   /// Gets the endpoints this resource is bound to.
-  Iterable<CoapIEndPoint> get endpoints => _endpoints;
+  Iterable<CoapIEndPoint>? get endpoints => _endpoints;
 
   /// The parent of this resource.
-  CoapIResource parent;
+  CoapIResource? parent;
 
-  Iterable<CoapIResource> _children;
+  Iterable<CoapIResource>? _children;
 
   /// Gets all child resources.
-  Iterable<CoapIResource> get children => _children;
+  Iterable<CoapIResource>? get children => _children;
 
   /// Adds the specified resource as child.
   void add(CoapIResource child);
@@ -86,5 +86,5 @@ abstract class CoapIResource {
   void removeObserveRelation(CoapObserveRelation relation);
 
   /// Handles the request from the specified exchange.
-  void handleRequest(CoapExchange exchange);
+  void handleRequest(CoapExchange? exchange);
 }

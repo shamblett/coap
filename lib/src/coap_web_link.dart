@@ -14,10 +14,10 @@ class CoapWebLink extends Comparable<CoapWebLink> {
     _uri = uri;
   }
 
-  String _uri;
+  String? _uri;
 
   /// The URI
-  String get uri => _uri;
+  String? get uri => _uri;
   final CoapResourceAttributes _attributes = CoapResourceAttributes();
 
   /// Attributes
@@ -28,7 +28,7 @@ class CoapWebLink extends Comparable<CoapWebLink> {
     if (other == null) {
       throw ArgumentError.notNull('CoapWebLink::other');
     }
-    return _uri.compareTo(other._uri);
+    return _uri!.compareTo(other._uri);
   }
 
   @override
