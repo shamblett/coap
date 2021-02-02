@@ -210,19 +210,46 @@ class CoapUtil {
     return old;
   }
 
-  /// Host lookup
+  /// Host lookup, does not use the resolver if the host is an IP address.
   static Future<CoapInternetAddress> lookupHost(String host,
       InternetAddressType addressType, InternetAddress bindAddress) async {
     final completer = Completer<CoapInternetAddress>();
-    final addresses = await InternetAddress.lookup(host, type: addressType);
-    if (addresses != null && addresses.isNotEmpty) {
-      final coapAddress = CoapInternetAddress(addressType, addresses[0]);
+    if (isAnIpAddress(host, addressType)) {
+      final address = InternetAddress(host);
+      final coapAddress = CoapInternetAddress(addressType, address);
       coapAddress.bindAddress = bindAddress;
       completer.complete(coapAddress);
     } else {
-      completer.complete(null);
+      final addresses = await InternetAddress.lookup(host, type: addressType);
+      if (addresses != null && addresses.isNotEmpty) {
+        final coapAddress = CoapInternetAddress(addressType, addresses[0]);
+        coapAddress.bindAddress = bindAddress;
+        completer.complete(coapAddress);
+      } else {
+        completer.complete(null);
+      }
     }
     return completer.future;
+  }
+
+  /// Check if a host is already an IP address.
+  /// Returns true if it is.
+  static bool isAnIpAddress(String host, InternetAddressType addressType) {
+    final log = CoapLogManager().logger;
+    var isIpAddress = true;
+    try {
+      if (addressType == InternetAddressType.IPv4) {
+        Uri.parseIPv4Address(host);
+      } else {
+        Uri.parseIPv6Address(host);
+      }
+    } on FormatException {
+      isIpAddress = false;
+    }
+    isIpAddress
+        ? log.warn('CoapUtils::isAnIpAddress - host $host is an IP address')
+        : null;
+    return isIpAddress;
   }
 
   /// Resolved address logger
