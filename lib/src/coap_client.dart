@@ -32,7 +32,9 @@ enum FailReason {
 class CoapClient {
   /// Instantiates.
   /// A supplied request is optional depending on the API call being used.
-  /// If it is specified it will be prepared and used
+  /// If it is specified it will be prepared and used.
+  /// Note that the host name part of the URI can be a name or an IP address,
+  /// in which case it is not resolved.
   CoapClient(this.uri, this._config, [this.request]);
 
   final CoapILogger _log = CoapLogManager().logger;
