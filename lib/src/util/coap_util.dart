@@ -214,7 +214,10 @@ class CoapUtil {
   static Future<CoapInternetAddress> lookupHost(String host,
       InternetAddressType addressType, InternetAddress bindAddress) async {
     final completer = Completer<CoapInternetAddress>();
+    final log = CoapLogManager().logger;
     if (isAnIpAddress(host, addressType)) {
+      log.info(
+          "CoapUtils:lookupHost host '$host' is an IP address, not resolving");
       final address = InternetAddress(host);
       final coapAddress = CoapInternetAddress(addressType, address);
       coapAddress.bindAddress = bindAddress;
@@ -235,7 +238,6 @@ class CoapUtil {
   /// Check if a host is already an IP address.
   /// Returns true if it is.
   static bool isAnIpAddress(String host, InternetAddressType addressType) {
-    final log = CoapLogManager().logger;
     var isIpAddress = true;
     try {
       if (addressType == InternetAddressType.IPv4) {
@@ -246,9 +248,6 @@ class CoapUtil {
     } on FormatException {
       isIpAddress = false;
     }
-    isIpAddress
-        ? log.warn('CoapUtils::isAnIpAddress - host $host is an IP address')
-        : null;
     return isIpAddress;
   }
 
