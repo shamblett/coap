@@ -597,7 +597,6 @@
         <entry key="yaml">
           <value>
             <list>
-              <option value="$PROJECT_DIR$/../../cache/hosted/pub.dartlang.org/yaml-2.2.0/lib" />
               <option value="$PROJECT_DIR$/../../cache/hosted/pub.dartlang.org/yaml-2.2.1/lib" />
             </list>
           </value>
@@ -717,7 +716,6 @@
       <root url="file://$PROJECT_DIR$/../../cache/hosted/pub.dartlang.org/watcher-0.9.7+15/lib" />
       <root url="file://$PROJECT_DIR$/../../cache/hosted/pub.dartlang.org/web_socket_channel-1.1.0/lib" />
       <root url="file://$PROJECT_DIR$/../../cache/hosted/pub.dartlang.org/webkit_inspection_protocol-0.5.0+1/lib" />
-      <root url="file://$PROJECT_DIR$/../../cache/hosted/pub.dartlang.org/yaml-2.2.0/lib" />
       <root url="file://$PROJECT_DIR$/../../cache/hosted/pub.dartlang.org/yaml-2.2.1/lib" />
     </CLASSES>
     <JAVADOC />
