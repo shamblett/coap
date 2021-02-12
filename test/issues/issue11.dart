@@ -36,7 +36,6 @@ FutureOr main() async {
       print(response.payloadString);
     } else {
       print('ISSUE: - no response received  - $count');
-      client.cancelRequest();
       client.close();
       return;
     }
@@ -66,6 +65,8 @@ FutureOr main() async {
 
   print('ISSUE: First getPut');
   await getPut(count);
+  print('ISSUE: Closing client');
+  client.close();
   print('ISSUE: Second getPut');
   await getPut(++count);
 
