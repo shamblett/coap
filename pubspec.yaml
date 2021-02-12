@@ -11,13 +11,13 @@ dependencies:
  collection: '^1.14.11'
  hex: '^0.1.2'
  executor: '^2.1.0'
- logging: '^0.11.3+2'
+ logging: '^0.11.4'
  event_bus: '^1.0.1'
  pedantic: '^1.5.0'
  string_scanner: '^1.0.5'
  date_format: '^1.0.6'
  build: '^1.2.2'
- yaml: '^2.2.0'
+ yaml: '^2.2.1'
  path: '^1.6.4'
 
 dev_dependencies:
