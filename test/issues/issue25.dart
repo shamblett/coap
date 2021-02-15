@@ -17,7 +17,7 @@ FutureOr main() async {
   // The method we are using creates its own request so we do not
   // need to supply one.
   // The current request is always available from the client.
-  final client = CoapClient(uri, conf);
+  var client = CoapClient(uri, conf);
 
   // Create the request for the get request
   final request = CoapRequest.withType(CoapCode.methodGET);
@@ -38,8 +38,10 @@ FutureOr main() async {
       '$host, waiting for responses ....');
   await client.get();
 
-  print('ISSUE: closing the client');
+  print('ISSUE: closing the client and re allocating');
   client.close();
+  client = CoapClient(uri, conf);
+  client.request = request;
 
   print('ISSUE: resending');
   await client.get();
