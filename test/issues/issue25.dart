@@ -9,7 +9,7 @@ FutureOr main() async {
 
   // Build the request uri, note that the request paths/query parameters can be changed
   // on the request anytime after this initial setup.
-  const host = 'google.com';
+  const host = 'coap.me';
 
   final uri = Uri(scheme: 'coap', host: host, port: conf.defaultPort);
 
@@ -38,10 +38,14 @@ FutureOr main() async {
       '$host, waiting for responses ....');
   await client.get();
 
-  print('ISSUE: closing the client and re allocating');
+  print('ISSUE: closing the client and re allocating it and the request');
   client.close();
+  client = null;
   client = CoapClient(uri, conf);
-  client.request = request;
+  final request2 = CoapRequest.withType(CoapCode.methodGET);
+  request2.addUriPath('obs');
+  request2.maxRetransmit = 2;
+  client.request = request2;
 
   print('ISSUE: resending');
   await client.get();
