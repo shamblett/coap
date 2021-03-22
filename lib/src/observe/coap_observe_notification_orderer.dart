@@ -16,7 +16,7 @@ class CoapObserveNotificationOrderer {
   }
 
   DefaultCoapConfig? _config;
-  int? _number;
+  int _number = 0;
 
   /// Current number
   int? get current => _number;
@@ -26,12 +26,13 @@ class CoapObserveNotificationOrderer {
 
   /// Gets a new observe option number.
   int getNextObserveNumber() {
-    var next = _number++!;
+    var next = _number++;
+    ;
     while (next >= 1 << 24) {
       if (_number == next) {
         _number = 0;
       }
-      next = _number++!;
+      next = _number++;
     }
     return next;
   }

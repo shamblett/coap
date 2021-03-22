@@ -17,8 +17,7 @@ class CoapMessageEncoder08 extends CoapMessageEncoder {
     var optionCount = 0;
     var lastOptionNumber = 0;
 
-    final List<CoapOption> options =
-        message.getAllOptions() as List<CoapOption>;
+    final options = message.getAllOptions() as List<CoapOption>;
     if (message.token != null &&
         message.token!.isNotEmpty &&
         !message.hasOption(optionTypeToken)) {

@@ -16,15 +16,6 @@ class CoapObserveRelation {
   /// The exchange that tries to establish the observe relation
   CoapObserveRelation(CoapObservingEndpoint endpoint, CoapIResource resource,
       CoapExchange exchange) {
-    if (endpoint == null) {
-      throw ArgumentError.notNull('CoapObserveRelation::endpoint');
-    }
-    if (resource == null) {
-      throw ArgumentError.notNull('CoapObserveRelation::resource');
-    }
-    if (exchange == null) {
-      throw ArgumentError.notNull('CoapObserveRelation::exchange');
-    }
     _endpoint = endpoint;
     _resource = resource;
     _exchange = exchange;

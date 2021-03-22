@@ -93,9 +93,6 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
 
   void _receiveData(CoapDataReceivedEvent event) {
     // Return if we have no data, should not happen but be defensive
-    if (event.data == null || event.data.isEmpty) {
-      return;
-    }
     final decoder = config!.spec!.newMessageDecoder(event.data);
     if (decoder.isRequest) {
       CoapRequest? request;
@@ -121,10 +118,8 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
 
       if (!request.isCancelled) {
         final exchange = _matcher.receiveRequest(request);
-        if (exchange != null) {
-          exchange.endpoint = this;
-          _coapStack.receiveRequest(exchange, request);
-        }
+        exchange.endpoint = this;
+        _coapStack.receiveRequest(exchange, request);
       }
     } else if (decoder.isResponse) {
       final response = decoder.decodeResponse()!;

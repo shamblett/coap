@@ -136,7 +136,7 @@ class CoapMatcher implements CoapIMatcher {
 
   @override
   void sendEmptyMessage(CoapExchange exchange, CoapEmptyMessage message) {
-    if (message.type == CoapMessageType.rst && exchange != null) {
+    if (message.type == CoapMessageType.rst) {
       // We have rejected the request or response
       exchange.complete = true;
     }

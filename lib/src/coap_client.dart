@@ -84,7 +84,7 @@ class CoapClient {
 
   /// Performs a CoAP ping and gives up after the given number of milliseconds.
   /// If a timeout is supplied it will overwrite any set in the client
-  Future<bool> ping(int timeout) async {
+  Future<bool> ping(int? timeout) async {
     try {
       // Ping is a confirmable empty message
       var request =
@@ -262,7 +262,7 @@ class CoapClient {
 
   /// Discovers remote resources.
   /// Creates its own request to do this.
-  Future<Iterable<CoapWebLink>> discover(String? query) async {
+  Future<Iterable<CoapWebLink>?> discover(String? query) async {
     final request = CoapRequest.newGet();
     request.uri = uri;
     final discover = await prepare(request);
@@ -273,7 +273,7 @@ class CoapClient {
     }
     this.request = discover;
     final links = await discover.send().waitForResponse(timeout);
-    if (links == null) {
+    if (links.isEmpty) {
       // If no response, return null (e.g., timeout)
       return null;
     } else if (links.contentFormat != CoapMediaType.applicationLinkFormat) {
@@ -347,9 +347,8 @@ class CoapClient {
   CoapObserveClientRelation _observe(CoapRequest request,
       ActionGeneric<CoapResponse>? notify, ActionGeneric<FailReason>? error) {
     final relation = _observeAsync(request, notify, error);
-    final CoapResponse response =
-        relation.request!.waitForResponse(timeout) as CoapResponse;
-    if (response == null || !response.hasOption(optionTypeObserve)) {
+    final response = relation.request!.waitForResponse(timeout) as CoapResponse;
+    if (!response.hasOption(optionTypeObserve)) {
       relation.cancelled = true;
     }
     relation.current = response;

@@ -60,9 +60,6 @@ class CoapMessage {
 
   /// Adds an option to the list of options of this CoAP message.
   CoapMessage addOption(CoapOption option) {
-    if (option == null) {
-      throw ArgumentError.notNull('Message::addOption - option is null');
-    }
     if (option.type == optionTypeToken) {
       // be compatible with draft 13-
       token = option.valueBytes;
@@ -78,8 +75,7 @@ class CoapMessage {
   /// Remove a specific option, returns true if the option has been removed.
   bool removeOption(CoapOption option) {
     var ret = false;
-    final List<CoapOption>? options =
-        getOptions(option.type) as List<CoapOption>?;
+    final options = getOptions(option.type) as List<CoapOption>?;
     if (options == null) {
       return ret;
     }
@@ -117,18 +113,13 @@ class CoapMessage {
 
   /// Sets an option, removing all others of the option type
   void setOption(CoapOption opt) {
-    if (opt != null) {
-      removeOptions(opt.type);
-      addOption(opt);
-    }
+    removeOptions(opt.type);
+    addOption(opt);
   }
 
   /// Sets all options with the specified option type, removing
   /// all others of the same type.
   void setOptions(Iterable<CoapOption> options) {
-    if (options == null) {
-      return;
-    }
     for (final opt in options) {
       removeOptions(opt.type);
     }
@@ -137,8 +128,7 @@ class CoapMessage {
 
   /// Returns the first option of the specified type, or null
   CoapOption? getFirstOption(int optionType) {
-    final List<CoapOption>? options =
-        getOptions(optionType) as List<CoapOption>?;
+    final options = getOptions(optionType) as List<CoapOption>?;
     if (options == null) {
       return null;
     }
@@ -313,9 +303,6 @@ class CoapMessage {
 
   /// Sets the payload.
   CoapMessage setPayload(String payload) {
-    if (payload == null) {
-      return this;
-    }
     this.payload ??= typed.Uint8Buffer();
     this.payload!.addAll(_utfEncoder.convert(payload));
     return this;
@@ -367,17 +354,11 @@ class CoapMessage {
 
   /// Add an if match option, if a null string is passed the if match is not set
   CoapMessage addIfMatch(String etag) {
-    if (etag == null) {
-      return this;
-    }
     return addOption(CoapOption.createString(optionTypeIfMatch, etag));
   }
 
   /// Add an opaque if match
   CoapMessage addIfMatchOpaque(typed.Uint8Buffer opaque) {
-    if (opaque == null) {
-      throw ArgumentError.notNull('Message::addIfMatch');
-    }
     if (opaque.length > 8) {
       throw ArgumentError.value(opaque.length, 'Message::addIfMatch',
           'Content of If-Match option is too large');
@@ -454,8 +435,7 @@ class CoapMessage {
 
   /// Remove an opaque ETag
   CoapMessage removeETagOpaque(typed.Uint8Buffer? opaque) {
-    final List<CoapOption>? list =
-        getOptions(optionTypeETag) as List<CoapOption>?;
+    final list = getOptions(optionTypeETag) as List<CoapOption>?;
     if (list != null) {
       const equality = collection.Equality<typed.Uint8Buffer>();
       final opt = CoapUtil.firstOrDefault(
@@ -603,15 +583,14 @@ class CoapMessage {
 
   /// Remove a URI path
   CoapMessage removeUriPath(String path) {
-    final List<CoapOption> list = uriPaths as List<CoapOption>;
-    if (list != null) {
-      final opt = CoapUtil.firstOrDefault(
-          list, (CoapOption o) => path == o.stringValue);
-      if (opt != null) {
-        _optionMap[optionTypeUriPath]!.remove(opt);
-        if (_optionMap[optionTypeUriPath]!.isEmpty) {
-          _optionMap.remove(optionTypeUriPath);
-        }
+    final list = uriPaths as List<CoapOption>;
+
+    final opt =
+        CoapUtil.firstOrDefault(list, (CoapOption o) => path == o.stringValue);
+    if (opt != null) {
+      _optionMap[optionTypeUriPath]!.remove(opt);
+      if (_optionMap[optionTypeUriPath]!.isEmpty) {
+        _optionMap.remove(optionTypeUriPath);
       }
     }
     return this;
@@ -668,8 +647,7 @@ class CoapMessage {
 
   /// Remove a URI query
   CoapMessage removeUriQuery(String query) {
-    final List<CoapOption>? list =
-        getOptions(optionTypeUriQuery) as List<CoapOption>?;
+    final list = getOptions(optionTypeUriQuery) as List<CoapOption>?;
     if (list != null) {
       final opt = CoapUtil.firstOrDefault(
           list, (CoapOption o) => query == o.stringValue);
@@ -758,8 +736,7 @@ class CoapMessage {
 
   /// Remove a location path
   CoapMessage removelocationPath(String path) {
-    final List<CoapOption>? list =
-        getOptions(optionTypeLocationPath) as List<CoapOption>?;
+    final list = getOptions(optionTypeLocationPath) as List<CoapOption>?;
     if (list != null) {
       final opt = CoapUtil.firstOrDefault(
           list, (CoapOption o) => path == o.stringValue);
@@ -827,8 +804,7 @@ class CoapMessage {
 
   /// Remove a location query
   CoapMessage removeLocationQuery(String query) {
-    final List<CoapOption>? list =
-        getOptions(optionTypeLocationQuery) as List<CoapOption>?;
+    final list = getOptions(optionTypeLocationQuery) as List<CoapOption>?;
     if (list != null) {
       final opt = CoapUtil.firstOrDefault(
           list, (CoapOption o) => query == o.stringValue);

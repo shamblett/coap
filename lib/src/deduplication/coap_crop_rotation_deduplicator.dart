@@ -11,7 +11,8 @@ part of coap;
 class CoapCropRotationDeduplicator implements CoapIDeduplicator {
   /// Construction
   CoapCropRotationDeduplicator(DefaultCoapConfig config) {
-    _maps = List<Map<CoapKeyId, CoapExchange>?>(3);
+    _maps = List<Map<CoapKeyId, CoapExchange>?>.filled(
+        3, <CoapKeyId, CoapExchange>{});
     _maps[0] = <CoapKeyId, CoapExchange>{};
     _maps[1] = <CoapKeyId, CoapExchange>{};
     _maps[2] = <CoapKeyId, CoapExchange>{};

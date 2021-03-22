@@ -105,26 +105,26 @@ class CoapLinkFormat {
         if (char == separator.codeUnitAt(0)) {
           // Process attributes
           var attributeString = scanner.takeUntil(linkStart);
-          if (attributeString != null) {
-            // Condition the string before splitting
-            if (attributeString.endsWith(delimiter)) {
-              attributeString =
-                  attributeString.substring(0, attributeString.length - 1);
+
+          // Condition the string before splitting
+          if (attributeString.endsWith(delimiter)) {
+            attributeString =
+                attributeString.substring(0, attributeString.length - 1);
+          } else {
+            attributeString =
+                attributeString.substring(0, attributeString.length);
+          }
+          // Split on delimiter
+          final attrs = attributeString.split(separator);
+          for (final attr in attrs) {
+            final parts = attr.split(attrNameValueSeparator);
+            if (parts.length == 1) {
+              link.attributes.addNoValue(parts[0]);
             } else {
-              attributeString =
-                  attributeString.substring(0, attributeString.length);
-            }
-            // Split on delimiter
-            final attrs = attributeString.split(separator);
-            for (final attr in attrs) {
-              final parts = attr.split(attrNameValueSeparator);
-              if (parts.length == 1) {
-                link.attributes.addNoValue(parts[0]);
-              } else {
-                link.attributes.add(parts[0], parts[1]);
-              }
+              link.attributes.add(parts[0], parts[1]);
             }
           }
+
           // Next path
           continue;
         }
@@ -140,8 +140,7 @@ class CoapLinkFormat {
       sb.write(',');
     }
     // sort by resource name
-    final List<CoapIResource> children =
-        resource.children as List<CoapIResource>;
+    final children = resource.children as List<CoapIResource>;
     children.sort(
         (CoapIResource r1, CoapIResource r2) => r1.name!.compareTo(r2.name!));
     for (final child in children) {
@@ -159,10 +158,10 @@ class CoapLinkFormat {
 
   static void _serializeAttributes(
       CoapResourceAttributes attributes, StringBuffer sb) {
-    final List<String> keys = attributes.keys as List<String>;
+    final keys = attributes.keys as List<String>;
     keys.sort();
     for (final name in keys) {
-      final List<String?> values = attributes.getValues(name) as List<String?>;
+      final values = attributes.getValues(name) as List<String?>;
       if (values.isEmpty) {
         continue;
       }
@@ -280,9 +279,6 @@ class CoapLinkFormat {
 
   static bool _matchesOption(
       CoapEndpointResource resource, Iterable<CoapOption>? query) {
-    if (resource == null) {
-      return false;
-    }
     if (query == null) {
       return true;
     }
@@ -333,9 +329,6 @@ class CoapLinkFormat {
   }
 
   static bool _matchesString(CoapIResource resource, Iterable<String>? query) {
-    if (resource == null) {
-      return false;
-    }
     if (query == null) {
       return true;
     }

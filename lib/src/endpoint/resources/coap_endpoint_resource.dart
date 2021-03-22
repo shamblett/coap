@@ -39,7 +39,7 @@ abstract class CoapEndpointResource {
   int get totalSubResourceCount => _totalSubResourceCount;
 
   /// Gets the count of sub-resources of this resource.
-  int get subResourceCount => null == _subResources ? 0 : _subResources.length;
+  int get subResourceCount => _subResources.length;
 
   /// Hidden
   bool? hidden = false;
@@ -182,10 +182,6 @@ abstract class CoapEndpointResource {
 
   /// Gets sub-resources of this resource.
   List<CoapEndpointResource> getSubResources() {
-    if (null == _subResources) {
-      return null;
-    }
-
     final resources = <CoapEndpointResource>[];
     resources.addAll(_subResources.values);
     return resources;
@@ -218,7 +214,7 @@ abstract class CoapEndpointResource {
     }
     // find root for absolute path
     if (path.startsWith('/')) {
-      CoapEndpointResource root = this;
+      var root = this;
       while (root._parent != null) {
         root = root._parent!;
       }
@@ -248,9 +244,6 @@ abstract class CoapEndpointResource {
 
   /// Adds a resource as a sub-resource of this resource.
   void addSubResource(CoapEndpointResource resource) {
-    if (null == resource) {
-      throw ArgumentError.notNull('resource');
-    }
     // no absolute paths allowed, use root directly
     while (resource.name.startsWith('/')) {
       if (_parent != null) {

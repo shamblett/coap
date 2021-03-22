@@ -14,15 +14,6 @@ class CoapClientMessageDeliverer implements CoapIMessageDeliverer {
 
   @override
   void deliverResponse(CoapExchange exchange, CoapResponse response) {
-    if (exchange == null) {
-      throw ArgumentError.notNull('exchange');
-    }
-    if (response == null) {
-      throw ArgumentError.notNull('response');
-    }
-    if (exchange.request == null) {
-      throw ArgumentError.notNull('request');
-    }
     exchange.request!.response = response;
   }
 }

@@ -226,7 +226,7 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
   @override
   void receiveResponse(
       CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
-    final CoapTransmissionContext? ctx =
+    final ctx =
         exchange.remove(transmissionContextKey) as CoapTransmissionContext?;
     if (ctx != null) {
       exchange.currentRequest!.isAcknowledged = true;
@@ -272,7 +272,7 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
         break;
     }
 
-    final CoapTransmissionContext? ctx =
+    final ctx =
         exchange.remove(transmissionContextKey) as CoapTransmissionContext?;
     if (ctx != null) {
       ctx.cancel();

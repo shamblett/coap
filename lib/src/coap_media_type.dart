@@ -132,10 +132,8 @@ class CoapMediaType {
       case applicationJson:
       case undefined:
         return true;
-        break;
       default:
         return false;
-        break;
     }
   }
 

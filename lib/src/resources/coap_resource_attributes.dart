@@ -121,7 +121,7 @@ class CoapResourceAttributes {
   /// If another value has been set for the attribute name, it will be removed.
   void set(String name, String? value) {
     if (_attributes[name] == null) {
-      _attributes[name] = List<String?>(1);
+      _attributes[name] = List<String>.filled(1, '');
     }
     _attributes[name]![0] = value;
   }

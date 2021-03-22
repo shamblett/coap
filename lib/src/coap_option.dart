@@ -106,7 +106,6 @@ class CoapOption {
       case optionTypeAccept:
       case optionTypeFencepostDivisor:
         return intValue;
-        break;
       case optionTypeProxyUri:
       case optionTypeETag:
       case optionTypeUriHost:
@@ -118,7 +117,6 @@ class CoapOption {
       case optionTypeIfMatch:
       case optionTypeIfNoneMatch:
         return stringValue;
-        break;
       default:
         return null;
     }
@@ -130,10 +128,8 @@ class CoapOption {
     switch (_type) {
       case optionTypeMaxAge:
         return intValue == CoapConstants.defaultMaxAge;
-        break;
       case optionTypeToken:
         return valueBytes!.lengthInBytes == 0;
-        break;
       default:
         return false;
     }
@@ -170,7 +166,6 @@ class CoapOption {
       case optionTypeAccept:
       case optionTypeFencepostDivisor:
         return optionFormat.integer;
-        break;
       case optionTypeUriHost:
       case optionTypeUriPath:
       case optionTypeUriQuery:
@@ -180,11 +175,9 @@ class CoapOption {
       case optionTypeProxyScheme:
       case optionTypeToken:
         return optionFormat.string;
-        break;
       case optionTypeETag:
       case optionTypeIfMatch:
         return optionFormat.opaque;
-        break;
       default:
         return optionFormat.unknown;
     }

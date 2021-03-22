@@ -47,9 +47,6 @@ class CoapRequest extends CoapMessage {
       query: uriQuery);
 
   set uri(Uri value) {
-    if (value == null) {
-      return;
-    }
     final host = value.host;
     var port = value.port;
     if ((host.isNotEmpty) &&

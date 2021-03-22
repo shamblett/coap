@@ -272,7 +272,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       _log!.info('Blockwise exchange block2 status is - $status');
       final blockStatus = CoapBlockOption(optionTypeBlock2);
       blockStatus.rawValue = status.currentNUM;
-      if (status != null && block2.num == blockStatus.num) {
+      if (block2.num == blockStatus.num) {
         // We got the block we expected
         _log!.info('Blockwise - Received expected block');
         status.addBlock(response.payload);
@@ -344,7 +344,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       } else {
         // ERROR, wrong block number (server error)
         // Currently, we reject it and cancel the request.
-        _log!.warn('Wrong block number. Expected ${status?.currentNUM} '
+        _log!.warn('Wrong block number. Expected ${status.currentNUM} '
             'but received ${block2.num}. Reject response; '
             'exchange has failed.');
         if (response.type == CoapMessageType.con) {
@@ -511,7 +511,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
 
   /// Clears the clean-up task.
   void _clearBlockCleanup(CoapExchange exchange) {
-    final Timer? timer = exchange.remove('BlockCleanupTimer') as Timer?;
+    final timer = exchange.remove('BlockCleanupTimer') as Timer?;
     timer?.cancel();
   }
 

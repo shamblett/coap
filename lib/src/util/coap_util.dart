@@ -5,7 +5,6 @@
  * Copyright :  S.Hamblett
  */
 
-import 'package:collection/collection.dart' show IterableExtension;
 part of coap;
 
 /// Cancellable asynchronous sleep support class
@@ -65,13 +64,9 @@ class CoapUtil {
 
   /// Checks if all items in both of the two enumerables are equal.
   static bool areSequenceEqualTo<T>(Iterable<T>? first, Iterable<T>? second,
-      [collection.Equality<T> equality]) {
-    final ie = collection.IterableEquality<T>(equality);
-    if (ie != null) {
-      return ie.equals(first, second);
-    } else {
-      return false;
-    }
+      [collection.Equality<T>? equality]) {
+    final ie = collection.IterableEquality<T>(equality!);
+    return ie.equals(first, second);
   }
 
   /// Finds the first matched item.
@@ -123,9 +118,6 @@ class CoapUtil {
 
   /// Stringify an iterable.
   static String iterableToString<T>(Iterable<T> source) {
-    if ((source == null) || (source.isEmpty)) {
-      return '';
-    }
     final sb = StringBuffer();
     for (final item in source) {
       sb.write(item.toString());
@@ -137,9 +129,6 @@ class CoapUtil {
 
   /// Stringify options in a message.
   static String optionsToString(CoapMessage msg) {
-    if (msg == null) {
-      return 'Message is null - no options';
-    }
     final sb = StringBuffer();
     sb.writeln('If-Match : ${iterableToString(msg.ifMatches)}');
     sb.write('Uri Host : ');
@@ -201,8 +190,8 @@ class CoapUtil {
 
   /// Puts a value associated with a key into a Map,
   /// and returns the old value, or null if not exists.
-  static TValue? put<TKey, TValue>(Map<TKey, TValue> dic, TKey key,
-      TValue value) {
+  static TValue? put<TKey, TValue>(
+      Map<TKey, TValue> dic, TKey key, TValue value) {
     TValue? old;
     if (dic.containsKey(key)) {
       old = dic[key];
@@ -217,7 +206,7 @@ class CoapUtil {
     final completer = Completer<CoapInternetAddress>();
     final log = CoapLogManager().logger;
     if (isAnIpAddress(host, addressType)) {
-      log.info(
+      log!.info(
           "CoapUtils:lookupHost host '$host' is an IP address, not resolving");
       final address = InternetAddress(host);
       final coapAddress = CoapInternetAddress(addressType, address);
@@ -225,7 +214,7 @@ class CoapUtil {
       completer.complete(coapAddress);
     } else {
       final addresses = await InternetAddress.lookup(host, type: addressType);
-      if (addresses != null && addresses.isNotEmpty) {
+      if (addresses.isNotEmpty) {
         final coapAddress = CoapInternetAddress(addressType, addresses[0]);
         coapAddress.bindAddress = bindAddress;
         completer.complete(coapAddress);
@@ -254,10 +243,6 @@ class CoapUtil {
 
   /// Resolved address logger
   static void logResolvedAddresses(List<InternetAddress> addresses) {
-    if (addresses == null) {
-      print('No resolved addresses');
-      return;
-    }
     for (final address in addresses) {
       print('Resolved address : $address');
     }
