@@ -12,21 +12,21 @@ part of coap;
 /// or a separate response with type CON or NON.
 class CoapResponse extends CoapMessage {
   /// Initializes a response message.
-  CoapResponse(int statusCode)
+  CoapResponse(int? statusCode)
       : super.withCode(CoapMessageType.unknown, statusCode) {
     _statusCode = code;
   }
 
-  int _statusCode;
+  int? _statusCode;
 
   /// The response status code.
-  int get statusCode => _statusCode;
+  int? get statusCode => _statusCode;
 
   /// Status code as a string
   String get statusCodeString => CoapCode.codeToString(_statusCode);
 
   /// The Round-Trip Time of this response.
-  double rtt;
+  double? rtt;
 
   /// A value indicating whether this response is the last
   /// response of an exchange.

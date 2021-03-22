@@ -13,14 +13,14 @@ part of coap;
 /// The file can't be empty, so version must as a minimum be present.
 abstract class DefaultCoapConfig {
   /// Instance
-  static DefaultCoapConfig inst;
+  static DefaultCoapConfig? inst;
 
   /// Protocol options
 
   /// The version of the CoAP protocol.
   String get version => '';
 
-  CoapISpec spec;
+  CoapISpec? spec;
 
   /// The default CoAP port for normal CoAP communication (not secure).
   int defaultPort = CoapConstants.defaultPort;

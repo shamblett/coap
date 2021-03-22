@@ -25,7 +25,7 @@ class CoapRespondEvent {
   CoapRespondEvent(this.resp);
 
   /// Response
-  CoapResponse resp;
+  CoapResponse? resp;
 }
 
 /// Responding event
@@ -61,7 +61,7 @@ class CoapSendingResponseEvent {
   CoapSendingResponseEvent(this.response);
 
   /// The response
-  CoapResponse response;
+  CoapResponse? response;
 }
 
 /// Occurs when a an empty message is about to be sent.
@@ -79,7 +79,7 @@ class CoapReceivingRequestEvent {
   CoapReceivingRequestEvent(this.request);
 
   /// The request
-  CoapRequest request;
+  CoapRequest? request;
 }
 
 /// Occurs when a response has been received.
@@ -127,7 +127,7 @@ class CoapDataReceivedEvent {
   typed.Uint8Buffer data;
 
   /// The address
-  CoapInternetAddress address;
+  CoapInternetAddress? address;
 }
 
 /// Event bus class
@@ -142,8 +142,8 @@ class CoapEventBus {
   /// Last event fired, useful for testing
   dynamic lastEvent;
 
-  final CoapILogger _log = CoapLogManager().logger;
-  events.EventBus _eventBus;
+  final CoapILogger? _log = CoapLogManager().logger;
+  late events.EventBus _eventBus;
   final bool _destroyed = false;
 
   /// Fire
@@ -152,7 +152,7 @@ class CoapEventBus {
       lastEvent = event;
       _eventBus.fire(event);
     } else {
-      _log.warn('Event Bus - attempting to raise event on '
+      _log!.warn('Event Bus - attempting to raise event on '
           'destroyed event bus : $event');
     }
   }

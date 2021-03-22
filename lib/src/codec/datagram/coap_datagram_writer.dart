@@ -17,21 +17,21 @@ class CoapDatagramWriter {
     _currentBitIndex = 7;
   }
 
-  final CoapILogger _log = CoapLogManager().logger;
+  final CoapILogger? _log = CoapLogManager().logger;
 
-  typed.Uint8Buffer _buffer;
-  ByteData _currentByte;
-  int _currentBitIndex;
+  typed.Uint8Buffer? _buffer;
+  late ByteData _currentByte;
+  late int _currentBitIndex;
 
   /// Writes a sequence of bits to the stream
-  void write(int data, int numBits) {
-    if (numBits < 32 && data >= (1 << numBits)) {
-      _log.warn('Truncating value {$data} to {$numBits}-bit integer');
+  void write(int? data, int numBits) {
+    if (numBits < 32 && data! >= (1 << numBits)) {
+      _log!.warn('Truncating value {$data} to {$numBits}-bit integer');
     }
 
     for (var i = numBits - 1; i >= 0; i--) {
       // Test bit
-      final bit = (data >> i & 1) != 0;
+      final bit = (data! >> i & 1) != 0;
       if (bit) {
         // Set bit in current byte
         _currentByte.setUint8(
@@ -49,7 +49,7 @@ class CoapDatagramWriter {
   }
 
   /// Writes a sequence of bytes to the stream
-  void writeBytes(typed.Uint8Buffer bytes) {
+  void writeBytes(typed.Uint8Buffer? bytes) {
     // Check if anything to do at all
     if (bytes == null) {
       return;
@@ -63,7 +63,7 @@ class CoapDatagramWriter {
     } else {
       // if bit buffer is empty, call can be delegated
       // to byte stream to increase
-      _buffer.addAll(bytes);
+      _buffer!.addAll(bytes);
     }
   }
 
@@ -74,14 +74,14 @@ class CoapDatagramWriter {
   }
 
   /// Returns a byte array containing the sequence of bits written
-  typed.Uint8Buffer toByteArray() {
+  typed.Uint8Buffer? toByteArray() {
     _writeCurrentByte();
     return _buffer;
   }
 
   void _writeCurrentByte() {
     if (_currentBitIndex < 7) {
-      _buffer.add(_currentByte.getUint8(0));
+      _buffer!.add(_currentByte.getUint8(0));
       _currentByte.setUint8(0, 0);
       _currentBitIndex = 7;
     }

@@ -215,7 +215,7 @@ void main() {
     writer.write(codeIn, codeSz);
     writer.write(msgIdIn, msgIdSz);
 
-    final data = writer.toByteArray();
+    final data = writer.toByteArray()!;
     final dataRef = typed.Uint8Buffer()..addAll(<int>[0x41, 0x01, 0x12, 0x34]);
 
     expect(leq.equals(dataRef.toList(), data.toList()), isTrue);

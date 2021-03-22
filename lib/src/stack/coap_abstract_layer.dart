@@ -10,7 +10,7 @@ part of coap;
 /// A partial implementation of a layer.
 class CoapAbstractLayer implements CoapILayer {
   @override
-  CoapIExecutor executor;
+  CoapIExecutor? executor;
 
   @override
   void sendRequest(
@@ -20,7 +20,7 @@ class CoapAbstractLayer implements CoapILayer {
 
   @override
   void sendResponse(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse? response) {
     nextLayer.sendResponse(exchange, response);
   }
 

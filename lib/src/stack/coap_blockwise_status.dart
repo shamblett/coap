@@ -10,7 +10,7 @@ part of coap;
 /// Represents the status of a blockwise transfer of a request or a response.
 class CoapBlockwiseStatus {
   /// Instantiates a new blockwise status.
-  CoapBlockwiseStatus(int contentFormat) {
+  CoapBlockwiseStatus(int? contentFormat) {
     _contentFormat = contentFormat;
   }
 
@@ -22,7 +22,7 @@ class CoapBlockwiseStatus {
   static const int noObserve = -1;
 
   /// Current num
-  int currentNUM = 0;
+  int? currentNUM = 0;
 
   /// Vurrent SZX
   int currentSZX = 0;
@@ -34,13 +34,13 @@ class CoapBlockwiseStatus {
   bool get isRandomAccess => randomAccess;
 
   /// The Content-Format must stay the same for the whole transfer.
-  int _contentFormat;
+  int? _contentFormat;
 
   /// Content format
-  int get contentFormat => _contentFormat;
+  int? get contentFormat => _contentFormat;
 
   /// Complete
-  bool complete;
+  late bool complete;
 
   /// Observe
   int observe = noObserve;
@@ -52,7 +52,7 @@ class CoapBlockwiseStatus {
   int get blockCount => blocks.length;
 
   /// Adds the specified block to the current list of blocks.
-  void addBlock(typed.Uint8Buffer block) {
+  void addBlock(typed.Uint8Buffer? block) {
     if (block != null) {
       blocks.add(block);
     }

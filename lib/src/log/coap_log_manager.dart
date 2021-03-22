@@ -10,12 +10,12 @@ part of coap;
 /// Allows selection and management of logging for the coap library.
 class CoapLogManager {
   /// Construction
-  factory CoapLogManager([String type]) {
+  factory CoapLogManager([String? type]) {
     _type = type;
     return _singleton ??= CoapLogManager._internal(_type);
   }
 
-  CoapLogManager._internal([String type]) {
+  CoapLogManager._internal([String? type]) {
     var setCommon = true;
     if (type == null || type == 'console') {
       logger = CoapConsoleLogger();
@@ -25,32 +25,32 @@ class CoapLogManager {
     }
     // Logging common configuration
     if (setCommon) {
-      if (DefaultCoapConfig.inst.logDebug) {
+      if (DefaultCoapConfig.inst!.logDebug) {
         // Debug maps to severe
-        logger.level = logging.Level.SEVERE;
+        logger!.level = logging.Level.SEVERE;
       }
-      if (DefaultCoapConfig.inst.logError) {
+      if (DefaultCoapConfig.inst!.logError) {
         // Error maps to shout, always sets
-        logger.level = logging.Level.SHOUT;
+        logger!.level = logging.Level.SHOUT;
       }
-      if (DefaultCoapConfig.inst.logWarn) {
+      if (DefaultCoapConfig.inst!.logWarn) {
         // Warning is warning
-        logger.level = logging.Level.WARNING;
+        logger!.level = logging.Level.WARNING;
       }
-      if (DefaultCoapConfig.inst.logInfo) {
+      if (DefaultCoapConfig.inst!.logInfo) {
         // Info is info
-        logger.level = logging.Level.INFO;
+        logger!.level = logging.Level.INFO;
       }
     }
   }
 
   /// Logger type
-  static String _type;
+  static String? _type;
 
-  static CoapLogManager _singleton;
+  static CoapLogManager? _singleton;
 
   /// The logger
-  CoapILogger logger;
+  CoapILogger? logger;
 
   /// Destroys the instance, the log manager must be reconstructed before
   /// use

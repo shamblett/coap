@@ -26,8 +26,8 @@ FutureOr main() async {
   request.markObserve();
 
   // Getting responses from the observable resource
-  request.responses.listen((CoapResponse response) {
-    print('ISSUE: - payload: ${response.payloadString}');
+  request.responses.listen((CoapResponse? response) {
+    print('ISSUE: - payload: ${response!.payloadString}');
   });
 
   client.request = request;

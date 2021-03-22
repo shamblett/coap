@@ -40,10 +40,8 @@ FutureOr<void> main(List<String> args) async {
   print('EXAMPLE - Sending get request to $host, waiting for response....');
 
   final response = await client.get();
-  if (response != null) {
-    print('EXAMPLE - Opps we have a response, we shouldn\'t have!');
-  } else {
-    print('EXAMPLE - expected behaviour');
+  if (!response.isEmpty) {
+    print('EXAMPLE - Oops we have a response, we shouldn\'t have!');
   }
 
   // Clean up

@@ -10,13 +10,13 @@ part of coap;
 /// Represents a name-filter pair that an <see cref="IChain&lt;TFilter, TNextFilter&gt;"/> contains.
 abstract class CoapIEntry<TFilter, TNextFilter> {
   /// Gets the name of the filter.
-  String name;
+  String? name;
 
   /// Gets the filter.
-  TFilter filter;
+  TFilter? filter;
 
   /// Gets the <typeparamref name="TNextFilter"/> of the filter.
-  TNextFilter nextFilter;
+  TNextFilter? nextFilter;
 
   /// Adds the specified filter with the specified name just before this entry.
   void addBefore(String name, TFilter filter);

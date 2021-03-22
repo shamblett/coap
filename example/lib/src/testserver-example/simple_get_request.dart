@@ -36,11 +36,7 @@ FutureOr<void> main(List<String> args) async {
   print('EXAMPLE - Sending get request to $host, waiting for response....');
 
   final response = await client.get();
-  if (response != null) {
-    print('EXAMPLE - ${response.payloadString}');
-  } else {
-    print('EXAMPLE - no response received');
-  }
+  print('EXAMPLE - ${response.payloadString}');
 
   // Clean up
   client.close();

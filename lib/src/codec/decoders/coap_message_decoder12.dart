@@ -14,7 +14,7 @@ class CoapMessageDecoder12 extends CoapMessageDecoder {
     readProtocol();
   }
 
-  int _optionCount;
+  int? _optionCount;
 
   @override
   bool get isWellFormed => _version == CoapDraft12.version;
@@ -22,11 +22,11 @@ class CoapMessageDecoder12 extends CoapMessageDecoder {
   @override
   void readProtocol() {
     // Read headers
-    _version = _reader.read(CoapDraft12.versionBits);
-    _type = _reader.read(CoapDraft12.typeBits);
-    _optionCount = _reader.read(CoapDraft12.optionCountBits);
-    _code = _reader.read(CoapDraft12.codeBits);
-    _id = _reader.read(CoapDraft12.idBits);
+    _version = _reader!.read(CoapDraft12.versionBits);
+    _type = _reader!.read(CoapDraft12.typeBits);
+    _optionCount = _reader!.read(CoapDraft12.optionCountBits);
+    _code = _reader!.read(CoapDraft12.codeBits);
+    _id = _reader!.read(CoapDraft12.idBits);
   }
 
   @override
@@ -35,14 +35,14 @@ class CoapMessageDecoder12 extends CoapMessageDecoder {
     var currentOption = 0;
     var hasMoreOptions = _optionCount == 15;
     for (var i = 0;
-        (i < _optionCount || hasMoreOptions) && _reader.bytesAvailable;
+        (i < _optionCount! || hasMoreOptions) && _reader!.bytesAvailable;
         i++) {
       // first 4 option bits: either option jump or option delta
-      var optionDelta = _reader.read(CoapDraft12.optionDeltaBits);
+      var optionDelta = _reader!.read(CoapDraft12.optionDeltaBits);
 
       if (optionDelta == 15) {
         // option jump or end-of-options marker
-        final bits = _reader.read(4);
+        final bits = _reader!.read(4);
         switch (bits) {
           case 0:
             // end-of-options marker read (0xF0), payload follows
@@ -50,17 +50,17 @@ class CoapMessageDecoder12 extends CoapMessageDecoder {
             continue;
           case 1:
             // 0xF1 (Delta = 15)
-            optionDelta = 15 + _reader.read(CoapDraft12.optionDeltaBits);
+            optionDelta = 15 + _reader!.read(CoapDraft12.optionDeltaBits);
             break;
           case 2:
             // Delta = ((Option Jump Value) + 2) * 8
-            optionDelta = (_reader.read(8) + 2) * 8 +
-                _reader.read(CoapDraft12.optionDeltaBits);
+            optionDelta = (_reader!.read(8) + 2) * 8 +
+                _reader!.read(CoapDraft12.optionDeltaBits);
             break;
           case 3:
             // Delta = ((Option Jump Value) + 258) * 8
-            optionDelta = (_reader.read(16) + 258) * 8 +
-                _reader.read(CoapDraft12.optionDeltaBits);
+            optionDelta = (_reader!.read(16) + 258) * 8 +
+                _reader!.read(CoapDraft12.optionDeltaBits);
             break;
           default:
             break;
@@ -70,7 +70,7 @@ class CoapMessageDecoder12 extends CoapMessageDecoder {
       currentOption += optionDelta;
       final currentOptionType = CoapDraft12.getOptionType(currentOption);
 
-      var length = _reader.read(CoapDraft12.optionLengthBaseBits);
+      var length = _reader!.read(CoapDraft12.optionLengthBaseBits);
       if (length == 15) {
         // When the Length field is set to 15, another byte is added as
         // an 8-bit unsigned integer whose value is added to the 15,
@@ -80,20 +80,20 @@ class CoapMessageDecoder12 extends CoapMessageDecoder {
         // "add 255, read another extension byte".
         var additionalLength = 0;
         do {
-          additionalLength = _reader.read(8);
+          additionalLength = _reader!.read(8);
           length += additionalLength;
         } while (additionalLength >= 255);
       }
 
       // read option
       final opt = CoapOption.create(currentOptionType);
-      opt.valueBytes = _reader.readBytes(length);
+      opt.valueBytes = _reader!.readBytes(length);
 
       message.addOption(opt);
     }
 
     message.token ??= CoapConstants.emptyToken;
 
-    message.payload = _reader.readBytesLeft();
+    message.payload = _reader!.readBytesLeft();
   }
 }

@@ -41,15 +41,11 @@ FutureOr<void> main(List<String> args) async {
   print('EXAMPLE - Sending get request to $host, waiting for response....');
 
   final response = await client.get();
-  if (response != null) {
-    print('EXAMPLE - response received');
-    if (response.payloadString != null) {
-      print('EXAMPLE - Payload : ${response.payloadString}');
-    } else {
-      print('EXAMPLE - Status code: ${response.statusCodeString}');
-    }
+  print('EXAMPLE - response received');
+  if (response.payloadString != null) {
+    print('EXAMPLE - Payload : ${response.payloadString}');
   } else {
-    print('EXAMPLE - no response received');
+    print('EXAMPLE - Status code: ${response.statusCodeString}');
   }
 
   // Clean up

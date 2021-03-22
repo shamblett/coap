@@ -5,6 +5,7 @@
  * Copyright :  S.Hamblett
  */
 
+import 'package:collection/collection.dart' show IterableExtension;
 part of coap;
 
 /// Cancellable asynchronous sleep support class
@@ -22,7 +23,7 @@ class CoapCancellableAsyncSleep {
   final Completer<void> _completer = Completer<void>();
 
   /// The timer
-  Timer _timer;
+  late Timer _timer;
 
   /// Timer running flag
   bool _running = false;
@@ -63,7 +64,7 @@ class CoapUtil {
   }
 
   /// Checks if all items in both of the two enumerables are equal.
-  static bool areSequenceEqualTo<T>(Iterable<T> first, Iterable<T> second,
+  static bool areSequenceEqualTo<T>(Iterable<T>? first, Iterable<T>? second,
       [collection.Equality<T> equality]) {
     final ie = collection.IterableEquality<T>(equality);
     if (ie != null) {
@@ -75,8 +76,8 @@ class CoapUtil {
 
   /// Finds the first matched item.
   /// Returns the item found, or null if none is matched.
-  static T firstOrDefault<T>(Iterable<T> source, bool Function(T) condition) =>
-      source.firstWhere(condition, orElse: () => null);
+  static T? firstOrDefault<T>(Iterable<T> source, bool Function(T) condition) =>
+      source.firstWhereOrNull(condition);
 
   /// Checks if matched item exists.
   /// Returns true if exists any matched item, otherwise false.
@@ -150,7 +151,7 @@ class CoapUtil {
         ? sb.writeln('If-None Match : ${iterableToString(msg.ifNoneMatches)}')
         : sb.writeln('None');
     sb.write('Uri Port : ');
-    if ((msg.uriPort != null) && (msg.uriPort > 0)) {
+    if ((msg.uriPort != null) && (msg.uriPort! > 0)) {
       sb.writeln(msg.uriPort);
     } else {
       sb.writeln('None');
@@ -200,9 +201,9 @@ class CoapUtil {
 
   /// Puts a value associated with a key into a Map,
   /// and returns the old value, or null if not exists.
-  static TValue put<TKey, TValue>(
-      Map<TKey, TValue> dic, TKey key, TValue value) {
-    TValue old;
+  static TValue? put<TKey, TValue>(Map<TKey, TValue> dic, TKey key,
+      TValue value) {
+    TValue? old;
     if (dic.containsKey(key)) {
       old = dic[key];
     }
@@ -212,7 +213,7 @@ class CoapUtil {
 
   /// Host lookup, does not use the resolver if the host is an IP address.
   static Future<CoapInternetAddress> lookupHost(String host,
-      InternetAddressType addressType, InternetAddress bindAddress) async {
+      InternetAddressType addressType, InternetAddress? bindAddress) async {
     final completer = Completer<CoapInternetAddress>();
     final log = CoapLogManager().logger;
     if (isAnIpAddress(host, addressType)) {

@@ -51,12 +51,8 @@ FutureOr<void> main(List<String> args) async {
   // this with a specified timeout in ms. If the timeout is exceeded the
   // response will be null, otherwise you can then interrogate the response.
   final response = await preparedRequest.send().waitForResponse(30000);
-  if (response != null) {
-    print('EXAMPLE - response received');
-    CoapLinkFormat.parse(response.payloadString).forEach(print);
-  } else {
-    print('EXAMPLE - no response received');
-  }
+  print('EXAMPLE - response received');
+  CoapLinkFormat.parse(response.payloadString!).forEach(print);
 
   // You can also listen for successive responses if you are observing,
   // see the time_obs_resource.dart for further details.

@@ -11,27 +11,27 @@ part of coap;
 /// as the timeout of the last notification and the current number.
 class CoapObserveNotificationOrderer {
   /// Construction
-  CoapObserveNotificationOrderer(DefaultCoapConfig config) {
+  CoapObserveNotificationOrderer(DefaultCoapConfig? config) {
     _config = config;
   }
 
-  DefaultCoapConfig _config;
-  int _number;
+  DefaultCoapConfig? _config;
+  int? _number;
 
   /// Current number
-  int get current => _number;
+  int? get current => _number;
 
   /// Time
-  DateTime timestamp;
+  DateTime? timestamp;
 
   /// Gets a new observe option number.
   int getNextObserveNumber() {
-    var next = _number++;
+    var next = _number++!;
     while (next >= 1 << 24) {
       if (_number == next) {
         _number = 0;
       }
-      next = _number++;
+      next = _number++!;
     }
     return next;
   }
@@ -50,12 +50,12 @@ class CoapObserveNotificationOrderer {
     // We use the notation from the observe draft-08.
     final t1 = timestamp;
     final t2 = DateTime.now();
-    final v1 = current;
-    final v2 = obs;
-    final notifMaxAge = _config.notificationMaxAge;
+    final v1 = current!;
+    final v2 = obs!;
+    final notifMaxAge = _config!.notificationMaxAge;
     if (v1 < v2 && v2 - v1 < 1 << 23 ||
         v1 > v2 && v1 - v2 > 1 << 23 ||
-        t2.isAfter(t1.add(Duration(milliseconds: notifMaxAge)))) {
+        t2.isAfter(t1!.add(Duration(milliseconds: notifMaxAge)))) {
       timestamp = t2;
       _number = v2;
       return true;

@@ -44,9 +44,9 @@ void main() {
       final fourByteValue = pow(2, 32) - 1;
       final fiveByteValue = fourByteValue + 1;
       final opt1 =
-          CoapOption.createLongVal(optionTypeContentType, fourByteValue);
+          CoapOption.createLongVal(optionTypeContentType, fourByteValue as int);
       final opt2 =
-          CoapOption.createLongVal(optionTypeContentType, fiveByteValue);
+          CoapOption.createLongVal(optionTypeContentType, fiveByteValue as int);
       expect(opt1.length, 8);
       expect(opt2.length, 8);
       expect(opt1.longValue, fourByteValue);
@@ -124,7 +124,6 @@ void main() {
 
       expect(opt1 == opt2, isFalse);
       expect(opt2 == opt22, isTrue);
-      expect(opt1 == null, isFalse);
     });
 
     test('Empty token', () {
@@ -191,90 +190,90 @@ void main() {
       final option = CoapOption.create(optionTypeReserved);
 
       option.intValue = 0;
-      expect(option.valueBytes[0], 0);
+      expect(option.valueBytes![0], 0);
 
       option.intValue = 11;
-      expect(option.valueBytes[0], 11);
+      expect(option.valueBytes![0], 11);
 
       option.intValue = 255;
-      expect(option.valueBytes[0], 255);
+      expect(option.valueBytes![0], 255);
 
       option.intValue = 256;
-      expect(option.valueBytes[0], 0);
-      expect(option.valueBytes[1], 1);
+      expect(option.valueBytes![0], 0);
+      expect(option.valueBytes![1], 1);
 
       option.intValue = 18273;
-      expect(option.valueBytes[0], 97);
-      expect(option.valueBytes[1], 71);
+      expect(option.valueBytes![0], 97);
+      expect(option.valueBytes![1], 71);
 
       option.intValue = 1 << 16;
-      expect(option.valueBytes[0], 0);
-      expect(option.valueBytes[1], 0);
-      expect(option.valueBytes[2], 1);
+      expect(option.valueBytes![0], 0);
+      expect(option.valueBytes![1], 0);
+      expect(option.valueBytes![2], 1);
 
       option.intValue = 23984773;
-      expect(option.valueBytes[0], 133);
-      expect(option.valueBytes[1], 250);
-      expect(option.valueBytes[2], 109);
-      expect(option.valueBytes[3], 1);
+      expect(option.valueBytes![0], 133);
+      expect(option.valueBytes![1], 250);
+      expect(option.valueBytes![2], 109);
+      expect(option.valueBytes![3], 1);
 
       option.intValue = 0xFFFFFFFF;
-      expect(option.valueBytes[0], 0xFF);
-      expect(option.valueBytes[1], 0xFF);
-      expect(option.valueBytes[2], 0xFF);
-      expect(option.valueBytes[3], 0xFF);
+      expect(option.valueBytes![0], 0xFF);
+      expect(option.valueBytes![1], 0xFF);
+      expect(option.valueBytes![2], 0xFF);
+      expect(option.valueBytes![3], 0xFF);
     });
 
     test('Set long value', () {
       final option = CoapOption.create(optionTypeReserved);
 
       option.longValue = 0;
-      expect(option.valueBytes[0], 0);
+      expect(option.valueBytes![0], 0);
 
       option.longValue = 11;
-      expect(option.valueBytes[0], 11);
+      expect(option.valueBytes![0], 11);
 
       option.longValue = 255;
-      expect(option.valueBytes[0], 255);
+      expect(option.valueBytes![0], 255);
 
       option.longValue = 256;
-      expect(option.valueBytes[0], 0);
-      expect(option.valueBytes[1], 1);
+      expect(option.valueBytes![0], 0);
+      expect(option.valueBytes![1], 1);
 
       option.longValue = 18273;
-      expect(option.valueBytes[0], 97);
-      expect(option.valueBytes[1], 71);
+      expect(option.valueBytes![0], 97);
+      expect(option.valueBytes![1], 71);
 
       option.longValue = 1 << 16;
-      expect(option.valueBytes[0], 0);
-      expect(option.valueBytes[1], 0);
-      expect(option.valueBytes[2], 1);
+      expect(option.valueBytes![0], 0);
+      expect(option.valueBytes![1], 0);
+      expect(option.valueBytes![2], 1);
 
       option.longValue = 23984773;
-      expect(option.valueBytes[0], 133);
-      expect(option.valueBytes[1], 250);
-      expect(option.valueBytes[2], 109);
-      expect(option.valueBytes[3], 1);
+      expect(option.valueBytes![0], 133);
+      expect(option.valueBytes![1], 250);
+      expect(option.valueBytes![2], 109);
+      expect(option.valueBytes![3], 1);
 
       option.longValue = 0xFFFFFFFF;
-      expect(option.valueBytes[0], 0xFF);
-      expect(option.valueBytes[1], 0xFF);
-      expect(option.valueBytes[2], 0xFF);
-      expect(option.valueBytes[3], 0xFF);
+      expect(option.valueBytes![0], 0xFF);
+      expect(option.valueBytes![1], 0xFF);
+      expect(option.valueBytes![2], 0xFF);
+      expect(option.valueBytes![3], 0xFF);
 
       option.longValue = 0x9823749837239845;
-      expect(option.valueBytes.toList(),
+      expect(option.valueBytes!.toList(),
           <int>[69, 152, 35, 55, 152, 116, 35, 152]);
 
       option.longValue = 0xFFFFFFFFFFFFFFFF;
-      expect(option.valueBytes[0], 0xFF);
-      expect(option.valueBytes[1], 0xFF);
-      expect(option.valueBytes[2], 0xFF);
-      expect(option.valueBytes[3], 0xFF);
-      expect(option.valueBytes[4], 0xFF);
-      expect(option.valueBytes[5], 0xFF);
-      expect(option.valueBytes[6], 0xFF);
-      expect(option.valueBytes[7], 0xFF);
+      expect(option.valueBytes![0], 0xFF);
+      expect(option.valueBytes![1], 0xFF);
+      expect(option.valueBytes![2], 0xFF);
+      expect(option.valueBytes![3], 0xFF);
+      expect(option.valueBytes![4], 0xFF);
+      expect(option.valueBytes![5], 0xFF);
+      expect(option.valueBytes![6], 0xFF);
+      expect(option.valueBytes![7], 0xFF);
     });
 
     test('Split', () {
@@ -328,7 +327,7 @@ void main() {
     test('Get value', () {
       /// Helper function that creates a BlockOption with the specified parameters
       /// and serializes them to a byte array.
-      typed.Uint8Buffer toBytes(int szx, int num, {bool m}) {
+      typed.Uint8Buffer? toBytes(int szx, int num, {required bool m}) {
         final opt = CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m: m);
         return opt.blockValueBytes;
       }
@@ -349,7 +348,7 @@ void main() {
     test('Combined', () {
       /// Converts a BlockOption with the specified parameters to a byte array and
       /// back and checks that the result is the same as the original.
-      void testCombined(int szx, int num, {bool m}) {
+      void testCombined(int szx, int num, {required bool m}) {
         final block =
             CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m: m);
         final copy = CoapBlockOption(optionTypeBlock1);

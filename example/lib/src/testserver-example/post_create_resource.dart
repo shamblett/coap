@@ -43,33 +43,25 @@ FutureOr<void> main(List<String> args) async {
   print('EXAMPLE - Sending post request to $host, waiting for response....');
 
   var response = await client.post('SJHTestPost');
-  if (response != null) {
-    print('EXAMPLE - post response received, sending get');
-    print(response.payloadString);
-    // Now get and check the payload
-    final getRequest = CoapRequest.newGet();
-    getRequest.addUriPath('storage');
-    client.request = getRequest;
-    response = await client.get();
-    if (response != null) {
-      print('EXAMPLE - get response received');
-      print(response.payloadString);
-      final options = response.getAllOptions();
-      for (final option in options) {
-        if (option.type == optionTypeUriQuery) {
-          print('Title is : ${option.stringValue.split('=')[1]}');
-        }
-      }
-      if (response.payloadString == 'SJHTestPost') {
-        print('EXAMPLE - Hoorah! the post has worked');
-      } else {
-        print('EXAMPLE - Boo! the post failed');
-      }
-    } else {
-      print('EXAMPLE - no get response received');
+  print('EXAMPLE - post response received, sending get');
+  print(response.payloadString);
+  // Now get and check the payload
+  final getRequest = CoapRequest.newGet();
+  getRequest.addUriPath('storage');
+  client.request = getRequest;
+  response = await client.get();
+  print('EXAMPLE - get response received');
+  print(response.payloadString);
+  final options = response.getAllOptions();
+  for (final option in options) {
+    if (option.type == optionTypeUriQuery) {
+      print('Title is : ${option.stringValue.split('=')[1]}');
     }
+  }
+  if (response.payloadString == 'SJHTestPost') {
+    print('EXAMPLE - Hoorah! the post has worked');
   } else {
-    print('EXAMPLE - no post response received');
+    print('EXAMPLE - Boo! the post failed');
   }
 
   // Clean up

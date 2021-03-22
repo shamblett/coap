@@ -12,23 +12,23 @@ class CoapNetworkUDP implements CoapINetwork {
   /// Initialize with an address and a port
   CoapNetworkUDP(this.address, this.port);
 
-  final CoapILogger _log = CoapLogManager().logger;
+  final CoapILogger? _log = CoapLogManager().logger;
 
   final CoapEventBus _eventBus = CoapEventBus();
 
   /// The internet address
   @override
-  CoapInternetAddress address;
+  CoapInternetAddress? address;
 
   /// The port to use for sending.
   @override
-  int port;
+  int? port;
 
   @override
   final StreamController<List<int>> _data =
       StreamController<List<int>>.broadcast();
 
-  RawDatagramSocket _socket;
+  RawDatagramSocket? _socket;
   bool _bound = false;
 
   /// The incoming data stream, call receive() to instigate
@@ -37,19 +37,19 @@ class CoapNetworkUDP implements CoapINetwork {
   Stream<List<int>> get data => _data.stream;
 
   /// UDP socket
-  RawDatagramSocket get socket => _socket;
+  RawDatagramSocket? get socket => _socket;
 
   @override
   int send(typed.Uint8Buffer data) {
     try {
       if (_bound) {
-        _socket?.send(data.toList(), address.address, port);
+        _socket?.send(data.toList(), address!.address, port!);
       }
     } on SocketException catch (e) {
-      _log.error(
+      _log!.error(
           'CoapNetworkUDP Recieve - severe error - socket exception : $e');
     } on Exception catch (e) {
-      _log.error('CoapNetworkUDP Send - severe error : $e');
+      _log!.error('CoapNetworkUDP Send - severe error : $e');
     }
     return -1;
   }
@@ -76,10 +76,10 @@ class CoapNetworkUDP implements CoapINetwork {
         }
       });
     } on SocketException catch (e) {
-      _log.error(
+      _log!.error(
           'CoapNetworkUDP Recieve - severe error - socket exception : $e');
     } on Exception catch (e) {
-      _log.error(
+      _log!.error(
           'CoapNetworkUDP Recieve - severe error - unknown exception: $e');
     }
   }
@@ -92,26 +92,26 @@ class CoapNetworkUDP implements CoapINetwork {
     try {
       // Use a port of 0 here as we are a client, this will generate
       // a random source port.
-      final bindAddress = address.bind;
-      _log.info('CoapNetworkUDP - binding to $bindAddress');
+      final bindAddress = address!.bind;
+      _log!.info('CoapNetworkUDP - binding to $bindAddress');
       RawDatagramSocket.bind(bindAddress, 0).then((RawDatagramSocket socket) {
         _socket = socket;
         receive();
         _bound = true;
       });
     } on SocketException catch (e) {
-      _log.error('CoapNetworkUDP Recieve - severe error - socket exception '
-          'failed to bind, address ${address.address.host}, '
+      _log!.error('CoapNetworkUDP Recieve - severe error - socket exception '
+          'failed to bind, address ${address!.address.host}, '
           'port $port with exception $e: $e');
     } on Exception catch (e) {
-      _log.error('CoapNetworkUDP - severe error - Failed to bind, '
-          'address ${address.address.host}, port $port with exception $e');
+      _log!.error('CoapNetworkUDP - severe error - Failed to bind, '
+          'address ${address!.address.host}, port $port with exception $e');
     }
   }
 
   @override
   void close() {
-    _log.info('Network UDP - closing ${address.address.host}, port $port');
+    _log!.info('Network UDP - closing ${address!.address.host}, port $port');
     _socket?.close();
     _data.close();
   }

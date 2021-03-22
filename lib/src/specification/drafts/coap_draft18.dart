@@ -36,7 +36,7 @@ class CoapDraft18 implements CoapISpec {
   /// Payload marker
   static const int payloadMarker = 0xFF;
 
-  static final CoapILogger _log = CoapLogManager().logger;
+  static final CoapILogger? _log = CoapLogManager().logger;
 
   @override
   String get name => 'draft-ietf-core-coap-18';
@@ -52,24 +52,25 @@ class CoapDraft18 implements CoapISpec {
       CoapMessageDecoder18(data);
 
   @override
-  typed.Uint8Buffer encode(CoapMessage msg) =>
+  typed.Uint8Buffer? encode(CoapMessage msg) =>
       newMessageEncoder().encodeMessage(msg);
 
   @override
-  CoapMessage decode(typed.Uint8Buffer bytes) =>
+  CoapMessage? decode(typed.Uint8Buffer bytes) =>
       newMessageDecoder(bytes).decodeMessage();
 
   /// Calculates the value used in the extended option fields as specified
   /// in draft-ietf-core-coap-18, section 3.1.
-  static int getValueFromOptionNibble(int nibble, CoapDatagramReader datagram) {
+  static int getValueFromOptionNibble(
+      int nibble, CoapDatagramReader? datagram) {
     if (nibble < 13) {
       return nibble;
     } else if (nibble == 13) {
-      return datagram.read(8) + 13;
+      return datagram!.read(8) + 13;
     } else if (nibble == 14) {
-      return datagram.read(16) + 269;
+      return datagram!.read(16) + 269;
     } else {
-      _log.warn('Unsupported option delta $nibble');
+      _log!.warn('Unsupported option delta $nibble');
       return 0;
     }
   }
@@ -83,7 +84,7 @@ class CoapDraft18 implements CoapISpec {
     } else if (optionValue <= 65535 + 269) {
       return 14;
     } else {
-      _log.warn('Unsupported option delta $optionValue');
+      _log!.warn('Unsupported option delta $optionValue');
       return 0;
     }
   }

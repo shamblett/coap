@@ -1,8 +1,0 @@
-name: example
-
-dependencies:
-  coap:
-    path: ../
-
-dev_dependencies:
-  build_runner:

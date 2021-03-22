@@ -10,11 +10,11 @@ part of coap;
 /// Message encoder 13
 class CoapMessageEncoder13 extends CoapMessageEncoder {
   @override
-  void serialize(CoapDatagramWriter writer, CoapMessage message, int code) {
+  void serialize(CoapDatagramWriter writer, CoapMessage message, int? code) {
     // Write fixed-size CoAP headers
     writer.write(CoapDraft13.version, CoapDraft13.versionBits);
     writer.write(message.type, CoapDraft13.typeBits);
-    writer.write(message.token == null ? 0 : message.token.length,
+    writer.write(message.token == null ? 0 : message.token!.length,
         CoapDraft13.tokenLengthBits);
     writer.write(code, CoapDraft13.codeBits);
     writer.write(message.id, CoapDraft13.idBits);
@@ -23,7 +23,8 @@ class CoapMessageEncoder13 extends CoapMessageEncoder {
     writer.writeBytes(message.token);
 
     var lastOptionNumber = 0;
-    final List<CoapOption> options = message.getAllOptions();
+    final List<CoapOption> options =
+        message.getAllOptions() as List<CoapOption>;
     CoapUtil.insertionSort(
         options, (dynamic a, dynamic b) => a.type.compareTo(b.type));
 
@@ -66,7 +67,7 @@ class CoapMessageEncoder13 extends CoapMessageEncoder {
       lastOptionNumber = optNum;
     }
 
-    if (message.payload != null && message.payload.isNotEmpty) {
+    if (message.payload != null && message.payload!.isNotEmpty) {
       // If payload is present and of non-zero length, it is prefixed by
       // an one-byte Payload Marker (0xFF) which indicates the end of
       // options and the start of the payload

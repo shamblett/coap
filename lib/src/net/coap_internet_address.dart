@@ -26,7 +26,7 @@ class CoapInternetAddress {
 
   /// Bind address if not using the default of all interfaces, note this
   /// address type must match the type selection
-  InternetAddress bindAddress;
+  InternetAddress? bindAddress;
 
   /// The bind address
   String get bind {

@@ -761,13 +761,13 @@ void main() {
       print('Draft name is - $name');
       print('Test number is $testNo');
       print('Data is - $data');
-      print('Chk  is - ${check[name][testNo]}');
+      print('Chk  is - ${check[name]![testNo]}');
     }
 
     void checkData(String name, typed.Uint8Buffer data, int testNo) {
       printData(name, data.toList(), testNo);
-      expect(data.toList().length, check[name][testNo].length);
-      expect(leq.equals(data.toList(), check[name][testNo]), isTrue);
+      expect(data.toList().length, check[name]![testNo].length);
+      expect(leq.equals(data.toList(), check[name]![testNo]), isTrue);
     }
 
     void testMessage(CoapISpec spec, int testNo) {
@@ -776,15 +776,15 @@ void main() {
 
       msg.id = 12345;
       msg.payload = typed.Uint8Buffer()..addAll('payload'.codeUnits);
-      final data = spec.encode(msg);
+      final data = spec.encode(msg)!;
       checkData(spec.name, data, testNo);
-      final convMsg = spec.decode(data);
+      final convMsg = spec.decode(data)!;
       expect(msg.code, convMsg.code);
       expect(msg.type, convMsg.type);
       expect(msg.id, convMsg.id);
       expect(msg.getAllOptions().length, convMsg.getAllOptions().length);
       expect(
-          leq.equals(msg.payload.toList(), convMsg.payload.toList()), isTrue);
+          leq.equals(msg.payload!.toList(), convMsg.payload!.toList()), isTrue);
       expect(msg.payloadString, convMsg.payloadString);
     }
 
@@ -798,11 +798,11 @@ void main() {
           CoapOption.createString(optionTypeContentType, 'text/plain'));
       msg.addOption(CoapOption.createVal(optionTypeMaxAge, 30));
       expect(
-          msg.getFirstOption(optionTypeContentType).stringValue, 'text/plain');
-      expect(msg.getFirstOption(optionTypeMaxAge).value, 30);
-      final data = spec.encode(msg);
+          msg.getFirstOption(optionTypeContentType)!.stringValue, 'text/plain');
+      expect(msg.getFirstOption(optionTypeMaxAge)!.value, 30);
+      final data = spec.encode(msg)!;
       checkData(spec.name, data, testNo);
-      final convMsg = spec.decode(data);
+      final convMsg = spec.decode(data)!;
 
       expect(msg.code, convMsg.code);
       expect(msg.type, convMsg.type);
@@ -812,11 +812,11 @@ void main() {
           leq.equals(
               msg.getAllOptions().toList(), convMsg.getAllOptions().toList()),
           isTrue);
-      expect(convMsg.getFirstOption(optionTypeContentType).stringValue,
+      expect(convMsg.getFirstOption(optionTypeContentType)!.stringValue,
           'text/plain');
-      expect(convMsg.getFirstOption(optionTypeMaxAge).value, 30);
+      expect(convMsg.getFirstOption(optionTypeMaxAge)!.value, 30);
       expect(
-          leq.equals(msg.payload.toList(), convMsg.payload.toList()), isTrue);
+          leq.equals(msg.payload!.toList(), convMsg.payload!.toList()), isTrue);
     }
 
     void testMessageWithExtendedOption(CoapISpec spec, int testNo) {
@@ -826,13 +826,13 @@ void main() {
       msg.id = 12345;
       msg.addOption(CoapOption.createString(12, 'a'));
       msg.addOption(CoapOption.createString(197, 'extend option'));
-      expect(msg.getFirstOption(12).stringValue, 'a');
-      expect(msg.getFirstOption(197).stringValue, 'extend option');
+      expect(msg.getFirstOption(12)!.stringValue, 'a');
+      expect(msg.getFirstOption(197)!.stringValue, 'extend option');
       msg.payload = typed.Uint8Buffer()..addAll('payload'.codeUnits);
 
-      final data = spec.encode(msg);
+      final data = spec.encode(msg)!;
       checkData(spec.name, data, testNo);
-      final convMsg = spec.decode(data);
+      final convMsg = spec.decode(data)!;
 
       expect(msg.code, convMsg.code);
       expect(msg.type, convMsg.type);
@@ -842,11 +842,11 @@ void main() {
           leq.equals(
               msg.getAllOptions().toList(), convMsg.getAllOptions().toList()),
           isTrue);
-      expect(convMsg.getFirstOption(12).stringValue, 'a');
+      expect(convMsg.getFirstOption(12)!.stringValue, 'a');
       expect(
-          leq.equals(msg.payload.toList(), convMsg.payload.toList()), isTrue);
+          leq.equals(msg.payload!.toList(), convMsg.payload!.toList()), isTrue);
 
-      final extendOpt = convMsg.getFirstOption(197);
+      final extendOpt = convMsg.getFirstOption(197)!;
       expect(extendOpt, isNotNull);
       expect(extendOpt.stringValue, 'extend option');
     }
@@ -863,14 +863,15 @@ void main() {
       request.contentType = 40;
       request.accept = 40;
 
-      final bytes = spec.encode(request);
+      final bytes = spec.encode(request)!;
       checkData(spec.name, bytes, testNo);
       final decoder = spec.newMessageDecoder(bytes);
       expect(decoder.isRequest, isTrue);
 
-      final result = decoder.decodeRequest();
+      final result = decoder.decodeRequest()!;
       expect(request.id, result.id);
-      expect(leq.equals(request.token.toList(), result.token.toList()), isTrue);
+      expect(
+          leq.equals(request.token!.toList(), result.token!.toList()), isTrue);
       expect(
           leq.equals(request.getAllOptions().toList(),
               result.getAllOptions().toList()),
@@ -892,23 +893,23 @@ void main() {
         ..addOption(CoapOption.createString(19205, 'Arbitrary2'))
         ..addOption(CoapOption.createString(19205, 'Arbitrary3'));
 
-      final bytes = spec.encode(response);
+      final bytes = spec.encode(response)!;
       checkData(spec.name, bytes, testNo);
 
       final decoder = spec.newMessageDecoder(bytes);
       expect(decoder.isResponse, isTrue);
 
-      final result = decoder.decodeResponse();
+      final result = decoder.decodeResponse()!;
       expect(response.id, result.id);
       expect(
-          leq.equals(response.token.toList(), result.token.toList()), isTrue);
+          leq.equals(response.token!.toList(), result.token!.toList()), isTrue);
       expect(
-          leq.equals(response.getOptions(57453).toList(),
-              result.getOptions(57453).toList()),
+          leq.equals(response.getOptions(57453)!.toList(),
+              result.getOptions(57453)!.toList()),
           isTrue);
       expect(
-          leq.equals(response.getOptions(19205).toList(),
-              result.getOptions(19205).toList()),
+          leq.equals(response.getOptions(19205)!.toList(),
+              result.getOptions(19205)!.toList()),
           isTrue);
       expect(
           response.etags.toList().toString(), result.etags.toList().toString());

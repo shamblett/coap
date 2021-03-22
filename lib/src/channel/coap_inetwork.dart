@@ -11,10 +11,10 @@ part of coap;
 /// UDP, test etc.
 abstract class CoapINetwork {
   /// The internet address
-  CoapInternetAddress address;
+  CoapInternetAddress? address;
 
   /// The port
-  int port;
+  int? port;
 
   final StreamController<List<int>> _data =
       StreamController<List<int>>.broadcast();

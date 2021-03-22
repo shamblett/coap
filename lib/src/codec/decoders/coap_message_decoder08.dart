@@ -14,7 +14,7 @@ class CoapMessageDecoder08 extends CoapMessageDecoder {
     readProtocol();
   }
 
-  int _optionCount;
+  late int _optionCount;
 
   @override
   bool get isWellFormed => _version == CoapDraft08.version;
@@ -22,11 +22,11 @@ class CoapMessageDecoder08 extends CoapMessageDecoder {
   @override
   void readProtocol() {
     // Read headers
-    _version = _reader.read(CoapDraft08.versionBits);
-    _type = _reader.read(CoapDraft08.typeBits);
-    _optionCount = _reader.read(CoapDraft08.optionCountBits);
-    _code = _reader.read(CoapDraft08.codeBits);
-    _id = _reader.read(CoapDraft08.idBits);
+    _version = _reader!.read(CoapDraft08.versionBits);
+    _type = _reader!.read(CoapDraft08.typeBits);
+    _optionCount = _reader!.read(CoapDraft08.optionCountBits);
+    _code = _reader!.read(CoapDraft08.codeBits);
+    _id = _reader!.read(CoapDraft08.idBits);
   }
 
   @override
@@ -35,24 +35,24 @@ class CoapMessageDecoder08 extends CoapMessageDecoder {
     var currentOption = 0;
     for (var i = 0; i < _optionCount; i++) {
       // Read option delta bits
-      final optionDelta = _reader.read(CoapDraft08.optionDeltaBits);
+      final optionDelta = _reader!.read(CoapDraft08.optionDeltaBits);
 
       currentOption += optionDelta;
       final currentOptionType = CoapDraft08.getOptionType(currentOption);
 
       if (CoapDraft08.isFencepost(currentOption)) {
         // Read number of options
-        _reader.read(CoapDraft08.optionLengthBaseBits);
+        _reader!.read(CoapDraft08.optionLengthBaseBits);
       } else {
         // Read option length
-        var length = _reader.read(CoapDraft08.optionLengthBaseBits);
+        var length = _reader!.read(CoapDraft08.optionLengthBaseBits);
         if (length > CoapDraft08.maxOptionLengthBase) {
           // Read extended option length
-          length += _reader.read(CoapDraft08.optionLengthExtendedBits);
+          length += _reader!.read(CoapDraft08.optionLengthExtendedBits);
         }
         // Read option
         final opt = CoapOption.create(currentOptionType);
-        opt.valueBytes = _reader.readBytes(length);
+        opt.valueBytes = _reader!.readBytes(length);
 
         message.addOption(opt);
       }
@@ -60,6 +60,6 @@ class CoapMessageDecoder08 extends CoapMessageDecoder {
 
     message.token ??= CoapConstants.emptyToken;
 
-    message.payload = _reader.readBytesLeft();
+    message.payload = _reader!.readBytesLeft();
   }
 }

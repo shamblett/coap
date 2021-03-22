@@ -9,17 +9,18 @@ part of coap;
 
 /// Message encoder 03
 class CoapMessageEncoder03 extends CoapMessageEncoder {
-  final CoapILogger _log = CoapLogManager().logger;
+  final CoapILogger? _log = CoapLogManager().logger;
 
   @override
-  void serialize(CoapDatagramWriter writer, CoapMessage message, int code) {
+  void serialize(CoapDatagramWriter writer, CoapMessage message, int? code) {
     final optWriter = CoapDatagramWriter();
     var optionCount = 0;
     var lastOptionNumber = 0;
 
-    final List<CoapOption> options = message.getAllOptions();
+    final List<CoapOption> options =
+        message.getAllOptions() as List<CoapOption>;
     if (message.token != null &&
-        message.token.isNotEmpty &&
+        message.token!.isNotEmpty &&
         !message.hasOption(optionTypeToken)) {
       options.add(CoapOption.createRaw(optionTypeToken, message.token));
     }
@@ -45,10 +46,10 @@ class CoapMessageEncoder03 extends CoapMessageEncoder {
         // Calculate fencepost delta
         final fencepostDelta = fencepostNumber - lastOptionNumber;
         if (fencepostDelta <= 0) {
-          _log.warn('Fencepost liveness violated: delta = $fencepostDelta');
+          _log!.warn('Fencepost liveness violated: delta = $fencepostDelta');
         }
         if (fencepostDelta > CoapDraft03.maxOptionDelta) {
-          _log.warn('Fencepost safety violated: delta = $fencepostDelta');
+          _log!.warn('Fencepost safety violated: delta = $fencepostDelta');
         }
 
         // Write fencepost option delta
