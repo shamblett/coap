@@ -7,9 +7,6 @@
 import 'dart:io';
 
 import 'package:coap/coap.dart';
-import 'package:coap/config/coap_config_all.dart';
-import 'package:coap/config/coap_config_default.dart';
-import 'package:coap/config/coap_config_logging.dart';
 import 'package:test/test.dart';
 
 void main() {

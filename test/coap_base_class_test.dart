@@ -43,10 +43,6 @@ void main() {
           CoapMediaType.negotiationContent(
               defaultContentType, supported, accepted),
           CoapMediaType.undefined);
-      expect(
-          CoapMediaType.negotiationContent(
-              defaultContentType, supported, accepted),
-          defaultContentType);
     });
 
     test('Parse', () {
