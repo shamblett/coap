@@ -126,7 +126,7 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
   /// Schedules a retransmission for confirmable messages.
   @override
   void sendRequest(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
+      CoapINextLayer nextLayer, CoapExchange? exchange, CoapRequest request) {
     if (request.type == CoapMessageType.unknown) {
       request.type = CoapMessageType.con;
     }
@@ -281,25 +281,26 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
     super.receiveEmptyMessage(nextLayer, exchange, message);
   }
 
-  void _prepareRetransmission(CoapExchange exchange, CoapMessage? msg,
+  void _prepareRetransmission(CoapExchange? exchange, CoapMessage? msg,
       ActionGeneric<CoapTransmissionContext> retransmit) {
-    final ctx = exchange.getOrAdd<CoapTransmissionContext>(
+    final ctx = exchange?.getOrAdd<CoapTransmissionContext>(
         transmissionContextKey,
         CoapTransmissionContext(_config, exchange, msg, retransmit))!;
+    if (ctx != null) {
+      if (ctx.failedTransmissionCount > 0) {
+        ctx.currentTimeout =
+            (ctx.currentTimeout * _config!.ackTimeoutScale).toInt();
+      } else if (ctx.currentTimeout == 0) {
+        ctx.currentTimeout =
+            _initialTimeout(_config!.ackTimeout, _config!.ackRandomFactor);
+      }
+      _log!.info('Reliability - sending request, failed transmission count: '
+          '${ctx.failedTransmissionCount}');
+      ctx.failedTransmissionCount++;
 
-    if (ctx.failedTransmissionCount > 0) {
-      ctx.currentTimeout =
-          (ctx.currentTimeout * _config!.ackTimeoutScale).toInt();
-    } else if (ctx.currentTimeout == 0) {
-      ctx.currentTimeout =
-          _initialTimeout(_config!.ackTimeout, _config!.ackRandomFactor);
+      exchange?.set<CoapTransmissionContext>(transmissionContextKey, ctx);
+      ctx.start();
     }
-    _log!.info('Reliability - sending request, failed transmission count: '
-        '${ctx.failedTransmissionCount}');
-    ctx.failedTransmissionCount++;
-
-    exchange.set<CoapTransmissionContext>(transmissionContextKey, ctx);
-    ctx.start();
   }
 
   int _initialTimeout(int initialTimeout, double factor) =>

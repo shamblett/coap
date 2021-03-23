@@ -15,7 +15,7 @@ class CoapNextLayer implements CoapINextLayer {
   final CoapEntry<dynamic, dynamic> _entry;
 
   @override
-  void sendRequest(CoapExchange exchange, CoapRequest request) {
+  void sendRequest(CoapExchange? exchange, CoapRequest request) {
     _entry.nextEntry!.filter
         .sendRequest(_entry.nextEntry!.nextFilter, exchange, request);
   }
@@ -55,10 +55,9 @@ class CoapNextLayer implements CoapINextLayer {
 class CoapStackTopLayer extends CoapAbstractLayer {
   @override
   void sendRequest(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
-    var nexchange = exchange;
-    nexchange.request = request;
-    super.sendRequest(nextLayer, nexchange, request);
+      CoapINextLayer nextLayer, CoapExchange? exchange, CoapRequest request) {
+    exchange?.request ?? request;
+    super.sendRequest(nextLayer, exchange, request);
   }
 
   @override
@@ -100,9 +99,9 @@ class CoapStackTopLayer extends CoapAbstractLayer {
 /// Bottom layer
 class CoapStackBottomLayer extends CoapAbstractLayer {
   @override
-  Future<void> sendRequest(CoapINextLayer nextLayer, CoapExchange exchange,
+  Future<void> sendRequest(CoapINextLayer nextLayer, CoapExchange? exchange,
       CoapRequest request) async {
-    exchange.outbox!.sendRequest(exchange, request);
+    exchange?.outbox!.sendRequest(exchange, request);
   }
 
   @override

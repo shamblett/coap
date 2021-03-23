@@ -10,7 +10,7 @@ part of coap;
 /// Represent a next layer in the stack.
 abstract class CoapINextLayer {
   /// Sends a request to next layer.
-  void sendRequest(CoapExchange exchange, CoapRequest request);
+  void sendRequest(CoapExchange? exchange, CoapRequest request);
 
   /// Sends a response to next layer.
   void sendResponse(CoapExchange exchange, CoapResponse? response);
@@ -35,7 +35,7 @@ abstract class CoapILayer {
 
   /// Filters a request sending event.
   void sendRequest(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request);
+      CoapINextLayer nextLayer, CoapExchange? exchange, CoapRequest request);
 
   /// Filters a response sending event.
   void sendResponse(

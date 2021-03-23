@@ -23,7 +23,7 @@ class CoapTokenLayer extends CoapAbstractLayer {
 
   @override
   void sendRequest(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
+      CoapINextLayer nextLayer, CoapExchange? exchange, CoapRequest request) {
     request.token ??= _newToken();
     super.sendRequest(nextLayer, exchange, request);
   }

@@ -26,7 +26,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
 
   @override
   void sendRequest(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
+      CoapINextLayer nextLayer, CoapExchange? exchange, CoapRequest request) {
     if (request.hasOption(optionTypeBlock2) && request.block2!.num > 0) {
       // This is the case if the user has explicitly added a block option
       // for random access.
@@ -41,19 +41,19 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       status.currentSZX = block2.szx;
       status.currentNUM = block2.num;
       status.randomAccess = true;
-      exchange.responseBlockStatus = status;
+      exchange!.responseBlockStatus = status;
       super.sendRequest(nextLayer, exchange, request);
     } else if (_requiresBlockwise(request)) {
       // This must be a large POST or PUT request
       _log!.info(
           'Request payload ${request.payloadSize} / $_maxMessageSize requires Blockwise.');
-      final status = _findRequestBlockStatus(exchange, request);
+      final status = _findRequestBlockStatus(exchange!, request);
       final block = _getNextRequestBlock(request, status);
       exchange.requestBlockStatus = status;
       exchange.currentRequest = block;
       super.sendRequest(nextLayer, exchange, block);
     } else {
-      exchange.currentRequest = request;
+      exchange?.currentRequest = request;
       super.sendRequest(nextLayer, exchange, request);
     }
   }

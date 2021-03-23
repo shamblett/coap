@@ -124,7 +124,7 @@ class CoapUtil {
       sb.write(',');
     }
     final ret = sb.toString();
-    return ret.substring(0, ret.length - 1);
+    return ret.isNotEmpty ? ret.substring(0, ret.length - 1) : ret;
   }
 
   /// Stringify options in a message.
