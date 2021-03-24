@@ -14,6 +14,6 @@ doc/api/
 # Dart 2 additions
 .dart_tool/
 
-.idea
+.idea/
 .DS_Store
 .directory

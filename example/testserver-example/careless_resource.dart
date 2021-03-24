@@ -4,14 +4,13 @@
  * Date   : 06/06/2018
  * Copyright :  S.Hamblett
  *
- * A request for the separate response test server resource
+ * A request for the careless test server resource
  */
 
 import 'dart:async';
 import 'dart:io';
-
 import 'package:coap/coap.dart';
-import '../../config/coap_config.dart';
+import '../config/coap_config.dart';
 
 FutureOr<void> main(List<String> args) async {
   // Create a configuration class. Logging levels can be specified in the
@@ -31,18 +30,19 @@ FutureOr<void> main(List<String> args) async {
   final client = CoapClient(uri, conf);
 
   // Adjust the response timeout if needed, defaults to 32767 milliseconds
-  //client.timeout = 10000;
+  client.timeout = 10000;
 
   // Create the request for the get request
   final request = CoapRequest.newGet();
-  request.addUriPath('separate');
+  request.addUriPath('careless');
   client.request = request;
 
   print('EXAMPLE - Sending get request to $host, waiting for response....');
 
   final response = await client.get();
-  print('EXAMPLE - response received');
-  print(response.payloadString);
+  if (!response.isEmpty) {
+    print('EXAMPLE - Oops we have a response, we shouldn\'t have!');
+  }
 
   // Clean up
   client.close();

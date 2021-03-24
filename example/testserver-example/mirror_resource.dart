@@ -4,13 +4,14 @@
  * Date   : 06/06/2018
  * Copyright :  S.Hamblett
  *
- * A request for the time test server resource
+ * A request for the mirror test server resource
  */
 
 import 'dart:async';
 import 'dart:io';
+
 import 'package:coap/coap.dart';
-import '../../config/coap_config.dart';
+import '../config/coap_config.dart';
 
 FutureOr<void> main(List<String> args) async {
   // Create a configuration class. Logging levels can be specified in the
@@ -34,7 +35,7 @@ FutureOr<void> main(List<String> args) async {
 
   // Create the request for the get request
   final request = CoapRequest.newGet();
-  request.addUriPath('time');
+  request.addUriPath('mirror');
   client.request = request;
 
   print('EXAMPLE - Sending get request to $host, waiting for response....');

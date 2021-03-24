@@ -4,13 +4,13 @@
  * Date   : 06/06/2018
  * Copyright :  S.Hamblett
  *
- * A request for the time test server resource, this time with observation
+ * A request for the fibonnaci test server resource
  */
 
 import 'dart:async';
-
+import 'dart:io';
 import 'package:coap/coap.dart';
-import '../../config/coap_config.dart';
+import '../config/coap_config.dart';
 
 FutureOr<void> main(List<String> args) async {
   // Create a configuration class. Logging levels can be specified in the
@@ -30,22 +30,21 @@ FutureOr<void> main(List<String> args) async {
   final client = CoapClient(uri, conf);
 
   // Adjust the response timeout if needed, defaults to 32767 milliseconds
-  //client.timeout = 10000;
+  client.timeout = 10000;
 
   // Create the request for the get request
   final request = CoapRequest.newGet();
-  request.addUriPath('time');
-  // Mark the request as observable
-  request.markObserve();
-
+  request.addUriPath('fibonacci');
+  request.addUriQuery('n=10');
   client.request = request;
 
-  print('EXAMPLE - Sending get observable request to '
-      '$host, waiting for responses ....');
-  await client.get();
+  print('EXAMPLE - Sending get request to $host, waiting for response....');
 
-  // Getting responses form the observable resource
-  request.responses.listen((CoapResponse? response) {
-    print('EXAMPLE - payload: ${response!.payloadString}');
-  });
+  final response = await client.get();
+  print('EXAMPLE - ${response.payloadString}');
+
+  // Clean up
+  client.close();
+
+  exit(0);
 }
