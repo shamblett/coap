@@ -56,8 +56,13 @@ class CoapStackTopLayer extends CoapAbstractLayer {
   @override
   void sendRequest(
       CoapINextLayer nextLayer, CoapExchange? exchange, CoapRequest request) {
-    exchange?.request ?? request;
-    super.sendRequest(nextLayer, exchange, request);
+    var nexchange = exchange;
+    if (exchange == null) {
+      nexchange = CoapExchange(request, CoapOrigin.local);
+      nexchange.endpoint = request.endpoint;
+    }
+    nexchange?.request = request;
+    super.sendRequest(nextLayer, nexchange, request);
   }
 
   @override

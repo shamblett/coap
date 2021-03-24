@@ -298,7 +298,7 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
     ctx?.failedTransmissionCount++;
 
     exchange?.set<CoapTransmissionContext>(
-        transmissionContextKey, ctx as Object);
+        transmissionContextKey, ctx!);
     ctx?.start();
   }
 
