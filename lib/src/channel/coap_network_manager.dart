@@ -14,7 +14,7 @@ class CoapNetworkManagement {
 
   /// Gets a new network, otherwise tries to find a cached network
   /// and returns that.
-  static Future<CoapINetwork> getNetwork(
+  static FutureOr<CoapINetwork> getNetwork(
       CoapInternetAddress address, int port) async {
     final completer = Completer<CoapINetwork>();
     final CoapINetwork network = CoapNetworkUDP(address, port);

@@ -45,9 +45,8 @@ class CoapUDPChannel extends CoapIChannel {
   Future<void> send(typed.Uint8Buffer data,
       [CoapInternetAddress? address]) async {
     if (address != null) {
-      final socket = await (CoapNetworkManagement.getNetwork(address, _port)
-          as FutureOr<CoapNetworkUDP>);
-      if (socket.socket != null) {
+      final socket = await (CoapNetworkManagement.getNetwork(address, _port));
+      if ((socket as CoapNetworkUDP).socket != null) {
         socket.send(data);
       }
     } else {
