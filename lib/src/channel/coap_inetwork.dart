@@ -31,7 +31,7 @@ abstract class CoapINetwork {
   Stream<List<int>> get data => _data.stream;
 
   /// Bind the network
-  void bind();
+  Future<void> bind();
 
   /// Close the socket
   void close();

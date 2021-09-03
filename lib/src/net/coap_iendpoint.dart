@@ -25,7 +25,7 @@ abstract class CoapIEndPoint {
   CoapIOutbox get outbox;
 
   /// Starts this endpoint and all its components.
-  void start();
+  Future<void> start();
 
   /// Stops this endpoint and all its components
   void stop();

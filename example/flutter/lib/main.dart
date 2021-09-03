@@ -1,51 +1,51 @@
-//import 'package:coap/coap.dart';
-//import 'package:flutter/material.dart';
-//import 'config/coap_config.dart';
+// import 'package:coap/coap.dart';
+// import 'package:flutter/material.dart';
+// import 'config/coap_config.dart';
 //
 //
-//void main() => runApp(MyApp());
+// void main() => runApp(MyApp());
 //
-///// make linter happy
-//class MyApp extends StatelessWidget {
+// /// make linter happy
+// class MyApp extends StatelessWidget {
 //  @override
 //  Widget build(BuildContext context) {
 //    return MaterialApp(
-//      title: 'Flutter Demo',
+//      title: 'Coap Demo',
 //      theme: ThemeData(
 //        primarySwatch: Colors.blue,
 //      ),
 //      home: MyHomePage(),
 //    );
 //  }
-//}
+// }
 //
-///// make linter happy
-//class MyHomePage extends StatefulWidget {
+// /// make linter happy
+// class MyHomePage extends StatefulWidget {
 //  @override
 //  _MyHomePageState createState() => _MyHomePageState();
-//}
+// }
 //
-//class _MyHomePageState extends State<MyHomePage> {
-//  String _data;
+// class _MyHomePageState extends State<MyHomePage> {
+//  String? _data;
 //  bool _isLoading = false;
 //
 //  final config = CoapConfig();
 //  final host = 'coap.me';
 //
 //  Future<void> _loadData() async {
-//    final Uri uri = Uri(scheme: 'coap', host: host, port: config.defaultPort);
+//    final uri = Uri(scheme: 'coap', host: host, port: config.defaultPort);
 //
 //    // Client
-//    final CoapClient client = CoapClient(uri, config);
+//    final client = CoapClient(uri, config);
 //
 //    // Create the request for the get request
-//    final CoapRequest request = CoapRequest.newGet();
+//    final request = CoapRequest.newGet();
 //    request.addUriPath('hello');
 //    client.request = request;
 //
 //    setState(() => _isLoading = true);
 //
-//    final CoapResponse response = await client.get();
+//    final response = await client.get();
 //
 //    setState(() {
 //      _isLoading = false;
@@ -83,4 +83,4 @@
 //        child: Icon(Icons.cloud_download),
 //      ),
 //    );
-//}
+// }
