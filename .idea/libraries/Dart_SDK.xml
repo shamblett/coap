@@ -2,12 +2,10 @@
   <library name="Dart SDK">
     <CLASSES>
       <root url="file://$PROJECT_DIR$/../../dart-sdk/lib/async" />
-      <root url="file://$PROJECT_DIR$/../../dart-sdk/lib/cli" />
       <root url="file://$PROJECT_DIR$/../../dart-sdk/lib/collection" />
       <root url="file://$PROJECT_DIR$/../../dart-sdk/lib/convert" />
       <root url="file://$PROJECT_DIR$/../../dart-sdk/lib/core" />
       <root url="file://$PROJECT_DIR$/../../dart-sdk/lib/developer" />
-      <root url="file://$PROJECT_DIR$/../../dart-sdk/lib/ffi" />
       <root url="file://$PROJECT_DIR$/../../dart-sdk/lib/html" />
       <root url="file://$PROJECT_DIR$/../../dart-sdk/lib/indexed_db" />
       <root url="file://$PROJECT_DIR$/../../dart-sdk/lib/io" />
