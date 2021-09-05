@@ -106,33 +106,37 @@ import '../config/coap_config_debug.dart';
 FutureOr<void> main(List<String> args) async {
   // Create a configuration class. Logging levels can be specified in
   // the configuration file
-  final conf = CoapConfigDebug();
+  final CoapConfigDebug conf = CoapConfigDebug();
 
   // Build the request uri, note that the request paths/query parameters can be changed
   // on the request anytime after this initial setup.
-  const host = 'coap.me';
+  const String host = 'coap.me';
 
-  final uri = Uri(scheme: 'coap', host: host, port: conf.defaultPort);
+  final Uri uri = Uri(scheme: 'coap', host: host, port: conf.defaultPort);
 
   // Create the client.
   // The method we are using creates its own request so we do not
   // need to supply one.
   // The current request is always available from the client.
-  final client = CoapClient(uri, conf);
+  final CoapClient client = CoapClient(uri, conf);
 
   // Adjust the response timeout if needed, defaults to 32767 milliseconds
   //client.timeout = 10000;
 
   // Create the request for the get request
-  final request = CoapRequest.newGet();
+  final CoapRequest request = CoapRequest.newGet();
   request.addUriPath('hello');
   client.request = request;
 
   print('EXAMPLE - Sending get request to $host, waiting for response....');
 
-  final response = await client.get();
-  print('EXAMPLE - response received');
-  print(response.payloadString);
+  final CoapResponse response = await client.get();
+  if (response != null) {
+    print('EXAMPLE - response received');
+    print(response.payloadString);
+  } else {
+    print('EXAMPLE - no response received');
+  }
 
   // Clean up
   client.close();

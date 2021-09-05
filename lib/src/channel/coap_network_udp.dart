@@ -85,7 +85,7 @@ class CoapNetworkUDP implements CoapINetwork {
   }
 
   @override
-  Future<void> bind() async {
+  void bind() {
     if (_bound) {
       return;
     }
@@ -94,8 +94,7 @@ class CoapNetworkUDP implements CoapINetwork {
       // a random source port.
       final bindAddress = address!.bind;
       _log!.info('CoapNetworkUDP - binding to $bindAddress');
-      await RawDatagramSocket.bind(bindAddress, 0)
-          .then((RawDatagramSocket socket) {
+      RawDatagramSocket.bind(bindAddress, 0).then((RawDatagramSocket socket) {
         _socket = socket;
         receive();
         _bound = true;

@@ -49,11 +49,11 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   CoapIOutbox get outbox => this;
 
   @override
-  Future<void> start() async {
+  void start() {
     _localEndpoint = _channel.address;
     try {
       _matcher.start();
-      await _channel.start();
+      _channel.start();
       _localEndpoint = _channel.address;
     } on Exception catch (e) {
       _log!.error('Cannot start endpoint at ${_localEndpoint!.address}, '
