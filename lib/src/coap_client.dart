@@ -328,7 +328,7 @@ class CoapClient {
       request.endpoint = endpoint;
     } else {
       request.endpoint = CoapEndPoint(channel, _config);
-      await request.endpoint!.start();
+      request.endpoint!.start();
       endpoint = request.endpoint;
     }
 
