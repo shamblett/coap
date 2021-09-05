@@ -14,19 +14,14 @@ class CoapNetworkManagement {
 
   /// Gets a new network, otherwise tries to find a cached network
   /// and returns that.
-  static FutureOr<CoapINetwork> getNetwork(
-      CoapInternetAddress address, int port) async {
-    final completer = Completer<CoapINetwork>();
+  static CoapINetwork getNetwork(CoapInternetAddress address, int port) {
     final CoapINetwork network = CoapNetworkUDP(address, port);
     if (_networks.contains(network)) {
-      completer.complete(
-          _networks.where((CoapINetwork e) => e == network).toList()[0]);
+      return _networks.where((CoapINetwork e) => e == network).toList()[0];
     } else {
-      network.bind();
       _networks.add(network);
-      completer.complete(network);
+      return network;
     }
-    return completer.future;
   }
 
   /// Removes a network
