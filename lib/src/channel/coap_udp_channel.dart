@@ -11,7 +11,8 @@ part of coap;
 class CoapUDPChannel extends CoapIChannel {
   /// Initialise with a specific address and port
   CoapUDPChannel(this._address, this._port) {
-    _socket = CoapNetworkUDP(address, port);
+    final socket = CoapNetworkManagement.getNetwork(address!, _port);
+    _socket = socket as CoapNetworkUDP;
   }
 
   final int _port;
@@ -22,37 +23,29 @@ class CoapUDPChannel extends CoapIChannel {
 
   @override
   CoapInternetAddress? get address => _address;
-  CoapNetworkUDP? _socket;
+  late CoapNetworkUDP _socket;
 
   final typed.Uint8Buffer _buff = typed.Uint8Buffer();
 
   final CoapEventBus _eventBus = CoapEventBus();
 
   @override
-  void start() {
-    _socket!.port = _port;
-    _socket!.address = _address;
-    _socket!.bind();
-    _socket!.receive();
+  Future<void> start() async {
+    _socket.port = _port;
+    _socket.address = _address;
+    await _socket.bind();
   }
 
   @override
   void stop() {
-    _socket!.close();
+    _socket.close();
   }
 
   @override
   Future<void> send(typed.Uint8Buffer data,
       [CoapInternetAddress? address]) async {
-    if (address != null) {
-      final socket = await (CoapNetworkManagement.getNetwork(address, _port));
-      if ((socket as CoapNetworkUDP).socket != null) {
-        socket.send(data);
-      }
-    } else {
-      if (_socket?.socket != null) {
-        _socket!.send(data);
-      }
+    if (_socket.socket != null) {
+      _socket.send(data);
     }
   }
 

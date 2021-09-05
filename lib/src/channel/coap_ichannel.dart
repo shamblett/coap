@@ -16,7 +16,7 @@ abstract class CoapIChannel {
   int? port;
 
   /// Starts this channel.
-  void start();
+  Future<void> start();
 
   /// Stops this channel.
   void stop();

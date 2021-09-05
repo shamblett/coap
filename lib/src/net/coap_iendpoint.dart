@@ -8,7 +8,6 @@
 part of coap;
 
 /// Events
-
 /// Represents a communication endpoint multiplexing CoAP message exchanges
 /// between (potentially multiple) clients and servers.
 abstract class CoapIEndPoint {
@@ -25,7 +24,7 @@ abstract class CoapIEndPoint {
   CoapIOutbox get outbox;
 
   /// Starts this endpoint and all its components.
-  void start();
+  Future<void> start();
 
   /// Stops this endpoint and all its components
   void stop();
