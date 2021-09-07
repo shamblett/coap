@@ -10,16 +10,17 @@ part of coap;
 /// Matcher class
 class CoapMatcher implements CoapIMatcher {
   /// Construction
-  CoapMatcher(DefaultCoapConfig config) {
+  CoapMatcher(CoapEventBus eventBus, DefaultCoapConfig config) {
+    _eventBus = eventBus;
     _deduplicator = CoapDeduplicatorFactory.createDeduplicator(config);
     if (config.useRandomIDStart) {
       _currentId = Random().nextInt(1 << 16);
     }
-    _eventBus.on<CoapCompletedEvent>().listen(onExchangeCompleted);
+    _eventBus?.on<CoapCompletedEvent>().listen(onExchangeCompleted);
   }
 
   final CoapILogger? _log = CoapLogManager().logger;
-  final CoapEventBus _eventBus = CoapEventBus();
+  CoapEventBus? _eventBus;
 
   /// For all
   final Map<CoapKeyId, CoapExchange> _exchangesById =
@@ -164,7 +165,7 @@ class CoapMatcher implements CoapIMatcher {
 
     if (!request.hasOption(optionTypeBlock1) &&
         !request.hasOption(optionTypeBlock2)) {
-      final exchange = CoapExchange(request, CoapOrigin.remote);
+      final exchange = CoapExchange(_eventBus!, request, CoapOrigin.remote);
       final previous = _deduplicator!.findPrevious(keyId, exchange);
       if (previous == null) {
         return exchange;
@@ -204,7 +205,7 @@ class CoapMatcher implements CoapIMatcher {
         // hash map 'ongoing' and the deduplicator. They must agree on
         // which exchange they store!
 
-        final exchange = CoapExchange(request, CoapOrigin.remote);
+        final exchange = CoapExchange(_eventBus!, request, CoapOrigin.remote);
         final previous = _deduplicator!.findPrevious(keyId, exchange);
         if (previous == null) {
           _log!.info(

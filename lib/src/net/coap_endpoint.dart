@@ -11,21 +11,23 @@ part of coap;
 class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   /// Instantiates a new endpoint with the
   /// specified channel and configuration.
-  CoapEndPoint(CoapIChannel channel, DefaultCoapConfig config) {
+  CoapEndPoint(
+      CoapEventBus eventBus, CoapIChannel channel, DefaultCoapConfig config) {
+    _eventBus = eventBus;
     _config = config;
     _channel = channel;
     _matcher = CoapMatcher(config);
     _coapStack = CoapStack(config);
-    _eventBus.on<CoapDataReceivedEvent>().listen(_receiveData);
+    _eventBus?.on<CoapDataReceivedEvent>().listen(_receiveData);
   }
 
   /// Instantiates a new endpoint with internet address, port and configuration
-  CoapEndPoint.address(
-      CoapInternetAddress localEndpoint, int port, DefaultCoapConfig config)
-      : this(newUDPChannel(localEndpoint, port), config);
+  CoapEndPoint.address(CoapEventBus eventBus, CoapInternetAddress localEndpoint,
+      int port, DefaultCoapConfig config)
+      : this(eventBus, newUDPChannel(eventBus, localEndpoint, port), config);
 
   final CoapILogger? _log = CoapLogManager().logger;
-  final CoapEventBus _eventBus = CoapEventBus();
+  CoapEventBus? _eventBus;
 
   DefaultCoapConfig? _config;
 
@@ -106,7 +108,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
           final rst = CoapEmptyMessage(CoapMessageType.rst);
           rst.destination = event.address;
           rst.id = decoder.id;
-          _eventBus.fire(CoapSendingEmptyMessageEvent(rst));
+          _eventBus?.fire(CoapSendingEmptyMessageEvent(rst));
           _channel.send(_serializeEmpty(rst), rst.destination);
           _log!.warn('Message format error caused by $e and reset.');
         }
@@ -114,7 +116,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
       }
 
       request!.source = event.address;
-      _eventBus.fire(CoapReceivingRequestEvent(request));
+      _eventBus?.fire(CoapReceivingRequestEvent(request));
 
       if (!request.isCancelled) {
         final exchange = _matcher.receiveRequest(request);
@@ -125,7 +127,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
       final response = decoder.decodeResponse()!;
       response.source = event.address;
 
-      _eventBus.fire(CoapReceivingResponseEvent(response));
+      _eventBus?.fire(CoapReceivingResponseEvent(response));
 
       if (!response.isCancelled) {
         final exchange = _matcher.receiveResponse(response);
@@ -144,7 +146,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
       final message = decoder.decodeEmptyMessage()!;
       message.source = event.address;
 
-      _eventBus.fire(CoapReceivingEmptyMessageEvent(message));
+      _eventBus?.fire(CoapReceivingEmptyMessageEvent(message));
 
       if (!message.isCancelled) {
         // CoAP Ping
@@ -168,7 +170,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   @override
   Future<void> sendRequest(CoapExchange exchange, CoapRequest request) async {
     _matcher.sendRequest(exchange, request);
-    _eventBus.fire(CoapSendingRequestEvent(request));
+    _eventBus?.fire(CoapSendingRequestEvent(request));
 
     if (!request.isCancelled) {
       _channel.send(_serializeRequest(request), request.destination);
@@ -178,7 +180,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   @override
   void sendResponse(CoapExchange exchange, CoapResponse? response) {
     _matcher.sendResponse(exchange, response);
-    _eventBus.fire(CoapSendingResponseEvent(response));
+    _eventBus?.fire(CoapSendingResponseEvent(response));
 
     if (!response!.isCancelled) {
       _channel.send(_serializeResponse(response), response.destination);
@@ -188,7 +190,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   @override
   void sendEmptyMessage(CoapExchange exchange, CoapEmptyMessage message) {
     _matcher.sendEmptyMessage(exchange, message);
-    _eventBus.fire(CoapSendingEmptyMessageEvent(message));
+    _eventBus?.fire(CoapSendingEmptyMessageEvent(message));
 
     if (!message.isCancelled) {
       _channel.send(_serializeEmpty(message), message.destination);
@@ -197,7 +199,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
 
   void _reject(CoapMessage message) {
     final rst = CoapEmptyMessage.newRST(message);
-    _eventBus.fire(CoapSendingEmptyMessageEvent(rst));
+    _eventBus?.fire(CoapSendingEmptyMessageEvent(rst));
 
     if (!rst.isCancelled) {
       _channel.send(_serializeEmpty(rst), rst.destination);
@@ -233,8 +235,8 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
 
   /// New UDP channel
   static CoapIChannel newUDPChannel(
-      CoapInternetAddress localEndpoint, int port) {
-    final CoapIChannel channel = CoapUDPChannel(localEndpoint, port);
+      CoapEventBus eventBus, CoapInternetAddress localEndpoint, int port) {
+    final CoapIChannel channel = CoapUDPChannel(eventBus, localEndpoint, port);
     return channel;
   }
 }

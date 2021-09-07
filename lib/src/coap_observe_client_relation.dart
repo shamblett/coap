@@ -13,18 +13,19 @@ part of coap;
 /// established and to cancel or refresh the relation.
 class CoapObserveClientRelation {
   /// Construction
-  CoapObserveClientRelation(
-      CoapRequest request, CoapIEndPoint? endpoint, DefaultCoapConfig config) {
+  CoapObserveClientRelation(CoapEventBus eventBus, CoapRequest request,
+      CoapIEndPoint? endpoint, DefaultCoapConfig config) {
+    _eventBus = eventBus;
     _config = config;
     _request = request;
     _endpoint = endpoint;
     _orderer = CoapObserveNotificationOrderer(config);
-    _eventBus.on<CoapReregisteringEvent>().listen(_onReregister);
+    _eventBus?.on<CoapReregisteringEvent>().listen(_onReregister);
   }
 
   DefaultCoapConfig? _config;
   CoapRequest? _request;
-  final CoapEventBus _eventBus = CoapEventBus();
+  CoapEventBus? _eventBus;
 
   /// Request
   CoapRequest? get request => _request;
@@ -48,7 +49,7 @@ class CoapObserveClientRelation {
 
   /// Cancel
   void proactiveCancel() {
-    final cancel = CoapRequest.newGet();
+    final cancel = CoapRequest.newGet(_eventBus!);
     // Copy options, but set Observe to cancel
     cancel.setOptions(_request!.getAllOptions());
     cancel.markObserveCancel();

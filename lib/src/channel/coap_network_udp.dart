@@ -10,11 +10,11 @@ part of coap;
 /// UDP network
 class CoapNetworkUDP implements CoapINetwork {
   /// Initialize with an address and a port
-  CoapNetworkUDP(this.address, this.port);
+  CoapNetworkUDP(this._eventBus, this.address, this.port);
 
   final CoapILogger? _log = CoapLogManager().logger;
 
-  final CoapEventBus _eventBus = CoapEventBus();
+  final CoapEventBus _eventBus;
 
   /// The internet address
   @override

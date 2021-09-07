@@ -62,6 +62,9 @@ class CoapClient {
   /// Address type, set this if using IPV6
   InternetAddressType addressType = InternetAddressType.IPv4;
 
+  /// The client event bus
+  final eventBus = CoapEventBus();
+
   /// Tell the client to use Confirmable requests.
   CoapClient useCONs() {
     _type = CoapMessageType.con;

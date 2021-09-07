@@ -14,16 +14,18 @@ part of coap;
 /// receiveResponse() or Response event.
 class CoapRequest extends CoapMessage {
   /// Default
-  CoapRequest();
+  CoapRequest(CoapEventBus eventBus) : super(eventBus);
 
   /// Initializes a request message.
   /// Defaults to confirmable
-  CoapRequest.withType(int? code) : this.isConfirmable(code, confirmable: true);
+  CoapRequest.withType(CoapEventBus eventBus, int? code)
+      : this.isConfirmable(eventBus, code, confirmable: true);
 
   /// Initializes a request message.
   /// True if the request is Confirmable
-  CoapRequest.isConfirmable(int? code, {required bool confirmable})
-      : super.withCode(
+  CoapRequest.isConfirmable(CoapEventBus eventBus, int? code,
+      {required bool confirmable})
+      : super.withCode(eventBus,
             confirmable ? CoapMessageType.con : CoapMessageType.non, code) {
     _method = code;
   }
@@ -188,14 +190,18 @@ class CoapRequest extends CoapMessage {
   String toString() => '\n<<< Request Message >>>${super.toString()}';
 
   /// Construct a GET request.
-  static CoapRequest newGet() => CoapRequest.withType(CoapCode.methodGET);
+  static CoapRequest newGet(CoapEventBus eventBus) =>
+      CoapRequest.withType(eventBus, CoapCode.methodGET);
 
   /// Construct a POST request.
-  static CoapRequest newPost() => CoapRequest.withType(CoapCode.methodPOST);
+  static CoapRequest newPost(CoapEventBus eventBus) =>
+      CoapRequest.withType(eventBus, CoapCode.methodPOST);
 
   /// Construct a PUT request.
-  static CoapRequest newPut() => CoapRequest.withType(CoapCode.methodPUT);
+  static CoapRequest newPut(CoapEventBus eventBus) =>
+      CoapRequest.withType(eventBus, CoapCode.methodPUT);
 
   /// Construct a DELETE request.
-  static CoapRequest newDelete() => CoapRequest.withType(CoapCode.methodDELETE);
+  static CoapRequest newDelete(CoapEventBus eventBus) =>
+      CoapRequest.withType(eventBus, CoapCode.methodDELETE);
 }

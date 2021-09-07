@@ -15,13 +15,13 @@ typedef HookFunction = void Function();
 /// a token (0-8 bytes), a collection of Options and a payload.
 class CoapMessage {
   /// Default
-  CoapMessage();
+  CoapMessage(this._eventBus);
 
   /// Instantiates a message with the given type.
-  CoapMessage.withType(this.type);
+  CoapMessage.withType(this._eventBus, this.type);
 
   /// Instantiates a message with the given type and code.
-  CoapMessage.withCode(this.type, this.code);
+  CoapMessage.withCode(this._eventBus, this.type, this.code);
 
   /// Indicates that no ID has been set.
   static const int none = -1;
@@ -47,7 +47,7 @@ class CoapMessage {
   int? id = _initialId.nextInt(initialIdLimit) + 1;
 
   final Map<int, List<CoapOption>> _optionMap = <int, List<CoapOption>>{};
-  final CoapEventBus _eventBus = CoapEventBus();
+  CoapEventBus _eventBus;
 
   /// Option map
   Map<int, List<CoapOption>> get optionMap => _optionMap;
