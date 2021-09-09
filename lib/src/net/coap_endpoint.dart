@@ -16,7 +16,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
     _eventBus = eventBus;
     _config = config;
     _channel = channel;
-    _matcher = CoapMatcher(config);
+    _matcher = CoapMatcher(_eventBus!, config);
     _coapStack = CoapStack(config);
     _eventBus?.on<CoapDataReceivedEvent>().listen(_receiveData);
   }
@@ -95,7 +95,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
 
   void _receiveData(CoapDataReceivedEvent event) {
     // Return if we have no data, should not happen but be defensive
-    final decoder = config!.spec!.newMessageDecoder(event.data);
+    final decoder = config!.spec!.newMessageDecoder(_eventBus!, event.data);
     if (decoder.isRequest) {
       CoapRequest? request;
       try {
@@ -105,7 +105,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
           _log!.warn('Message format error caused by $e');
         } else {
           // Manually build RST from raw information
-          final rst = CoapEmptyMessage(CoapMessageType.rst);
+          final rst = CoapEmptyMessage(_eventBus!, CoapMessageType.rst);
           rst.destination = event.address;
           rst.id = decoder.id;
           _eventBus?.fire(CoapSendingEmptyMessageEvent(rst));
@@ -198,7 +198,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   }
 
   void _reject(CoapMessage message) {
-    final rst = CoapEmptyMessage.newRST(message);
+    final rst = CoapEmptyMessage.newRST(_eventBus!, message);
     _eventBus?.fire(CoapSendingEmptyMessageEvent(rst));
 
     if (!rst.isCancelled) {

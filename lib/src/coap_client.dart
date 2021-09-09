@@ -91,7 +91,7 @@ class CoapClient {
     try {
       // Ping is a confirmable empty message
       var request =
-          CoapRequest.isConfirmable(CoapCode.empty, confirmable: true);
+          CoapRequest.isConfirmable(eventBus, CoapCode.empty, confirmable: true);
       request.token = CoapConstants.emptyToken;
       request.uri = uri;
       request = await prepare(request);
@@ -108,14 +108,14 @@ class CoapClient {
   /// Sends a GET request and blocks until the response is available.
   /// If no request has been set in the client a default one is used.
   Future<CoapResponse> get() {
-    request ??= CoapRequest.newGet();
+    request ??= CoapRequest.newGet(eventBus);
     return send(request!);
   }
 
   /// Sends a GET request with the specified Accept option and blocks
   /// until the response is available.
   Future<CoapResponse> getWithAccept(int acceptVal) {
-    request ??= CoapRequest.newGet();
+    request ??= CoapRequest.newGet(eventBus);
     return send(accept(request!, acceptVal));
   }
 
@@ -123,7 +123,7 @@ class CoapClient {
   Future<CoapResponse> post(String payload,
       [int format = CoapMediaType.textPlain]) {
     request ??=
-        CoapRequest.newPost().setPayloadMedia(payload, format) as CoapRequest?;
+        CoapRequest.newPost(eventBus).setPayloadMedia(payload, format) as CoapRequest?;
     return send(request!.setPayloadMedia(payload, format) as CoapRequest);
   }
 
@@ -132,7 +132,7 @@ class CoapClient {
   Future<CoapResponse> postWithAccept(
       String payload, int format, int acceptVal) {
     request ??=
-        CoapRequest.newPost().setPayloadMedia(payload, format) as CoapRequest?;
+        CoapRequest.newPost(eventBus).setPayloadMedia(payload, format) as CoapRequest?;
     return send(accept(
         request!.setPayloadMedia(payload, format) as CoapRequest, acceptVal));
   }
@@ -140,7 +140,7 @@ class CoapClient {
   /// Sends a POST request with the specified byte payload and blocks
   /// until the response is available.
   Future<CoapResponse> postBytePayload(typed.Uint8Buffer payload, int format) {
-    request ??= CoapRequest.newPost().setPayloadMediaRaw(payload, format)
+    request ??= CoapRequest.newPost(eventBus).setPayloadMediaRaw(payload, format)
         as CoapRequest?;
     return send(request!.setPayloadMediaRaw(payload, format) as CoapRequest);
   }
@@ -149,7 +149,7 @@ class CoapClient {
   /// Blocks until the response is available.
   Future<CoapResponse> postBytePayloadWithAccept(
       typed.Uint8Buffer payload, int format, int acceptVal) {
-    request ??= CoapRequest.newPost().setPayloadMediaRaw(payload, format)
+    request ??= CoapRequest.newPost(eventBus).setPayloadMediaRaw(payload, format)
         as CoapRequest?;
     return send(accept(
         request!.setPayloadMediaRaw(payload, format) as CoapRequest,
@@ -160,7 +160,7 @@ class CoapClient {
   Future<CoapResponse> put(String payload,
       [int format = CoapMediaType.textPlain]) {
     request ??=
-        CoapRequest.newPut().setPayloadMedia(payload, format) as CoapRequest?;
+        CoapRequest.newPut(eventBus).setPayloadMedia(payload, format) as CoapRequest?;
     return send(request!.setPayloadMedia(payload, format) as CoapRequest);
   }
 
@@ -168,7 +168,7 @@ class CoapClient {
   /// until the response is available.
   Future<CoapResponse> putBytePayloadWithAccept(
       typed.Uint8Buffer payload, int format, int acceptVal) {
-    request ??= CoapRequest.newPut().setPayloadMediaRaw(payload, format)
+    request ??= CoapRequest.newPut(eventBus).setPayloadMediaRaw(payload, format)
         as CoapRequest?;
     return send(accept(
         request!.setPayloadMediaRaw(payload, format) as CoapRequest,
@@ -179,7 +179,7 @@ class CoapClient {
   Future<CoapResponse> putIfMatch(
       String payload, int format, List<typed.Uint8Buffer> etags) {
     request ??=
-        CoapRequest.newPut().setPayloadMedia(payload, format) as CoapRequest?;
+        CoapRequest.newPut(eventBus).setPayloadMedia(payload, format) as CoapRequest?;
     return send(ifMatch(
         request!.setPayloadMedia(payload, format) as CoapRequest, etags));
   }
@@ -187,7 +187,7 @@ class CoapClient {
   /// If match byte payload
   Future<CoapResponse> putIfMatchBytePayload(
       typed.Uint8Buffer payload, int format, List<typed.Uint8Buffer> etags) {
-    request ??= CoapRequest.newPut().setPayloadMediaRaw(payload, format)
+    request ??= CoapRequest.newPut(eventBus).setPayloadMediaRaw(payload, format)
         as CoapRequest?;
     return send(ifMatch(
         request!.setPayloadMediaRaw(payload, format) as CoapRequest, etags));
@@ -197,7 +197,7 @@ class CoapClient {
   Future<CoapResponse> putIfNoneMatch(
       String payload, int format, List<typed.Uint8Buffer> etags) {
     request ??=
-        CoapRequest.newPut().setPayloadMedia(payload, format) as CoapRequest?;
+        CoapRequest.newPut(eventBus).setPayloadMedia(payload, format) as CoapRequest?;
     return send(ifNoneMatch(
         request!.setPayloadMedia(payload, format) as CoapRequest, etags));
   }
@@ -205,7 +205,7 @@ class CoapClient {
   /// If none match byte payload
   Future<CoapResponse> putIfNoneMatchBytePayload(
       typed.Uint8Buffer payload, int format, List<typed.Uint8Buffer> etags) {
-    request ??= CoapRequest.newPut().setPayloadMediaRaw(payload, format)
+    request ??= CoapRequest.newPut(eventBus).setPayloadMediaRaw(payload, format)
         as CoapRequest?;
     return send(ifNoneMatch(
         request!.setPayloadMediaRaw(payload, format) as CoapRequest, etags));
@@ -213,27 +213,27 @@ class CoapClient {
 
   /// Delete
   Future<CoapResponse> delete() {
-    request ??= CoapRequest.newDelete();
+    request ??= CoapRequest.newDelete(eventBus);
     return send(request!);
   }
 
   /// Validate
   Future<CoapResponse> validate(List<typed.Uint8Buffer> etags) {
-    request ??= CoapRequest.newGet();
+    request ??= CoapRequest.newGet(eventBus);
     return send(eTags(request!, etags));
   }
 
   /// Observe
   CoapObserveClientRelation observe(
       [ActionGeneric<CoapResponse>? notify, ActionGeneric<FailReason>? error]) {
-    request ??= CoapRequest.newGet();
+    request ??= CoapRequest.newGet(eventBus);
     return _observe(request!.markObserve(), notify, error);
   }
 
   /// Observe with accept
   CoapObserveClientRelation observeWithAccept(int acceptVal,
       [ActionGeneric<CoapResponse>? notify, ActionGeneric<FailReason>? error]) {
-    request ??= CoapRequest.newGet();
+    request ??= CoapRequest.newGet(eventBus);
     return _observe(accept(request!.markObserve(), acceptVal), notify, error);
   }
 
@@ -266,7 +266,7 @@ class CoapClient {
   /// Discovers remote resources.
   /// Creates its own request to do this.
   Future<Iterable<CoapWebLink>?> discover(String? query) async {
-    final request = CoapRequest.newGet();
+    final request = CoapRequest.newGet(eventBus);
     request.uri = uri;
     final discover = await prepare(request);
     discover.clearUriPath().clearUriQuery().uriPath =
@@ -314,7 +314,7 @@ class CoapClient {
     if (endpoint != null) {
       return endpoint;
     } else {
-      return CoapEndpointManager.getDefaultEndpoint(request.endpoint!);
+      return CoapEndpointManager.getDefaultEndpoint(eventBus, request.endpoint!);
     }
   }
 
@@ -326,11 +326,11 @@ class CoapClient {
     await request.resolveDestination(addressType);
     // Endpoint and channel
     CoapEndpointManager.getDefaultSpec();
-    final CoapIChannel channel = CoapUDPChannel(request.destination, uri.port);
+    final CoapIChannel channel = CoapUDPChannel(eventBus, request.destination, uri.port);
     if (endpoint != null) {
       request.endpoint = endpoint;
     } else {
-      request.endpoint = CoapEndPoint(channel, _config);
+      request.endpoint = CoapEndPoint(eventBus, channel, _config);
       await request.endpoint!.start();
       endpoint = request.endpoint;
     }
@@ -361,7 +361,7 @@ class CoapClient {
   CoapObserveClientRelation _observeAsync(CoapRequest request,
       ActionGeneric<CoapResponse>? notify, ActionGeneric<FailReason>? error) {
     final endpoint = _getEffectiveEndpoint(request);
-    final relation = CoapObserveClientRelation(request, endpoint, _config);
+    final relation = CoapObserveClientRelation(eventBus, request, endpoint, _config);
     _doPrepare(request);
     request.send();
     return relation;

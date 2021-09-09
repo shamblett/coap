@@ -10,7 +10,7 @@ part of coap;
 /// Message decoder 012
 class CoapMessageDecoder12 extends CoapMessageDecoder {
   /// Construction
-  CoapMessageDecoder12(typed.Uint8Buffer data) : super(data) {
+  CoapMessageDecoder12(CoapEventBus eventBus, typed.Uint8Buffer data) : super(eventBus, data) {
     readProtocol();
   }
 

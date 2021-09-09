@@ -23,11 +23,11 @@ abstract class CoapISpec {
   /// Decodes a CoAP message from a bytes array.
   /// Returns the decoded message, or null if the bytes array
   /// can not be recognized.
-  CoapMessage? decode(typed.Uint8Buffer bytes);
+  CoapMessage? decode(CoapEventBus eventBus, typed.Uint8Buffer bytes);
 
   /// Gets an IMessageEncoder.
   CoapIMessageEncoder newMessageEncoder();
 
   /// Gets an IMessageDecoder.
-  CoapIMessageDecoder newMessageDecoder(typed.Uint8Buffer data);
+  CoapIMessageDecoder newMessageDecoder(CoapEventBus eventBus, typed.Uint8Buffer data);
 }

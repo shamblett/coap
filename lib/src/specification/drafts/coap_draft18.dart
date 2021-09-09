@@ -48,16 +48,16 @@ class CoapDraft18 implements CoapISpec {
   CoapIMessageEncoder newMessageEncoder() => CoapMessageEncoder18();
 
   @override
-  CoapIMessageDecoder newMessageDecoder(typed.Uint8Buffer data) =>
-      CoapMessageDecoder18(data);
+  CoapIMessageDecoder newMessageDecoder(CoapEventBus eventBus, typed.Uint8Buffer data) =>
+      CoapMessageDecoder18(eventBus, data);
 
   @override
   typed.Uint8Buffer? encode(CoapMessage msg) =>
       newMessageEncoder().encodeMessage(msg);
 
   @override
-  CoapMessage? decode(typed.Uint8Buffer bytes) =>
-      newMessageDecoder(bytes).decodeMessage();
+  CoapMessage? decode(CoapEventBus eventBus, typed.Uint8Buffer bytes) =>
+      newMessageDecoder(eventBus, bytes).decodeMessage();
 
   /// Calculates the value used in the extended option fields as specified
   /// in draft-ietf-core-coap-18, section 3.1.

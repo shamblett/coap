@@ -55,16 +55,16 @@ class CoapDraft03 implements CoapISpec {
   CoapIMessageEncoder newMessageEncoder() => CoapMessageEncoder03();
 
   @override
-  CoapIMessageDecoder newMessageDecoder(typed.Uint8Buffer data) =>
-      CoapMessageDecoder03(data);
+  CoapIMessageDecoder newMessageDecoder(CoapEventBus eventBus, typed.Uint8Buffer data) =>
+      CoapMessageDecoder03(eventBus, data);
 
   @override
   typed.Uint8Buffer? encode(CoapMessage msg) =>
       newMessageEncoder().encodeMessage(msg);
 
   @override
-  CoapMessage? decode(typed.Uint8Buffer bytes) =>
-      newMessageDecoder(bytes).decodeMessage();
+  CoapMessage? decode(CoapEventBus eventBus, typed.Uint8Buffer bytes) =>
+      newMessageDecoder(eventBus, bytes).decodeMessage();
 
   /// Option number
   static int getOptionNumber(int optionType) {

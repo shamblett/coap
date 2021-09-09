@@ -12,8 +12,8 @@ part of coap;
 /// or a separate response with type CON or NON.
 class CoapResponse extends CoapMessage {
   /// Initializes a response message.
-  CoapResponse(int? statusCode)
-      : super.withCode(CoapMessageType.unknown, statusCode) {
+  CoapResponse(CoapEventBus eventBus, int? statusCode)
+      : super.withCode(eventBus, CoapMessageType.unknown, statusCode) {
     _statusCode = code;
   }
 
@@ -41,8 +41,8 @@ class CoapResponse extends CoapMessage {
   /// endpoint of the request.
   /// The response has the same token as the request.
   /// Type and ID are usually set automatically by the ReliabilityLayer>.
-  static CoapResponse createResponse(CoapRequest request, int statusCode) {
-    final response = CoapResponse(statusCode);
+  static CoapResponse createResponse(CoapEventBus eventBus, CoapRequest request, int statusCode) {
+    final response = CoapResponse(eventBus, statusCode);
     response.destination = request.source;
     response.token = request.token;
     return response;

@@ -14,8 +14,8 @@ class CoapNetworkManagement {
 
   /// Gets a new network, otherwise tries to find a cached network
   /// and returns that.
-  static CoapINetwork getNetwork(CoapInternetAddress address, int port) {
-    final CoapINetwork network = CoapNetworkUDP(address, port);
+  static CoapINetwork getNetwork(CoapEventBus eventBus, CoapInternetAddress address, int port) {
+    final CoapINetwork network = CoapNetworkUDP(eventBus, address, port);
     if (_networks.contains(network)) {
       return _networks.where((CoapINetwork e) => e == network).toList()[0];
     } else {

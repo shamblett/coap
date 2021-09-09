@@ -163,7 +163,7 @@ class CoapRequest extends CoapMessage {
           .asFuture()
           .timeout(Duration(milliseconds: millisecondsTimeout), onTimeout: () {
             if (!completer.isCompleted) {
-              completer.complete(CoapResponse(CoapCode.empty));
+              completer.complete(CoapResponse(_eventBus, CoapCode.empty));
             }
           });
       return completer.future;

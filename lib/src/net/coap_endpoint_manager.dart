@@ -16,13 +16,13 @@ class CoapEndpointManager {
   }
 
   /// Default endpoint
-  static CoapIEndPoint getDefaultEndpoint(CoapIEndPoint endpoint) {
+  static CoapIEndPoint getDefaultEndpoint(CoapEventBus eventBus, CoapIEndPoint endpoint) {
     final config = DefaultCoapConfig.inst!;
     config.spec ??= CoapDraft18();
     config.defaultPort = config.spec!.defaultPort;
     final CoapIChannel channel =
-        CoapUDPChannel(endpoint.localEndpoint, config.defaultPort);
-    final ep = CoapEndPoint(channel, config);
+        CoapUDPChannel(eventBus, endpoint.localEndpoint, config.defaultPort);
+    final ep = CoapEndPoint(eventBus, channel, config);
     ep.start();
     return ep;
   }

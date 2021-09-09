@@ -10,9 +10,10 @@ part of coap;
 /// The next processing layer
 class CoapNextLayer implements CoapINextLayer {
   /// Construction
-  CoapNextLayer(this._entry);
+  CoapNextLayer(this_eventBus, this._entry);
 
   final CoapEntry<dynamic, dynamic> _entry;
+  late CoapEventBus _coapEventBus;
 
   @override
   void sendRequest(CoapExchange? exchange, CoapRequest request) {
@@ -58,7 +59,7 @@ class CoapStackTopLayer extends CoapAbstractLayer {
       CoapINextLayer nextLayer, CoapExchange? exchange, CoapRequest request) {
     var nexchange = exchange;
     if (exchange == null) {
-      nexchange = CoapExchange(request, CoapOrigin.local);
+      nexchange = CoapExchange(_eventBus, request, CoapOrigin.local);
       nexchange.endpoint = request.endpoint;
     }
     nexchange?.request = request;

@@ -11,7 +11,7 @@ part of coap;
 class CoapUDPChannel extends CoapIChannel {
   /// Initialise with a specific address and port
   CoapUDPChannel(this._eventBus, this._address, this._port) {
-    final socket = CoapNetworkManagement.getNetwork(address!, _port);
+    final socket = CoapNetworkManagement.getNetwork(_eventBus, address!, _port);
     _socket = socket as CoapNetworkUDP;
   }
 

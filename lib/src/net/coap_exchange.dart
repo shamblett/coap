@@ -108,7 +108,7 @@ class CoapExchange {
   void sendReject() {
     assert(_origin == CoapOrigin.remote, 'Origin must be remote');
     request!.isRejected = true;
-    final rst = CoapEmptyMessage.newRST(request!);
+    final rst = CoapEmptyMessage.newRST(_eventBus, request!);
     endpoint!.sendEpEmptyMessage(this, rst);
   }
 
@@ -119,7 +119,7 @@ class CoapExchange {
     assert(_origin == CoapOrigin.remote, 'Origin must be remote');
     if (request!.type == CoapMessageType.con && !request!.isAcknowledged) {
       request!.isAcknowledged = true;
-      final ack = CoapEmptyMessage.newACK(request!);
+      final ack = CoapEmptyMessage.newACK(_eventBus, request!);
       endpoint!.sendEpEmptyMessage(this, ack);
     }
   }

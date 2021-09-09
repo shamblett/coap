@@ -10,7 +10,7 @@ part of coap;
 /// Base class for message encoders.
 abstract class CoapMessageDecoder implements CoapIMessageDecoder {
   /// Instantiates.
-  CoapMessageDecoder(typed.Uint8Buffer data) {
+  CoapMessageDecoder(this._eventBus, typed.Uint8Buffer data) {
     _reader = CoapDatagramReader(data);
   }
 
@@ -35,6 +35,9 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
   /// The id of the decoding message
   int? _id;
 
+  /// The event bus
+  final _eventBus;
+
   @override
   int? get id => _id;
 
@@ -58,7 +61,7 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
   @override
   CoapRequest? decodeRequest() {
     if (isRequest) {
-      final request = CoapRequest.withType(_code);
+      final request = CoapRequest.withType(_eventBus, _code);
       request.type = _type;
       request.id = _id;
       parseMessage(request);
@@ -71,7 +74,7 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
   @override
   CoapResponse? decodeResponse() {
     if (isResponse) {
-      final response = CoapResponse(_code);
+      final response = CoapResponse(_eventBus, _code);
       response.type = _type;
       response.id = _id;
       parseMessage(response);
@@ -84,7 +87,7 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
   @override
   CoapEmptyMessage? decodeEmptyMessage() {
     if ((!isResponse) && (!isRequest)) {
-      final message = CoapEmptyMessage(_code);
+      final message = CoapEmptyMessage(_eventBus, _code);
       message.type = _type;
       message.id = _id;
       parseMessage(message);
