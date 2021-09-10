@@ -135,7 +135,7 @@ class CoapEventBus {
   /// Construction
   factory CoapEventBus() => _singleton;
 
-  CoapEventBus._internal() {
+  CoapEventBus._internal(this._destroyed) {
     _eventBus = events.EventBus();
   }
 
@@ -144,7 +144,7 @@ class CoapEventBus {
 
   final CoapILogger? _log = CoapLogManager().logger;
   late events.EventBus _eventBus;
-  final bool _destroyed = false;
+  bool _destroyed;
 
   /// Fire
   void fire(dynamic event) {
@@ -163,7 +163,8 @@ class CoapEventBus {
   /// Destroy
   void destroy() {
     _eventBus.destroy();
+    _destroyed = true;
   }
 
-  static final CoapEventBus _singleton = CoapEventBus._internal();
+  static final CoapEventBus _singleton = CoapEventBus._internal(false);
 }

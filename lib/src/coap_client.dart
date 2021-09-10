@@ -62,6 +62,9 @@ class CoapClient {
   /// Address type, set this if using IPV6
   InternetAddressType addressType = InternetAddressType.IPv4;
 
+  /// Event bus
+  final eventBus = CoapEventBus();
+
   /// Tell the client to use Confirmable requests.
   CoapClient useCONs() {
     _type = CoapMessageType.con;
@@ -302,6 +305,7 @@ class CoapClient {
   /// Close the client.
   void close() {
     _log!.info('Close - closing client');
+    eventBus.destroy();
     cancelRequest();
   }
 
