@@ -219,7 +219,9 @@ class CoapUtil {
         coapAddress.bindAddress = bindAddress;
         completer.complete(coapAddress);
       } else {
-        completer.complete(null);
+        // Address not found, bind to local host.
+        completer.complete(CoapInternetAddress(
+            InternetAddressType.IPv4, InternetAddress('127.0.0.1')));
       }
     }
     return completer.future;

@@ -132,11 +132,14 @@ class CoapDataReceivedEvent {
 
 /// Event bus class
 class CoapEventBus {
+  static CoapEventBus? _instance;
+
   /// Construction
-  factory CoapEventBus() => _singleton;
+  factory CoapEventBus() => _singleton!;
 
   CoapEventBus._internal(this._destroyed) {
     _eventBus = events.EventBus();
+    _instance = this;
   }
 
   /// Last event fired, useful for testing
@@ -164,7 +167,9 @@ class CoapEventBus {
   void destroy() {
     _eventBus.destroy();
     _destroyed = true;
+    _instance = null;
   }
 
-  static final CoapEventBus _singleton = CoapEventBus._internal(false);
+  static final CoapEventBus? _singleton =
+      _instance == null ? CoapEventBus._internal(false) : _instance;
 }
