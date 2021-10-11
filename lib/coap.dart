@@ -21,6 +21,7 @@ import 'package:executor/executor.dart' as tasking;
 import 'package:event_bus/event_bus.dart' as events;
 import 'package:string_scanner/string_scanner.dart' as scanner;
 import 'package:date_format/date_format.dart' as df;
+import 'package:dtls/dtls.dart';
 
 /// The Coap package exported interface
 

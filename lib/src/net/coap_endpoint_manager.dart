@@ -23,7 +23,7 @@ class CoapEndpointManager {
     config.defaultPort = config.spec!.defaultPort;
     final CoapIChannel channel = CoapUDPChannel(
         endpoint.localEndpoint, config.defaultPort,
-        namespace: namespace);
+        namespace: namespace, config: config);
     final ep = CoapEndPoint(channel, config, namespace: namespace);
     ep.start();
     return ep;

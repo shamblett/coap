@@ -331,8 +331,8 @@ class CoapClient {
     await request.resolveDestination(addressType);
     // Endpoint and channel
     CoapEndpointManager.getDefaultSpec();
-    final CoapIChannel channel =
-        CoapUDPChannel(request.destination, uri.port, namespace: _namespace);
+    final CoapIChannel channel = CoapUDPChannel(request.destination, uri.port,
+        namespace: _namespace, config: _config);
     if (endpoint != null) {
       request.endpoint = endpoint;
     } else {

@@ -25,6 +25,18 @@ abstract class DefaultCoapConfig {
   /// The default CoAP port for normal CoAP communication (not secure).
   int defaultPort = CoapConstants.defaultPort;
 
+  /// weather to use dtls
+  bool get dtlsUse => false;
+
+  // weather to verify dtls certs
+  bool get dtlsVerify => true;
+
+  // weather to verify dtls trusted roots, too
+  bool get dtlsWithTrustedRoots => true;
+
+  // dtls ciphers to use
+  String? get dtlsCiphers => null;
+
   /// The default CoAP port for secure CoAP communication (coaps).
   int get defaultSecurePort => CoapConstants.defaultSecurePort;
 

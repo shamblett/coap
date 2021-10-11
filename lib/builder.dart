@@ -60,26 +60,34 @@ class $className extends DefaultCoapConfig {
 
   @override
   CoapISpec? spec;
-${_generateDataScript(data)}}
+${_generateDataScript(data, '')}}
 """;
 
-String _generateDataScript(YamlMap data) {
+String _generateDataScript(YamlMap data, String prefix) {
   final buff = StringBuffer();
   data.forEach((k, v) {
+    if (v is YamlMap) {
+      buff.write(_generateDataScript(v, k));
+      return;
+    }
+    final variableName =
+        prefix.isEmpty ? k : prefix + k[0].toUpperCase() + k.substring(1);
     buff.writeln('');
     buff.writeln('  @override');
     if (v is String) {
       if ('true' == v || 'false' == v) {
-        buff.writeln('  bool get $k => $v;');
+        buff.writeln('  bool get $variableName => $v;');
         return;
       }
-      buff.writeln("  String get $k => '$v';");
+      buff.writeln("  String get $variableName => '$v';");
     } else if (v is bool) {
-      buff.writeln('  bool get $k => $v;');
+      buff.writeln('  bool get $variableName => $v;');
     } else if (v is int) {
-      buff.writeln('  int get $k => $v;');
+      buff.writeln('  int get $variableName => $v;');
     } else if (v is double) {
-      buff.writeln('  double get $k => $v;');
+      buff.writeln('  double get $variableName => $v;');
+    } else if (v == null) {
+      buff.writeln('  Null get $variableName => null;');
     }
   });
   return buff.toString();

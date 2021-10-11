@@ -1,0 +1,14 @@
+# A test COAP config file
+# Syntax is YAML
+
+# Protocol section
+
+version: "RFC7252"
+deduplicator: "MarkAndSweep"
+
+# dtls section
+dtls:
+  use: true
+  verify: true
+  withTrustedRoots: true
+  ciphers: null

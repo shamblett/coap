@@ -60,6 +60,17 @@ exchangeLifetime: 1247000 # ms
 markAndSweepInterval: 10000 # ms
 channelReceivePacketSize: 2048
 deduplicator: "MarkAndSweep" # CropRotayion or Noop
+
+# dtls section
+dtls:
+  # weather to use dtls
+  use: false
+  # wether to verify the certs
+  verify: true
+  withTrustedRoots: false
+  # string ciphers to accept, null for default
+  ciphers: null
+
 # Logging section
 # Target is none or console
 logTarget: "console"

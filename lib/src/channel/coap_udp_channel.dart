@@ -10,10 +10,11 @@ part of coap;
 /// Channel via UDP protocol.
 class CoapUDPChannel extends CoapIChannel {
   /// Initialise with a specific address and port
-  CoapUDPChannel(this._address, this._port, {required String namespace}) {
+  CoapUDPChannel(this._address, this._port,
+      {required String namespace, required DefaultCoapConfig config}) {
     _eventBus = CoapEventBus(namespace: namespace);
-    final socket =
-        CoapNetworkManagement.getNetwork(address!, _port, namespace: namespace);
+    final socket = CoapNetworkManagement.getNetwork(address!, _port,
+        namespace: namespace, config: config);
     _socket = socket as CoapNetworkUDP;
   }
 

@@ -28,6 +28,15 @@ markAndSweepInterval: 17
 channelReceivePacketSize: 18
 deduplicator: "MarkAndSweep"
 
+# dtls section
+dtls:
+  # weather to use dtls
+  use: false
+  # wether to verify the certs
+  verify: true
+  withTrustedRoots: false
+  # string ciphers to accept, null for default
+  ciphers: null
 
 # Logging section
 
