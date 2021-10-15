@@ -15,11 +15,13 @@ class CoapMatcher implements CoapIMatcher {
     if (config.useRandomIDStart) {
       _currentId = Random().nextInt(1 << 16);
     }
-    _eventBus.on<CoapCompletedEvent>().listen(onExchangeCompleted);
+    subscr = _eventBus.on<CoapCompletedEvent>().listen(onExchangeCompleted);
+
   }
 
   final CoapILogger? _log = CoapLogManager().logger;
   final CoapEventBus _eventBus = CoapEventBus();
+  StreamSubscription? subscr;
 
   /// For all
   final Map<CoapKeyId, CoapExchange> _exchangesById =
@@ -44,6 +46,7 @@ class CoapMatcher implements CoapIMatcher {
   @override
   void stop() {
     _deduplicator?.stop();
+    subscr?.cancel();
   }
 
   @override

@@ -16,7 +16,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
     _channel = channel;
     _matcher = CoapMatcher(config);
     _coapStack = CoapStack(config);
-    _eventBus.on<CoapDataReceivedEvent>().listen(_receiveData);
+    subscr = _eventBus.on<CoapDataReceivedEvent>().listen(_receiveData);
   }
 
   /// Instantiates a new endpoint with internet address, port and configuration
@@ -33,6 +33,8 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   DefaultCoapConfig? get config => _config;
   late CoapIChannel _channel;
   late CoapStack _coapStack;
+  StreamSubscription? subscr;
+
   @override
   CoapIMessageDeliverer? deliverer = CoapClientMessageDeliverer();
 
@@ -69,6 +71,8 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
     _log!.info(
         'Endpoint - stopping endpoint bound to ${_localEndpoint!.address}');
     _channel.stop();
+    _matcher.stop();
+    subscr?.cancel();
   }
 
   @override

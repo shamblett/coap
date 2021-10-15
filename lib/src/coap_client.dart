@@ -41,6 +41,7 @@ class CoapClient {
   static final Iterable<CoapWebLink> _emptyLinks = <CoapWebLink>[
     CoapWebLink('')
   ];
+  CoapEndPoint? coapEndPoint;
 
   /// The URI
   Uri uri;
@@ -302,6 +303,7 @@ class CoapClient {
   /// Close the client.
   void close() {
     _log!.info('Close - closing client');
+    coapEndPoint?.stop();
     cancelRequest();
   }
 
@@ -327,7 +329,8 @@ class CoapClient {
     if (endpoint != null) {
       request.endpoint = endpoint;
     } else {
-      request.endpoint = CoapEndPoint(channel, _config);
+      coapEndPoint = CoapEndPoint(channel, _config);
+      request.endpoint = coapEndPoint;
       await request.endpoint!.start();
       endpoint = request.endpoint;
     }
