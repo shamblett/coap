@@ -50,6 +50,7 @@ defaultBlockSize: 512
 blockwiseStatusLifetime: 60000 # ms
 useRandomIDStart: true
 useRandomTokenStart: true
+poolUdpConnectionsByClient: false
 notificationMaxAge: 128000 # ms
 notificationCheckIntervalTime: 86400000 # ms
 notificationCheckIntervalCount: 100 # ms

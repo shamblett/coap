@@ -109,7 +109,7 @@ void main() {
     message.isAcknowledged = true;
     expect(message.isAcknowledged, isTrue);
     expect(acked, isFalse);
-    final eventBus = CoapEventBus();
+    final eventBus = CoapEventBus(namespace: '');
     expect(eventBus.lastEvent is CoapAcknowledgedEvent, isTrue);
     eventBus.lastEvent = null;
     message.acknowledgedHook = ackHook;
@@ -123,7 +123,7 @@ void main() {
     final message = CoapMessage();
     message.isRejected = true;
     expect(message.isRejected, isTrue);
-    final eventBus = CoapEventBus();
+    final eventBus = CoapEventBus(namespace: '');
     expect(eventBus.lastEvent is CoapRejectedEvent, isTrue);
   });
 
@@ -137,7 +137,7 @@ void main() {
     message.isTimedOut = true;
     expect(message.isTimedOut, isTrue);
     expect(timedOut, isFalse);
-    final eventBus = CoapEventBus();
+    final eventBus = CoapEventBus(namespace: '');
     expect(eventBus.lastEvent is CoapTimedOutEvent, isTrue);
     eventBus.lastEvent = null;
     message.timedOutHook = toHook;
@@ -165,7 +165,7 @@ void main() {
     final message = CoapMessage();
     message.isCancelled = true;
     expect(message.isCancelled, isTrue);
-    final eventBus = CoapEventBus();
+    final eventBus = CoapEventBus(namespace: '');
     expect(eventBus.lastEvent is CoapCancelledEvent, isTrue);
     message.isCancelled = false;
     message.cancel();

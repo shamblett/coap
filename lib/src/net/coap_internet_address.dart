@@ -39,4 +39,15 @@ class CoapInternetAddress {
       return ipv6DefaultBind;
     }
   }
+
+  /// Equality, deemed to be equal if the address and bind address are the same
+  @override
+  bool operator ==(dynamic other) {
+    if (other is CoapInternetAddress) {
+      if (other.address == address && other.bindAddress == bindAddress) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

@@ -133,17 +133,18 @@ class CoapDataReceivedEvent {
 /// Event bus class
 class CoapEventBus {
   /// Construction
-  factory CoapEventBus() => _singleton;
+  factory CoapEventBus({required String namespace}) =>
+      _singletons[namespace] ??= CoapEventBus._internal(namespace);
 
-  CoapEventBus._internal() {
-    _eventBus = events.EventBus();
-  }
+  final String namespace;
+
+  CoapEventBus._internal(this.namespace) : _eventBus = events.EventBus();
 
   /// Last event fired, useful for testing
   dynamic lastEvent;
 
   final CoapILogger? _log = CoapLogManager().logger;
-  late events.EventBus _eventBus;
+  final events.EventBus _eventBus;
   final bool _destroyed = false;
 
   /// Fire
@@ -165,5 +166,5 @@ class CoapEventBus {
     _eventBus.destroy();
   }
 
-  static final CoapEventBus _singleton = CoapEventBus._internal();
+  static final _singletons = <String, CoapEventBus>{};
 }
