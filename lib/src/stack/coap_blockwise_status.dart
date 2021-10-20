@@ -40,7 +40,7 @@ class CoapBlockwiseStatus {
   int? get contentFormat => _contentFormat;
 
   /// Complete
-  late bool complete;
+  bool complete = false;
 
   /// Observe
   int observe = noObserve;

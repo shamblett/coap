@@ -63,7 +63,7 @@ class CoapDatagramReader {
         bytes.add(read(8));
       }
     } else {
-      final removed = _buffer!.getRange(0, bufferCount).toList();
+      final removed = _buffer!.getRange(0, min(bufferCount, _buffer!.length)).toList();
       bytes.insertAll(0, removed);
       _buffer!.removeRange(0, bytes.length);
     }
@@ -78,7 +78,7 @@ class CoapDatagramReader {
   typed.Uint8Buffer readBytesLeft() => readBytes(-1);
 
   void _readCurrentByte() {
-    final val = _buffer!.removeAt(0);
+    final val = bytesAvailable ? _buffer!.removeAt(0) : 0;
 
     if (val >= 0) {
       _currentByte.setUint8(0, val);
