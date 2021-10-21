@@ -16,7 +16,6 @@ class CoapMatcher implements CoapIMatcher {
       _currentId = Random().nextInt(1 << 16);
     }
     subscr = _eventBus.on<CoapCompletedEvent>().listen(onExchangeCompleted);
-
   }
 
   final CoapILogger? _log = CoapLogManager().logger;

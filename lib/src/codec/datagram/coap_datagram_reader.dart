@@ -63,7 +63,8 @@ class CoapDatagramReader {
         bytes.add(read(8));
       }
     } else {
-      final removed = _buffer!.getRange(0, min(bufferCount, _buffer!.length)).toList();
+      final removed =
+          _buffer!.getRange(0, min(bufferCount, _buffer!.length)).toList();
       bytes.insertAll(0, removed);
       _buffer!.removeRange(0, bytes.length);
     }

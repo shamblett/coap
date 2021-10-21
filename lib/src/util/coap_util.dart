@@ -201,9 +201,9 @@ class CoapUtil {
   }
 
   /// Host lookup, does not use the resolver if the host is an IP address.
-  static Future<CoapInternetAddress> lookupHost(String host,
+  static Future<CoapInternetAddress?> lookupHost(String host,
       InternetAddressType addressType, InternetAddress? bindAddress) async {
-    final completer = Completer<CoapInternetAddress>();
+    final completer = Completer<CoapInternetAddress?>();
     final log = CoapLogManager().logger;
     if (isAnIpAddress(host, addressType)) {
       log!.info(
