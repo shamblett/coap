@@ -14,17 +14,19 @@ part of coap;
 class CoapObserveClientRelation {
   /// Construction
   CoapObserveClientRelation(
-      CoapRequest request, CoapIEndPoint? endpoint, DefaultCoapConfig config) {
+      CoapRequest request, CoapIEndPoint? endpoint, DefaultCoapConfig config,
+      {required String namespace}) {
     _config = config;
     _request = request;
     _endpoint = endpoint;
+    _eventBus = CoapEventBus(namespace: namespace);
     _orderer = CoapObserveNotificationOrderer(config);
     _eventBus.on<CoapReregisteringEvent>().listen(_onReregister);
   }
 
   DefaultCoapConfig? _config;
   CoapRequest? _request;
-  final CoapEventBus _eventBus = CoapEventBus();
+  late final CoapEventBus _eventBus;
 
   /// Request
   CoapRequest? get request => _request;

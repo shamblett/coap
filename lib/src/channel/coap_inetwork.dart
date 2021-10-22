@@ -13,6 +13,9 @@ abstract class CoapINetwork {
   /// The internet address
   CoapInternetAddress? address;
 
+  /// The namespace
+  String namespace = '';
+
   /// The port
   int? port;
 

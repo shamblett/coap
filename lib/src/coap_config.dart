@@ -58,6 +58,8 @@ abstract class DefaultCoapConfig {
 
   bool get useRandomTokenStart => true;
 
+  bool get poolUdpConnectionsByClient => false;
+
   int get notificationMaxAge => 128 * 1000; // ms
 
   int get notificationCheckIntervalTime => 24 * 60 * 60 * 1000; // ms

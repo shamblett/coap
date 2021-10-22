@@ -884,8 +884,8 @@ void main() {
       response.id = 9;
       response.token = typed.Uint8Buffer()
         ..addAll(<int>[22, 255, 0, 78, 100, 22]);
-      response.addETagOpaque(
-          typed.Uint8Buffer()..addAll(<int>[1, 0, 0, 0, 0, 1]))
+      response
+          .addETagOpaque(typed.Uint8Buffer()..addAll(<int>[1, 0, 0, 0, 0, 1]))
         ..addLocationPath('/one/two/three/four/five/six/seven/eight/nine/ten')
         ..addOption(CoapOption.createVal(
             57453, 0x71ca949f)) // C# 'Arbitrary'.hashCode()

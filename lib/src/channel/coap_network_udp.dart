@@ -10,11 +10,13 @@ part of coap;
 /// UDP network
 class CoapNetworkUDP implements CoapINetwork {
   /// Initialize with an address and a port
-  CoapNetworkUDP(this.address, this.port);
+  CoapNetworkUDP(this.address, this.port, {required this.namespace}) {
+    _eventBus = CoapEventBus(namespace: namespace);
+  }
 
   final CoapILogger? _log = CoapLogManager().logger;
 
-  final CoapEventBus _eventBus = CoapEventBus();
+  late final CoapEventBus _eventBus;
 
   /// The internet address
   @override
@@ -23,6 +25,10 @@ class CoapNetworkUDP implements CoapINetwork {
   /// The port to use for sending.
   @override
   int? port;
+
+  /// The namespace to use
+  @override
+  String namespace = '';
 
   @override
   final StreamController<List<int>> _data =
@@ -121,7 +127,9 @@ class CoapNetworkUDP implements CoapINetwork {
   @override
   bool operator ==(dynamic other) {
     if (other is CoapNetworkUDP) {
-      if (other.port == port && other.address == address) {
+      if (other.port == port &&
+          other.address == address &&
+          other.namespace == namespace) {
         return true;
       }
     }
@@ -134,6 +142,7 @@ class CoapNetworkUDP implements CoapINetwork {
     var result = 17;
     result = 37 * result + port.hashCode;
     result = 37 * result + address.hashCode;
+    result = 37 * result + namespace.hashCode;
     return result;
   }
 }

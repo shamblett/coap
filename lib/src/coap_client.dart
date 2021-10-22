@@ -47,6 +47,9 @@ class CoapClient {
   Uri uri;
   final DefaultCoapConfig _config;
 
+  String get _namespace =>
+      _config.poolUdpConnectionsByClient ? hashCode.toString() : '';
+
   /// The endpoint. Once set, on the first request this endpoint is used
   /// throughout this client for all subsequent requests.
   CoapIEndPoint? endpoint;
@@ -286,6 +289,7 @@ class CoapClient {
 
   /// Send
   Future<CoapResponse> send(CoapRequest request) async {
+    _log!.info('Sending request in namespace "$_namespace"');
     await prepare(request);
     return request.send().waitForResponse(timeout);
   }
@@ -313,23 +317,26 @@ class CoapClient {
     if (endpoint != null) {
       return endpoint;
     } else {
-      return CoapEndpointManager.getDefaultEndpoint(request.endpoint!);
+      return CoapEndpointManager.getDefaultEndpoint(request.endpoint!,
+          namespace: _namespace);
     }
   }
 
   Future<CoapRequest> _doPrepare(CoapRequest request) async {
     request.type = _type;
     request.uri = uri;
+    request.setEventBus(CoapEventBus(namespace: _namespace));
 
     // Resolve the uri
     await request.resolveDestination(addressType);
     // Endpoint and channel
     CoapEndpointManager.getDefaultSpec();
-    final CoapIChannel channel = CoapUDPChannel(request.destination, uri.port);
+    final CoapIChannel channel =
+        CoapUDPChannel(request.destination, uri.port, namespace: _namespace);
     if (endpoint != null) {
       request.endpoint = endpoint;
     } else {
-      coapEndPoint = CoapEndPoint(channel, _config);
+      coapEndPoint = CoapEndPoint(channel, _config, namespace: _namespace);
       request.endpoint = coapEndPoint;
       await request.endpoint!.start();
       endpoint = request.endpoint;
@@ -361,7 +368,8 @@ class CoapClient {
   CoapObserveClientRelation _observeAsync(CoapRequest request,
       ActionGeneric<CoapResponse>? notify, ActionGeneric<FailReason>? error) {
     final endpoint = _getEffectiveEndpoint(request);
-    final relation = CoapObserveClientRelation(request, endpoint, _config);
+    final relation = CoapObserveClientRelation(request, endpoint, _config,
+        namespace: _namespace);
     _doPrepare(request);
     request.send();
     return relation;

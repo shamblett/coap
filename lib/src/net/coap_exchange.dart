@@ -15,11 +15,12 @@ part of coap;
 /// i.e., has reached the retransmission limit without being acknowledged.
 class CoapExchange {
   /// Construction
-  CoapExchange(this.request, this._origin) {
+  CoapExchange(this.request, this._origin, {required String namespace}) {
+    _eventBus = CoapEventBus(namespace: namespace);
     _timestamp = DateTime.now();
   }
 
-  final CoapEventBus _eventBus = CoapEventBus();
+  late final CoapEventBus _eventBus;
 
   final Map<Object, Object> _attributes = <Object, Object>{};
   final CoapOrigin _origin;

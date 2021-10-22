@@ -10,8 +10,10 @@ part of coap;
 /// Channel via UDP protocol.
 class CoapUDPChannel extends CoapIChannel {
   /// Initialise with a specific address and port
-  CoapUDPChannel(this._address, this._port) {
-    final socket = CoapNetworkManagement.getNetwork(address!, _port);
+  CoapUDPChannel(this._address, this._port, {required String namespace}) {
+    _eventBus = CoapEventBus(namespace: namespace);
+    final socket =
+        CoapNetworkManagement.getNetwork(address!, _port, namespace: namespace);
     _socket = socket as CoapNetworkUDP;
   }
 
@@ -27,7 +29,7 @@ class CoapUDPChannel extends CoapIChannel {
 
   final typed.Uint8Buffer _buff = typed.Uint8Buffer();
 
-  final CoapEventBus _eventBus = CoapEventBus();
+  late final CoapEventBus _eventBus;
 
   @override
   Future<void> start() async {

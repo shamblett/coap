@@ -15,52 +15,16 @@ class CoapConfigAll extends DefaultCoapConfig {
   CoapISpec? spec;
 
   @override
-  bool get useRandomIDStart => false;
-
-  @override
-  int get exchangeLifetime => 16;
-
-  @override
-  String get deduplicator => 'MarkAndSweep';
-
-  @override
-  int get defaultBlockSize => 9;
-
-  @override
-  int get cropRotationPeriod => 15;
-
-  @override
-  int get blockwiseStatusLifetime => 10;
-
-  @override
-  int get notificationReregistrationBackoff => 14;
-
-  @override
-  String get logTarget => 'console';
-
-  @override
-  bool get useRandomTokenStart => false;
-
-  @override
-  int get httpPort => 3;
-
-  @override
-  int get notificationCheckIntervalCount => 13;
+  String get version => 'RFC7252';
 
   @override
   int get defaultPort => 1;
 
   @override
-  int get notificationMaxAge => 11;
+  int get defaultSecurePort => 2;
 
   @override
-  bool get logInfo => true;
-
-  @override
-  bool get logError => false;
-
-  @override
-  bool get logDebug => true;
+  int get httpPort => 3;
 
   @override
   int get ackTimeout => 4;
@@ -72,26 +36,65 @@ class CoapConfigAll extends DefaultCoapConfig {
   double get ackTimeoutScale => 6.0;
 
   @override
-  int get defaultSecurePort => 2;
-
-  @override
-  bool get logWarn => true;
-
-  @override
-  String get version => 'RFC7252';
-
-  @override
-  int get channelReceivePacketSize => 18;
-
-  @override
-  int get notificationCheckIntervalTime => 12;
+  int get maxRetransmit => 7;
 
   @override
   int get maxMessageSize => 8;
 
   @override
-  int get maxRetransmit => 7;
+  int get defaultBlockSize => 9;
+
+  @override
+  int get blockwiseStatusLifetime => 10;
+
+  @override
+  bool get useRandomIDStart => false;
+
+  @override
+  bool get useRandomTokenStart => false;
+
+  @override
+  bool get poolUdpConnectionsByClient => false;
+
+  @override
+  int get notificationMaxAge => 11;
+
+  @override
+  int get notificationCheckIntervalTime => 12;
+
+  @override
+  int get notificationCheckIntervalCount => 13;
+
+  @override
+  int get notificationReregistrationBackoff => 14;
+
+  @override
+  int get cropRotationPeriod => 15;
+
+  @override
+  int get exchangeLifetime => 16;
 
   @override
   int get markAndSweepInterval => 17;
+
+  @override
+  int get channelReceivePacketSize => 18;
+
+  @override
+  String get deduplicator => 'MarkAndSweep';
+
+  @override
+  String get logTarget => 'console';
+
+  @override
+  bool get logError => false;
+
+  @override
+  bool get logDebug => true;
+
+  @override
+  bool get logWarn => true;
+
+  @override
+  bool get logInfo => true;
 }

@@ -47,7 +47,7 @@ class CoapMessage {
   int? id = _initialId.nextInt(initialIdLimit) + 1;
 
   final Map<int, List<CoapOption>> _optionMap = <int, List<CoapOption>>{};
-  final CoapEventBus _eventBus = CoapEventBus();
+  CoapEventBus? _eventBus = CoapEventBus(namespace: '');
 
   /// Option map
   Map<int, List<CoapOption>> get optionMap => _optionMap;
@@ -57,6 +57,12 @@ class CoapMessage {
 
   /// Bind address if not using the default
   InternetAddress? bindAddress;
+
+  void setEventBus(CoapEventBus eventBus) {
+    _eventBus = eventBus;
+  }
+
+  CoapEventBus? get eventBus => _eventBus;
 
   /// Adds an option to the list of options of this CoAP message.
   CoapMessage addOption(CoapOption option) {
@@ -197,7 +203,7 @@ class CoapMessage {
   set isAcknowledged(bool value) {
     _acknowledged = value;
     if (acknowledgedHook == null) {
-      _eventBus.fire(CoapAcknowledgedEvent());
+      _eventBus?.fire(CoapAcknowledgedEvent());
     } else {
       acknowledgedHook!();
     }
@@ -210,7 +216,7 @@ class CoapMessage {
 
   set isRejected(bool value) {
     _rejected = value;
-    _eventBus.fire(CoapRejectedEvent());
+    _eventBus?.fire(CoapRejectedEvent());
   }
 
   bool _timedOut = false;
@@ -224,7 +230,7 @@ class CoapMessage {
   set isTimedOut(bool value) {
     _timedOut = value;
     if (timedOutHook == null) {
-      _eventBus.fire(CoapTimedOutEvent());
+      _eventBus?.fire(CoapTimedOutEvent());
     } else {
       timedOutHook!();
     }
@@ -247,7 +253,7 @@ class CoapMessage {
 
   set isCancelled(bool value) {
     _cancelled = value;
-    _eventBus.fire(CoapCancelledEvent());
+    _eventBus?.fire(CoapCancelledEvent());
   }
 
   /// Indicates whether this message is a duplicate.

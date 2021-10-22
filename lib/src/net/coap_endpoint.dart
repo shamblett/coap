@@ -11,21 +11,25 @@ part of coap;
 class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   /// Instantiates a new endpoint with the
   /// specified channel and configuration.
-  CoapEndPoint(CoapIChannel channel, DefaultCoapConfig config) {
+  CoapEndPoint(CoapIChannel channel, DefaultCoapConfig config,
+      {required String namespace}) {
     _config = config;
     _channel = channel;
-    _matcher = CoapMatcher(config);
+    _eventBus = CoapEventBus(namespace: namespace);
+    _matcher = CoapMatcher(config, namespace: namespace);
     _coapStack = CoapStack(config);
     subscr = _eventBus.on<CoapDataReceivedEvent>().listen(_receiveData);
   }
 
   /// Instantiates a new endpoint with internet address, port and configuration
   CoapEndPoint.address(
-      CoapInternetAddress localEndpoint, int port, DefaultCoapConfig config)
-      : this(newUDPChannel(localEndpoint, port), config);
+      CoapInternetAddress localEndpoint, int port, DefaultCoapConfig config,
+      {required String namespace})
+      : this(newUDPChannel(localEndpoint, port, namespace: namespace), config,
+            namespace: namespace);
 
   final CoapILogger? _log = CoapLogManager().logger;
-  final CoapEventBus _eventBus = CoapEventBus();
+  late final CoapEventBus _eventBus;
 
   DefaultCoapConfig? _config;
 
@@ -96,8 +100,11 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   }
 
   void _receiveData(CoapDataReceivedEvent event) {
+    // clone the data, in case other objects want to do stuff with it, too
+    final data = typed.Uint8Buffer();
+    data.addAll(event.data);
     // Return if we have no data, should not happen but be defensive
-    final decoder = config!.spec!.newMessageDecoder(event.data);
+    final decoder = config!.spec!.newMessageDecoder(data);
     if (decoder.isRequest) {
       CoapRequest? request;
       try {
@@ -236,9 +243,10 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   }
 
   /// New UDP channel
-  static CoapIChannel newUDPChannel(
-      CoapInternetAddress localEndpoint, int port) {
-    final CoapIChannel channel = CoapUDPChannel(localEndpoint, port);
+  static CoapIChannel newUDPChannel(CoapInternetAddress localEndpoint, int port,
+      {required String namespace}) {
+    final CoapIChannel channel =
+        CoapUDPChannel(localEndpoint, port, namespace: namespace);
     return channel;
   }
 }

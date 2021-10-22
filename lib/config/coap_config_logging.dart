@@ -15,23 +15,23 @@ class CoapConfigLogging extends DefaultCoapConfig {
   CoapISpec? spec;
 
   @override
-  String get logTarget => 'console';
-
-  @override
-  bool get logWarn => true;
-
-  @override
   String get version => 'RFC7252';
 
   @override
   String get deduplicator => 'MarkAndSweep';
 
   @override
-  bool get logInfo => true;
+  String get logTarget => 'console';
 
   @override
   bool get logError => true;
 
   @override
   bool get logDebug => true;
+
+  @override
+  bool get logWarn => true;
+
+  @override
+  bool get logInfo => true;
 }
