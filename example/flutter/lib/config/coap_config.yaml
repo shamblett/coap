@@ -17,6 +17,7 @@ useRandomIDStart: true
 useRandomTokenStart: true
 notificationMaxAge: 128000 # ms
 notificationCheckIntervalTime: 86400000 # ms
+poolUdpConnectionsByClient: false
 notificationCheckIntervalCount: 100 # ms
 notificationReregistrationBackoff: 2000 # ms
 cropRotationPeriod: 2000 # ms

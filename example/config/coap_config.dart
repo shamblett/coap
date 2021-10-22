@@ -54,6 +54,9 @@ class CoapConfig extends DefaultCoapConfig {
   bool get useRandomTokenStart => true;
 
   @override
+  bool get poolUdpConnectionsByClient => false;
+
+  @override
   int get notificationMaxAge => 128000;
 
   @override
