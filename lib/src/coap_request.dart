@@ -92,7 +92,7 @@ class CoapRequest extends CoapMessage {
   CoapIEndPoint? endpoint;
 
   /// Resolves the destination internet address
-  Future<CoapInternetAddress> resolveDestination(
+  Future<CoapInternetAddress?> resolveDestination(
           InternetAddressType addressType) async =>
       destination =
           await CoapUtil.lookupHost(resolveHost, addressType, bindAddress);
