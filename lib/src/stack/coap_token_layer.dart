@@ -59,6 +59,10 @@ class CoapTokenLayer extends CoapAbstractLayer {
 
   typed.Uint8Buffer _newToken() {
     final token = _counter;
+    _counter++;
+    if (_counter > 32767) {
+      _counter = 0;
+    }
     final buff = typed.Uint8Buffer()
       ..addAll(<int>[token >> 24, token >> 16, token >> 8, token]);
     return buff;
