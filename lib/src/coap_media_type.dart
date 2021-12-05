@@ -20,7 +20,48 @@ class CoapMediaType {
     applicationXml: <String>['application/xml', 'xml'],
     applicationOctetStream: <String>['application/octet-stream', 'bin'],
     applicationExi: <String>['application/exi', 'exi'],
-    applicationJson: <String>['application/json', 'json']
+    applicationJson: <String>['application/json', 'json'],
+    // FIXME: How to deal with undefined file extensions?
+    applicationJsonPatchJson: <String>['application/json-patch+json'],
+    applicationMergePatchJson: <String>['application/merge-patch+json'],
+    applicationCbor: <String>['application/cbor', 'cbor'],
+    applicationCwt: <String>['application/cwt'],
+    applicationMultipartCore: <String>['application/multipart-core'],
+    applicationCborSeq: <String>['application/cbor-seq'],
+    // TODO: Add application/cose Content Formats
+    applicationCoseKey: <String>['application/cose-key', 'cbor'],
+    applicationCoseKeySet: <String>['application/cose-key-set', 'cbor'],
+    applicationSenmlJson: <String>['application/senml+json', 'senml'],
+    applicationSensmlJson: <String>['application/sensml+json', 'sensml'],
+    applicationSenmlCbor: <String>['application/senml+cbor', 'senmlc'],
+    applicationSensmlCbor: <String>['application/sensml+cbor', 'sensmlc'],
+    applicationSenmlExi: <String>['application/senml-exi', 'senmle'],
+    applicationSensmlExi: <String>['application/sensml-exi', 'sensmle'],
+    applicationCoapGroupJson: <String>['application/coap-group+json', 'json'],
+    applicationDotsCbor: <String>['application/dots+cbor'],
+    applicationMissingBlocksCborSeq: <String>[
+      'application/missing-blocks+cbor-seq'
+    ],
+    // TODO: Add application/pkcs7-mime Content Formats
+    applicationPkcs8: <String>['application/pkcs8'],
+    applicationCsrattrs: <String>['application/csrattrs'],
+    applicationPkcs10: <String>['application/pkcs10'],
+    applicationPkixCert: <String>['application/pkix-cert'],
+    applicationSenmlXml: <String>['application/senml+xml', 'senmlx'],
+    applicationSensmlXml: <String>['application/sensml+xml', 'sensmlx'],
+    applicationSenmlEtchJson: <String>[
+      'application/senml-etch+json',
+      'senml-etchj'
+    ],
+    applicationSenmlEtchCbor: <String>[
+      'application/senml-etch+cbor',
+      'senml-etchc'
+    ],
+    applicationTdJson: <String>['application/td+json', 'jsontd'],
+    applicationVndOcfCbor: <String>['application/vnd.ocf+cbor'],
+    applicationOscore: <String>['application/oscore'],
+    applicationJavascript: <String>['application/javascript', 'js'],
+    textCss: <String>['text/css', 'css'],
   };
 
   /// undefined
@@ -52,6 +93,99 @@ class CoapMediaType {
 
   /// application/json
   static const int applicationJson = 50;
+
+  /// application/json-patch+json
+  static const int applicationJsonPatchJson = 51;
+
+  /// application/merge-patch+json
+  static const int applicationMergePatchJson = 52;
+
+  /// application/cbor
+  static const int applicationCbor = 60;
+
+  /// application/cwt
+  static const int applicationCwt = 61;
+
+  /// application/multipart-core
+  static const int applicationMultipartCore = 62;
+
+  /// application/cbor-seq
+  static const int applicationCborSeq = 63;
+
+  /// application/cose-key
+  static const int applicationCoseKey = 101;
+
+  /// application/cose-key-set
+  static const int applicationCoseKeySet = 102;
+
+  /// application/senml+json
+  static const int applicationSenmlJson = 110;
+
+  /// application/sensml+json
+  static const int applicationSensmlJson = 111;
+
+  /// application/senml+cbor
+  static const int applicationSenmlCbor = 112;
+
+  /// application/sensml+cbor
+  static const int applicationSensmlCbor = 113;
+
+  /// application/senml-exi
+  static const int applicationSenmlExi = 114;
+
+  /// application/sensml-exi
+  static const int applicationSensmlExi = 115;
+
+  /// application/coap-group+json
+  static const int applicationCoapGroupJson = 256;
+
+  /// application/dots+cbor
+  static const int applicationDotsCbor = 271;
+
+  /// application/missing-blocks+cbor-seq
+  static const int applicationMissingBlocksCborSeq = 272;
+
+  /// application/pkcs8
+  static const int applicationPkcs8 = 284;
+
+  /// application/csrattrs
+  static const int applicationCsrattrs = 285;
+
+  /// application/pkcs10
+  static const int applicationPkcs10 = 286;
+
+  /// application/pkix-cert
+  static const int applicationPkixCert = 287;
+
+  /// application/senml+xml
+  static const int applicationSenmlXml = 310;
+
+  /// application/sensml+xml
+  static const int applicationSensmlXml = 311;
+
+  /// application/senml-etch+json
+  static const int applicationSenmlEtchJson = 320;
+
+  /// application/senml-etch+cbor
+  static const int applicationSenmlEtchCbor = 322;
+
+  /// application/td+json
+  static const int applicationTdJson = 432;
+
+  /// application/vnd.ocf+cbor
+  static const int applicationVndOcfCbor = 10000;
+
+  /// application/oscore
+  static const int applicationOscore = 10001;
+
+  /// application/javascript
+  static const int applicationJavascript = 10002;
+
+  /// text/css
+  static const int textCss = 20000;
+
+  /// image/svg+xml
+  static const int imageSvgXml = 30000;
 
   /// any
   static const int any = 0xFF;
