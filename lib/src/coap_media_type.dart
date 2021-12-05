@@ -85,12 +85,14 @@ class CoapMediaType {
   }
 
   /// Gets the file extension of the given media type.
+  ///
+  /// Returns 'undefined' if the [mediaType] cannot be resolved.
   static String fileExtension(int mediaType) {
-    if (_registry.containsKey(mediaType)) {
+    if (_registry.containsKey(mediaType) && _registry[mediaType]!.length > 1) {
       return _registry[mediaType]![1];
-    } else {
-      return 'unknown/$mediaType';
     }
+
+    return 'undefined';
   }
 
   /// Negotiation content
