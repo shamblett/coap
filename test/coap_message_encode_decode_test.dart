@@ -919,11 +919,6 @@ void main() {
           isTrue);
     }
 
-    test('TestDraft03', () {
-      testMessage(CoapDraft03(), 0);
-      testMessageWithOptions(CoapDraft03(), 1);
-      testMessageWithExtendedOption(CoapDraft03(), 2);
-    });
     test('TestDraft08', () {
       testMessage(CoapDraft08(), 0);
       testMessageWithOptions(CoapDraft08(), 1);
