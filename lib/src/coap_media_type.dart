@@ -200,8 +200,25 @@ class CoapMediaType {
     switch (mediaType) {
       case textPlain:
       case applicationLinkFormat:
+      case applicationJavascript:
+      case textCss:
+
+      // XML based mediaTypes
       case applicationXml:
+      case applicationSenmlXml:
+      case applicationSensmlXml:
+      case imageSvgXml:
+
+      // JSON based mediaTypes
       case applicationJson:
+      case applicationJsonPatchJson:
+      case applicationMergePatchJson:
+      case applicationSenmlJson:
+      case applicationSensmlJson:
+      case applicationCoapGroupJson:
+      case applicationSenmlEtchJson:
+      case applicationTdJson:
+
       case undefined:
         return true;
       default:
