@@ -210,11 +210,14 @@ class CoapMediaType {
   }
 
   /// Returns a string representation of the media type.
+  ///
+  /// Returns 'application/octet-stream' as the default if the [mediaType] code
+  /// is unknown.
   static String name(int mediaType) {
     if (_registry.containsKey(mediaType)) {
       return _registry[mediaType]![0];
     } else {
-      return 'unknown/$mediaType';
+      return 'application/octet-stream';
     }
   }
 
