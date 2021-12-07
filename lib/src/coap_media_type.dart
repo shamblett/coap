@@ -13,30 +13,55 @@ class CoapMediaType {
   /// Media registry
   static final Map<int, List<String>> _registry = <int, List<String>>{
     textPlain: <String>['text/plain', 'txt'],
-    textXml: <String>['text/xml', 'xml'],
-    textCsv: <String>['text/csv', 'csv'],
-    textHtml: <String>['text/html', 'html'],
     imageGif: <String>['image/gif', 'gif'],
     imageJpeg: <String>['image/jpeg', 'jpg'],
     imagePng: <String>['image/png', 'png'],
-    imageTiff: <String>['image/tiff', 'tif'],
-    audioRaw: <String>['audio/raw', 'raw'],
-    videoRaw: <String>['video/raw', 'raw'],
     applicationLinkFormat: <String>['application/link-format', 'wlnk'],
     applicationXml: <String>['application/xml', 'xml'],
     applicationOctetStream: <String>['application/octet-stream', 'bin'],
-    applicationRdfXml: <String>['application/rdf+xml', 'rdf'],
-    applicationSoapXml: <String>['application/soap+xml', 'soap'],
-    applicationAtomXml: <String>['application/atom+xml', 'atom'],
-    applicationXmppXml: <String>['application/xmpp+xml', 'xmpp'],
-    applicationFastinfoset: <String>['application/fastinfoset', 'finf'],
-    applicationSoapFastinfoset: <String>[
-      'application/soap+fastinfoset',
-      'soap.finf'
-    ],
-    applicationXObixBinary: <String>['application/x-obix-binary', 'obix'],
     applicationExi: <String>['application/exi', 'exi'],
-    applicationJson: <String>['application/json', 'json']
+    applicationJson: <String>['application/json', 'json'],
+    // FIXME: How to deal with undefined file extensions?
+    applicationJsonPatchJson: <String>['application/json-patch+json'],
+    applicationMergePatchJson: <String>['application/merge-patch+json'],
+    applicationCbor: <String>['application/cbor', 'cbor'],
+    applicationCwt: <String>['application/cwt'],
+    applicationMultipartCore: <String>['application/multipart-core'],
+    applicationCborSeq: <String>['application/cbor-seq'],
+    // TODO: Add application/cose Content Formats
+    applicationCoseKey: <String>['application/cose-key', 'cbor'],
+    applicationCoseKeySet: <String>['application/cose-key-set', 'cbor'],
+    applicationSenmlJson: <String>['application/senml+json', 'senml'],
+    applicationSensmlJson: <String>['application/sensml+json', 'sensml'],
+    applicationSenmlCbor: <String>['application/senml+cbor', 'senmlc'],
+    applicationSensmlCbor: <String>['application/sensml+cbor', 'sensmlc'],
+    applicationSenmlExi: <String>['application/senml-exi', 'senmle'],
+    applicationSensmlExi: <String>['application/sensml-exi', 'sensmle'],
+    applicationCoapGroupJson: <String>['application/coap-group+json', 'json'],
+    applicationDotsCbor: <String>['application/dots+cbor'],
+    applicationMissingBlocksCborSeq: <String>[
+      'application/missing-blocks+cbor-seq'
+    ],
+    // TODO: Add application/pkcs7-mime Content Formats
+    applicationPkcs8: <String>['application/pkcs8'],
+    applicationCsrattrs: <String>['application/csrattrs'],
+    applicationPkcs10: <String>['application/pkcs10'],
+    applicationPkixCert: <String>['application/pkix-cert'],
+    applicationSenmlXml: <String>['application/senml+xml', 'senmlx'],
+    applicationSensmlXml: <String>['application/sensml+xml', 'sensmlx'],
+    applicationSenmlEtchJson: <String>[
+      'application/senml-etch+json',
+      'senml-etchj'
+    ],
+    applicationSenmlEtchCbor: <String>[
+      'application/senml-etch+cbor',
+      'senml-etchc'
+    ],
+    applicationTdJson: <String>['application/td+json', 'jsontd'],
+    applicationVndOcfCbor: <String>['application/vnd.ocf+cbor'],
+    applicationOscore: <String>['application/oscore'],
+    applicationJavascript: <String>['application/javascript', 'js'],
+    textCss: <String>['text/css', 'css'],
   };
 
   /// undefined
@@ -44,15 +69,6 @@ class CoapMediaType {
 
   /// text/plain; charset=utf-8
   static const int textPlain = 0;
-
-  /// text/xml
-  static const int textXml = 1;
-
-  /// text/csv
-  static const int textCsv = 2;
-
-  /// text/html
-  static const int textHtml = 3;
 
   /// image/gif
   static const int imageGif = 21;
@@ -63,15 +79,6 @@ class CoapMediaType {
   /// image/png
   static const int imagePng = 23;
 
-  /// image/tiff
-  static const int imageTiff = 24;
-
-  /// audio/raw
-  static const int audioRaw = 25;
-
-  /// video/raw
-  static const int videoRaw = 26;
-
   /// application/link-format
   static const int applicationLinkFormat = 40;
 
@@ -81,32 +88,104 @@ class CoapMediaType {
   /// application/octet-stream
   static const int applicationOctetStream = 42;
 
-  /// application/rdf+xml
-  static const int applicationRdfXml = 43;
-
-  /// application/soap+xml
-  static const int applicationSoapXml = 44;
-
-  /// application/atom+xml
-  static const int applicationAtomXml = 45;
-
-  /// application/xmpp+xml
-  static const int applicationXmppXml = 46;
-
   /// application/exi
   static const int applicationExi = 47;
-
-  /// application/fastinfoset
-  static const int applicationFastinfoset = 48;
-
-  /// application/soap+fastinfoset
-  static const int applicationSoapFastinfoset = 49;
 
   /// application/json
   static const int applicationJson = 50;
 
-  /// application/x-obix-binary
-  static const int applicationXObixBinary = 51;
+  /// application/json-patch+json
+  static const int applicationJsonPatchJson = 51;
+
+  /// application/merge-patch+json
+  static const int applicationMergePatchJson = 52;
+
+  /// application/cbor
+  static const int applicationCbor = 60;
+
+  /// application/cwt
+  static const int applicationCwt = 61;
+
+  /// application/multipart-core
+  static const int applicationMultipartCore = 62;
+
+  /// application/cbor-seq
+  static const int applicationCborSeq = 63;
+
+  /// application/cose-key
+  static const int applicationCoseKey = 101;
+
+  /// application/cose-key-set
+  static const int applicationCoseKeySet = 102;
+
+  /// application/senml+json
+  static const int applicationSenmlJson = 110;
+
+  /// application/sensml+json
+  static const int applicationSensmlJson = 111;
+
+  /// application/senml+cbor
+  static const int applicationSenmlCbor = 112;
+
+  /// application/sensml+cbor
+  static const int applicationSensmlCbor = 113;
+
+  /// application/senml-exi
+  static const int applicationSenmlExi = 114;
+
+  /// application/sensml-exi
+  static const int applicationSensmlExi = 115;
+
+  /// application/coap-group+json
+  static const int applicationCoapGroupJson = 256;
+
+  /// application/dots+cbor
+  static const int applicationDotsCbor = 271;
+
+  /// application/missing-blocks+cbor-seq
+  static const int applicationMissingBlocksCborSeq = 272;
+
+  /// application/pkcs8
+  static const int applicationPkcs8 = 284;
+
+  /// application/csrattrs
+  static const int applicationCsrattrs = 285;
+
+  /// application/pkcs10
+  static const int applicationPkcs10 = 286;
+
+  /// application/pkix-cert
+  static const int applicationPkixCert = 287;
+
+  /// application/senml+xml
+  static const int applicationSenmlXml = 310;
+
+  /// application/sensml+xml
+  static const int applicationSensmlXml = 311;
+
+  /// application/senml-etch+json
+  static const int applicationSenmlEtchJson = 320;
+
+  /// application/senml-etch+cbor
+  static const int applicationSenmlEtchCbor = 322;
+
+  /// application/td+json
+  static const int applicationTdJson = 432;
+
+  /// application/vnd.ocf+cbor
+  static const int applicationVndOcfCbor = 10000;
+
+  /// application/oscore
+  static const int applicationOscore = 10001;
+
+  /// application/javascript
+  static const int applicationJavascript = 10002;
+
+  /// text/css
+  static const int textCss = 20000;
+
+  /// image/svg+xml
+  static const int imageSvgXml = 30000;
 
   /// any
   static const int any = 0xFF;
@@ -114,22 +193,32 @@ class CoapMediaType {
   /// Checks whether the given media type is a type of image.
   /// True iff the media type is a type of image.
   static bool isImage(int mediaType) =>
-      mediaType >= imageGif && mediaType <= imageTiff;
+      mediaType >= imageGif && mediaType <= imagePng;
 
   /// Is the media type printable
   static bool isPrintable(int? mediaType) {
     switch (mediaType) {
       case textPlain:
-      case textXml:
-      case textCsv:
-      case textHtml:
       case applicationLinkFormat:
+      case applicationJavascript:
+      case textCss:
+
+      // XML based mediaTypes
       case applicationXml:
-      case applicationRdfXml:
-      case applicationSoapXml:
-      case applicationAtomXml:
-      case applicationXmppXml:
+      case applicationSenmlXml:
+      case applicationSensmlXml:
+      case imageSvgXml:
+
+      // JSON based mediaTypes
       case applicationJson:
+      case applicationJsonPatchJson:
+      case applicationMergePatchJson:
+      case applicationSenmlJson:
+      case applicationSensmlJson:
+      case applicationCoapGroupJson:
+      case applicationSenmlEtchJson:
+      case applicationTdJson:
+
       case undefined:
         return true;
       default:
@@ -138,21 +227,26 @@ class CoapMediaType {
   }
 
   /// Returns a string representation of the media type.
+  ///
+  /// Returns 'application/octet-stream' as the default if the [mediaType] code
+  /// is unknown.
   static String name(int mediaType) {
     if (_registry.containsKey(mediaType)) {
       return _registry[mediaType]![0];
     } else {
-      return 'unknown/$mediaType';
+      return 'application/octet-stream';
     }
   }
 
   /// Gets the file extension of the given media type.
+  ///
+  /// Returns 'undefined' if the [mediaType] cannot be resolved.
   static String fileExtension(int mediaType) {
-    if (_registry.containsKey(mediaType)) {
+    if (_registry.containsKey(mediaType) && _registry[mediaType]!.length > 1) {
       return _registry[mediaType]![1];
-    } else {
-      return 'unknown/$mediaType';
     }
+
+    return 'undefined';
   }
 
   /// Negotiation content

@@ -20,8 +20,8 @@ void main() {
       expect(CoapMediaType.isImage(type), false);
 
       const unknownType = 200;
-      expect(CoapMediaType.name(unknownType), 'unknown/200');
-      expect(CoapMediaType.fileExtension(unknownType), 'unknown/200');
+      expect(CoapMediaType.name(unknownType), 'application/octet-stream');
+      expect(CoapMediaType.fileExtension(unknownType), 'undefined');
       expect(CoapMediaType.isPrintable(unknownType), false);
       expect(CoapMediaType.isImage(unknownType), false);
     });
@@ -59,12 +59,9 @@ void main() {
 
       res = CoapMediaType.parseWildcard('xml*');
       expect(res, <int>[
-        CoapMediaType.textXml,
         CoapMediaType.applicationXml,
-        CoapMediaType.applicationRdfXml,
-        CoapMediaType.applicationSoapXml,
-        CoapMediaType.applicationAtomXml,
-        CoapMediaType.applicationXmppXml
+        CoapMediaType.applicationSenmlXml,
+        CoapMediaType.applicationSensmlXml,
       ]);
     });
   });
