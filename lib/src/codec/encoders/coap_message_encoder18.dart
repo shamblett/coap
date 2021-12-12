@@ -60,7 +60,11 @@ class CoapMessageEncoder18 extends CoapMessageEncoder {
       }
 
       // Write option value
-      writer.writeBytes(opt.valueBytes);
+      if (opt is CoapBlockOption) {
+        writer.writeBytes(opt.blockValueBytes);
+      } else {
+        writer.writeBytes(opt.valueBytes);
+      }
 
       lastOptionNumber = optNum;
     }
