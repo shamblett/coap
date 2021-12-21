@@ -61,6 +61,15 @@ class CoapMessageDecoder18 extends CoapMessageDecoder {
         // Read option
         final opt = CoapOption.create(currentOption);
         opt.valueBytes = _reader!.readBytes(optionLength);
+        // Reverse byte order for numeric options
+        if (CoapOption.getFormatByType(opt.type) == optionFormat.integer) {
+          final valueBytes = opt.valueBytes;
+          if (valueBytes != null) {
+            final reversedBytes = valueBytes.reversed;
+            opt.valueBytes = typed.Uint8Buffer()..addAll(reversedBytes);
+          }
+        }
+
         message.addOption(opt);
       }
     }
