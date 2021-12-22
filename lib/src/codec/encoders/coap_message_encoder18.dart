@@ -59,9 +59,14 @@ class CoapMessageEncoder18 extends CoapMessageEncoder {
         writer.write(optionLength - 269, 16);
       }
 
-      // Write option value
-      if (opt is CoapBlockOption) {
-        writer.writeBytes(opt.blockValueBytes);
+      // Write option value, reverse byte order for numeric options
+      if (CoapOption.getFormatByType(opt.type) == optionFormat.integer) {
+        final valueBytes = opt.valueBytes;
+        if (valueBytes != null) {
+          final reversedBytes = valueBytes.reversed;
+          final reversedBuffer = typed.Uint8Buffer()..addAll(reversedBytes);
+          writer.writeBytes(reversedBuffer);
+        }
       } else {
         writer.writeBytes(opt.valueBytes);
       }
