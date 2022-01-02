@@ -18,7 +18,7 @@ Observation of resources is supported with the client 'listening' for observed r
 when configured for this. The client supports both IPV4 and IPV6 communications and multicast operation. CoAP
 over DTLS(secure CoAP) is not supported.
 Many examples of usage are provided in the examples directory both using a .NET based CoAP server for local testing
-and testing using the [coap.me](http://coap.me/) test server. Also a fully populated default configuration
+and testing using the [coap.me](https://coap.me/) test server. Also a fully populated default configuration
 file is present in the examples directory.
 # Setup
 * Add this as dependency in your `pubspec.yaml`:
@@ -74,7 +74,7 @@ logInfo: "true"
     * Run `flutter pub run build_runner build` in a Flutter project;
       After running the command above the configuration class will be generated next to the `.yaml` configuration file.
 # Example
-This is a Dart Native program example that uses the [coap.me](http://coap.me/) server to fetch the word "world". Note that to run it you will need to generate your own configuration file.
+This is a Dart Native program example that uses the [coap.me](https://coap.me/) server to fetch the word "world". Note that to run it you will need to generate your own configuration file.
 ````dart
 import 'dart:async';
 import 'dart:io';
