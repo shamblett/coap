@@ -84,15 +84,15 @@ part 'src/util/coap_scanner.dart';
 
 part 'src/specification/coap_ispec.dart';
 
-part 'src/specification/drafts/coap_draft18.dart';
+part 'src/specification/rfcs/coap_rfc7252.dart';
 
 part 'src/codec/coap_imessage_encoder.dart';
 
 part 'src/codec/encoders/coap_message_encoder.dart';
 
-part 'src/codec/encoders/coap_message_encoder18.dart';
+part 'src/codec/encoders/coap_message_encoder_rfc7252.dart';
 
-part 'src/codec/decoders/coap_message_decoder18.dart';
+part 'src/codec/decoders/coap_message_decoder_rfc7252.dart';
 
 part 'src/codec/coap_imessage_decoder.dart';
 

@@ -15,16 +15,16 @@ class CoapMessageDecoder18 extends CoapMessageDecoder {
   }
 
   @override
-  bool get isWellFormed => _version == CoapDraft18.version;
+  bool get isWellFormed => _version == CoapRfc7252.version;
 
   @override
   void readProtocol() {
     // Read headers
-    _version = _reader!.read(CoapDraft18.versionBits);
-    _type = _reader!.read(CoapDraft18.typeBits);
-    _tokenLength = _reader!.read(CoapDraft18.tokenLengthBits);
-    _code = _reader!.read(CoapDraft18.codeBits);
-    _id = _reader!.read(CoapDraft18.idBits);
+    _version = _reader!.read(CoapRfc7252.versionBits);
+    _type = _reader!.read(CoapRfc7252.typeBits);
+    _tokenLength = _reader!.read(CoapRfc7252.tokenLengthBits);
+    _code = _reader!.read(CoapRfc7252.codeBits);
+    _id = _reader!.read(CoapRfc7252.idBits);
   }
 
   @override
@@ -39,7 +39,7 @@ class CoapMessageDecoder18 extends CoapMessageDecoder {
     var currentOption = 0;
     while (_reader!.bytesAvailable) {
       final nextByte = _reader!.readNextByte();
-      if (nextByte == CoapDraft18.payloadMarker) {
+      if (nextByte == CoapRfc7252.payloadMarker) {
         if (!_reader!.bytesAvailable) {
           // The presence of a marker followed by a zero-length payload
           // must be processed as a message format error
@@ -51,12 +51,12 @@ class CoapMessageDecoder18 extends CoapMessageDecoder {
         // The first 4 bits of the byte represent the option delta
         final optionDeltaNibble = (0xF0 & nextByte) >> 4;
         currentOption +=
-            CoapDraft18.getValueFromOptionNibble(optionDeltaNibble, _reader);
+            CoapRfc7252.getValueFromOptionNibble(optionDeltaNibble, _reader);
 
         // The second 4 bits represent the option length
         final optionLengthNibble = 0x0F & nextByte;
         final optionLength =
-            CoapDraft18.getValueFromOptionNibble(optionLengthNibble, _reader);
+            CoapRfc7252.getValueFromOptionNibble(optionLengthNibble, _reader);
 
         // Read option
         final opt = CoapOption.create(currentOption);

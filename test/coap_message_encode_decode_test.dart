@@ -16,7 +16,7 @@ void main() {
   final DefaultCoapConfig conf = CoapConfigLogging();
   group('COAP All', () {
     final check = <String, List<List<int>>>{
-      'draft-ietf-core-coap-18': <List<int>>[
+      'RFC 7252': <List<int>>[
         <int>[64, 1, 48, 57, 255, 112, 97, 121, 108, 111, 97, 100],
         <int>[
           64,
@@ -218,7 +218,7 @@ void main() {
 
     /// Helper functions
     void printData(String name, List<int> data, int testNo) {
-      print('Draft name is - $name');
+      print('Specification name is - $name');
       print('Test number is $testNo');
       print('Data is - $data');
       print('Chk  is - ${check[name]![testNo]}');
@@ -379,12 +379,12 @@ void main() {
           isTrue);
     }
 
-    test('TestDraft18', () {
-      testMessage(CoapDraft18(), 0);
-      testMessageWithOptions(CoapDraft18(), 1);
-      testMessageWithExtendedOption(CoapDraft18(), 2);
-      testRequestParsing(CoapDraft18(), 3);
-      testResponseParsing(CoapDraft18(), 4);
+    test('Test RFC 7252', () {
+      testMessage(CoapRfc7252(), 0);
+      testMessageWithOptions(CoapRfc7252(), 1);
+      testMessageWithExtendedOption(CoapRfc7252(), 2);
+      testRequestParsing(CoapRfc7252(), 3);
+      testResponseParsing(CoapRfc7252(), 4);
     });
   });
 }

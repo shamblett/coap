@@ -7,8 +7,8 @@
 
 part of coap;
 
-/// draft-ietf-core-coap-18
-class CoapDraft18 implements CoapISpec {
+/// RFC 7252
+class CoapRfc7252 implements CoapISpec {
   /// Version
   static const int version = 1;
 
@@ -39,13 +39,13 @@ class CoapDraft18 implements CoapISpec {
   static final CoapILogger? _log = CoapLogManager().logger;
 
   @override
-  String get name => 'draft-ietf-core-coap-18';
+  String get name => 'RFC 7252';
 
   @override
   int get defaultPort => 5683;
 
   @override
-  CoapIMessageEncoder newMessageEncoder() => CoapMessageEncoder18();
+  CoapIMessageEncoder newMessageEncoder() => CoapMessageEncoderRfc7252();
 
   @override
   CoapIMessageDecoder newMessageDecoder(typed.Uint8Buffer data) =>
