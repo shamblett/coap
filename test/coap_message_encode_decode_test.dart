@@ -23,17 +23,8 @@ void main() {
           1,
           48,
           57,
-          202,
-          110,
-          105,
-          97,
-          108,
-          112,
-          47,
-          116,
-          120,
-          101,
-          116,
+          193,
+          0,
           33,
           30,
           255,
@@ -51,7 +42,7 @@ void main() {
           48,
           57,
           193,
-          97,
+          0,
           221,
           172,
           0,
@@ -75,7 +66,7 @@ void main() {
           108,
           111,
           97,
-          100
+          100,
         ],
         <int>[
           85,
@@ -254,11 +245,10 @@ void main() {
 
       msg.id = 12345;
       msg.payload = typed.Uint8Buffer()..addAll('payload'.codeUnits);
-      msg.addOption(
-          CoapOption.createString(optionTypeContentType, 'text/plain'));
+      msg.addOption(CoapOption.createVal(
+          optionTypeContentFormat, CoapMediaType.textPlain));
       msg.addOption(CoapOption.createVal(optionTypeMaxAge, 30));
-      expect(
-          msg.getFirstOption(optionTypeContentType)!.stringValue, 'text/plain');
+      expect(msg.getFirstOption(optionTypeContentType)!.intValue, 0);
       expect(msg.getFirstOption(optionTypeMaxAge)!.value, 30);
       final data = spec.encode(msg)!;
       checkData(spec.name, data, testNo);
@@ -272,8 +262,8 @@ void main() {
           leq.equals(
               msg.getAllOptions().toList(), convMsg.getAllOptions().toList()),
           isTrue);
-      expect(convMsg.getFirstOption(optionTypeContentType)!.stringValue,
-          'text/plain');
+      expect(convMsg.getFirstOption(optionTypeContentType)!.intValue,
+          CoapMediaType.textPlain);
       expect(convMsg.getFirstOption(optionTypeMaxAge)!.value, 30);
       expect(
           leq.equals(msg.payload!.toList(), convMsg.payload!.toList()), isTrue);
@@ -284,9 +274,9 @@ void main() {
           CoapRequest.isConfirmable(CoapCode.methodGET, confirmable: true);
 
       msg.id = 12345;
-      msg.addOption(CoapOption.createString(12, 'a'));
+      msg.addOption(CoapOption.createVal(12, 0));
       msg.addOption(CoapOption.createString(197, 'extend option'));
-      expect(msg.getFirstOption(12)!.stringValue, 'a');
+      expect(msg.getFirstOption(12)!.value, 0);
       expect(msg.getFirstOption(197)!.stringValue, 'extend option');
       msg.payload = typed.Uint8Buffer()..addAll('payload'.codeUnits);
 
@@ -302,7 +292,7 @@ void main() {
           leq.equals(
               msg.getAllOptions().toList(), convMsg.getAllOptions().toList()),
           isTrue);
-      expect(convMsg.getFirstOption(12)!.stringValue, 'a');
+      expect(convMsg.getFirstOption(12)!.value, 0);
       expect(
           leq.equals(msg.payload!.toList(), convMsg.payload!.toList()), isTrue);
 
