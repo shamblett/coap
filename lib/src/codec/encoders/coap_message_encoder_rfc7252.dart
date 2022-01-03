@@ -7,17 +7,17 @@
 
 part of coap;
 
-/// Message encoder 13
-class CoapMessageEncoder13 extends CoapMessageEncoder {
+/// Message encoder RFC 7252
+class CoapMessageEncoderRfc7252 extends CoapMessageEncoder {
   @override
   void serialize(CoapDatagramWriter writer, CoapMessage message, int? code) {
     // Write fixed-size CoAP headers
-    writer.write(CoapDraft13.version, CoapDraft13.versionBits);
-    writer.write(message.type, CoapDraft13.typeBits);
+    writer.write(CoapRfc7252.version, CoapRfc7252.versionBits);
+    writer.write(message.type, CoapRfc7252.typeBits);
     writer.write(message.token == null ? 0 : message.token!.length,
-        CoapDraft13.tokenLengthBits);
-    writer.write(code, CoapDraft13.codeBits);
-    writer.write(message.id, CoapDraft13.idBits);
+        CoapRfc7252.tokenLengthBits);
+    writer.write(code, CoapRfc7252.codeBits);
+    writer.write(message.id, CoapRfc7252.idBits);
 
     // Write token, which may be 0 to 8 bytes, given by token length field
     writer.writeBytes(message.token);
@@ -28,23 +28,22 @@ class CoapMessageEncoder13 extends CoapMessageEncoder {
         options, (dynamic a, dynamic b) => a.type.compareTo(b.type));
 
     for (final opt in options) {
-      if (opt.type == optionTypeToken) {
-        continue;
-      }
-      if (opt.isDefault()) {
+      if (opt.type == optionTypeToken ||
+          opt.type == optionTypeUriHost ||
+          opt.type == optionTypeUriPort) {
         continue;
       }
 
       // Write 4-bit option delta
-      final optNum = CoapDraft13.getOptionNumber(opt.type);
+      final optNum = opt.type;
       final optionDelta = optNum - lastOptionNumber;
-      final optionDeltaNibble = CoapDraft13.getOptionNibble(optionDelta);
-      writer.write(optionDeltaNibble, CoapDraft13.optionDeltaBits);
+      final optionDeltaNibble = CoapRfc7252.getOptionNibble(optionDelta);
+      writer.write(optionDeltaNibble, CoapRfc7252.optionDeltaBits);
 
       // Write 4-bit option length
       final optionLength = opt.length;
-      final optionLengthNibble = CoapDraft13.getOptionNibble(optionLength);
-      writer.write(optionLengthNibble, CoapDraft13.optionLengthBits);
+      final optionLengthNibble = CoapRfc7252.getOptionNibble(optionLength);
+      writer.write(optionLengthNibble, CoapRfc7252.optionLengthBits);
 
       // Write extended option delta field (0 - 2 bytes)
       if (optionDeltaNibble == 13) {
@@ -60,8 +59,17 @@ class CoapMessageEncoder13 extends CoapMessageEncoder {
         writer.write(optionLength - 269, 16);
       }
 
-      // Write option value
-      writer.writeBytes(opt.valueBytes);
+      // Write option value, reverse byte order for numeric options
+      if (CoapOption.getFormatByType(opt.type) == optionFormat.integer) {
+        final valueBytes = opt.valueBytes;
+        if (valueBytes != null) {
+          final reversedBytes = valueBytes.reversed;
+          final reversedBuffer = typed.Uint8Buffer()..addAll(reversedBytes);
+          writer.writeBytes(reversedBuffer);
+        }
+      } else {
+        writer.writeBytes(opt.valueBytes);
+      }
 
       lastOptionNumber = optNum;
     }
@@ -70,7 +78,7 @@ class CoapMessageEncoder13 extends CoapMessageEncoder {
       // If payload is present and of non-zero length, it is prefixed by
       // an one-byte Payload Marker (0xFF) which indicates the end of
       // options and the start of the payload
-      writer.writeByte(CoapDraft13.payloadMarker);
+      writer.writeByte(CoapRfc7252.payloadMarker);
     }
     // Write payload
     writer.writeBytes(message.payload);

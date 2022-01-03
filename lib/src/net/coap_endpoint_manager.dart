@@ -12,14 +12,14 @@ class CoapEndpointManager {
   /// Default spec
   static void getDefaultSpec() {
     final config = DefaultCoapConfig.inst!;
-    config.spec ??= CoapDraft18();
+    config.spec ??= CoapRfc7252();
   }
 
   /// Default endpoint
   static CoapIEndPoint getDefaultEndpoint(CoapIEndPoint endpoint,
       {required String namespace}) {
     final config = DefaultCoapConfig.inst!;
-    config.spec ??= CoapDraft18();
+    config.spec ??= CoapRfc7252();
     config.defaultPort = config.spec!.defaultPort;
     final CoapIChannel channel = CoapUDPChannel(
         endpoint.localEndpoint, config.defaultPort,

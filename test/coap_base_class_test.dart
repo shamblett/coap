@@ -69,7 +69,7 @@ void main() {
   group('Configuration', () {
     test('All', () {
       final DefaultCoapConfig conf = CoapConfigAll();
-      conf.spec = CoapDraft18();
+      conf.spec = CoapRfc7252();
       expect(conf.version, 'RFC7252');
       expect(conf.defaultPort, 1);
       expect(conf.defaultSecurePort, 2);
@@ -101,7 +101,7 @@ void main() {
 
     test('Default', () {
       final DefaultCoapConfig conf = CoapConfigDefault();
-      conf.spec = CoapDraft18();
+      conf.spec = CoapRfc7252();
       expect(conf.version, 'RFC7252');
       expect(conf.defaultPort, CoapConstants.defaultPort);
       expect(conf.defaultSecurePort, CoapConstants.defaultSecurePort);

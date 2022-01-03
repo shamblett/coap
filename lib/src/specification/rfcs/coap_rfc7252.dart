@@ -7,8 +7,8 @@
 
 part of coap;
 
-/// draft-ietf-core-coap-13
-class CoapDraft13 implements CoapISpec {
+/// RFC 7252
+class CoapRfc7252 implements CoapISpec {
   /// Version
   static const int version = 1;
 
@@ -30,7 +30,7 @@ class CoapDraft13 implements CoapISpec {
   /// Option delta bit length
   static const int optionDeltaBits = 4;
 
-  /// Option length bits
+  /// Option length bit length
   static const int optionLengthBits = 4;
 
   /// Payload marker
@@ -39,17 +39,17 @@ class CoapDraft13 implements CoapISpec {
   static final CoapILogger? _log = CoapLogManager().logger;
 
   @override
-  String get name => 'draft-ietf-core-coap-13';
+  String get name => 'RFC 7252';
 
   @override
   int get defaultPort => 5683;
 
   @override
-  CoapIMessageEncoder newMessageEncoder() => CoapMessageEncoder13();
+  CoapIMessageEncoder newMessageEncoder() => CoapMessageEncoderRfc7252();
 
   @override
   CoapIMessageDecoder newMessageDecoder(typed.Uint8Buffer data) =>
-      CoapMessageDecoder13(data);
+      CoapMessageDecoder18(data);
 
   @override
   typed.Uint8Buffer? encode(CoapMessage msg) =>
@@ -60,7 +60,7 @@ class CoapDraft13 implements CoapISpec {
       newMessageDecoder(bytes).decodeMessage();
 
   /// Calculates the value used in the extended option fields as specified
-  /// in draft-ietf-core-coap-13, section 3.1.
+  /// in draft-ietf-core-coap-18, section 3.1.
   static int getValueFromOptionNibble(
       int nibble, CoapDatagramReader? datagram) {
     if (nibble < 13) {
@@ -70,7 +70,7 @@ class CoapDraft13 implements CoapISpec {
     } else if (nibble == 14) {
       return datagram!.read(16) + 269;
     } else {
-      _log!.warn('15 is reserved for payload marker, message format error');
+      _log!.warn('Unsupported option delta $nibble');
       return 0;
     }
   }
@@ -84,27 +84,8 @@ class CoapDraft13 implements CoapISpec {
     } else if (optionValue <= 65535 + 269) {
       return 14;
     } else {
-      _log!.warn('The option value $optionValue is too large to be '
-          'encoded; Max allowed is 65804.');
+      _log!.warn('Unsupported option delta $optionValue');
       return 0;
-    }
-  }
-
-  /// Option number
-  static int getOptionNumber(int optionType) {
-    if (optionType == optionTypeAccept) {
-      return 16;
-    } else {
-      return optionType;
-    }
-  }
-
-  /// Option type
-  static int getOptionType(int optionNumber) {
-    if (optionNumber == 16) {
-      return optionTypeAccept;
-    } else {
-      return optionNumber;
     }
   }
 }
