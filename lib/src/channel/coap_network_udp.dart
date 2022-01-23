@@ -46,10 +46,11 @@ class CoapNetworkUDP implements CoapINetwork {
   RawDatagramSocket? get socket => _socket;
 
   @override
-  int send(typed.Uint8Buffer data) {
+  int send(typed.Uint8Buffer data, [CoapInternetAddress? address]) {
     try {
       if (_bound) {
-        _socket?.send(data.toList(), address!.address, port!);
+        _socket?.send(
+            data.toList(), address?.address ?? this.address!.address, port!);
       }
     } on SocketException catch (e) {
       _log!.error(
