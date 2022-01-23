@@ -31,6 +31,9 @@ class CoapExchange {
   /// The request
   CoapRequest? request;
 
+  /// The request
+  CoapRequest? originalMulticastRequest;
+
   /// The current request
   CoapRequest? currentRequest;
 
