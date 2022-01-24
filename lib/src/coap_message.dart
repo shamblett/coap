@@ -66,11 +66,6 @@ class CoapMessage {
 
   /// Adds an option to the list of options of this CoAP message.
   CoapMessage addOption(CoapOption option) {
-    if (option.type == optionTypeToken) {
-      // be compatible with draft 13-
-      token = option.valueBytes;
-      return this;
-    }
     if (!_optionMap.containsKey(option.type)) {
       _optionMap[option.type] = <CoapOption>[];
     }
