@@ -7,8 +7,7 @@
 
 part of coap;
 
-/// This class provides link format definitions as specified in
-/// draft-ietf-core-link-format-06
+/// This class provides link format definitions as specified in RFC 6690.
 class CoapLinkFormat {
   /// Name of the attribute Resource Type
   static const String resourceType = 'rt';

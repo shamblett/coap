@@ -48,7 +48,7 @@ class CoapObserveNotificationOrderer {
     // Multiple responses with different notification numbers might
     // arrive and be processed by different threads. We have to
     // ensure that only the most fresh one is being delivered.
-    // We use the notation from the observe draft-08.
+    // We use the notation from RFC 7641.
     final t1 = timestamp;
     final t2 = DateTime.now();
     final v1 = current!;

@@ -60,7 +60,7 @@ class CoapRfc7252 implements CoapISpec {
       newMessageDecoder(bytes).decodeMessage();
 
   /// Calculates the value used in the extended option fields as specified
-  /// in draft-ietf-core-coap-18, section 3.1.
+  /// in RFC 7252, section 3.1.
   static int getValueFromOptionNibble(
       int nibble, CoapDatagramReader? datagram) {
     if (nibble < 13) {

@@ -7,8 +7,8 @@
 
 part of coap;
 
-/// This class describes the CoAP Code Registry as defined in
-/// draft-ietf-core-coap-08, section 11.1
+/// This class describes the CoAP Code Registry as defined in  RFC 7252,
+/// section 12.1.
 class CoapCode {
   /// Not set
   static const int notSet = -1;
@@ -80,7 +80,7 @@ class CoapCode {
   /// 4.06 Not Acceptable
   static const int notAcceptable = 134;
 
-  /// 4.08 Request Entity Incomplete (draft-ietf-core-block)
+  /// 4.08 Request Entity Incomplete (RFC 7959)
   static const int requestEntityIncomplete = 136;
 
   /// 4.12 Client not supported by server/headers don't satisfy protocol
@@ -267,7 +267,7 @@ class CoapCode {
   /// 4.06 Not Acceptable
   static const int statusCodeNotAcceptable = 134;
 
-  /// 4.08 Request Entity Incomplete (draft-ietf-core-block)
+  /// 4.08 Request Entity Incomplete (RFC 7959)
   static const int statusCodeRequestEntityIncomplete = 136;
 
   /// 4.12 Precondition failed
