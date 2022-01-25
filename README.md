@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/shamblett/coap.svg?branch=master)](https://travis-ci.org/shamblett/coap)
+[![Build Status](https://github.com/shamblett/coap/actions/workflows/ci.yml/badge.svg)](https://github.com/shamblett/coap/actions/workflows/ci.yml)
 # coap
 A CoAP client library for Dart developers.
 The Constrained Application Protocol ([CoAP](https://datatracker.ietf.org/doc/html/rfc7252))
