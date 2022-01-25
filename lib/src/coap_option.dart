@@ -120,8 +120,7 @@ class CoapOption {
     }
   }
 
-  /// Gets a value indicating whether the option has a default value
-  /// according to the draft.
+  /// Checks whether the option value is the default.
   bool isDefault() {
     switch (_type) {
       case optionTypeMaxAge:
