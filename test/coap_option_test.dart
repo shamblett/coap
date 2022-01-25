@@ -88,8 +88,6 @@ void main() {
       final opt =
           CoapOption.createVal(optionTypeMaxAge, CoapConstants.defaultMaxAge);
       expect(opt.isDefault(), isTrue);
-      final opt1 = CoapOption.create(optionTypeToken);
-      expect(opt1.isDefault(), isTrue);
       final opt2 = CoapOption.create(optionTypeReserved);
       expect(opt2.isDefault(), isFalse);
     });
@@ -124,46 +122,6 @@ void main() {
 
       expect(opt1 == opt2, isFalse);
       expect(opt2 == opt22, isTrue);
-    });
-
-    test('Empty token', () {
-      final opt1 = CoapOption.create(optionTypeToken);
-      final opt2 = CoapOption.create(optionTypeToken);
-      final opt22 = CoapOption.createString(optionTypeToken, 'full');
-
-      expect(opt1 == opt2, isTrue);
-      expect(opt2 == opt22, isFalse);
-      expect(opt1.length, 0);
-    });
-
-    test('1 Byte token', () {
-      final opt1 = CoapOption.createVal(optionTypeToken, 0xCD);
-      final opt2 = CoapOption.createVal(optionTypeToken, 0xCD);
-      final opt22 = CoapOption.createVal(optionTypeToken, 0xCE);
-
-      expect(opt1 == opt2, isTrue);
-      expect(opt2 == opt22, isFalse);
-      expect(opt1.length, 1);
-    });
-
-    test('2 Byte token', () {
-      final opt1 = CoapOption.createVal(optionTypeToken, 0xABCD);
-      final opt2 = CoapOption.createVal(optionTypeToken, 0xABCD);
-      final opt22 = CoapOption.createVal(optionTypeToken, 0xABCE);
-
-      expect(opt1 == opt2, isTrue);
-      expect(opt2 == opt22, isFalse);
-      expect(opt1.length, 2);
-    });
-
-    test('4 Byte token', () {
-      final opt1 = CoapOption.createVal(optionTypeToken, 0x1234ABCD);
-      final opt2 = CoapOption.createVal(optionTypeToken, 0x1234ABCD);
-      final opt22 = CoapOption.createVal(optionTypeToken, 0x1234ABCE);
-
-      expect(opt1 == opt2, isTrue);
-      expect(opt2 == opt22, isFalse);
-      expect(opt1.length, 4);
     });
 
     test('Set value', () {

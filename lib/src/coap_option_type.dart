@@ -48,10 +48,6 @@ const int optionTypeUriQuery = 15;
 /// C, Sequence of Bytes, 1-n B, -
 const int optionTypeAccept = 17;
 
-/// C, Sequence of Bytes, 1-2 B, -. NOTE: this option has been replaced with <see cref="Message.Token"/> since draft 13.
-/// draft-ietf-core-coap-03, draft-ietf-core-coap-12</remarks>
-const int optionTypeToken = 19;
-
 /// E, String, 1-270 B, -
 const int optionTypeLocationQuery = 20;
 
@@ -71,9 +67,6 @@ const int optionTypeObserve = 6;
 const int optionTypeBlock2 = 23;
 const int optionTypeBlock1 = 27;
 const int optionTypeSize2 = 28;
-
-/// no-op for fenceposting
-const int optionTypeFencepostDivisor = 114;
 
 /// CoAP option formats
 enum optionFormat { integer, string, opaque, unknown }
