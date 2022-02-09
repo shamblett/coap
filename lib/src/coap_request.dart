@@ -34,7 +34,7 @@ class CoapRequest extends CoapMessage {
   int? get method => _method;
 
   /// Indicates whether this request is a multicast request or not.
-  bool? multicast;
+  bool? get multicast => destination?.address.isMulticast;
 
   Uri? _uri;
 
