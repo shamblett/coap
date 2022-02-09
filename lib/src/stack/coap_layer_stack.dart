@@ -58,8 +58,13 @@ class CoapStackTopLayer extends CoapAbstractLayer {
       CoapINextLayer nextLayer, CoapExchange? exchange, CoapRequest request) {
     var nexchange = exchange;
     if (exchange == null) {
-      nexchange = CoapExchange(request, CoapOrigin.local,
-          namespace: request.eventBus!.namespace);
+      if (request.multicast ?? false) {
+        nexchange = CoapMulticastExchange(request, CoapOrigin.local,
+            namespace: request.eventBus!.namespace);
+      } else {
+        nexchange = CoapExchange(request, CoapOrigin.local,
+            namespace: request.eventBus!.namespace);
+      }
       nexchange.endpoint = request.endpoint;
     }
     nexchange?.request = request;
@@ -86,7 +91,8 @@ class CoapStackTopLayer extends CoapAbstractLayer {
   @override
   void receiveResponse(
       CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
-    if (!response.hasOption(optionTypeObserve)) {
+    if (!response.hasOption(optionTypeObserve) &&
+        exchange is! CoapMulticastExchange) {
       exchange.complete = true;
     }
     if (exchange.deliverer != null) {
