@@ -33,6 +33,15 @@ class CoapRequest extends CoapMessage {
   /// The request method(code)
   int? get method => _method;
 
+  @override
+  int? get type {
+    if (super.type == CoapMessageType.con && (multicast ?? false)) {
+      return CoapMessageType.non;
+    }
+
+    return super.type;
+  }
+
   /// Indicates whether this request is a multicast request or not.
   bool? get multicast => destination?.address.isMulticast;
 
