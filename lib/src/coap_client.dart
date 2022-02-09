@@ -63,8 +63,8 @@ class CoapClient {
   /// Timeout
   int timeout = 32767; //ms
 
-  /// Address type, set this if using IPV6
-  InternetAddressType addressType = InternetAddressType.IPv4;
+  /// Address type.
+  InternetAddressType addressType = InternetAddressType.any;
 
   /// Tell the client to use Confirmable requests.
   CoapClient useCONs() {
