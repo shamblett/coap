@@ -63,7 +63,7 @@ class CoapClient {
   /// Timeout
   int timeout = 32767; //ms
 
-  /// Address type, set this if using IPV6
+  /// Address type used for DNS lookups.
   InternetAddressType addressType = InternetAddressType.IPv4;
 
   /// Tell the client to use Confirmable requests.
