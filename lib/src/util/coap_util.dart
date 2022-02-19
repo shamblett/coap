@@ -210,16 +210,15 @@ class CoapUtil {
       log!.info(
           "CoapUtils:lookupHost host '$host' is an IP address, not resolving");
       final coapAddress =
-          CoapInternetAddress(parsedAddress.type, parsedAddress);
-      coapAddress.bindAddress = bindAddress;
+          CoapInternetAddress(parsedAddress.type, parsedAddress, bindAddress);
       completer.complete(coapAddress);
       return completer.future;
     }
 
     final addresses = await InternetAddress.lookup(host, type: addressType);
     if (addresses.isNotEmpty) {
-      final coapAddress = CoapInternetAddress(addressType, addresses[0]);
-      coapAddress.bindAddress = bindAddress;
+      final coapAddress =
+          CoapInternetAddress(addressType, addresses[0], bindAddress);
       completer.complete(coapAddress);
     } else {
       completer.complete(null);
