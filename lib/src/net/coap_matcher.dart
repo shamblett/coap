@@ -237,6 +237,20 @@ class CoapMatcher implements CoapIMatcher {
     final keyToken = CoapKeyToken(response.token);
     final exchange = _exchangesByToken[keyToken];
     if (exchange != null) {
+      if (exchange is CoapMulticastExchange) {
+        _log!.info('Matcher - Received response to multicast '
+            'request ${exchange.request}');
+        if (!exchange.alreadyReceived(response)) {
+          _log!.info('Matcher - Received multicast response is from a new '
+              'endpoint.');
+          exchange.responses.add(response);
+        } else {
+          _log!.info('Matcher - Received multicast response is a duplicate.');
+          response.duplicate = true;
+        }
+        return exchange;
+      }
+
       // There is an exchange with the given token
       final prev = _deduplicator!.findPrevious(keyId, exchange);
       if (prev != null) {
