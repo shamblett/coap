@@ -10,7 +10,7 @@ part of coap;
 /// Internet address
 class CoapInternetAddress {
   /// Construction
-  CoapInternetAddress(this.type, this.address);
+  CoapInternetAddress(this.type, this.address, [this.bindAddress]);
 
   /// IPV4 default bind address
   static const String ipv4DefaultBind = '0.0.0.0';
