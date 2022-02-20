@@ -213,6 +213,28 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     }
   }
 
+  CoapBlockwiseStatus _copyBlockStatus(
+      CoapBlockwiseStatus? oldBlockwiseStatus, int currentSZX) {
+    final newStatus = CoapBlockwiseStatus.withSize(
+        oldBlockwiseStatus?.contentFormat,
+        oldBlockwiseStatus?.currentNUM,
+        currentSZX);
+    newStatus.blocks = oldBlockwiseStatus!.blocks;
+    return newStatus;
+  }
+
+  CoapExchange _convertMutlicastToUnicastExchange(
+      CoapMulticastExchange exchange, CoapRequest block) {
+    final endpoint = exchange.endpoint;
+    final originalRequest = exchange.request;
+    final newExchange = CoapExchange(block, exchange.origin,
+        namespace: exchange._eventBus.namespace);
+    newExchange.originalMulticastRequest = originalRequest;
+    newExchange.endpoint = endpoint;
+    block.type = CoapMessageType.con;
+    return newExchange;
+  }
+
   @override
   void receiveResponse(
       CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
@@ -250,7 +272,11 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
         status.currentNUM = nextNum;
         status.currentSZX = block1.szx;
         final nextBlock = _getNextRequestBlock(exchange.request!, status);
-        nextBlock.token ??= response.token; // reuse same token
+        if (exchange is CoapMulticastExchange) {
+          exchange = _convertMutlicastToUnicastExchange(exchange, nextBlock);
+        } else {
+          nextBlock.token ??= response.token; // reuse same token
+        }
         exchange.currentRequest = nextBlock;
         super.sendRequest(nextLayer, exchange, nextBlock);
         // Do not deliver response
@@ -268,7 +294,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     final block2 = response.block2;
     if (block2 != null) {
       _log!.info('Blockwise block2 - response acknowledges block: $block2');
-      final status = _findResponseBlockStatus(exchange, response);
+      var status = _findResponseBlockStatus(exchange, response);
       _log!.info('Blockwise exchange block2 status is - $status');
       final blockStatus = CoapBlockOption(optionTypeBlock2);
       blockStatus.rawValue = status.currentNUM;
@@ -299,14 +325,22 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           final block = CoapRequest.withType(request.method);
           // NON could make sense over SMS or similar transports
           block.type = request.type;
-          block.destination = request.destination;
           block.setOptions(request.getAllOptions());
           final nextBlock =
               CoapBlockOption.fromParts(optionTypeBlock2, num, szx, m: m);
           block.setOption(nextBlock);
-          // We use the same token to ease traceability
-          // (GET without Observe no longer cancels relations)
-          block.token = response.token;
+          block.destination = response.source;
+          block.uriHost = response.source?.address.host;
+          if (exchange is CoapMulticastExchange) {
+            status = _copyBlockStatus(
+                exchange.responseBlockStatus, nextBlock.intValue);
+            exchange = _convertMutlicastToUnicastExchange(exchange, block);
+          } else {
+            // We use the same token to ease traceability
+            // (GET without Observe no longer cancels relations)
+            block.token = response.token;
+          }
+
           // Make sure not to use Observe for block retrieval
           block.removeOptions(optionTypeObserve);
           status.currentNUM = nextBlock.intValue;
@@ -438,7 +472,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
   CoapBlockwiseStatus _findResponseBlockStatus(
       CoapExchange exchange, CoapResponse? response) {
     var status = exchange.responseBlockStatus;
-    if (status == null) {
+    if (status == null || exchange is CoapMulticastExchange) {
       status = CoapBlockwiseStatus(response!.contentType);
       status.currentSZX = CoapBlockOption.encodeSZX(_defaultBlockSize);
       final blockOptions = response.getOptions(optionTypeBlock2)!;

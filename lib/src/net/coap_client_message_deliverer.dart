@@ -14,6 +14,10 @@ class CoapClientMessageDeliverer implements CoapIMessageDeliverer {
 
   @override
   void deliverResponse(CoapExchange exchange, CoapResponse response) {
+    if (exchange.originalMulticastRequest != null) {
+      exchange.originalMulticastRequest!.response = response;
+      return;
+    }
     exchange.request!.response = response;
   }
 }
