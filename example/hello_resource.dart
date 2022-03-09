@@ -8,7 +8,6 @@
  */
 
 import 'dart:async';
-import 'dart:io';
 import 'package:coap/coap.dart';
 import 'config/coap_config.dart';
 
@@ -45,6 +44,4 @@ FutureOr<void> main(List<String> args) async {
 
   // Clean up
   client.close();
-
-  exit(0);
 }
