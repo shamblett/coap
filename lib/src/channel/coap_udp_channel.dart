@@ -40,6 +40,7 @@ class CoapUDPChannel extends CoapIChannel {
 
   @override
   void stop() {
+    CoapNetworkManagement.removeNetwork(_socket);
     _socket.close();
   }
 
