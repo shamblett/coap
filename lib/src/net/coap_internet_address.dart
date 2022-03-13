@@ -50,4 +50,7 @@ class CoapInternetAddress {
     }
     return false;
   }
+
+  @override
+  int get hashCode => Object.hash(address, bindAddress);
 }
