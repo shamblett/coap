@@ -551,9 +551,9 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
 
   void _blockwiseTimeout(CoapExchange exchange) {
     if (exchange.request == null) {
-      _log!.warn('Block1 transfer timed out: $exchange.currentRequest');
+      _log!.warn('Block1 transfer timed out: ${exchange.currentRequest}');
     } else {
-      _log!.warn('Block2 transfer timed out: $exchange.request');
+      _log!.warn('Block2 transfer timed out: ${exchange.request}');
     }
     exchange.complete = true;
   }
