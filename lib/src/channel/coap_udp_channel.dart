@@ -11,13 +11,11 @@ part of coap;
 class CoapUDPChannel extends CoapIChannel {
   /// Initialise with a specific address and port
   CoapUDPChannel(this._address, this._port, this.uriScheme,
-      {required String namespace, required this.config}) {
-    _eventBus = CoapEventBus(namespace: namespace);
-    final socket = CoapNetworkManagement.getNetwork(
-        address!, _port, CoapConstants.uriScheme,
-        namespace: namespace, config: config);
-    _socket = socket;
-  }
+      {required String namespace, required this.config})
+      : _eventBus = CoapEventBus(namespace: namespace),
+        _socket = CoapNetworkManagement.getNetwork(
+            _address!, _port, CoapConstants.uriScheme,
+            namespace: namespace, config: config);
 
   final String uriScheme;
 
@@ -31,11 +29,11 @@ class CoapUDPChannel extends CoapIChannel {
 
   @override
   CoapInternetAddress? get address => _address;
-  late CoapINetwork _socket;
+  final CoapINetwork _socket;
 
   final typed.Uint8Buffer _buff = typed.Uint8Buffer();
 
-  late final CoapEventBus _eventBus;
+  final CoapEventBus _eventBus;
 
   @override
   Future<void> start() async {
