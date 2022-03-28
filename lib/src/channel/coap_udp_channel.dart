@@ -10,14 +10,20 @@ part of coap;
 /// Channel via UDP protocol.
 class CoapUDPChannel extends CoapIChannel {
   /// Initialise with a specific address and port
-  CoapUDPChannel(this._address, this._port, {required String namespace}) {
+  CoapUDPChannel(this._address, this._port, this.uriScheme,
+      {required String namespace, required this.config}) {
     _eventBus = CoapEventBus(namespace: namespace);
-    final socket =
-        CoapNetworkManagement.getNetwork(address!, _port, namespace: namespace);
-    _socket = socket as CoapNetworkUDP;
+    final socket = CoapNetworkManagement.getNetwork(
+        address!, _port, CoapConstants.uriScheme,
+        namespace: namespace, config: config);
+    _socket = socket;
   }
 
+  final String uriScheme;
+
   final int _port;
+
+  final DefaultCoapConfig config;
 
   @override
   int get port => _port;
@@ -25,7 +31,7 @@ class CoapUDPChannel extends CoapIChannel {
 
   @override
   CoapInternetAddress? get address => _address;
-  late CoapNetworkUDP _socket;
+  late CoapINetwork _socket;
 
   final typed.Uint8Buffer _buff = typed.Uint8Buffer();
 
@@ -47,9 +53,7 @@ class CoapUDPChannel extends CoapIChannel {
   @override
   Future<void> send(typed.Uint8Buffer data,
       [CoapInternetAddress? address]) async {
-    if (_socket.socket != null) {
-      _socket.send(data, address);
-    }
+    _socket.send(data, address);
   }
 
   @override

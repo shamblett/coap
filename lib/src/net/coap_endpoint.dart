@@ -11,9 +11,8 @@ part of coap;
 class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   /// Instantiates a new endpoint with the
   /// specified channel and configuration.
-  CoapEndPoint(CoapIChannel channel, DefaultCoapConfig config,
+  CoapEndPoint(CoapIChannel channel, this._config,
       {required String namespace}) {
-    _config = config;
     _channel = channel;
     _eventBus = CoapEventBus(namespace: namespace);
     _matcher = CoapMatcher(config, namespace: namespace);
@@ -22,19 +21,22 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   }
 
   /// Instantiates a new endpoint with internet address, port and configuration
-  CoapEndPoint.address(
-      CoapInternetAddress localEndpoint, int port, DefaultCoapConfig config,
-      {required String namespace})
-      : this(newUDPChannel(localEndpoint, port, namespace: namespace), config,
+  CoapEndPoint.address(String scheme, CoapInternetAddress localEndpoint,
+      int port, DefaultCoapConfig config, {required String namespace})
+      : this(
+            CoapEndpointManager.determineCoapChannel(
+                scheme, localEndpoint, port,
+                namespace: namespace, config: config),
+            config,
             namespace: namespace);
 
   final CoapILogger? _log = CoapLogManager().logger;
   late final CoapEventBus _eventBus;
 
-  DefaultCoapConfig? _config;
+  DefaultCoapConfig _config;
 
   @override
-  DefaultCoapConfig? get config => _config;
+  DefaultCoapConfig get config => _config;
   late CoapIChannel _channel;
   late CoapStack _coapStack;
   StreamSubscription? subscr;
@@ -104,7 +106,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
     final data = typed.Uint8Buffer();
     data.addAll(event.data);
     // Return if we have no data, should not happen but be defensive
-    final decoder = config!.spec!.newMessageDecoder(data);
+    final decoder = config.spec!.newMessageDecoder(data);
     if (decoder.isRequest) {
       CoapRequest? request;
       try {
@@ -218,7 +220,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   typed.Uint8Buffer _serializeEmpty(CoapEmptyMessage message) {
     var bytes = message.bytes;
     if (bytes == null) {
-      bytes = _config!.spec!.newMessageEncoder().encodeMessage(message);
+      bytes = _config.spec!.newMessageEncoder().encodeMessage(message);
       message.bytes = bytes;
     }
     return bytes!;
@@ -227,7 +229,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   typed.Uint8Buffer _serializeRequest(CoapMessage message) {
     var bytes = message.bytes;
     if (bytes == null) {
-      bytes = _config!.spec!.newMessageEncoder().encodeMessage(message);
+      bytes = _config.spec!.newMessageEncoder().encodeMessage(message);
       message.bytes = bytes;
     }
     return bytes!;
@@ -236,17 +238,9 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   typed.Uint8Buffer _serializeResponse(CoapMessage message) {
     var bytes = message.bytes;
     if (bytes == null) {
-      bytes = _config!.spec!.newMessageEncoder().encodeMessage(message);
+      bytes = _config.spec!.newMessageEncoder().encodeMessage(message);
       message.bytes = bytes;
     }
     return bytes!;
-  }
-
-  /// New UDP channel
-  static CoapIChannel newUDPChannel(CoapInternetAddress localEndpoint, int port,
-      {required String namespace}) {
-    final CoapIChannel channel =
-        CoapUDPChannel(localEndpoint, port, namespace: namespace);
-    return channel;
   }
 }

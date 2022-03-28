@@ -15,15 +15,40 @@ class CoapEndpointManager {
     config.spec ??= CoapRfc7252();
   }
 
+  static CoapIChannel determineCoapChannel(
+      String uriScheme, CoapInternetAddress? endpoint, int port,
+      {required String namespace, required DefaultCoapConfig config}) {
+    switch (uriScheme) {
+      case CoapConstants.uriScheme:
+        return CoapUDPChannel(endpoint, port, uriScheme,
+            namespace: namespace, config: config);
+      default:
+        throw UnsupportedProtocolException(uriScheme);
+    }
+  }
+
+  static int _getPortForUriScheme(String scheme, CoapISpec spec) {
+    switch (scheme) {
+      case CoapConstants.uriScheme:
+        return spec.defaultPort;
+      case CoapConstants.secureUriScheme:
+        return spec.defaultSecurePort;
+      default:
+        throw UnsupportedProtocolException(scheme);
+    }
+  }
+
   /// Default endpoint
-  static CoapIEndPoint getDefaultEndpoint(CoapIEndPoint endpoint,
+  static CoapIEndPoint getDefaultEndpoint(String scheme, CoapIEndPoint endpoint,
       {required String namespace}) {
     final config = DefaultCoapConfig.inst!;
     config.spec ??= CoapRfc7252();
     config.defaultPort = config.spec!.defaultPort;
-    final CoapIChannel channel = CoapUDPChannel(
-        endpoint.localEndpoint, config.defaultPort,
-        namespace: namespace);
+    config.defaultSecurePort = config.spec!.defaultSecurePort;
+
+    final port = _getPortForUriScheme(scheme, config.spec!);
+    final channel = determineCoapChannel(scheme, endpoint.localEndpoint, port,
+        namespace: namespace, config: config);
     final ep = CoapEndPoint(channel, config, namespace: namespace);
     ep.start();
     return ep;

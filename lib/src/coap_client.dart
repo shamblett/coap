@@ -317,7 +317,8 @@ class CoapClient {
     if (endpoint != null) {
       return endpoint;
     } else {
-      return CoapEndpointManager.getDefaultEndpoint(request.endpoint!,
+      return CoapEndpointManager.getDefaultEndpoint(
+          request.uri.scheme, request.endpoint!,
           namespace: _namespace);
     }
   }
@@ -331,8 +332,10 @@ class CoapClient {
     await request.resolveDestination(addressType);
     // Endpoint and channel
     CoapEndpointManager.getDefaultSpec();
-    final CoapIChannel channel =
-        CoapUDPChannel(request.destination, uri.port, namespace: _namespace);
+
+    final channel = CoapEndpointManager.determineCoapChannel(
+        uri.scheme, request.destination, uri.port,
+        namespace: _namespace, config: _config);
     if (endpoint != null) {
       request.endpoint = endpoint;
     } else {

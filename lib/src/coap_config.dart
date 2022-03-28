@@ -26,7 +26,7 @@ abstract class DefaultCoapConfig {
   int defaultPort = CoapConstants.defaultPort;
 
   /// The default CoAP port for secure CoAP communication (coaps).
-  int get defaultSecurePort => CoapConstants.defaultSecurePort;
+  int defaultSecurePort = CoapConstants.defaultSecurePort;
 
   /// The port which HTTP proxy is on.
   int get httpPort => 8080;
