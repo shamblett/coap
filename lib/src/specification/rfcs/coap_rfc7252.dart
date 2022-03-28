@@ -45,6 +45,9 @@ class CoapRfc7252 implements CoapISpec {
   int get defaultPort => 5683;
 
   @override
+  int get defaultSecurePort => 5684;
+
+  @override
   CoapIMessageEncoder newMessageEncoder() => CoapMessageEncoderRfc7252();
 
   @override
