@@ -105,6 +105,5 @@ FutureOr<void> main(List<String> args) async {
   print(response.payloadString);
   // Clean up
   client.close();
-  exit(0);
 }
 ````

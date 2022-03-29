@@ -42,6 +42,4 @@ FutureOr<void> main(List<String> args) async {
 
   // Clean up
   client.close();
-
-  exit(0);
 }
