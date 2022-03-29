@@ -33,16 +33,16 @@ FutureOr<void> main(List<String> args) async {
   //client.timeout = 10000;
 
   // Create the request for the put request
-  final request = CoapRequest.newPost();
+  final request = CoapRequest.newPut();
   request.addUriPath('create1');
   // Add a title
-  request.addUriQuery('${CoapLinkFormat.title}=This is an SJH post request');
+  request.addUriQuery('${CoapLinkFormat.title}=This is an SJH put request');
   client.request = request;
 
-  print('EXAMPLE - Sending post request to $host, waiting for response....');
+  print('EXAMPLE - Sending put request to $host, waiting for response....');
 
   var response = await client.put('SJHTestPut');
-  print('EXAMPLE - post response received, sending get');
+  print('EXAMPLE - put response received, sending get');
   print('EXAMPLE -  Payload: ${response.payloadString}');
   // Now get and check the payload
   final getRequest = CoapRequest.newGet();
