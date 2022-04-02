@@ -45,6 +45,4 @@ FutureOr<void> main(List<String> args) async {
   // Cancel the current request
   print('EXAMPLE  - Cleaning up');
   client.close();
-
-  exit(0);
 }
