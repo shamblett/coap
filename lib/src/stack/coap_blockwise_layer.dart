@@ -284,6 +284,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
         // All request block have been acknowledged and we
         // receive a piggy-backed response that needs no blockwise
         // transfer. Thus, deliver it.
+        _clearBlockCleanup(exchange);
         super.receiveResponse(nextLayer, exchange, response);
       } else {
         _log!
@@ -313,6 +314,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
         if (status.isRandomAccess) {
           // The client has requested this specific block and we deliver it
           exchange.response = response;
+          _clearBlockCleanup(exchange);
           super.receiveResponse(nextLayer, exchange, response);
         } else if (block2.m) {
           _log!.info('Blockwise - Request the next response block');
@@ -373,6 +375,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
 
           _log!.info('Assembled response: $assembled');
           exchange.response = assembled;
+          _clearBlockCleanup(exchange);
           super.receiveResponse(nextLayer, exchange, assembled);
         }
       } else {
