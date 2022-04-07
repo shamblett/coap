@@ -51,7 +51,7 @@ class CoapLinkFormat {
   static final RegExp wordRegex = RegExp('\\w+');
 
   /// Quoted string
-  static final RegExp quotedStringRegex = RegExp('\".*?\"');
+  static final RegExp quotedStringRegex = RegExp('".*?"');
 
   /// Cardinal
   static final RegExp cardinalRegex = RegExp('\\d+');

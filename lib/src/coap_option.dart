@@ -132,12 +132,12 @@ class CoapOption {
 
   String _toValueString() {
     switch (getFormatByType(_type)) {
-      case optionFormat.integer:
+      case OptionFormat.integer:
         return (_type == optionTypeAccept || _type == optionTypeContentFormat)
-            ? ('${CoapMediaType.name(intValue)}')
+            ? CoapMediaType.name(intValue)
             : intValue.toString();
-      case optionFormat.string:
-        return '$stringValue';
+      case OptionFormat.string:
+        return stringValue;
       default:
         return CoapByteArrayUtil.toHexString(valueBytes!);
     }
@@ -147,7 +147,7 @@ class CoapOption {
   String toString() => '$name: ${_toValueString()}';
 
   /// Returns the option format based on the option type.
-  static optionFormat getFormatByType(int type) {
+  static OptionFormat getFormatByType(int type) {
     switch (type) {
       case optionTypeContentFormat:
       case optionTypeMaxAge:
@@ -159,7 +159,7 @@ class CoapOption {
       case optionTypeSize1:
       case optionTypeIfNoneMatch:
       case optionTypeAccept:
-        return optionFormat.integer;
+        return OptionFormat.integer;
       case optionTypeUriHost:
       case optionTypeUriPath:
       case optionTypeUriQuery:
@@ -167,12 +167,12 @@ class CoapOption {
       case optionTypeLocationQuery:
       case optionTypeProxyUri:
       case optionTypeProxyScheme:
-        return optionFormat.string;
+        return OptionFormat.string;
       case optionTypeETag:
       case optionTypeIfMatch:
-        return optionFormat.opaque;
+        return OptionFormat.opaque;
       default:
-        return optionFormat.unknown;
+        return OptionFormat.unknown;
     }
   }
 

@@ -520,7 +520,7 @@ class CoapMessage {
   /// Uri's
   String? get uriHost {
     final host = getFirstOption(optionTypeUriHost);
-    return host == null ? null : host.toString();
+    return host?.toString();
   }
 
   set uriHost(String? value) {
@@ -669,7 +669,7 @@ class CoapMessage {
   /// Uri port
   int? get uriPort {
     final opt = getFirstOption(optionTypeUriPort);
-    return opt == null ? null : opt.value;
+    return opt?.value;
   }
 
   set uriPort(int? value) {
@@ -901,7 +901,7 @@ class CoapMessage {
   /// Proxy scheme
   String? get proxyScheme {
     final opt = getFirstOption(optionTypeProxyScheme);
-    return opt == null ? null : opt.toString();
+    return opt?.toString();
   }
 
   set proxyScheme(String? value) {

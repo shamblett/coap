@@ -1,4 +1,3 @@
-
 builders:
   config_builder:
     import: "package:coap/builder.dart"
