@@ -11,8 +11,14 @@ part of coap;
 /// Represents a communication endpoint multiplexing CoAP message exchanges
 /// between (potentially multiple) clients and servers.
 abstract class CoapIEndPoint {
+  /// The endpoint's destination
+  CoapInternetAddress? get destination;
+
   /// Gets this endpoint's configuration.
   DefaultCoapConfig? get config;
+
+  /// The next message id to use
+  int get nextMessageId;
 
   /// Gets the local internetAddress this endpoint is associated with.
   CoapInternetAddress? get localEndpoint;

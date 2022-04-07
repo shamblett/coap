@@ -10,16 +10,10 @@ part of coap;
 /// Doesn't do much yet except for setting a simple token. Notice that empty
 /// tokens must be represented as byte array of length 0 (not null).
 class CoapTokenLayer extends CoapAbstractLayer {
-  /// Constructs a new token layer.
-  CoapTokenLayer(DefaultCoapConfig config) {
-    if (config.useRandomTokenStart) {
-      _counter = Random().nextInt(32767);
-    } else {
-      _counter = 5000;
-    }
-  }
+  final Random _random = Random();
 
-  late int _counter;
+  /// Constructs a new token layer.
+  CoapTokenLayer(DefaultCoapConfig config);
 
   @override
   void sendRequest(
@@ -58,13 +52,8 @@ class CoapTokenLayer extends CoapAbstractLayer {
   }
 
   typed.Uint8Buffer _newToken() {
-    final token = _counter;
-    _counter++;
-    if (_counter > 32767) {
-      _counter = 0;
-    }
     final buff = typed.Uint8Buffer()
-      ..addAll(<int>[token >> 24, token >> 16, token >> 8, token]);
+      ..addAll(List<int>.generate(8, (i) => _random.nextInt(256)));
     return buff;
   }
 }

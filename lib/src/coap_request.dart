@@ -24,14 +24,10 @@ class CoapRequest extends CoapMessage {
   /// True if the request is Confirmable
   CoapRequest.isConfirmable(int? code, {required bool confirmable})
       : super.withCode(
-            confirmable ? CoapMessageType.con : CoapMessageType.non, code) {
-    _method = code;
-  }
-
-  int? _method;
+            confirmable ? CoapMessageType.con : CoapMessageType.non, code);
 
   /// The request method(code)
-  int? get method => _method;
+  int? get method => super.code;
 
   @override
   int? get type {
@@ -98,13 +94,15 @@ class CoapRequest extends CoapMessage {
   }
 
   /// The endpoint for this request
-  CoapIEndPoint? endpoint;
+  CoapIEndPoint? _endpoint;
 
-  /// Resolves the destination internet address
-  Future<CoapInternetAddress?> resolveDestination(
-          InternetAddressType addressType) async =>
-      destination =
-          await CoapUtil.lookupHost(resolveHost, addressType, bindAddress);
+  set endpoint(CoapIEndPoint? endpoint) {
+    super.id = endpoint!.nextMessageId;
+    super.destination = endpoint.destination;
+    _endpoint = endpoint;
+  }
+
+  CoapIEndPoint? get endpoint => _endpoint;
 
   /// Sets CoAP's observe option. If the target resource of this request
   /// responds with a success code and also sets the observe option, it will
@@ -140,9 +138,8 @@ class CoapRequest extends CoapMessage {
   }
 
   void _validateBeforeSending() {
-    if (destination == null) {
-      throw StateError(
-          'CoapRequest::validateBeforeSending - Missing destination');
+    if (endpoint == null) {
+      throw StateError('CoapRequest::validateBeforeSending - Missing endpoint');
     }
   }
 

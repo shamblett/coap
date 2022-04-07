@@ -56,8 +56,6 @@ abstract class DefaultCoapConfig {
 
   bool get useRandomIDStart => true;
 
-  bool get useRandomTokenStart => true;
-
   bool get poolUdpConnectionsByClient => false;
 
   int get notificationMaxAge => 128 * 1000; // ms

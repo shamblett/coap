@@ -41,10 +41,8 @@ class CoapMessage {
   /// The codestring
   String get codeString => CoapCode.codeToString(code);
 
-  static final Random _initialId = Random();
-
   /// The ID of this CoAP message.
-  int? id = _initialId.nextInt(initialIdLimit) + 1;
+  int? id;
 
   final Map<int, List<CoapOption>> _optionMap = <int, List<CoapOption>>{};
   CoapEventBus? _eventBus = CoapEventBus(namespace: '');

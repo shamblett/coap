@@ -18,6 +18,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
     _eventBus = CoapEventBus(namespace: namespace);
     _matcher = CoapMatcher(config, namespace: namespace);
     _coapStack = CoapStack(config);
+    _currentId = config.useRandomIDStart ? Random().nextInt(1 << 16) : 0;
     subscr = _eventBus.on<CoapDataReceivedEvent>().listen(_receiveData);
   }
 
@@ -32,6 +33,19 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   late final CoapEventBus _eventBus;
 
   DefaultCoapConfig? _config;
+
+  late int _currentId;
+
+  @override
+  int get nextMessageId {
+    if (++_currentId > (1 << 16)) {
+      _currentId = 1;
+    }
+    return _currentId;
+  }
+
+  @override
+  CoapInternetAddress? get destination => _channel.address;
 
   @override
   DefaultCoapConfig? get config => _config;

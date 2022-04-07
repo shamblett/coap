@@ -19,9 +19,8 @@ void main() {
     final message = CoapMessage();
     expect(message.type, CoapMessageType.unknown);
     expect(message.code, CoapCode.notSet);
-    expect(message.id! >= 1, isTrue);
-    expect(message.id! <= CoapMessage.initialIdLimit, isTrue);
-    expect(message.resolveHost == 'localhost', isTrue);
+    expect(message.id, null);
+    expect(message.resolveHost, 'localhost');
     expect(message.optionMap.isEmpty, isTrue);
     expect(message.bindAddress, isNull);
     expect(message.token, isNull);
