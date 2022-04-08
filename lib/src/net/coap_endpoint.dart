@@ -38,7 +38,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
 
   @override
   int get nextMessageId {
-    if (++_currentId > (1 << 16)) {
+    if (++_currentId >= (1 << 16)) {
       _currentId = 1;
     }
     return _currentId;
