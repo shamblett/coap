@@ -27,7 +27,6 @@ class CoapObserveNotificationOrderer {
   /// Gets a new observe option number.
   int getNextObserveNumber() {
     var next = _number++;
-    ;
     while (next >= 1 << 24) {
       if (_number == next) {
         _number = 0;

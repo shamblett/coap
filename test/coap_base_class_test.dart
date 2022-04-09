@@ -82,7 +82,6 @@ void main() {
       expect(conf.defaultBlockSize, 9);
       expect(conf.blockwiseStatusLifetime, 10);
       expect(conf.useRandomIDStart, isFalse);
-      expect(conf.useRandomTokenStart, isFalse);
       expect(conf.notificationMaxAge, 11);
       expect(conf.notificationCheckIntervalTime, 12);
       expect(conf.notificationCheckIntervalCount, 13);
@@ -91,7 +90,7 @@ void main() {
       expect(conf.exchangeLifetime, 16);
       expect(conf.markAndSweepInterval, 17);
       expect(conf.channelReceivePacketSize, 18);
-      //TODO expect(conf.deduplicator,'');
+      expect(conf.deduplicator, 'MarkAndSweep');
       expect(conf.logTarget, 'console');
       expect(conf.logError, false);
       expect(conf.logInfo, true);
@@ -114,7 +113,6 @@ void main() {
       expect(conf.defaultBlockSize, CoapConstants.defaultBlockSize);
       expect(conf.blockwiseStatusLifetime, 10 * 60 * 1000);
       expect(conf.useRandomIDStart, isTrue);
-      expect(conf.useRandomTokenStart, isTrue);
       expect(conf.notificationMaxAge, 128 * 1000);
       expect(conf.notificationCheckIntervalTime, 24 * 60 * 60 * 1000);
       expect(conf.notificationCheckIntervalCount, 100);
@@ -123,7 +121,7 @@ void main() {
       expect(conf.exchangeLifetime, 247 * 1000);
       expect(conf.markAndSweepInterval, 10000);
       expect(conf.channelReceivePacketSize, 2048);
-      //TODO expect(conf.deduplicator,'');
+      expect(conf.deduplicator, 'MarkAndSweep');
       expect(conf.logTarget, 'none');
       expect(conf.logError, true);
       expect(conf.logInfo, false);

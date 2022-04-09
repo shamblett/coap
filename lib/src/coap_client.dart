@@ -41,7 +41,6 @@ class CoapClient {
   static final Iterable<CoapWebLink> _emptyLinks = <CoapWebLink>[
     CoapWebLink('')
   ];
-  CoapEndPoint? coapEndPoint;
 
   /// The URI
   Uri uri;
@@ -307,19 +306,17 @@ class CoapClient {
   /// Close the client.
   void close() {
     _log!.info('Close - closing client');
-    coapEndPoint?.stop();
+    endpoint?.stop();
     cancelRequest();
   }
 
   /// Gets the effective endpoint that the specified request
   /// is supposed to be sent over.
   CoapIEndPoint? _getEffectiveEndpoint(CoapRequest request) {
-    if (endpoint != null) {
-      return endpoint;
-    } else {
-      return CoapEndpointManager.getDefaultEndpoint(request.endpoint!,
-          namespace: _namespace);
+    if (request.endpoint != null) {
+      return request.endpoint;
     }
+    return endpoint;
   }
 
   Future<CoapRequest> _doPrepare(CoapRequest request) async {
@@ -327,20 +324,18 @@ class CoapClient {
     request.uri = uri;
     request.setEventBus(CoapEventBus(namespace: _namespace));
 
-    // Resolve the uri
-    await request.resolveDestination(addressType);
-    // Endpoint and channel
     CoapEndpointManager.getDefaultSpec();
-    final CoapIChannel channel =
-        CoapUDPChannel(request.destination, uri.port, namespace: _namespace);
-    if (endpoint != null) {
-      request.endpoint = endpoint;
-    } else {
-      coapEndPoint = CoapEndPoint(channel, _config, namespace: _namespace);
-      request.endpoint = coapEndPoint;
-      await request.endpoint!.start();
-      endpoint = request.endpoint;
+
+    // Set default endpoint if missing
+    if (endpoint == null) {
+      var destination = await CoapUtil.lookupHost(uri.host, addressType, null);
+      final CoapIChannel channel =
+          CoapUDPChannel(destination, uri.port, namespace: _namespace);
+      endpoint = CoapEndPoint(channel, _config, namespace: _namespace);
+      await endpoint!.start();
     }
+
+    request.endpoint ??= endpoint;
 
     // Set a default accept
     if (request.accept == CoapMediaType.undefined) {

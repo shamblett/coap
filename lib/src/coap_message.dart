@@ -41,10 +41,8 @@ class CoapMessage {
   /// The codestring
   String get codeString => CoapCode.codeToString(code);
 
-  static final Random _initialId = Random();
-
   /// The ID of this CoAP message.
-  int? id = _initialId.nextInt(initialIdLimit) + 1;
+  int? id;
 
   final Map<int, List<CoapOption>> _optionMap = <int, List<CoapOption>>{};
   CoapEventBus? _eventBus = CoapEventBus(namespace: '');
@@ -522,7 +520,7 @@ class CoapMessage {
   /// Uri's
   String? get uriHost {
     final host = getFirstOption(optionTypeUriHost);
-    return host == null ? null : host.toString();
+    return host?.toString();
   }
 
   set uriHost(String? value) {
@@ -671,7 +669,7 @@ class CoapMessage {
   /// Uri port
   int? get uriPort {
     final opt = getFirstOption(optionTypeUriPort);
-    return opt == null ? null : opt.value;
+    return opt?.value;
   }
 
   set uriPort(int? value) {
@@ -903,7 +901,7 @@ class CoapMessage {
   /// Proxy scheme
   String? get proxyScheme {
     final opt = getFirstOption(optionTypeProxyScheme);
-    return opt == null ? null : opt.toString();
+    return opt?.toString();
   }
 
   set proxyScheme(String? value) {

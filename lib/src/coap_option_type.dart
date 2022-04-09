@@ -69,4 +69,4 @@ const int optionTypeBlock1 = 27;
 const int optionTypeSize2 = 28;
 
 /// CoAP option formats
-enum optionFormat { integer, string, opaque, unknown }
+enum OptionFormat { integer, string, opaque, unknown }

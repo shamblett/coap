@@ -325,6 +325,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           final m = block2.m;
 
           final block = CoapRequest.withType(request.method);
+          block.endpoint = request.endpoint;
           // NON could make sense over SMS or similar transports
           block.type = request.type;
           block.setOptions(request.getAllOptions());
@@ -424,6 +425,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     final num = status.currentNUM!;
     final szx = status.currentSZX;
     final block = CoapRequest.withType(request.method);
+    block.endpoint = request.endpoint;
     block.setOptions(request.getAllOptions());
     block.destination = request.destination;
     block.token = request.token;

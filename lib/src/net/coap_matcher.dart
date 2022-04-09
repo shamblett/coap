@@ -13,16 +13,13 @@ class CoapMatcher implements CoapIMatcher {
   CoapMatcher(DefaultCoapConfig config, {required this.namespace}) {
     _eventBus = CoapEventBus(namespace: namespace);
     _deduplicator = CoapDeduplicatorFactory.createDeduplicator(config);
-    if (config.useRandomIDStart) {
-      _currentId = Random().nextInt(1 << 16);
-    }
     subscr = _eventBus.on<CoapCompletedEvent>().listen(onExchangeCompleted);
   }
 
   final CoapILogger? _log = CoapLogManager().logger;
   late final CoapEventBus _eventBus;
   final String namespace;
-  StreamSubscription? subscr;
+  late StreamSubscription subscr;
 
   /// For all
   final Map<CoapKeyId, CoapExchange> _exchangesById =
@@ -36,18 +33,17 @@ class CoapMatcher implements CoapIMatcher {
   final Map<CoapKeyUri, CoapExchange> _ongoingExchanges =
       <CoapKeyUri, CoapExchange>{};
 
-  int? _currentId;
-  CoapIDeduplicator? _deduplicator;
+  late final CoapIDeduplicator _deduplicator;
 
   @override
   void start() {
-    _deduplicator!.start();
+    _deduplicator.start();
   }
 
   @override
   void stop() {
-    _deduplicator?.stop();
-    subscr?.cancel();
+    _deduplicator.stop();
+    subscr.cancel();
   }
 
   @override
@@ -55,15 +51,11 @@ class CoapMatcher implements CoapIMatcher {
     _exchangesById.clear();
     _exchangesByToken.clear();
     _ongoingExchanges.clear();
-    _deduplicator!.clear();
+    _deduplicator.clear();
   }
 
   @override
   void sendRequest(CoapExchange exchange, CoapRequest request) {
-    if (request.id == CoapMessage.none) {
-      request.id = _currentId ?? (1 << 16);
-    }
-
     // The request is a CON or NON and must be prepared for these responses
     // - CON => ACK / RST / ACK+response / CON+response / NON+response
     // - NON => RST / CON+response / NON+response
@@ -79,10 +71,6 @@ class CoapMatcher implements CoapIMatcher {
 
   @override
   void sendResponse(CoapExchange exchange, CoapResponse? response) {
-    if (response!.id == CoapMessage.none) {
-      response.id = _currentId! % (1 << 16);
-    }
-
     // The response is a CON or NON or ACK and must be prepared for these
     // - CON => ACK / RST // we only care to stop retransmission
     // - NON => RST // we only care for observe
@@ -93,7 +81,7 @@ class CoapMatcher implements CoapIMatcher {
 
     // If this is a CON notification we now can forget all previous
     // NON notifications.
-    if (response.type == CoapMessageType.con ||
+    if (response!.type == CoapMessageType.con ||
         response.type == CoapMessageType.ack) {
       final relation = exchange.relation;
       if (relation != null) {
@@ -170,7 +158,7 @@ class CoapMatcher implements CoapIMatcher {
         !request.hasOption(optionTypeBlock2)) {
       final exchange =
           CoapExchange(request, CoapOrigin.remote, namespace: namespace);
-      final previous = _deduplicator!.findPrevious(keyId, exchange);
+      final previous = _deduplicator.findPrevious(keyId, exchange);
       if (previous == null) {
         return exchange;
       } else {
@@ -184,7 +172,7 @@ class CoapMatcher implements CoapIMatcher {
 
       final ongoing = _ongoingExchanges[keyUri];
       if (ongoing != null) {
-        final prev = _deduplicator!.findPrevious(keyId, ongoing);
+        final prev = _deduplicator.findPrevious(keyId, ongoing);
         if (prev != null) {
           _log!.info('Matcher - Duplicate ongoing request: $request');
           request.duplicate = true;
@@ -211,7 +199,7 @@ class CoapMatcher implements CoapIMatcher {
 
         final exchange =
             CoapExchange(request, CoapOrigin.remote, namespace: namespace);
-        final previous = _deduplicator!.findPrevious(keyId, exchange);
+        final previous = _deduplicator.findPrevious(keyId, exchange);
         if (previous == null) {
           _log!.info(
               'Matcher - New ongoing request, storing $keyUri for $request');
@@ -252,7 +240,7 @@ class CoapMatcher implements CoapIMatcher {
       }
 
       // There is an exchange with the given token
-      final prev = _deduplicator!.findPrevious(keyId, exchange);
+      final prev = _deduplicator.findPrevious(keyId, exchange);
       if (prev != null) {
         // (and thus it holds: prev == exchange)
         _log!.info('Matcher - Duplicate response for open exchange');
@@ -277,7 +265,7 @@ class CoapMatcher implements CoapIMatcher {
       // There is no exchange with the given token.
       if (response.type != CoapMessageType.ack) {
         // Only act upon separate responses
-        final prev = _deduplicator!.find(keyId);
+        final prev = _deduplicator.find(keyId);
         if (prev != null) {
           _log!.warn(
               'Matcher - Duplicate response for completed exchange: $response');

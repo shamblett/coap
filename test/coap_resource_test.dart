@@ -104,7 +104,7 @@ void main() {
     });
     test('Match test', () {
       const link1 =
-          '</myUri/something>;ct=42;if="/someRef/path\";obs;rt=\"MyName";sz=10';
+          '</myUri/something>;ct=42;if="/someRef/path";obs;rt="MyName";sz=10';
       const link2 = '</myUri>;ct=50;rt="MyName"';
       const link3 = '</a>;sz=10;rt="MyNope"';
       const format = '$link1,$link2,$link3';

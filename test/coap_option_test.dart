@@ -100,11 +100,11 @@ void main() {
 
     test('Option format', () {
       expect(
-          CoapOption.getFormatByType(optionTypeMaxAge), optionFormat.integer);
+          CoapOption.getFormatByType(optionTypeMaxAge), OptionFormat.integer);
       expect(
-          CoapOption.getFormatByType(optionTypeUriHost), optionFormat.string);
-      expect(CoapOption.getFormatByType(optionTypeETag), optionFormat.opaque);
-      expect(CoapOption.getFormatByType(1000), optionFormat.unknown);
+          CoapOption.getFormatByType(optionTypeUriHost), OptionFormat.string);
+      expect(CoapOption.getFormatByType(optionTypeETag), OptionFormat.opaque);
+      expect(CoapOption.getFormatByType(1000), OptionFormat.unknown);
     });
 
     test('Hash code', () {

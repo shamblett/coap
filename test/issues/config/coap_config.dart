@@ -51,9 +51,6 @@ class CoapConfig extends DefaultCoapConfig {
   bool get useRandomIDStart => true;
 
   @override
-  bool get useRandomTokenStart => true;
-
-  @override
   int get notificationMaxAge => 128000;
 
   @override

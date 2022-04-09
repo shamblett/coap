@@ -51,9 +51,6 @@ class CoapConfigAll extends DefaultCoapConfig {
   bool get useRandomIDStart => false;
 
   @override
-  bool get useRandomTokenStart => false;
-
-  @override
   bool get poolUdpConnectionsByClient => false;
 
   @override

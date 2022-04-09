@@ -10,7 +10,6 @@
  */
 
 import 'dart:async';
-import 'dart:io';
 import 'package:coap/coap.dart';
 import 'config/coap_config.dart';
 
