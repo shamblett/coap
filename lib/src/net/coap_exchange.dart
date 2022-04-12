@@ -37,7 +37,7 @@ class CoapExchange {
   /// The current request
   CoapRequest? currentRequest;
 
-  /// The response
+  // The response
   CoapResponse? response;
 
   /// The current response
@@ -99,14 +99,6 @@ class CoapExchange {
 
   set outbox(CoapIOutbox? value) => _outbox = value;
 
-  CoapIMessageDeliverer? _deliverer;
-
-  /// Deliverer
-  CoapIMessageDeliverer? get deliverer =>
-      _deliverer ?? (endpoint == null ? null : endpoint!.deliverer);
-
-  set deliverer(CoapIMessageDeliverer? value) => _deliverer = value;
-
   /// Reject this exchange and therefore the request.
   /// Sends an RST back to the client.
   void sendReject() {
@@ -134,6 +126,25 @@ class CoapExchange {
     resp.destination = request!.source;
     response = resp;
     endpoint!.sendEpResponse(this, response);
+  }
+
+  /// Fire the reregistering event
+  void fireReregistering(CoapRequest req) {
+    _eventBus.fire(CoapReregisteringEvent(req));
+  }
+
+  /// Fire the responding event
+  void fireResponding(CoapResponse resp) {
+    _eventBus.fire(CoapRespondingEvent(resp));
+  }
+
+  // Fire the respond event
+  void fireRespond(CoapResponse resp) {
+    // block1 requests only have token set on their blocks
+    if (request?.token == null) {
+      request!.token = currentRequest!.token;
+    }
+    _eventBus.fire(CoapRespondEvent(resp));
   }
 
   /// Attributes

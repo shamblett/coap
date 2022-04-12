@@ -12,9 +12,10 @@ import 'dart:collection';
 import 'dart:convert' as convertor;
 import 'dart:io';
 import 'dart:math';
+import 'package:meta/meta.dart';
+import 'package:synchronized/synchronized.dart' as sync;
 import 'dart:typed_data';
 import 'package:typed_data/typed_data.dart' as typed;
-import 'package:logging/logging.dart' as logging;
 import 'package:collection/collection.dart' as collection;
 import 'package:hex/hex.dart' as hex;
 import 'package:executor/executor.dart' as tasking;
@@ -58,14 +59,6 @@ part 'src/coap_media_type.dart';
 
 part 'src/coap_constants.dart';
 
-part 'src/log/coap_ilogger.dart';
-
-part 'src/log/coap_null_logger.dart';
-
-part 'src/log/coap_console_logger.dart';
-
-part 'src/log/coap_log_manager.dart';
-
 part 'src/deduplication/coap_ideduplicator.dart';
 
 part 'src/deduplication/coap_noop_deduplicator.dart';
@@ -106,15 +99,9 @@ part 'src/net/coap_iendpoint.dart';
 
 part 'src/net/coap_endpoint.dart';
 
-part 'src/net/coap_endpoint_manager.dart';
-
 part 'src/net/coap_imatcher.dart';
 
 part 'src/net/coap_matcher.dart';
-
-part 'src/net/coap_imessage_deliverer.dart';
-
-part 'src/net/coap_client_message_deliverer.dart';
 
 part 'src/net/coap_ioutbox.dart';
 
@@ -156,23 +143,17 @@ part 'src/resources/coap_iresource.dart';
 
 part 'src/resources/coap_resource_attributes.dart';
 
-part 'src/threading/coap_iexecutor.dart';
+part 'src/tasks/coap_iexecutor.dart';
 
-part 'src/threading/coap_executor.dart';
+part 'src/tasks/coap_executor.dart';
 
 part 'src/endpoint/resources/coap_endpoint_resource.dart';
 
 part 'src/endpoint/resources/coap_remote_resource.dart';
 
-part 'src/channel/coap_ichannel.dart';
+part 'src/network/coap_inetwork.dart';
 
-part 'src/channel/coap_udp_channel.dart';
-
-part 'src/channel/coap_inetwork.dart';
-
-part 'src/channel/coap_network_udp.dart';
-
-part 'src/channel/coap_network_manager.dart';
+part 'src/network/coap_network_udp.dart';
 
 part 'src/event/coap_event_bus.dart';
 

@@ -18,11 +18,14 @@ class CoapObserveClientRelation {
       {required String namespace}) {
     _config = config;
     _request = request;
-    _endpoint = endpoint;
     _eventBus = CoapEventBus(namespace: namespace);
     _orderer = CoapObserveNotificationOrderer(config);
     _eventBus.on<CoapReregisteringEvent>().listen(_onReregister);
   }
+
+  /// Response stream
+  Stream<CoapRespondEvent> get stream => _eventBus.on<CoapRespondEvent>().where(
+      (CoapRespondEvent e) => e.resp!.tokenString == _request!.tokenString);
 
   DefaultCoapConfig? _config;
   CoapRequest? _request;
@@ -30,30 +33,29 @@ class CoapObserveClientRelation {
 
   /// Request
   CoapRequest? get request => _request;
-  CoapIEndPoint? _endpoint;
 
-  /// Cancelled
-  bool? cancelled;
-
-  /// Current response
-  CoapResponse? current;
   CoapObserveNotificationOrderer? _orderer;
 
   /// Orderer
   CoapObserveNotificationOrderer? get orderer => _orderer;
 
-  /// Cancel after the fact
-  void reactiveCancel() {
-    _request!.isCancelled = true;
-    cancelled = true;
+  bool _cancelled = false;
+
+  /// Cancelled
+  bool get isCancelled => _cancelled;
+  @protected
+  set isCancelled(bool val) {
+    _request!.isCancelled = val;
+    _cancelled = val;
   }
 
-  /// Cancel
-  void proactiveCancel() {
+  /// Create a cancellation request
+  @protected
+  CoapRequest newCancel() {
     final cancel = CoapRequest.newGet();
     // Copy options, but set Observe to cancel
     cancel.setOptions(_request!.getAllOptions());
-    cancel.markObserveCancel();
+    cancel.observe = 1;
     // Use same Token
     cancel.token = _request!.token;
     cancel.destination = _request!.destination;
@@ -61,10 +63,7 @@ class CoapObserveClientRelation {
     // Dispatch final response to the same message observers
     cancel.copyEventHandler(_request!);
 
-    cancel.sendWithEndpoint(_endpoint);
-    // Cancel old ongoing request
-    _request!.isCancelled = true;
-    cancelled = true;
+    return cancel;
   }
 
   void _onReregister(CoapReregisteringEvent e) {

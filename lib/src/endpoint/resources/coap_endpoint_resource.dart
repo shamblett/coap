@@ -15,8 +15,6 @@ abstract class CoapEndpointResource {
   /// Initialize a resource.
   CoapEndpointResource.hide(this.name, {this.hidden});
 
-  final CoapILogger? _log = CoapLogManager().logger;
-
   /// The name of the resource identifier
   String name;
 
@@ -246,10 +244,6 @@ abstract class CoapEndpointResource {
   void addSubResource(CoapEndpointResource resource) {
     // no absolute paths allowed, use root directly
     while (resource.name.startsWith('/')) {
-      if (_parent != null) {
-        _log!.warn('Adding absolute path only allowed for root: '
-            'made relative ${resource.name}');
-      }
       resource.name = resource.name.substring(1);
     }
 
@@ -269,7 +263,6 @@ abstract class CoapEndpointResource {
 
     if (path.isEmpty) {
       // resource replaces base
-      _log!.info('Replacing resource ${baseRes.path}');
       for (final sub in baseRes.getSubResources()) {
         sub._parent = resource;
         resource.subResources[sub.name] = sub;
@@ -281,7 +274,6 @@ abstract class CoapEndpointResource {
 
       final segments = path.split('/');
       if (segments.length > 1) {
-        _log!.info('Splitting up compound resource ${resource.name}');
         resource.name = segments[segments.length - 1];
 
         // insert middle segments
@@ -298,8 +290,6 @@ abstract class CoapEndpointResource {
 
       resource._parent = baseRes;
       baseRes.subResources[resource.name] = resource;
-
-      _log!.info('Add resource ${resource.name}');
     }
 
     // update number of sub-resources in the tree

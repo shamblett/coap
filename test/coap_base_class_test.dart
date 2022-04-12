@@ -7,7 +7,6 @@
 import 'package:coap/coap.dart';
 import 'package:coap/config/coap_config_all.dart';
 import 'package:coap/config/coap_config_default.dart';
-import 'package:coap/config/coap_config_logging.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -69,38 +68,32 @@ void main() {
   group('Configuration', () {
     test('All', () {
       final DefaultCoapConfig conf = CoapConfigAll();
-      conf.spec = CoapRfc7252();
       expect(conf.version, 'RFC7252');
       expect(conf.defaultPort, 1);
       expect(conf.defaultSecurePort, 2);
       expect(conf.httpPort, 3);
-      expect(conf.ackTimeout, 4);
-      expect(conf.ackRandomFactor, 5.0);
-      expect(conf.ackTimeoutScale, 6.0);
-      expect(conf.maxRetransmit, 7);
-      expect(conf.maxMessageSize, 8);
-      expect(conf.defaultBlockSize, 9);
-      expect(conf.blockwiseStatusLifetime, 10);
+      expect(conf.defaultTimeout, 4);
+      expect(conf.ackTimeout, 5);
+      expect(conf.ackRandomFactor, 6.0);
+      expect(conf.ackTimeoutScale, 7.0);
+      expect(conf.maxRetransmit, 8);
+      expect(conf.maxMessageSize, 9);
+      expect(conf.defaultBlockSize, 10);
+      expect(conf.blockwiseStatusLifetime, 11);
       expect(conf.useRandomIDStart, isFalse);
-      expect(conf.notificationMaxAge, 11);
-      expect(conf.notificationCheckIntervalTime, 12);
-      expect(conf.notificationCheckIntervalCount, 13);
-      expect(conf.notificationReregistrationBackoff, 14);
-      expect(conf.cropRotationPeriod, 15);
-      expect(conf.exchangeLifetime, 16);
-      expect(conf.markAndSweepInterval, 17);
-      expect(conf.channelReceivePacketSize, 18);
+      expect(conf.notificationMaxAge, 12);
+      expect(conf.notificationCheckIntervalTime, 13);
+      expect(conf.notificationCheckIntervalCount, 14);
+      expect(conf.notificationReregistrationBackoff, 15);
+      expect(conf.cropRotationPeriod, 16);
+      expect(conf.exchangeLifetime, 17);
+      expect(conf.markAndSweepInterval, 18);
+      expect(conf.channelReceivePacketSize, 19);
       expect(conf.deduplicator, 'MarkAndSweep');
-      expect(conf.logTarget, 'console');
-      expect(conf.logError, false);
-      expect(conf.logInfo, true);
-      expect(conf.logWarn, true);
-      expect(conf.logDebug, true);
     });
 
     test('Default', () {
       final DefaultCoapConfig conf = CoapConfigDefault();
-      conf.spec = CoapRfc7252();
       expect(conf.version, 'RFC7252');
       expect(conf.defaultPort, CoapConstants.defaultPort);
       expect(conf.defaultSecurePort, CoapConstants.defaultSecurePort);
@@ -122,53 +115,6 @@ void main() {
       expect(conf.markAndSweepInterval, 10000);
       expect(conf.channelReceivePacketSize, 2048);
       expect(conf.deduplicator, 'MarkAndSweep');
-      expect(conf.logTarget, 'none');
-      expect(conf.logError, true);
-      expect(conf.logInfo, false);
-      expect(conf.logWarn, false);
-      expect(conf.logDebug, false);
-    });
-
-    test('Instance', () {
-      final conf = CoapConfigDefault();
-      expect(conf == DefaultCoapConfig.inst, isTrue);
-    });
-  });
-
-  group('Logging', () {
-    test('Null', () {
-      final logmanager = CoapLogManager('none');
-      final logger = logmanager.logger!;
-      expect(logger.isDebugEnabled(), isFalse);
-      expect(logger.isErrorEnabled(), isFalse);
-      expect(logger.isInfoEnabled(), isFalse);
-      expect(logger.isWarnEnabled(), isFalse);
-      logger.warn('Warning message');
-      logger.info('Information message');
-      logger.error('Error message');
-      logger.debug('Debug message');
-      logmanager.destroy();
-    });
-
-    test('Console', () {
-      final conf = CoapConfigLogging();
-      expect(conf.logTarget, 'console');
-      final logmanager = CoapLogManager('console');
-      final logger = logmanager.logger!;
-      // Add a string appender to test correct log strings
-      expect(logger.isDebugEnabled(), isTrue);
-      expect(logger.isErrorEnabled(), isTrue);
-      expect(logger.isInfoEnabled(), isTrue);
-      expect(logger.isWarnEnabled(), isTrue);
-      logger.warn('Warning message');
-      expect(logger.lastMessage!.contains('Warning message'), isTrue);
-      logger.info('Information message');
-      expect(logger.lastMessage!.contains('Information message'), isTrue);
-      logger.error('Error message');
-      expect(logger.lastMessage!.contains('Error message'), isTrue);
-      logger.debug('Debug message');
-      expect(logger.lastMessage!.contains('Debug message'), isTrue);
-      logmanager.destroy();
     });
   });
 }

@@ -18,10 +18,10 @@ class CoapMessage {
   CoapMessage();
 
   /// Instantiates a message with the given type.
-  CoapMessage.withType(this.type);
+  CoapMessage.withType(this.type, {this.code});
 
   /// Instantiates a message with the given type and code.
-  CoapMessage.withCode(this.type, this.code);
+  CoapMessage.withCode(this.code, {this.type});
 
   /// Indicates that no ID has been set.
   static const int none = -1;
@@ -41,8 +41,12 @@ class CoapMessage {
   /// The codestring
   String get codeString => CoapCode.codeToString(code);
 
+  int? _id;
+
   /// The ID of this CoAP message.
-  int? id;
+  int? get id => _id;
+  @protected
+  set id(int? val) => _id = val;
 
   final Map<int, List<CoapOption>> _optionMap = <int, List<CoapOption>>{};
   CoapEventBus? _eventBus = CoapEventBus(namespace: '');
@@ -56,11 +60,14 @@ class CoapMessage {
   /// Bind address if not using the default
   InternetAddress? bindAddress;
 
+  @protected
   void setEventBus(CoapEventBus eventBus) {
     _eventBus = eventBus;
   }
 
   CoapEventBus? get eventBus => _eventBus;
+
+  String? get namespace => _eventBus?.namespace;
 
   /// Adds an option to the list of options of this CoAP message.
   CoapMessage addOption(CoapOption option) {
@@ -180,24 +187,25 @@ class CoapMessage {
   bool get isValid => CoapCode.isValid(code!);
 
   /// The destination endpoint.
+  @protected
   CoapInternetAddress? destination;
 
   /// The source endpoint.
+  @protected
   CoapInternetAddress? source;
+
+  /// Acknowledged hook for attaching a callback if needed
+  HookFunction? acknowledgedHook;
 
   bool _acknowledged = false;
 
   /// Indicates whether this message has been acknowledged.
   bool get isAcknowledged => _acknowledged;
-
-  /// Acknowledged hook for attaching a callback if needed
-  HookFunction? acknowledgedHook;
-
+  @protected
   set isAcknowledged(bool value) {
     _acknowledged = value;
-    if (acknowledgedHook == null) {
-      _eventBus?.fire(CoapAcknowledgedEvent());
-    } else {
+    _eventBus?.fire(CoapAcknowledgedEvent(this));
+    if (acknowledgedHook != null) {
       acknowledgedHook!();
     }
   }
@@ -206,25 +214,24 @@ class CoapMessage {
 
   /// Indicates whether this message has been rejected.
   bool get isRejected => _rejected;
-
+  @protected
   set isRejected(bool value) {
     _rejected = value;
-    _eventBus?.fire(CoapRejectedEvent());
+    _eventBus?.fire(CoapRejectedEvent(this));
   }
+
+  /// Timed out hook function for attaching a callback if needed
+  HookFunction? timedOutHook;
 
   bool _timedOut = false;
 
   /// Indicates whether this message has been timed out.
   bool get isTimedOut => _timedOut;
-
-  /// Timed out hook function for attaching a callback if needed
-  HookFunction? timedOutHook;
-
+  @protected
   set isTimedOut(bool value) {
     _timedOut = value;
-    if (timedOutHook == null) {
-      _eventBus?.fire(CoapTimedOutEvent());
-    } else {
+    _eventBus?.fire(CoapTimedOutEvent(this));
+    if (timedOutHook != null) {
       timedOutHook!();
     }
   }
@@ -232,8 +239,15 @@ class CoapMessage {
   /// Retransmit hook function
   HookFunction? retransmittingHook;
 
+  int _retransmits = 0;
+
+  /// The current number of retransmits
+  int get retransmits => _retransmits;
+
   /// Fire retransmitting event
   void fireRetransmitting() {
+    _retransmits++;
+    _eventBus?.fire(CoapRetransmitEvent(this));
     if (retransmittingHook != null) {
       retransmittingHook!();
     }
@@ -243,21 +257,33 @@ class CoapMessage {
 
   /// Indicates whether this message has been cancelled.
   bool get isCancelled => _cancelled;
-
+  @protected
   set isCancelled(bool value) {
     _cancelled = value;
-    _eventBus?.fire(CoapCancelledEvent());
+    _eventBus?.fire(CoapCancelledEvent(this));
   }
 
+  bool _duplicate = false;
+
   /// Indicates whether this message is a duplicate.
-  bool duplicate = false;
+  bool get duplicate => _duplicate;
+  @protected
+  set duplicate(bool val) => _duplicate = val;
+
+  typed.Uint8Buffer? _bytes;
 
   /// The serialized message as byte array, or null if not serialized yet.
-  typed.Uint8Buffer? bytes;
+  typed.Uint8Buffer? get bytes => _bytes;
+  @protected
+  set bytes(typed.Uint8Buffer? val) => _bytes = val;
+
+  DateTime? _timestamp;
 
   /// The timestamp when this message has been received or sent,
   /// or null if neither has happened yet.
-  DateTime? timestamp;
+  DateTime? get timestamp => _timestamp;
+  @protected
+  set timestamp(DateTime? val) => _timestamp = val;
 
   /// The max times this message should be retransmitted if no ACK received.
   /// A value of 0 means that the CoapConstants.maxRetransmit time
@@ -323,11 +349,6 @@ class CoapMessage {
     this.payload = payload;
     contentType = mediaType;
     return this;
-  }
-
-  /// Cancels this message.
-  void cancel() {
-    isCancelled = true;
   }
 
   @override
@@ -523,6 +544,7 @@ class CoapMessage {
     return host?.toString();
   }
 
+  @protected
   set uriHost(String? value) {
     if (value == null) {
       throw ArgumentError.notNull('Message::uriHost');
@@ -641,7 +663,7 @@ class CoapMessage {
       throw ArgumentError.value(query.length, 'Message::addUriQuery',
           'Uri Query option\'s length must be between 0 and 255 inclusive');
     }
-    return addOption(CoapOption.createString(optionTypeUriQuery, query));
+    return addOption(CoapOption.createUriQuery(query));
   }
 
   /// Remove a URI query
@@ -922,6 +944,7 @@ class CoapMessage {
     }
   }
 
+  @protected
   set observe(int? value) {
     if (value == null) {
       removeOptions(optionTypeObserve);

@@ -225,6 +225,13 @@ class CoapOption {
     return opt;
   }
 
+  /// Creates a query option (shorthand because it's so common).
+  static CoapOption createUriQuery(String str) {
+    final opt = create(optionTypeUriQuery);
+    opt.stringValue = str;
+    return opt;
+  }
+
   /// Creates an option.
   static CoapOption createVal(int type, int? val) {
     final opt = create(type);

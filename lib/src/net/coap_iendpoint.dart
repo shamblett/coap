@@ -23,14 +23,14 @@ abstract class CoapIEndPoint {
   /// Gets the local internetAddress this endpoint is associated with.
   CoapInternetAddress? get localEndpoint;
 
-  /// Gets or sets the message deliverer.
-  CoapIMessageDeliverer? deliverer;
-
   /// Gets the outbox.
   CoapIOutbox get outbox;
 
   /// Starts this endpoint and all its components.
   Future<void> start();
+
+  // The namespace which the endpoint belongs to
+  String get namespace;
 
   /// Stops this endpoint and all its components
   void stop();

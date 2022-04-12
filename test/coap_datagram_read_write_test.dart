@@ -6,7 +6,7 @@
  */
 
 import 'package:coap/coap.dart';
-import 'package:coap/config/coap_config_logging.dart';
+import 'package:coap/config/coap_config_default.dart';
 import 'package:collection/collection.dart';
 import 'package:test/test.dart';
 import 'package:typed_data/typed_data.dart' as typed;
@@ -14,7 +14,7 @@ import 'package:typed_data/typed_data.dart' as typed;
 void main() {
   const leq = ListEquality<dynamic>();
   // ignore: unused_local_variable
-  final DefaultCoapConfig conf = CoapConfigLogging();
+  final DefaultCoapConfig conf = CoapConfigDefault();
 
   test('Test32BitInt', () {
     const intIn = 0x87654321;

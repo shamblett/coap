@@ -71,7 +71,7 @@ void main() {
     test('Value', () {
       final opt = CoapOption.createVal(optionTypeMaxAge, 10);
       expect(opt.value, 10);
-      final opt1 = CoapOption.createString(optionTypeUriQuery, 'Hello');
+      final opt1 = CoapOption.createUriQuery('Hello');
       expect(opt1.value, 'Hello');
       final opt2 = CoapOption.create(optionTypeReserved);
       expect(opt2.value, isNull);

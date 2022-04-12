@@ -24,7 +24,7 @@ Future<void> main() async {
   await RawDatagramSocket.bind(ipAddress, 5683)
       .then((RawDatagramSocket socket) {
     print('Datagram socket ready to receive');
-    print('Waiting on ${socket.address.address}:${socket.port} .....');
+    print('Waiting on ${socket.address.address}:${socket.port}...');
     socket.listen((RawSocketEvent e) {
       switch (e) {
         case RawSocketEvent.write:
@@ -52,5 +52,5 @@ Future<void> main() async {
     });
   });
 
-  await Future<void>.delayed(const Duration(milliseconds: 400000));
+  await Future<void>.delayed(const Duration(seconds: 40));
 }

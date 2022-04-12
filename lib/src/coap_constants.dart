@@ -35,6 +35,11 @@ class CoapConstants {
   static const int defaultSecurePort = 5684;
 
   ///
+  /// Default request timeout
+  ///
+  static const int defaultTimeout = 32767;
+
+  ///
   /// The initial time (ms) for a CoAP message
   ///
   static const int ackTimeout = 3000;

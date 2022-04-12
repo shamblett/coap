@@ -16,7 +16,6 @@ class CoapMatcher implements CoapIMatcher {
     subscr = _eventBus.on<CoapCompletedEvent>().listen(onExchangeCompleted);
   }
 
-  final CoapILogger? _log = CoapLogManager().logger;
   late final CoapEventBus _eventBus;
   final String namespace;
   late StreamSubscription subscr;
@@ -64,7 +63,6 @@ class CoapMatcher implements CoapIMatcher {
     // The MID is from the local namespace -- use blank address
     final keyId = CoapKeyId(request.id);
     final keyToken = CoapKeyToken(request.token);
-    _log!.info('Matcher - Stored open request by $keyId + $keyToken');
     _exchangesById[keyId] = exchange;
     _exchangesByToken[keyToken] = exchange;
   }
@@ -98,16 +96,8 @@ class CoapMatcher implements CoapIMatcher {
       if (exchange.responseBlockStatus != null &&
           !response.hasOption(optionTypeObserve)) {
         // Remember ongoing blockwise GET requests
-        if (CoapUtil.put(_ongoingExchanges, keyUri, exchange) == null) {
-          _log!.info('Matcher - Ongoing Block2 started late, '
-              'storing $keyUri for $request');
-        } else {
-          _log!.info('Matcher - Ongoing Block2 continued, '
-              'storing $keyUri for $request');
-        }
+        CoapUtil.put(_ongoingExchanges, keyUri, exchange);
       } else {
-        _log!.info('Matcher - Ongoing Block2 completed, '
-            'cleaning up $keyUri for $request');
         _ongoingExchanges.remove(keyUri);
       }
     }
@@ -162,19 +152,16 @@ class CoapMatcher implements CoapIMatcher {
       if (previous == null) {
         return exchange;
       } else {
-        _log!.info('Matcher - Duplicate request: $request');
         request.duplicate = true;
         return previous;
       }
     } else {
       final keyUri = CoapKeyUri(request.uri, request.source);
-      _log!.info('Matcher - Looking up ongoing exchange for $keyUri');
 
       final ongoing = _ongoingExchanges[keyUri];
       if (ongoing != null) {
         final prev = _deduplicator.findPrevious(keyId, ongoing);
         if (prev != null) {
-          _log!.info('Matcher - Duplicate ongoing request: $request');
           request.duplicate = true;
         } else {
           // The exchange is continuing, we can (i.e., must)
@@ -182,8 +169,6 @@ class CoapMatcher implements CoapIMatcher {
           if (ongoing.currentResponse!.type != CoapMessageType.ack &&
               !ongoing.currentResponse!.hasOption(optionTypeObserve)) {
             keyId = CoapKeyId(ongoing.currentResponse!.id);
-            _log!.info('Matcher - Ongoing exchange got new request, '
-                'cleaning up $keyId');
             _exchangesById.remove(keyId);
           }
         }
@@ -201,12 +186,9 @@ class CoapMatcher implements CoapIMatcher {
             CoapExchange(request, CoapOrigin.remote, namespace: namespace);
         final previous = _deduplicator.findPrevious(keyId, exchange);
         if (previous == null) {
-          _log!.info(
-              'Matcher - New ongoing request, storing $keyUri for $request');
           _ongoingExchanges[keyUri] = exchange;
           return exchange;
         } else {
-          _log!.info('Matcher - Duplicate initial request: $request');
           request.duplicate = true;
           return previous;
         }
@@ -220,20 +202,14 @@ class CoapMatcher implements CoapIMatcher {
     // The first CON/NON/ACK+response => deliver
     // Retransmitted CON (because client got no ACK)
     //	=> resend ACK
-    _log!.info('Matcher - received response $response');
     var keyId = CoapKeyId(response.id);
     final keyToken = CoapKeyToken(response.token);
     final exchange = _exchangesByToken[keyToken];
     if (exchange != null) {
       if (exchange is CoapMulticastExchange) {
-        _log!.info('Matcher - Received response to multicast '
-            'request ${exchange.request}');
         if (!exchange.alreadyReceived(response)) {
-          _log!.info('Matcher - Received multicast response is from a new '
-              'endpoint.');
           exchange.responses.add(response);
         } else {
-          _log!.info('Matcher - Received multicast response is a duplicate.');
           response.duplicate = true;
         }
         return exchange;
@@ -242,22 +218,10 @@ class CoapMatcher implements CoapIMatcher {
       // There is an exchange with the given token
       final prev = _deduplicator.findPrevious(keyId, exchange);
       if (prev != null) {
-        // (and thus it holds: prev == exchange)
-        _log!.info('Matcher - Duplicate response for open exchange');
         response.duplicate = true;
       } else {
         keyId = CoapKeyId(exchange.currentRequest!.id);
-        _log!.info('Matcher - cleaning up $keyId');
         _exchangesById.remove(keyId);
-      }
-
-      if (response.type == CoapMessageType.ack &&
-          exchange.currentRequest!.id != response.id) {
-        // The token matches but not the MID. This is a
-        // response for an older exchange
-        _log!.warn('Matcher - Possible MID reuse before lifetime end: '
-            '${response.tokenString} expected MID '
-            '${exchange.currentRequest!.id} but received ${response.id}');
       }
 
       return exchange;
@@ -267,14 +231,9 @@ class CoapMatcher implements CoapIMatcher {
         // Only act upon separate responses
         final prev = _deduplicator.find(keyId);
         if (prev != null) {
-          _log!.warn(
-              'Matcher - Duplicate response for completed exchange: $response');
           response.duplicate = true;
           return prev;
         }
-      } else {
-        _log!.warn('Matcher - Ignoring unmatchable piggy-backed '
-            'response from ${response.source!.address.host} : $response');
       }
       // Ignore response
       return null;
@@ -287,12 +246,9 @@ class CoapMatcher implements CoapIMatcher {
     final keyId = CoapKeyId(message.id);
     final exchange = _exchangesById[keyId];
     if (exchange != null) {
-      _log!.info('Exchange got reply: Cleaning up $keyId');
       _exchangesById.remove(keyId);
       return exchange;
     } else {
-      _log!.warn('Matcher - Ignoring unmatchable empty message '
-          'from ${message.source} : $message');
       return null;
     }
   }
@@ -305,7 +261,6 @@ class CoapMatcher implements CoapIMatcher {
       // This endpoint created the Exchange by issuing a request
       final keyId = CoapKeyId(exchange.currentRequest!.id);
       final keyToken = CoapKeyToken(exchange.currentRequest!.token);
-      _log!.info('Matcher - Exchange completed: Cleaning up $keyToken');
 
       _exchangesByToken.remove(keyToken);
       // In case an empty ACK was lost
@@ -325,7 +280,6 @@ class CoapMatcher implements CoapIMatcher {
           (request.hasOption(optionTypeBlock1) ||
               (response != null && response.hasOption(optionTypeBlock2)))) {
         final uriKey = CoapKeyUri(request.uri, request.source);
-        _log!.info('Matcher - Remote ongoing completed, cleaning up $uriKey');
         _ongoingExchanges.remove(uriKey);
       }
 
@@ -339,9 +293,6 @@ class CoapMatcher implements CoapIMatcher {
   }
 
   void _removeNotificatoinsOf(CoapObserveRelation relation) {
-    _log!.info(
-        'Matcher - Remove all remaining NON-notifications of observe relation');
-
     for (final previous in relation.clearNotifications()) {
       // Notifications are local MID namespace
       var keyId = CoapKeyId(previous!.id);

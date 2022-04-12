@@ -15,8 +15,6 @@ class CoapLinkAttribute {
     _value = value;
   }
 
-  final CoapILogger? _log = CoapLogManager().logger;
-
   String? _name;
 
   /// Name
@@ -51,7 +49,7 @@ class CoapLinkAttribute {
         } else if (_value is int) {
           builder.write(_value);
         } else {
-          _log!.error('Serializing attribute of unexpected type: '
+          throw FormatException('Serializing attribute of unexpected type: '
               '$_name ${_value.runtimeType}');
         }
       }

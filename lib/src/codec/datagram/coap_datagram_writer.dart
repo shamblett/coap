@@ -17,18 +17,12 @@ class CoapDatagramWriter {
     _currentBitIndex = 7;
   }
 
-  final CoapILogger? _log = CoapLogManager().logger;
-
   typed.Uint8Buffer? _buffer;
   late ByteData _currentByte;
   late int _currentBitIndex;
 
   /// Writes a sequence of bits to the stream
   void write(int? data, int numBits) {
-    if (numBits < 32 && data! >= (1 << numBits)) {
-      _log!.warn('Truncating value {$data} to {$numBits}-bit integer');
-    }
-
     for (var i = numBits - 1; i >= 0; i--) {
       // Test bit
       final bit = (data! >> i & 1) != 0;

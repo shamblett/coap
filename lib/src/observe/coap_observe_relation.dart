@@ -14,15 +14,16 @@ class CoapObserveRelation {
   /// The observing endpoint
   /// The observed resource
   /// The exchange that tries to establish the observe relation
-  CoapObserveRelation(CoapObservingEndpoint endpoint, CoapIResource resource,
-      CoapExchange exchange) {
+  CoapObserveRelation(this.cfg, CoapObservingEndpoint endpoint,
+      CoapIResource resource, CoapExchange exchange) {
     _endpoint = endpoint;
     _resource = resource;
     _exchange = exchange;
     _key = '$source#${exchange.request!.tokenString}';
   }
 
-  final CoapILogger? _log = CoapLogManager().logger;
+  DefaultCoapConfig cfg;
+
   late CoapObservingEndpoint _endpoint;
 
   /// Source endpoint of the observing endpoint
@@ -57,11 +58,9 @@ class CoapObserveRelation {
 
   /// Cancel this observe relation.
   void cancel() {
-    _log!.debug('CoapObserveRelation::Cancel observe relation from '
-        '$_key with ${_resource!.path}');
     // Stop ongoing retransmissions
     if (_exchange!.response != null) {
-      _exchange!.response!.cancel();
+      _exchange!.response!.isCancelled = true;
     }
     established = false;
     _resource!.removeObserveRelation(this);
@@ -87,13 +86,10 @@ class CoapObserveRelation {
     final now = DateTime.now();
     check = check ||
         _interestCheckTime
-            .add(Duration(
-                milliseconds:
-                    DefaultCoapConfig.inst!.notificationCheckIntervalTime))
+            .add(Duration(milliseconds: cfg.notificationCheckIntervalTime))
             .isBefore(now);
     check = check ||
-        (++_interestCheckCounter >=
-            DefaultCoapConfig.inst!.notificationCheckIntervalCount);
+        (++_interestCheckCounter >= cfg.notificationCheckIntervalCount);
     if (check) {
       _interestCheckTime = now;
       _interestCheckCounter = 0;

@@ -23,15 +23,15 @@ class CoapRequest extends CoapMessage {
   /// Initializes a request message.
   /// True if the request is Confirmable
   CoapRequest.isConfirmable(int? code, {required bool confirmable})
-      : super.withCode(
-            confirmable ? CoapMessageType.con : CoapMessageType.non, code);
+      : super.withCode(code,
+            type: confirmable ? CoapMessageType.con : CoapMessageType.non);
 
   /// The request method(code)
   int? get method => super.code;
 
   @override
   int? get type {
-    if (super.type == CoapMessageType.con && (multicast ?? false)) {
+    if (super.type == CoapMessageType.con && multicast) {
       return CoapMessageType.non;
     }
 
@@ -39,7 +39,7 @@ class CoapRequest extends CoapMessage {
   }
 
   /// Indicates whether this request is a multicast request or not.
-  bool? get multicast => destination?.address.isMulticast;
+  bool get multicast => destination?.address.isMulticast ?? false;
 
   Uri? _uri;
 
@@ -51,6 +51,7 @@ class CoapRequest extends CoapMessage {
       path: uriPath,
       query: uriQuery);
 
+  @protected
   set uri(Uri value) {
     final host = value.host;
     var port = value.port;
@@ -80,114 +81,16 @@ class CoapRequest extends CoapMessage {
     _uri = value;
   }
 
-  CoapResponse? _currentResponse;
-
-  /// The response to this request.
-  CoapResponse? get response => _currentResponse;
-
-  set response(CoapResponse? value) {
-    _currentResponse = value;
-    _currentResponse!.timestamp = DateTime.now();
-    _eventBus?.fire(CoapRespondEvent(value));
-    // Add to the internal response stream
-    _responseStream.add(value);
-  }
-
-  /// The endpoint for this request
   CoapIEndPoint? _endpoint;
 
+  /// The endpoint for this request
+  @protected
+  CoapIEndPoint? get endpoint => _endpoint;
+  @protected
   set endpoint(CoapIEndPoint? endpoint) {
     super.id = endpoint!.nextMessageId;
     super.destination = endpoint.destination;
     _endpoint = endpoint;
-  }
-
-  CoapIEndPoint? get endpoint => _endpoint;
-
-  /// Sets CoAP's observe option. If the target resource of this request
-  /// responds with a success code and also sets the observe option, it will
-  /// send more responses in the future whenever the resource's state changes.
-  CoapRequest markObserve() {
-    observe = 0;
-    return this;
-  }
-
-  /// Sets CoAP's observe option to the value of 1 to proactively cancel.
-  CoapRequest markObserveCancel() {
-    observe = 1;
-    return this;
-  }
-
-  /// Sends this message.
-  CoapRequest send() {
-    _validateBeforeSending();
-    endpoint!.sendEpRequest(this);
-    timestamp = DateTime.now();
-    // Clear the internal response stream
-    _responseStream.stream.drain();
-    return this;
-  }
-
-  /// Sends the request over the specified endpoint.
-  CoapRequest sendWithEndpoint(CoapIEndPoint? endpointIn) {
-    _validateBeforeSending();
-    endpoint = endpointIn;
-    endpoint!.sendEpRequest(this);
-    timestamp = DateTime.now();
-    return this;
-  }
-
-  void _validateBeforeSending() {
-    if (endpoint == null) {
-      throw StateError('CoapRequest::validateBeforeSending - Missing endpoint');
-    }
-  }
-
-  final StreamController<CoapResponse?> _responseStream =
-      StreamController<CoapResponse?>.broadcast();
-
-  /// Response stream
-  Stream<CoapResponse?> get responses => _responseStream.stream;
-
-  /// Wait for a response.
-  /// Returns the response, or null if timeout occured.
-  FutureOr<CoapResponse> waitForResponse(int millisecondsTimeout) {
-    final completer = Completer<CoapResponse>();
-    if ((_currentResponse == null) &&
-        (!isCancelled) &&
-        (!isTimedOut) &&
-        (!isRejected)) {
-      final response = _responseStream.stream.take(1);
-      response
-          .listen((CoapResponse? resp) {
-            _currentResponse = resp;
-            _currentResponse!.timestamp = DateTime.now();
-            completer.complete(_currentResponse);
-          })
-          .asFuture()
-          .timeout(Duration(milliseconds: millisecondsTimeout), onTimeout: () {
-            if (!completer.isCompleted) {
-              completer.complete(CoapResponse(CoapCode.empty));
-            }
-          });
-      return completer.future;
-    }
-    return completer.future;
-  }
-
-  /// Fire the responding event
-  void fireResponding(CoapResponse response) {
-    _eventBus?.fire(CoapRespondingEvent(response));
-  }
-
-  /// Fire the reregistering event
-  void fireReregistering(CoapRequest request) {
-    _eventBus?.fire(CoapReregisteringEvent(request));
-  }
-
-  /// Stop a request, effectively cancels the request
-  void stop() {
-    endpoint!.stop();
   }
 
   @override

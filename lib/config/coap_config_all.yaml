@@ -8,32 +8,21 @@ version: "RFC7252"
 defaultPort: 1
 defaultSecurePort: 2
 httpPort: 3
-ackTimeout: 4
-ackRandomFactor: 5.0
-ackTimeoutScale: 6.0
-maxRetransmit: 7
-maxMessageSize: 8
-defaultBlockSize: 9
-blockwiseStatusLifetime: 10
+defaultTimeout: 4
+ackTimeout: 5
+ackRandomFactor: 6.0
+ackTimeoutScale: 7.0
+maxRetransmit: 8
+maxMessageSize: 9
+defaultBlockSize: 10
+blockwiseStatusLifetime: 11
 useRandomIDStart: false
-poolUdpConnectionsByClient: false
-notificationMaxAge: 11
-notificationCheckIntervalTime: 12
-notificationCheckIntervalCount: 13
-notificationReregistrationBackoff: 14
-cropRotationPeriod: 15
-exchangeLifetime: 16
-markAndSweepInterval: 17
-channelReceivePacketSize: 18
+notificationMaxAge: 12
+notificationCheckIntervalTime: 13
+notificationCheckIntervalCount: 14
+notificationReregistrationBackoff: 15
+cropRotationPeriod: 16
+exchangeLifetime: 17
+markAndSweepInterval: 18
+channelReceivePacketSize: 19
 deduplicator: "MarkAndSweep"
-
-
-# Logging section
-
-# Target is none, console or file
-logTarget: "console"
-# Log levels
-logError: false
-logDebug: true
-logWarn: true
-logInfo: true

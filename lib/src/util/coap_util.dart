@@ -204,11 +204,8 @@ class CoapUtil {
   static Future<CoapInternetAddress?> lookupHost(String host,
       InternetAddressType addressType, InternetAddress? bindAddress) async {
     final completer = Completer<CoapInternetAddress?>();
-    final log = CoapLogManager().logger;
     final parsedAddress = InternetAddress.tryParse(host);
     if (parsedAddress != null) {
-      log!.info(
-          "CoapUtils:lookupHost host '$host' is an IP address, not resolving");
       final coapAddress =
           CoapInternetAddress(parsedAddress.type, parsedAddress, bindAddress);
       completer.complete(coapAddress);
@@ -224,13 +221,6 @@ class CoapUtil {
       completer.complete(null);
     }
     return completer.future;
-  }
-
-  /// Resolved address logger
-  static void logResolvedAddresses(List<InternetAddress> addresses) {
-    for (final address in addresses) {
-      print('Resolved address : $address');
-    }
   }
 
   /// Time formatting for logging

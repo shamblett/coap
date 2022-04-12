@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_use_of_protected_member
+
 /*
  * Package : Coap
  * Author : S. Hamblett <steve.hamblett@linux.com>
@@ -5,7 +7,7 @@
  * Copyright :  S.Hamblett
  */
 import 'package:coap/coap.dart';
-import 'package:coap/config/coap_config_logging.dart';
+import 'package:coap/config/coap_config_default.dart';
 import 'package:collection/collection.dart';
 import 'package:test/test.dart';
 import 'package:typed_data/typed_data.dart' as typed;
@@ -13,7 +15,7 @@ import 'package:typed_data/typed_data.dart' as typed;
 void main() {
   const leq = ListEquality<dynamic>();
   // ignore: unused_local_variable
-  final DefaultCoapConfig conf = CoapConfigLogging();
+  final DefaultCoapConfig conf = CoapConfigDefault();
   group('COAP All', () {
     final check = <String, List<List<int>>>{
       'RFC 7252': <List<int>>[

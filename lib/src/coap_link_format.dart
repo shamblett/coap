@@ -59,8 +59,6 @@ class CoapLinkFormat {
   /// Equal
   static final RegExp equalRegex = RegExp('=');
 
-  static final CoapILogger? _log = CoapLogManager().logger;
-
   /// Serialize
   static String serialize(CoapIResource root) => _serializeQueries(root, null);
 
@@ -393,8 +391,6 @@ class CoapLinkFormat {
     if (isSingle(attrToAdd.name)) {
       for (final attr in attributes) {
         if (attr.name == attrToAdd.name) {
-          _log!.warn('CoapLinkFormat::addAttribute - Found existing '
-              'singleton attribute: ${attr.name}');
           return false;
         }
       }
