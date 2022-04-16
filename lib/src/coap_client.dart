@@ -348,8 +348,8 @@ class CoapClient {
       if (_endpoint == null) {
         final destination =
             await CoapUtil.lookupHost(uri.host, addressType, null);
-        final socket = CoapNetworkUDP(destination, _config.defaultPort,
-            namespace: _namespace);
+        final socket = CoapINetwork.fromUri(uri,
+            address: destination, config: _config, namespace: _namespace);
         await socket.bind();
         _endpoint = CoapEndPoint(socket, _config, namespace: _namespace);
         await _endpoint!.start();

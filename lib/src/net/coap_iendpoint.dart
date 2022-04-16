@@ -15,7 +15,7 @@ abstract class CoapIEndPoint {
   CoapInternetAddress? get destination;
 
   /// Gets this endpoint's configuration.
-  DefaultCoapConfig? get config;
+  DefaultCoapConfig get config;
 
   /// The next message id to use
   int get nextMessageId;

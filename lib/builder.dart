@@ -59,23 +59,25 @@ ${_generateDataScript(data)}}
 
 String _generateDataScript(YamlMap data) {
   final buff = StringBuffer();
-  data.forEach((k, v) {
-    buff.writeln('');
+  for (var k in data.keys) {
     buff.writeln('  @override');
-    if (v is String) {
-      if ('true' == v || 'false' == v) {
-        buff.writeln('  bool get $k => $v;');
-        return;
+    if (data[k] is String) {
+      if ('true' == data[k] || 'false' == data[k]) {
+        buff.writeln('  bool get $k => ${data[k]};');
+        continue;
       }
-      buff.writeln("  String get $k => '$v';");
-    } else if (v is bool) {
-      buff.writeln('  bool get $k => $v;');
-    } else if (v is int) {
-      buff.writeln('  int get $k => $v;');
-    } else if (v is double) {
-      buff.writeln('  double get $k => $v;');
+      buff.writeln("  String get $k => '${data[k]}';");
+    } else if (data[k] is bool) {
+      buff.writeln('  bool get $k => ${data[k]};');
+    } else if (data[k] is int) {
+      buff.writeln('  int get $k => ${data[k]};');
+    } else if (data[k] is double) {
+      buff.writeln('  double get $k => ${data[k]};');
     }
-  });
+    if (k != data.keys.last) {
+      buff.writeln();
+    }
+  }
   return buff.toString();
 }
 

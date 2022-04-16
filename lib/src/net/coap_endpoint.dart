@@ -11,24 +11,25 @@ part of coap;
 class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   /// Instantiates a new endpoint with the
   /// specified channel and configuration.
-  CoapEndPoint(CoapINetwork socket, DefaultCoapConfig config,
-      {required String namespace}) {
-    _config = config;
-    _socket = socket;
-    _eventBus = CoapEventBus(namespace: namespace);
-    _matcher = CoapMatcher(config, namespace: namespace);
-    _coapStack = CoapStack(config);
-    _currentId = config.useRandomIDStart ? Random().nextInt(1 << 16) : 0;
+  CoapEndPoint(this._socket, this._config, {required String namespace})
+      : _eventBus = CoapEventBus(namespace: namespace),
+        _matcher = CoapMatcher(_config, namespace: namespace),
+        _coapStack = CoapStack(_config),
+        _currentId = _config.useRandomIDStart ? Random().nextInt(1 << 16) : 0 {
     subscr = _eventBus.on<CoapDataReceivedEvent>().listen(_receiveData);
   }
 
-  late final CoapEventBus _eventBus;
+  final CoapEventBus _eventBus;
+
   @override
   String get namespace => _eventBus.namespace;
 
-  DefaultCoapConfig? _config;
+  final DefaultCoapConfig _config;
 
-  late int _currentId;
+  @override
+  DefaultCoapConfig get config => _config;
+
+  int _currentId;
 
   @override
   int get nextMessageId {
@@ -41,17 +42,15 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   @override
   CoapInternetAddress? get destination => _socket.address;
 
-  @override
-  DefaultCoapConfig? get config => _config;
-  late CoapINetwork _socket;
-  late CoapStack _coapStack;
-  StreamSubscription? subscr;
+  final CoapStack _coapStack;
+  late final StreamSubscription subscr;
 
-  late CoapIMatcher _matcher;
-  CoapInternetAddress? _localEndpoint;
+  final CoapIMatcher _matcher;
+
+  final CoapINetwork _socket;
 
   @override
-  CoapInternetAddress? get localEndpoint => _localEndpoint;
+  CoapInternetAddress? get localEndpoint => _socket.address;
 
   /// Executor
   CoapIExecutor executor = CoapExecutor();
@@ -61,10 +60,8 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
 
   @override
   Future<void> start() async {
-    _localEndpoint = _socket.address;
     try {
       _matcher.start();
-      _localEndpoint = _socket.address;
     } on Exception {
       stop();
       rethrow;
@@ -103,7 +100,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
     final data = typed.Uint8Buffer();
     data.addAll(event.data);
     // Return if we have no data, should not happen but be defensive
-    final decoder = config!.spec!.newMessageDecoder(data);
+    final decoder = config.spec!.newMessageDecoder(data);
     if (decoder.isRequest) {
       CoapRequest? request;
       try {
@@ -210,7 +207,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   typed.Uint8Buffer _serializeEmpty(CoapEmptyMessage message) {
     var bytes = message.bytes;
     if (bytes == null) {
-      bytes = _config!.spec!.newMessageEncoder().encodeMessage(message);
+      bytes = _config.spec!.newMessageEncoder().encodeMessage(message);
       message.bytes = bytes;
     }
     return bytes!;
@@ -219,7 +216,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   typed.Uint8Buffer _serializeRequest(CoapMessage message) {
     var bytes = message.bytes;
     if (bytes == null) {
-      bytes = _config!.spec!.newMessageEncoder().encodeMessage(message);
+      bytes = _config.spec!.newMessageEncoder().encodeMessage(message);
       message.bytes = bytes;
     }
     return bytes!;
@@ -228,7 +225,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   typed.Uint8Buffer _serializeResponse(CoapMessage message) {
     var bytes = message.bytes;
     if (bytes == null) {
-      bytes = _config!.spec!.newMessageEncoder().encodeMessage(message);
+      bytes = _config.spec!.newMessageEncoder().encodeMessage(message);
       message.bytes = bytes;
     }
     return bytes!;
