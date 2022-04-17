@@ -18,20 +18,20 @@ class CoapRequest extends CoapMessage {
 
   /// Initializes a request message.
   /// Defaults to confirmable
-  CoapRequest.withType(int? code) : this.isConfirmable(code, confirmable: true);
+  CoapRequest.withType(int code) : this.isConfirmable(code, confirmable: true);
 
   /// Initializes a request message.
   /// True if the request is Confirmable
-  CoapRequest.isConfirmable(int? code, {required bool confirmable})
+  CoapRequest.isConfirmable(int code, {required bool confirmable})
       : super.withCode(code,
             type: confirmable ? CoapMessageType.con : CoapMessageType.non);
 
   /// The request method(code)
-  int? get method => super.code;
+  int get method => super.code;
 
   @override
-  int? get type {
-    if (super.type == CoapMessageType.con && multicast) {
+  int get type {
+    if (super.type == CoapMessageType.con && isMulticast) {
       return CoapMessageType.non;
     }
 
@@ -39,7 +39,7 @@ class CoapRequest extends CoapMessage {
   }
 
   /// Indicates whether this request is a multicast request or not.
-  bool get multicast => destination?.address.isMulticast ?? false;
+  bool get isMulticast => destination?.address.isMulticast ?? false;
 
   Uri? _uri;
 

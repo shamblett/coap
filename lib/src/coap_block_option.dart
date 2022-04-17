@@ -31,7 +31,7 @@ class CoapBlockOption extends CoapOption {
   }
 
   /// Set the raw value directly
-  set rawValue(int? num) => intValue = num;
+  set rawValue(int num) => intValue = num;
 
   /// Block number.
   int get num => intValue >> 4;

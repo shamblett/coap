@@ -161,7 +161,7 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
     if (request.duplicate) {
       // Request is a duplicate, so resend ACK, RST or response
       if (exchange.currentResponse != null) {
-        super.sendResponse(nextLayer, exchange, exchange.currentResponse);
+        super.sendResponse(nextLayer, exchange, exchange.currentResponse!);
       } else if (exchange.currentRequest != null) {
         if (exchange.currentRequest!.isAcknowledged) {
           final ack = CoapEmptyMessage.newACK(request);

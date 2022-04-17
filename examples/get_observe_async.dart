@@ -28,7 +28,7 @@ FutureOr main() async {
     print('Observing /obs on ${uri.host}');
     final obs = await client.observe(reqObs);
     obs.stream.listen((CoapRespondEvent e) {
-      print('/obs response: ${e.resp!.payloadString}');
+      print('/obs response: ${e.resp.payloadString}');
     });
 
     final reqObsNon =
@@ -38,7 +38,7 @@ FutureOr main() async {
     print('Observing /obs-non on ${uri.host}');
     final obsNon = await client.observe(reqObsNon);
     obsNon.stream.listen((CoapRespondEvent e) {
-      print('/obs-non response: ${e.resp!.payloadString}');
+      print('/obs-non response: ${e.resp.payloadString}');
     });
 
     final futures = <Future<void>>[];

@@ -17,7 +17,7 @@ void main() {
       var res = CoapRemoteResource('billy');
       expect(res.name, 'billy');
       expect(res.hidden, isFalse);
-      res = CoapRemoteResource.hide('fred', hidden: true);
+      res = CoapRemoteResource.hide('fred');
       expect(res.name, 'fred');
       expect(res.hidden, isTrue);
     });

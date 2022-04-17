@@ -10,14 +10,12 @@ part of coap;
 /// This class can be used to programmatically browse a remote CoAP endoint.
 class CoapWebLink extends Comparable<CoapWebLink> {
   /// Instantiates.
-  CoapWebLink(String uri) {
-    _uri = uri;
-  }
+  CoapWebLink(this._uri);
 
-  String? _uri;
+  final String _uri;
 
   /// The URI
-  String? get uri => _uri;
+  String get uri => _uri;
   final CoapResourceAttributes _attributes = CoapResourceAttributes();
 
   /// Attributes
@@ -28,7 +26,7 @@ class CoapWebLink extends Comparable<CoapWebLink> {
     if (other == null) {
       throw ArgumentError.notNull('CoapWebLink::other');
     }
-    return _uri!.compareTo(other._uri);
+    return _uri.compareTo(other._uri);
   }
 
   @override

@@ -10,7 +10,7 @@ part of coap;
 /// Message encoder RFC 7252
 class CoapMessageEncoderRfc7252 extends CoapMessageEncoder {
   @override
-  void serialize(CoapDatagramWriter writer, CoapMessage message, int? code) {
+  void serialize(CoapDatagramWriter writer, CoapMessage message, int code) {
     // Write fixed-size CoAP headers
     writer.write(CoapRfc7252.version, CoapRfc7252.versionBits);
     writer.write(message.type, CoapRfc7252.typeBits);

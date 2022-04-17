@@ -261,7 +261,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     if (block2 != null) {
       var status = _findResponseBlockStatus(exchange, response);
       final blockStatus = CoapBlockOption(optionTypeBlock2);
-      blockStatus.rawValue = status.currentNUM;
+      blockStatus.rawValue = status.currentNUM!;
       if (block2.num == blockStatus.num) {
         // We got the block we expected
         status.addBlock(response.payload);

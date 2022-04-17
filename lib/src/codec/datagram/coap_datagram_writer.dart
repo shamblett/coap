@@ -11,15 +11,14 @@ part of coap;
 /// datagrams on bit-level.
 class CoapDatagramWriter {
   /// Initializes a new DatagramWriter object
-  CoapDatagramWriter() {
-    _buffer = typed.Uint8Buffer();
-    _currentByte = ByteData(1)..setUint8(0, 0);
-    _currentBitIndex = 7;
-  }
+  CoapDatagramWriter()
+      : _buffer = typed.Uint8Buffer(),
+        _currentByte = ByteData(1)..setUint8(0, 0),
+        _currentBitIndex = 7;
 
-  typed.Uint8Buffer? _buffer;
-  late ByteData _currentByte;
-  late int _currentBitIndex;
+  final typed.Uint8Buffer _buffer;
+  final ByteData _currentByte;
+  int _currentBitIndex;
 
   /// Writes a sequence of bits to the stream
   void write(int? data, int numBits) {
@@ -57,7 +56,7 @@ class CoapDatagramWriter {
     } else {
       // if bit buffer is empty, call can be delegated
       // to byte stream to increase
-      _buffer!.addAll(bytes);
+      _buffer.addAll(bytes);
     }
   }
 
@@ -68,14 +67,14 @@ class CoapDatagramWriter {
   }
 
   /// Returns a byte array containing the sequence of bits written
-  typed.Uint8Buffer? toByteArray() {
+  typed.Uint8Buffer toByteArray() {
     _writeCurrentByte();
     return _buffer;
   }
 
   void _writeCurrentByte() {
     if (_currentBitIndex < 7) {
-      _buffer!.add(_currentByte.getUint8(0));
+      _buffer.add(_currentByte.getUint8(0));
       _currentByte.setUint8(0, 0);
       _currentBitIndex = 7;
     }

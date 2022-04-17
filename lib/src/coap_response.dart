@@ -12,14 +12,12 @@ part of coap;
 /// or a separate response with type CON or NON.
 class CoapResponse extends CoapMessage {
   /// Initializes a response message.
-  CoapResponse(int? statusCode) : super.withCode(statusCode) {
-    _statusCode = code;
-  }
+  CoapResponse(this._statusCode) : super.withCode(_statusCode);
 
-  int? _statusCode;
+  final int _statusCode;
 
   /// The response status code.
-  int? get statusCode => _statusCode;
+  int get statusCode => _statusCode;
 
   /// Status code as a string
   String get statusCodeString => CoapCode.codeToString(_statusCode);

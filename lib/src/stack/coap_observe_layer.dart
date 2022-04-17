@@ -65,13 +65,13 @@ class CoapObserveLayer extends CoapAbstractLayer {
 
   @override
   void sendResponse(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse? response) {
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
     final relation = exchange.relation;
     if (relation != null && relation.established) {
       if (exchange.request!.isAcknowledged ||
           exchange.request!.type == CoapMessageType.non) {
         // Transmit errors as CON
-        if (!CoapCode.isSuccess(response!.code!)) {
+        if (!CoapCode.isSuccess(response.code)) {
           response.type = CoapMessageType.con;
           relation.cancel();
         } else {
@@ -88,7 +88,7 @@ class CoapObserveLayer extends CoapAbstractLayer {
       }
 
       // This is a notification
-      response!.last = false;
+      response.last = false;
 
       // The matcher must be able to find the NON notifications to remove
       // them from the exchangesByID map

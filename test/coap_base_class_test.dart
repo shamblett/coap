@@ -45,10 +45,7 @@ void main() {
     });
 
     test('Parse', () {
-      var res = CoapMediaType.parse(null);
-      expect(res, CoapMediaType.undefined);
-
-      res = CoapMediaType.parse('application/xml');
+      var res = CoapMediaType.parse('application/xml');
       expect(res, CoapMediaType.applicationXml);
     });
 

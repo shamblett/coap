@@ -13,7 +13,7 @@ abstract class CoapINextLayer {
   void sendRequest(CoapExchange? exchange, CoapRequest request);
 
   /// Sends a response to next layer.
-  void sendResponse(CoapExchange exchange, CoapResponse? response);
+  void sendResponse(CoapExchange exchange, CoapResponse response);
 
   /// Sends an empty message to next layer.
   void sendEmptyMessage(CoapExchange exchange, CoapEmptyMessage message);
@@ -35,7 +35,7 @@ abstract class CoapILayer {
 
   /// Filters a request sending event.
   void sendRequest(
-      CoapINextLayer nextLayer, CoapExchange? exchange, CoapRequest request);
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request);
 
   /// Filters a response sending event.
   void sendResponse(

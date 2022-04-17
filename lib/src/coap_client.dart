@@ -25,6 +25,17 @@ enum MatchEtags {
   onNoneMatch,
 }
 
+/// Response event handler for multicast responses
+class CoapMulticastResponseHandler {
+  final void Function(CoapRespondEvent)? onData;
+  final Function? onError;
+  final void Function()? onDone;
+  final bool? cancelOnError;
+
+  CoapMulticastResponseHandler(this.onData,
+      {this.onError, this.onDone, this.cancelOnError});
+}
+
 /// Provides convenient methods for accessing CoAP resources.
 /// This class provides a fairly high level interface for the majority of
 /// simple CoAP requests but because of this is fairly coarsely grained.
@@ -85,6 +96,7 @@ class CoapClient {
     int block2Size = 0,
     int maxRetransmit = 0,
     Duration? timeout,
+    CoapMulticastResponseHandler? onMulticastResponse,
   }) {
     final request = CoapRequest.newGet()
       ..addUriPath(path)
@@ -97,7 +109,8 @@ class CoapClient {
     if (block2Size != 0) {
       request.setBlock2(CoapBlockOption.encodeSZX(block2Size), 0, m: false);
     }
-    return send(request, timeout: timeout);
+    return send(request,
+        timeout: timeout, onMulticastResponse: onMulticastResponse);
   }
 
   /// Sends a POST request.
@@ -112,6 +125,7 @@ class CoapClient {
     int block2Size = 0,
     int maxRetransmit = 0,
     Duration? timeout,
+    CoapMulticastResponseHandler? onMulticastResponse,
   }) {
     final request = CoapRequest.newPost()
       ..addUriPath(path)
@@ -125,7 +139,8 @@ class CoapClient {
     if (block2Size != 0) {
       request.setBlock2(CoapBlockOption.encodeSZX(block2Size), 0, m: false);
     }
-    return send(request, timeout: timeout);
+    return send(request,
+        timeout: timeout, onMulticastResponse: onMulticastResponse);
   }
 
   /// Sends a POST request with the specified byte payload.
@@ -140,6 +155,7 @@ class CoapClient {
     int block2Size = 0,
     Duration? timeout,
     int maxRetransmit = 0,
+    CoapMulticastResponseHandler? onMulticastResponse,
   }) {
     final request = CoapRequest.newPost()
       ..addUriPath(path)
@@ -153,7 +169,8 @@ class CoapClient {
     if (block2Size != 0) {
       request.setBlock2(CoapBlockOption.encodeSZX(block2Size), 0, m: false);
     }
-    return send(request, timeout: timeout);
+    return send(request,
+        timeout: timeout, onMulticastResponse: onMulticastResponse);
   }
 
   /// Sends a PUT request.
@@ -170,6 +187,7 @@ class CoapClient {
     int block2Size = 0,
     int maxRetransmit = 0,
     Duration? timeout,
+    CoapMulticastResponseHandler? onMulticastResponse,
   }) {
     final request = CoapRequest.newPut()
       ..addUriPath(path)
@@ -192,7 +210,8 @@ class CoapClient {
     if (block2Size != 0) {
       request.setBlock2(CoapBlockOption.encodeSZX(block2Size), 0, m: false);
     }
-    return send(request, timeout: timeout);
+    return send(request,
+        timeout: timeout, onMulticastResponse: onMulticastResponse);
   }
 
   /// Sends a PUT request with the specified byte payload.
@@ -209,6 +228,7 @@ class CoapClient {
     int block2Size = 0,
     int maxRetransmit = 0,
     Duration? timeout,
+    CoapMulticastResponseHandler? onMulticastResponse,
   }) {
     final request = CoapRequest.newPut()
       ..addUriPath(path)
@@ -231,7 +251,8 @@ class CoapClient {
     if (block2Size != 0) {
       request.setBlock2(CoapBlockOption.encodeSZX(block2Size), 0, m: false);
     }
-    return send(request, timeout: timeout);
+    return send(request,
+        timeout: timeout, onMulticastResponse: onMulticastResponse);
   }
 
   /// Sends a DELETE request
@@ -244,6 +265,7 @@ class CoapClient {
     int block2Size = 0,
     int maxRetransmit = 0,
     Duration? timeout,
+    CoapMulticastResponseHandler? onMulticastResponse,
   }) {
     final request = CoapRequest.newDelete()
       ..addUriPath(path)
@@ -256,7 +278,8 @@ class CoapClient {
     if (block2Size != 0) {
       request.setBlock2(CoapBlockOption.encodeSZX(block2Size), 0, m: false);
     }
-    return send(request, timeout: timeout);
+    return send(request,
+        timeout: timeout, onMulticastResponse: onMulticastResponse);
   }
 
   /// Observe
@@ -269,9 +292,7 @@ class CoapClient {
       ..observe = 0
       ..maxRetransmit = maxRetransmit;
     await _prepare(request);
-    final relation = CoapObserveClientRelation(
-        request, request.endpoint, _config,
-        namespace: _namespace);
+    final relation = CoapObserveClientRelation(request, _config);
     () async {
       _endpoint!.sendEpRequest(request);
       final response = await _waitForResponse(request, timeout ?? this.timeout);
@@ -304,8 +325,27 @@ class CoapClient {
   }
 
   /// Send
-  Future<CoapResponse> send(CoapRequest request, {Duration? timeout}) async {
+  Future<CoapResponse> send(
+    CoapRequest request, {
+    Duration? timeout,
+    CoapMulticastResponseHandler? onMulticastResponse,
+  }) async {
     await _prepare(request);
+    if (request.isMulticast) {
+      if (onMulticastResponse == null) {
+        throw ArgumentError("Missing onMulticastResponse argument");
+      }
+      request.eventBus!
+          .on<CoapRespondEvent>()
+          .where((CoapRespondEvent e) => e.resp.token!.equals(request.token!))
+          .takeWhile((_) => !request.isTimedOut && !request.isCancelled)
+          .listen(
+            onMulticastResponse.onData,
+            onError: onMulticastResponse.onError,
+            onDone: onMulticastResponse.onDone,
+            cancelOnError: onMulticastResponse.cancelOnError,
+          );
+    }
     _endpoint!.sendEpRequest(request);
     return _waitForResponse(request, timeout ?? this.timeout);
   }
@@ -323,7 +363,7 @@ class CoapClient {
     relation.isCancelled = true;
   }
 
-  /// Cancels a request (retries)
+  /// Cancels a request
   void cancel(CoapRequest request) {
     request.isCancelled = true;
   }
@@ -365,10 +405,10 @@ class CoapClient {
     final completer = Completer<CoapResponse>();
     req.eventBus!
         .on<CoapRespondEvent>()
-        .where((CoapRespondEvent e) => e.resp?.tokenString == req.tokenString)
+        .where((CoapRespondEvent e) => e.resp.token!.equals(req.token!))
         .take(1)
         .listen((CoapRespondEvent e) {
-          e.resp?.timestamp = DateTime.now();
+          e.resp.timestamp = DateTime.now();
           completer.complete(e.resp);
         })
         .asFuture()
@@ -389,7 +429,7 @@ class CoapClient {
     final completer = Completer<CoapMessage>();
     req.eventBus!
         .on<CoapRejectedEvent>()
-        .where((CoapRejectedEvent e) => e.msg.tokenString == req.tokenString)
+        .where((CoapRejectedEvent e) => e.msg.token!.equals(req.token!))
         .take(1)
         .listen((CoapRejectedEvent e) {
           e.msg.timestamp = DateTime.now();

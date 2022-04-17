@@ -48,7 +48,7 @@ class CoapRespondEvent {
   CoapRespondEvent(this.resp);
 
   /// Response
-  CoapResponse? resp;
+  CoapResponse resp;
 }
 
 /// Responding event
@@ -84,7 +84,7 @@ class CoapSendingResponseEvent {
   CoapSendingResponseEvent(this.resp);
 
   /// The response
-  CoapResponse? resp;
+  CoapResponse resp;
 }
 
 /// Occurs when a an empty message is about to be sent.
@@ -102,7 +102,7 @@ class CoapReceivingRequestEvent {
   CoapReceivingRequestEvent(this.req);
 
   /// The request
-  CoapRequest? req;
+  CoapRequest req;
 }
 
 /// Occurs when a response has been received.

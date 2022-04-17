@@ -20,9 +20,6 @@ abstract class CoapIEndPoint {
   /// The next message id to use
   int get nextMessageId;
 
-  /// Gets the local internetAddress this endpoint is associated with.
-  CoapInternetAddress? get localEndpoint;
-
   /// Gets the outbox.
   CoapIOutbox get outbox;
 
@@ -42,7 +39,7 @@ abstract class CoapIEndPoint {
   void sendEpRequest(CoapRequest request);
 
   /// Sends the specified response.
-  void sendEpResponse(CoapExchange exchange, CoapResponse? response);
+  void sendEpResponse(CoapExchange exchange, CoapResponse response);
 
   /// Sends the specified empty message.
   void sendEpEmptyMessage(CoapExchange exchange, CoapEmptyMessage message);

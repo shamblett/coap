@@ -140,7 +140,7 @@ class CoapUtil {
         ? sb.writeln('If-None Match : ${iterableToString(msg.ifNoneMatches)}')
         : sb.writeln('None');
     sb.write('Uri Port : ');
-    if ((msg.uriPort != null) && (msg.uriPort! > 0)) {
+    if (msg.uriPort > 0) {
       sb.writeln(msg.uriPort);
     } else {
       sb.writeln('None');
@@ -172,7 +172,7 @@ class CoapUtil {
     sb.write('Observe : ');
     sb.writeln(msg.observe ?? 'None');
     sb.write('Size 1 : ');
-    sb.writeln(msg.size1 ?? 'None');
+    sb.writeln(msg.size1);
     sb.write('Size 2 : ');
     sb.writeln(msg.size2 ?? 'None');
     return sb.toString();

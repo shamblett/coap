@@ -268,10 +268,7 @@ class CoapMediaType {
   }
 
   /// Parse
-  static int? parse(String? type) {
-    if (type == null) {
-      return CoapMediaType.undefined;
-    }
+  static int? parse(String type) {
     int? keyRet;
     _registry.forEach((int key, List<String> value) {
       if (value[0].toLowerCase() == type.toLowerCase()) {

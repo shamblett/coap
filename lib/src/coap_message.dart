@@ -18,10 +18,10 @@ class CoapMessage {
   CoapMessage();
 
   /// Instantiates a message with the given type.
-  CoapMessage.withType(this.type, {this.code});
+  CoapMessage.withType(this.type, {this.code = CoapCode.notSet});
 
   /// Instantiates a message with the given type and code.
-  CoapMessage.withCode(this.code, {this.type});
+  CoapMessage.withCode(this.code, {this.type = CoapMessageType.unknown});
 
   /// Indicates that no ID has been set.
   static const int none = -1;
@@ -33,10 +33,10 @@ class CoapMessage {
   static const int invalidID = none;
 
   /// The type of this CoAP message.
-  int? type = CoapMessageType.unknown;
+  int type = CoapMessageType.unknown;
 
   /// The code of this CoAP message.
-  int? code = CoapCode.notSet;
+  int code = CoapCode.notSet;
 
   /// The codestring
   String get codeString => CoapCode.codeToString(code);
@@ -172,11 +172,11 @@ class CoapMessage {
 
   /// Gets a value that indicates whether this CoAP message is a
   /// request message.
-  bool get isRequest => CoapCode.isRequest(code!);
+  bool get isRequest => CoapCode.isRequest(code);
 
   /// Gets a value that indicates whether this CoAP message is a
   /// response message.
-  bool get isResponse => CoapCode.isResponse(code!);
+  bool get isResponse => CoapCode.isResponse(code);
 
   /// Gets a value that indicates whether this CoAP message is
   /// an empty message.
@@ -184,7 +184,7 @@ class CoapMessage {
 
   /// Gets a value that indicates whether this CoAP message is a
   /// valid message.
-  bool get isValid => CoapCode.isValid(code!);
+  bool get isValid => CoapCode.isValid(code);
 
   /// The destination endpoint.
   @protected
@@ -689,12 +689,12 @@ class CoapMessage {
   }
 
   /// Uri port
-  int? get uriPort {
+  int get uriPort {
     final opt = getFirstOption(optionTypeUriPort);
-    return opt?.value;
+    return opt?.value ?? 0;
   }
 
-  set uriPort(int? value) {
+  set uriPort(int value) {
     if (value == 0) {
       removeOptions(optionTypeUriPort);
     } else {
@@ -846,12 +846,12 @@ class CoapMessage {
   }
 
   /// Content type
-  int? get contentType {
+  int get contentType {
     final opt = getFirstOption(optionTypeContentType);
     return (null == opt) ? CoapMediaType.undefined : opt.value;
   }
 
-  set contentType(int? value) {
+  set contentType(int value) {
     if (value == CoapMediaType.undefined) {
       removeOptions(optionTypeContentType);
     } else {
@@ -861,9 +861,9 @@ class CoapMessage {
 
   /// The content-format of this CoAP message,
   /// Same as ContentType, only another name.
-  int? get contentFormat => contentType;
+  int get contentFormat => contentType;
 
-  set contentFormat(int? value) => contentType = value;
+  set contentFormat(int value) => contentType = value;
 
   /// The max-age of this CoAP message.
   int get maxAge {
@@ -883,12 +883,12 @@ class CoapMessage {
   }
 
   /// Accept
-  int? get accept {
+  int get accept {
     final opt = getFirstOption(optionTypeAccept);
     return (null == opt) ? CoapMediaType.undefined : opt.value;
   }
 
-  set accept(int? value) {
+  set accept(int value) {
     if (value == CoapMediaType.undefined) {
       removeOptions(optionTypeAccept);
     } else {
@@ -937,11 +937,7 @@ class CoapMessage {
   /// Observe
   int? get observe {
     final opt = getFirstOption(optionTypeObserve);
-    if (opt == null) {
-      return -1;
-    } else {
-      return opt.value;
-    }
+    return opt == null ? -1 : opt.value;
   }
 
   @protected
@@ -960,7 +956,7 @@ class CoapMessage {
   }
 
   /// Size 1
-  int? get size1 {
+  int get size1 {
     final opt = getFirstOption(optionTypeSize1);
     return opt == null ? 0 : opt.value;
   }

@@ -187,7 +187,7 @@ class CoapLinkFormat {
 
     // Skip hidden and empty root in recursive mode,
     // always skip non-matching resources.
-    if ((!resource.hidden! && (resource.name.isNotEmpty) || !recursive) &&
+    if ((!resource.hidden && resource.name.isNotEmpty || !recursive) &&
         _matchesOption(resource, query)) {
       linkFormat.write('<');
       linkFormat.write(resource.path);

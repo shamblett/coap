@@ -50,12 +50,12 @@ class CoapOption {
     }
   }
 
-  set intValue(int? val) {
+  set intValue(int val) {
     if (val == 0) {
       valueBytes!.add(0);
     } else {
       valueBytes!.clear();
-      if (val! <= 255) {
+      if (val <= 255) {
         valueBytes!.add(val);
       } else if (val <= 65535) {
         final buff = Uint16List(1);
@@ -233,7 +233,7 @@ class CoapOption {
   }
 
   /// Creates an option.
-  static CoapOption createVal(int type, int? val) {
+  static CoapOption createVal(int type, int val) {
     final opt = create(type);
     opt.intValue = val;
     return opt;

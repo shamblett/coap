@@ -29,7 +29,7 @@ abstract class CoapINetwork {
   String get namespace;
 
   /// The port
-  int? port;
+  abstract int port;
 
   /// Send, returns the number of bytes sent or null
   /// if not bound.

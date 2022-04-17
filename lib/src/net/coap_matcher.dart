@@ -68,7 +68,7 @@ class CoapMatcher implements CoapIMatcher {
   }
 
   @override
-  void sendResponse(CoapExchange exchange, CoapResponse? response) {
+  void sendResponse(CoapExchange exchange, CoapResponse response) {
     // The response is a CON or NON or ACK and must be prepared for these
     // - CON => ACK / RST // we only care to stop retransmission
     // - NON => RST // we only care for observe
@@ -79,7 +79,7 @@ class CoapMatcher implements CoapIMatcher {
 
     // If this is a CON notification we now can forget all previous
     // NON notifications.
-    if (response!.type == CoapMessageType.con ||
+    if (response.type == CoapMessageType.con ||
         response.type == CoapMessageType.ack) {
       final relation = exchange.relation;
       if (relation != null) {
@@ -125,7 +125,7 @@ class CoapMatcher implements CoapIMatcher {
   }
 
   @override
-  CoapExchange receiveRequest(CoapRequest? request) {
+  CoapExchange receiveRequest(CoapRequest request) {
     // This request could be
     //  - Complete origin request => deliver with new exchange
     //  - One origin block        => deliver with ongoing exchange
@@ -137,7 +137,7 @@ class CoapMatcher implements CoapIMatcher {
     //		if nothing has been sent yet => do nothing
     // (Retransmission is supposed to be done by the retransm. layer)
 
-    var keyId = CoapKeyId(request!.id);
+    var keyId = CoapKeyId(request.id);
 
     // The differentiation between the case where there is a Block1 or
     // Block2 option and the case where there is none has the advantage that
@@ -248,9 +248,8 @@ class CoapMatcher implements CoapIMatcher {
     if (exchange != null) {
       _exchangesById.remove(keyId);
       return exchange;
-    } else {
-      return null;
     }
+    return null;
   }
 
   /// Exchange completed event handler

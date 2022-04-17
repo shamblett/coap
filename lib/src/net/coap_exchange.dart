@@ -125,7 +125,7 @@ class CoapExchange {
   void sendResponse(CoapResponse resp) {
     resp.destination = request!.source;
     response = resp;
-    endpoint!.sendEpResponse(this, response);
+    endpoint!.sendEpResponse(this, resp);
   }
 
   /// Fire the reregistering event
@@ -141,9 +141,7 @@ class CoapExchange {
   // Fire the respond event
   void fireRespond(CoapResponse resp) {
     // block1 requests only have token set on their blocks
-    if (request?.token == null) {
-      request!.token = currentRequest!.token;
-    }
+    request!.token ??= currentRequest!.token;
     _eventBus.fire(CoapRespondEvent(resp));
   }
 

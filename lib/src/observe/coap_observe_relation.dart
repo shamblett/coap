@@ -98,7 +98,7 @@ class CoapObserveRelation {
   }
 
   /// Add a notification
-  void addNotification(CoapResponse? notification) {
+  void addNotification(CoapResponse notification) {
     _notifications.add(notification);
   }
 

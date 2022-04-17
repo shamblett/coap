@@ -13,7 +13,7 @@ abstract class CoapEndpointResource {
   CoapEndpointResource(this.name);
 
   /// Initialize a resource.
-  CoapEndpointResource.hide(this.name, {this.hidden});
+  CoapEndpointResource.hide(this.name, {this.hidden = true});
 
   /// The name of the resource identifier
   String name;
@@ -40,7 +40,7 @@ abstract class CoapEndpointResource {
   int get subResourceCount => _subResources.length;
 
   /// Hidden
-  bool? hidden = false;
+  bool hidden = false;
 
   /// Resource type
   String? get resourceType => getAttributes(CoapLinkFormat.resourceType).isEmpty

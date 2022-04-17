@@ -20,33 +20,39 @@ class CoapMessageDecoder18 extends CoapMessageDecoder {
   @override
   void readProtocol() {
     // Read headers
-    _version = _reader!.read(CoapRfc7252.versionBits);
-    _type = _reader!.read(CoapRfc7252.typeBits);
-    _tokenLength = _reader!.read(CoapRfc7252.tokenLengthBits);
-    _code = _reader!.read(CoapRfc7252.codeBits);
-    _id = _reader!.read(CoapRfc7252.idBits);
+    _version = _reader.read(CoapRfc7252.versionBits);
+    _type = _reader.read(CoapRfc7252.typeBits);
+    _tokenLength = _reader.read(CoapRfc7252.tokenLengthBits);
+    _code = _reader.read(CoapRfc7252.codeBits);
+    _id = _reader.read(CoapRfc7252.idBits);
   }
+
+  @override
+  int _type = CoapMessageType.unknown;
+
+  @override
+  int _code = CoapCode.notSet;
 
   @override
   void parseMessage(CoapMessage message) {
     // Read token
     if (_tokenLength > 0) {
-      message.token = _reader!.readBytes(_tokenLength);
+      message.token = _reader.readBytes(_tokenLength);
     } else {
       message.token = CoapConstants.emptyToken;
     }
     // Read options
     var currentOption = 0;
-    while (_reader!.bytesAvailable) {
-      final nextByte = _reader!.readNextByte();
+    while (_reader.bytesAvailable) {
+      final nextByte = _reader.readNextByte();
       if (nextByte == CoapRfc7252.payloadMarker) {
-        if (!_reader!.bytesAvailable) {
+        if (!_reader.bytesAvailable) {
           // The presence of a marker followed by a zero-length payload
           // must be processed as a message format error
           throw StateError('Decoder18 - Marker followed by 0 length payload');
         }
 
-        message.payload = _reader!.readBytesLeft();
+        message.payload = _reader.readBytesLeft();
       } else {
         // The first 4 bits of the byte represent the option delta
         final optionDeltaNibble = (0xF0 & nextByte) >> 4;
@@ -60,7 +66,7 @@ class CoapMessageDecoder18 extends CoapMessageDecoder {
 
         // Read option
         final opt = CoapOption.create(currentOption);
-        opt.valueBytes = _reader!.readBytes(optionLength);
+        opt.valueBytes = _reader.readBytes(optionLength);
         // Reverse byte order for numeric options
         if (CoapOption.getFormatByType(opt.type) == OptionFormat.integer) {
           final valueBytes = opt.valueBytes;

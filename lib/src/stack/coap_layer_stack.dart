@@ -58,7 +58,7 @@ class CoapStackTopLayer extends CoapAbstractLayer {
       CoapINextLayer nextLayer, CoapExchange? exchange, CoapRequest request) {
     var nexchange = exchange;
     if (exchange == null) {
-      if (request.multicast) {
+      if (request.isMulticast) {
         nexchange = CoapMulticastExchange(request, CoapOrigin.local,
             namespace: request.eventBus!.namespace);
       } else {
@@ -73,7 +73,7 @@ class CoapStackTopLayer extends CoapAbstractLayer {
 
   @override
   void sendResponse(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse? response) {
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
     exchange.response = response;
     super.sendResponse(nextLayer, exchange, response);
   }
@@ -112,7 +112,7 @@ class CoapStackBottomLayer extends CoapAbstractLayer {
 
   @override
   void sendResponse(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse? response) {
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
     exchange.outbox!.sendResponse(exchange, response);
   }
 

@@ -14,13 +14,12 @@ class CoapNetworkUDP implements CoapINetwork {
     _eventBus = CoapEventBus(namespace: namespace);
   }
 
-  CoapNetworkUDP.from(CoapNetworkUDP src, {required String namespace}) {
-    address = src.address;
-    port = src.port;
-    _eventBus = CoapEventBus(namespace: namespace);
-    _socket = src.socket;
-    _bound = src.bound;
-  }
+  CoapNetworkUDP.from(CoapNetworkUDP src, {required String namespace})
+      : address = src.address,
+        port = src.port,
+        _eventBus = CoapEventBus(namespace: namespace),
+        _socket = src.socket,
+        _bound = src.bound;
 
   late final CoapEventBus _eventBus;
 
@@ -30,7 +29,7 @@ class CoapNetworkUDP implements CoapINetwork {
 
   /// The port to use for sending.
   @override
-  int? port;
+  int port;
 
   /// The namespace to use
   @override
@@ -47,7 +46,7 @@ class CoapNetworkUDP implements CoapINetwork {
   int send(typed.Uint8Buffer data, [CoapInternetAddress? address]) {
     if (_bound) {
       _socket?.send(
-          data.toList(), address?.address ?? this.address!.address, port!);
+          data.toList(), address?.address ?? this.address!.address, port);
     }
     return -1;
   }
