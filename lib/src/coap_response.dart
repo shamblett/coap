@@ -12,7 +12,7 @@ part of coap;
 /// or a separate response with type CON or NON.
 class CoapResponse extends CoapMessage {
   /// Initializes a response message.
-  CoapResponse(this._statusCode) : super.withCode(_statusCode);
+  CoapResponse(this._statusCode) : super(code: _statusCode);
 
   final int _statusCode;
 

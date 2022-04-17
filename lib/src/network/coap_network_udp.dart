@@ -71,7 +71,8 @@ class CoapNetworkUDP implements CoapINetwork {
         case RawSocketEvent.readClosed:
           close();
           break;
-        case RawSocketEvent.write:
+        default:
+          break;
       }
     });
   }

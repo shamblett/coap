@@ -77,8 +77,7 @@ class CoapClient {
 
   /// Performs a CoAP ping and gives up after the given number of milliseconds.
   Future<bool> ping({Duration? timeout}) async {
-    final request =
-        CoapRequest.isConfirmable(CoapCode.empty, confirmable: true);
+    final request = CoapRequest(CoapCode.empty, confirmable: true);
     request.token = CoapConstants.emptyToken;
     await _prepare(request);
     _endpoint!.sendEpRequest(request);
@@ -441,7 +440,7 @@ class CoapClient {
             req
               ..isTimedOut = true
               ..isCancelled = true;
-            completer.complete(CoapMessage.withCode(CoapCode.empty));
+            completer.complete(CoapMessage(code: CoapCode.empty));
           }
         });
     return completer.future;

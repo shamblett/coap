@@ -14,14 +14,9 @@ typedef HookFunction = void Function();
 /// each of which has a MessageType, a message identifier,
 /// a token (0-8 bytes), a collection of Options and a payload.
 class CoapMessage {
-  /// Default
-  CoapMessage();
-
-  /// Instantiates a message with the given type.
-  CoapMessage.withType(this.type, {this.code = CoapCode.notSet});
-
-  /// Instantiates a message with the given type and code.
-  CoapMessage.withCode(this.code, {this.type = CoapMessageType.unknown});
+  /// Constructor
+  CoapMessage(
+      {this.type = CoapMessageType.unknown, this.code = CoapCode.notSet});
 
   /// Indicates that no ID has been set.
   static const int none = -1;

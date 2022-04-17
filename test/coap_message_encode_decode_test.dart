@@ -225,7 +225,7 @@ void main() {
 
     void testMessage(CoapISpec spec, int testNo) {
       final CoapMessage msg =
-          CoapRequest.isConfirmable(CoapCode.methodGET, confirmable: true);
+          CoapRequest(CoapCode.methodGET, confirmable: true);
 
       msg.id = 12345;
       msg.payload = typed.Uint8Buffer()..addAll('payload'.codeUnits);
@@ -243,7 +243,7 @@ void main() {
 
     void testMessageWithOptions(CoapISpec spec, int testNo) {
       final CoapMessage msg =
-          CoapRequest.isConfirmable(CoapCode.methodGET, confirmable: true);
+          CoapRequest(CoapCode.methodGET, confirmable: true);
 
       msg.id = 12345;
       msg.payload = typed.Uint8Buffer()..addAll('payload'.codeUnits);
@@ -273,7 +273,7 @@ void main() {
 
     void testMessageWithExtendedOption(CoapISpec spec, int testNo) {
       final CoapMessage msg =
-          CoapRequest.isConfirmable(CoapCode.methodGET, confirmable: true);
+          CoapRequest(CoapCode.methodGET, confirmable: true);
 
       msg.id = 12345;
       msg.addOption(CoapOption.createVal(12, 0));
@@ -304,8 +304,7 @@ void main() {
     }
 
     void testRequestParsing(CoapISpec spec, int testNo) {
-      final request =
-          CoapRequest.isConfirmable(CoapCode.methodPOST, confirmable: false);
+      final request = CoapRequest(CoapCode.methodPOST, confirmable: false);
       request.id = 7;
       request.token = typed.Uint8Buffer()..addAll(<int>[11, 82, 165, 77, 3]);
       request

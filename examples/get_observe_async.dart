@@ -31,8 +31,7 @@ FutureOr main() async {
       print('/obs response: ${e.resp.payloadString}');
     });
 
-    final reqObsNon =
-        CoapRequest.isConfirmable(CoapCode.get, confirmable: false);
+    final reqObsNon = CoapRequest(CoapCode.get, confirmable: false);
     reqObsNon.addUriPath('obs-non');
 
     print('Observing /obs-non on ${uri.host}');

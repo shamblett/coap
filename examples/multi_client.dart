@@ -29,7 +29,7 @@ FutureOr<void> main(List<String> args) async {
     print('/hello response: ${response.payloadString}');
 
     print('Sending get /test to ${uri2.host}');
-    response = await client1.get('test');
+    response = await client2.get('test');
     print('/test response: ${response.payloadString}');
 
     // Clean up
