@@ -31,10 +31,10 @@ dependencies:
         * Example: `coap_config_all`. This will generate a file called `CoapConfigAll` that you will use in your code.
         * Example: `coap_config_debug`. This will generate a file called `CoapConfigDebug` that you will use in your code.
         * This file must contains at least the protocol version. See the example bellow.
-          This is a valid configuration file with all possible properties: [examples/config/coap_config.yaml](./examples/config/coap_config.yaml).
+          This is a valid configuration file with all possible properties: [example/config/coap_config.yaml](./example/config/coap_config.yaml).
 * Run the command that will generate the configuration class.
     * Run `pub run build_runner build` in a Dart project;
     * Run `flutter pub run build_runner build` in a Flutter project;
       After running the command above the configuration class will be generated next to the `.yaml` configuration file.
 
-See the [examples](./examples/) for example usage.
+See the [examples](./example/) for example usage.
