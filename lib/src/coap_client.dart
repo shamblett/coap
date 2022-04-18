@@ -97,17 +97,8 @@ class CoapClient {
     Duration? timeout,
     CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newGet()
-      ..addUriPath(path)
-      ..accept = accept
-      ..type = type
-      ..maxRetransmit = maxRetransmit;
-    if (options != null) {
-      request.addOptions(options);
-    }
-    if (block2Size != 0) {
-      request.setBlock2(CoapBlockOption.encodeSZX(block2Size), 0, m: false);
-    }
+    final request = CoapRequest.newGet();
+    _build(request, path, accept, type, options, block2Size, maxRetransmit);
     return send(request,
         timeout: timeout, onMulticastResponse: onMulticastResponse);
   }
@@ -126,18 +117,8 @@ class CoapClient {
     Duration? timeout,
     CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPost()
-      ..addUriPath(path)
-      ..setPayloadMedia(payload, format)
-      ..accept = accept
-      ..type = type
-      ..maxRetransmit = maxRetransmit;
-    if (options != null) {
-      request.addOptions(options);
-    }
-    if (block2Size != 0) {
-      request.setBlock2(CoapBlockOption.encodeSZX(block2Size), 0, m: false);
-    }
+    final request = CoapRequest.newPost()..setPayloadMedia(payload, format);
+    _build(request, path, accept, type, options, block2Size, maxRetransmit);
     return send(request,
         timeout: timeout, onMulticastResponse: onMulticastResponse);
   }
@@ -156,18 +137,8 @@ class CoapClient {
     int maxRetransmit = 0,
     CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPost()
-      ..addUriPath(path)
-      ..setPayloadMediaRaw(payload, format)
-      ..accept = accept
-      ..type = type
-      ..maxRetransmit = maxRetransmit;
-    if (options != null) {
-      request.addOptions(options);
-    }
-    if (block2Size != 0) {
-      request.setBlock2(CoapBlockOption.encodeSZX(block2Size), 0, m: false);
-    }
+    final request = CoapRequest.newPost();
+    _build(request, path, accept, type, options, block2Size, maxRetransmit);
     return send(request,
         timeout: timeout, onMulticastResponse: onMulticastResponse);
   }
@@ -188,27 +159,9 @@ class CoapClient {
     Duration? timeout,
     CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPut()
-      ..addUriPath(path)
-      ..setPayloadMedia(payload, format)
-      ..accept = accept
-      ..type = type
-      ..maxRetransmit = maxRetransmit;
-    if (options != null) {
-      request.addOptions(options);
-    }
-    if (etags != null) {
-      switch (matchEtags) {
-        case MatchEtags.onMatch:
-          etags.forEach(request.addIfMatchOpaque);
-          break;
-        case MatchEtags.onNoneMatch:
-          etags.forEach(request.addIfNoneMatchOpaque);
-      }
-    }
-    if (block2Size != 0) {
-      request.setBlock2(CoapBlockOption.encodeSZX(block2Size), 0, m: false);
-    }
+    final request = CoapRequest.newPut()..setPayloadMedia(payload, format);
+    _build(request, path, accept, type, options, block2Size, maxRetransmit,
+        etags: etags, matchEtags: matchEtags);
     return send(request,
         timeout: timeout, onMulticastResponse: onMulticastResponse);
   }
@@ -229,27 +182,9 @@ class CoapClient {
     Duration? timeout,
     CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPut()
-      ..addUriPath(path)
-      ..setPayloadMediaRaw(payload, format)
-      ..accept = accept
-      ..type = type
-      ..maxRetransmit = maxRetransmit;
-    if (options != null) {
-      request.addOptions(options);
-    }
-    if (etags != null) {
-      switch (matchEtags) {
-        case MatchEtags.onMatch:
-          etags.forEach(request.addIfMatchOpaque);
-          break;
-        case MatchEtags.onNoneMatch:
-          etags.forEach(request.addIfNoneMatchOpaque);
-      }
-    }
-    if (block2Size != 0) {
-      request.setBlock2(CoapBlockOption.encodeSZX(block2Size), 0, m: false);
-    }
+    final request = CoapRequest.newPut()..setPayloadMediaRaw(payload, format);
+    _build(request, path, accept, type, options, block2Size, maxRetransmit,
+        etags: etags, matchEtags: matchEtags);
     return send(request,
         timeout: timeout, onMulticastResponse: onMulticastResponse);
   }
@@ -266,17 +201,8 @@ class CoapClient {
     Duration? timeout,
     CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newDelete()
-      ..addUriPath(path)
-      ..accept = accept
-      ..type = type
-      ..maxRetransmit = maxRetransmit;
-    if (options != null) {
-      request.addOptions(options);
-    }
-    if (block2Size != 0) {
-      request.setBlock2(CoapBlockOption.encodeSZX(block2Size), 0, m: false);
-    }
+    final request = CoapRequest.newDelete();
+    _build(request, path, accept, type, options, block2Size, maxRetransmit);
     return send(request,
         timeout: timeout, onMulticastResponse: onMulticastResponse);
   }
@@ -370,6 +296,39 @@ class CoapClient {
   /// Cancel all ongoing requests
   void close() {
     _endpoint?.stop();
+  }
+
+  void _build(
+    CoapRequest request,
+    String path,
+    int accept,
+    int type,
+    List<CoapOption>? options,
+    int block2Size,
+    int maxRetransmit, {
+    MatchEtags matchEtags = MatchEtags.onMatch,
+    List<typed.Uint8Buffer>? etags,
+  }) {
+    request
+      ..addUriPath(path)
+      ..accept = accept
+      ..type = type
+      ..maxRetransmit = maxRetransmit;
+    if (options != null) {
+      request.addOptions(options);
+    }
+    if (etags != null) {
+      switch (matchEtags) {
+        case MatchEtags.onMatch:
+          etags.forEach(request.addIfMatchOpaque);
+          break;
+        case MatchEtags.onNoneMatch:
+          etags.forEach(request.addIfNoneMatchOpaque);
+      }
+    }
+    if (block2Size != 0) {
+      request.setBlock2(CoapBlockOption.encodeSZX(block2Size), 0, m: false);
+    }
   }
 
   Future<void> _prepare(CoapRequest request) async {
