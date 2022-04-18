@@ -48,13 +48,13 @@ class CoapLinkFormat {
   static final RegExp resourceNameRegex = RegExp('<[^>]*>');
 
   /// Word
-  static final RegExp wordRegex = RegExp('\\w+');
+  static final RegExp wordRegex = RegExp(r'\w+');
 
   /// Quoted string
   static final RegExp quotedStringRegex = RegExp('".*?"');
 
   /// Cardinal
-  static final RegExp cardinalRegex = RegExp('\\d+');
+  static final RegExp cardinalRegex = RegExp(r'\d+');
 
   /// Equal
   static final RegExp equalRegex = RegExp('=');
@@ -137,7 +137,7 @@ class CoapLinkFormat {
       sb.write(',');
     }
     // sort by resource name
-    final children = resource.children as List<CoapIResource>;
+    final children = resource.children! as List<CoapIResource>;
     children.sort(
         (CoapIResource r1, CoapIResource r2) => r1.name!.compareTo(r2.name!));
     for (final child in children) {
@@ -158,7 +158,7 @@ class CoapLinkFormat {
     final keys = attributes.keys as List<String>;
     keys.sort();
     for (final name in keys) {
-      final values = attributes.getValues(name) as List<String?>;
+      final values = attributes.getValues(name)! as List<String?>;
       if (values.isEmpty) {
         continue;
       }

@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:build/build.dart';
-import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as path;
+import 'package:yaml/yaml.dart';
 
 Builder configBuilder(BuilderOptions options) => _ConfigBuilder();
 

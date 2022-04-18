@@ -19,7 +19,7 @@ FutureOr<void> main(List<String> args) async {
   final opt = CoapOption.createUriQuery(
       '${CoapLinkFormat.title}=This is an SJH Post request');
 
-  final payload = '''
+  const payload = '''
      0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

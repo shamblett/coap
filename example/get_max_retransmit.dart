@@ -34,7 +34,7 @@ FutureOr main() async {
     if (request.isTimedOut) {
       print('Timeout! Client retransmitted ${request.retransmits} times');
     } else {
-      print("Expected timeout did not happen, something could be wrong");
+      print('Expected timeout did not happen, something could be wrong');
     }
 
     client.close();

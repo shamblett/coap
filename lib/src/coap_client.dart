@@ -218,13 +218,13 @@ class CoapClient {
       ..maxRetransmit = maxRetransmit;
     await _prepare(request);
     final relation = CoapObserveClientRelation(request, _config);
-    () async {
+    unawaited(() async {
       _endpoint!.sendEpRequest(request);
       final response = await _waitForResponse(request, timeout ?? this.timeout);
       if (!response.hasOption(optionTypeObserve)) {
         relation.isCancelled = true;
       }
-    }();
+    }());
     return relation;
   }
 
@@ -258,7 +258,7 @@ class CoapClient {
     await _prepare(request);
     if (request.isMulticast) {
       if (onMulticastResponse == null) {
-        throw ArgumentError("Missing onMulticastResponse argument");
+        throw ArgumentError('Missing onMulticastResponse argument');
       }
       request.eventBus!
           .on<CoapRespondEvent>()

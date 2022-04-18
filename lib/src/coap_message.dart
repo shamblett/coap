@@ -200,9 +200,7 @@ class CoapMessage {
   set isAcknowledged(bool value) {
     _acknowledged = value;
     _eventBus?.fire(CoapAcknowledgedEvent(this));
-    if (acknowledgedHook != null) {
-      acknowledgedHook!();
-    }
+    acknowledgedHook?.call();
   }
 
   bool _rejected = false;
@@ -226,9 +224,7 @@ class CoapMessage {
   set isTimedOut(bool value) {
     _timedOut = value;
     _eventBus?.fire(CoapTimedOutEvent(this));
-    if (timedOutHook != null) {
-      timedOutHook!();
-    }
+    timedOutHook?.call();
   }
 
   /// Retransmit hook function
@@ -243,9 +239,7 @@ class CoapMessage {
   void fireRetransmitting() {
     _retransmits++;
     _eventBus?.fire(CoapRetransmitEvent(this));
-    if (retransmittingHook != null) {
-      retransmittingHook!();
-    }
+    retransmittingHook?.call();
   }
 
   bool _cancelled = false;
@@ -368,9 +362,8 @@ class CoapMessage {
       _selectOptions(optionTypeIfMatch).toList();
 
   /// Add an if match option, if a null string is passed the if match is not set
-  CoapMessage addIfMatch(String etag) {
-    return addOption(CoapOption.createString(optionTypeIfMatch, etag));
-  }
+  CoapMessage addIfMatch(String etag) =>
+      addOption(CoapOption.createString(optionTypeIfMatch, etag));
 
   /// Add an opaque if match
   CoapMessage addIfMatchOpaque(typed.Uint8Buffer opaque) {

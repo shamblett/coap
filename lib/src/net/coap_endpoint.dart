@@ -58,6 +58,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   @override
   Future<void> start() async {
     try {
+      subscr.resume();
       _matcher.start();
     } on Exception {
       stop();
@@ -70,6 +71,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
     _matcher.stop();
     _eventBus.destroy();
     _socket.close();
+    subscr.cancel();
   }
 
   @override

@@ -245,7 +245,7 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
       ActionGeneric<CoapTransmissionContext> retransmit) {
     final ctx = exchange?.getOrAdd<CoapTransmissionContext>(
         transmissionContextKey,
-        CoapTransmissionContext(_config, exchange, msg, retransmit))!;
+        CoapTransmissionContext(_config, exchange, msg, retransmit));
     if (ctx != null && ctx.failedTransmissionCount > 0) {
       ctx.currentTimeout =
           (ctx.currentTimeout * _config!.ackTimeoutScale).toInt();
