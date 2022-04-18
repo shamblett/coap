@@ -17,7 +17,7 @@ abstract class DefaultCoapConfig {
   /// The version of the CoAP protocol.
   String get version => 'RFC7252';
 
-  /// The CoAP specification derived from the protocl version.
+  /// The CoAP specification derived from the protocol version.
   CoapISpec get spec {
     switch (version) {
       case 'RFC7252':

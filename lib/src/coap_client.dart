@@ -137,7 +137,7 @@ class CoapClient {
     int maxRetransmit = 0,
     CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPost();
+    final request = CoapRequest.newPost()..setPayloadMediaRaw(payload, format);
     _build(request, path, accept, type, options, block2Size, maxRetransmit);
     return send(request,
         timeout: timeout, onMulticastResponse: onMulticastResponse);
