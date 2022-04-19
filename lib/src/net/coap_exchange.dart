@@ -37,7 +37,7 @@ class CoapExchange {
   /// The current request
   CoapRequest? currentRequest;
 
-  // The response
+  /// The response
   CoapResponse? response;
 
   /// The current response

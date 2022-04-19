@@ -26,7 +26,7 @@ abstract class CoapIEndPoint {
   /// Starts this endpoint and all its components.
   Future<void> start();
 
-  // The namespace which the endpoint belongs to
+  /// The namespace which the endpoint belongs to
   String get namespace;
 
   /// Stops this endpoint and all its components
