@@ -55,13 +55,21 @@ class CoapClient {
   /// If it is specified it will be prepared and used.
   /// Note that the host name part of the URI can be a name or an IP address,
   /// in which case it is not resolved.
-  CoapClient(this.uri, this._config,
-      {this.addressType = InternetAddressType.IPv4, Duration? timeout})
-      : timeout =
+  CoapClient(
+    this.uri,
+    this._config, {
+    this.addressType = InternetAddressType.IPv4,
+    this.bindAddress,
+    Duration? timeout,
+  }) : timeout =
             timeout ?? Duration(milliseconds: CoapConstants.defaultTimeout);
 
   /// Address type used for DNS lookups.
   final InternetAddressType addressType;
+
+  /// The client's local socket bind address, if set explicitly
+  /// IPv4 default is 0.0.0.0, IPv6 default is 0:0:0:0:0:0:0:0
+  final InternetAddress? bindAddress;
 
   /// The client endpoint URI
   final Uri uri;
@@ -346,7 +354,7 @@ class CoapClient {
       // Set endpoint if missing
       if (_endpoint == null) {
         final destination =
-            await CoapUtil.lookupHost(uri.host, addressType, null);
+            await CoapUtil.lookupHost(uri.host, addressType, bindAddress);
         final socket = CoapINetwork.fromUri(uri,
             address: destination, config: _config, namespace: _namespace);
         await socket.bind();
