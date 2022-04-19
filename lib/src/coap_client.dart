@@ -56,10 +56,8 @@ class CoapClient {
   /// Note that the host name part of the URI can be a name or an IP address,
   /// in which case it is not resolved.
   CoapClient(this.uri, this._config,
-      {this.addressType = InternetAddressType.IPv4, Duration? timeout}) {
-    this.timeout = timeout ?? Duration(milliseconds: _config.defaultTimeout);
-    _namespace = hashCode.toString();
-  }
+      {this.addressType = InternetAddressType.IPv4, Duration? timeout})
+      : timeout = timeout ?? Duration(milliseconds: _config.defaultTimeout);
 
   /// Address type used for DNS lookups.
   final InternetAddressType addressType;
@@ -68,11 +66,11 @@ class CoapClient {
   final Uri uri;
 
   /// The default request timeout
-  late Duration timeout; // ms
+  late Duration timeout;
 
   final DefaultCoapConfig _config;
   CoapIEndPoint? _endpoint;
-  late final String _namespace;
+  String get _namespace => hashCode.toString();
   final _lock = sync.Lock();
 
   /// Performs a CoAP ping and gives up after the given number of milliseconds.

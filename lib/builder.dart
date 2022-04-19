@@ -59,7 +59,7 @@ ${_generateDataScript(data)}}
 
 String _generateDataScript(YamlMap data) {
   final buff = StringBuffer();
-  for (var k in data.keys) {
+  for (final k in data.keys) {
     buff.writeln('  @override');
     if (data[k] is String) {
       if ('true' == data[k] || 'false' == data[k]) {
