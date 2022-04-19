@@ -56,9 +56,9 @@ abstract class DefaultCoapConfig {
 
   int get maxMessageSize => 1024;
 
-  /// The default preferred size of block in blockwise transfer.
+  /// The preferred size of block in blockwise transfer.
 
-  int get defaultBlockSize => CoapConstants.defaultBlockSize;
+  int get preferredBlockSize => CoapConstants.preferredBlockSize;
 
   int get blockwiseStatusLifetime => 10 * 60 * 1000; // ms
 

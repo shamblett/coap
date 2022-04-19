@@ -74,7 +74,7 @@ void main() {
       expect(conf.ackTimeoutScale, 6.0);
       expect(conf.maxRetransmit, 7);
       expect(conf.maxMessageSize, 8);
-      expect(conf.defaultBlockSize, 9);
+      expect(conf.preferredBlockSize, 9);
       expect(conf.blockwiseStatusLifetime, 10);
       expect(conf.useRandomIDStart, isFalse);
       expect(conf.notificationMaxAge, 11);
@@ -99,7 +99,7 @@ void main() {
       expect(conf.ackTimeoutScale, 2.0);
       expect(conf.maxRetransmit, CoapConstants.maxRetransmit);
       expect(conf.maxMessageSize, 1024);
-      expect(conf.defaultBlockSize, CoapConstants.defaultBlockSize);
+      expect(conf.preferredBlockSize, CoapConstants.preferredBlockSize);
       expect(conf.blockwiseStatusLifetime, 10 * 60 * 1000);
       expect(conf.useRandomIDStart, isTrue);
       expect(conf.notificationMaxAge, 128 * 1000);

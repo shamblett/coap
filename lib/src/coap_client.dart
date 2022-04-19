@@ -85,25 +85,24 @@ class CoapClient {
   }
 
   /// Sends a GET request.
-  /// block2Size: early negotiation blocksize (16, 32, 64, 128, 256, 512, or 1024)
   Future<CoapResponse> get(
     String path, {
     int accept = CoapMediaType.textPlain,
     int type = CoapMessageType.con,
     List<CoapOption>? options,
-    int block2Size = 0,
+    bool earlyBlock2Negotiation = false,
     int maxRetransmit = 0,
     Duration? timeout,
     CoapMulticastResponseHandler? onMulticastResponse,
   }) {
     final request = CoapRequest.newGet();
-    _build(request, path, accept, type, options, block2Size, maxRetransmit);
+    _build(request, path, accept, type, options, earlyBlock2Negotiation,
+        maxRetransmit);
     return send(request,
         timeout: timeout, onMulticastResponse: onMulticastResponse);
   }
 
   /// Sends a POST request.
-  /// block2Size: early negotiation blocksize (16, 32, 64, 128, 256, 512, or 1024)
   Future<CoapResponse> post(
     String path, {
     required String payload,
@@ -111,19 +110,19 @@ class CoapClient {
     int accept = CoapMediaType.textPlain,
     int type = CoapMessageType.con,
     List<CoapOption>? options,
-    int block2Size = 0,
+    bool earlyBlock2Negotiation = false,
     int maxRetransmit = 0,
     Duration? timeout,
     CoapMulticastResponseHandler? onMulticastResponse,
   }) {
     final request = CoapRequest.newPost()..setPayloadMedia(payload, format);
-    _build(request, path, accept, type, options, block2Size, maxRetransmit);
+    _build(request, path, accept, type, options, earlyBlock2Negotiation,
+        maxRetransmit);
     return send(request,
         timeout: timeout, onMulticastResponse: onMulticastResponse);
   }
 
   /// Sends a POST request with the specified byte payload.
-  /// block2Size: early negotiation blocksize (16, 32, 64, 128, 256, 512, or 1024)
   Future<CoapResponse> postBytes(
     String path, {
     required typed.Uint8Buffer payload,
@@ -131,19 +130,19 @@ class CoapClient {
     int accept = CoapMediaType.textPlain,
     int type = CoapMessageType.con,
     List<CoapOption>? options,
-    int block2Size = 0,
+    bool earlyBlock2Negotiation = false,
     Duration? timeout,
     int maxRetransmit = 0,
     CoapMulticastResponseHandler? onMulticastResponse,
   }) {
     final request = CoapRequest.newPost()..setPayloadMediaRaw(payload, format);
-    _build(request, path, accept, type, options, block2Size, maxRetransmit);
+    _build(request, path, accept, type, options, earlyBlock2Negotiation,
+        maxRetransmit);
     return send(request,
         timeout: timeout, onMulticastResponse: onMulticastResponse);
   }
 
   /// Sends a PUT request.
-  /// block2Size: early negotiation blocksize (16, 32, 64, 128, 256, 512, or 1024)
   Future<CoapResponse> put(
     String path, {
     required String payload,
@@ -153,20 +152,20 @@ class CoapClient {
     List<typed.Uint8Buffer>? etags,
     MatchEtags matchEtags = MatchEtags.onMatch,
     List<CoapOption>? options,
-    int block2Size = 0,
+    bool earlyBlock2Negotiation = false,
     int maxRetransmit = 0,
     Duration? timeout,
     CoapMulticastResponseHandler? onMulticastResponse,
   }) {
     final request = CoapRequest.newPut()..setPayloadMedia(payload, format);
-    _build(request, path, accept, type, options, block2Size, maxRetransmit,
+    _build(request, path, accept, type, options, earlyBlock2Negotiation,
+        maxRetransmit,
         etags: etags, matchEtags: matchEtags);
     return send(request,
         timeout: timeout, onMulticastResponse: onMulticastResponse);
   }
 
   /// Sends a PUT request with the specified byte payload.
-  /// block2Size: early negotiation blocksize (16, 32, 64, 128, 256, 512, or 1024)
   Future<CoapResponse> putBytes(
     String path, {
     required typed.Uint8Buffer payload,
@@ -176,32 +175,33 @@ class CoapClient {
     int accept = CoapMediaType.textPlain,
     int type = CoapMessageType.con,
     List<CoapOption>? options,
-    int block2Size = 0,
+    bool earlyBlock2Negotiation = false,
     int maxRetransmit = 0,
     Duration? timeout,
     CoapMulticastResponseHandler? onMulticastResponse,
   }) {
     final request = CoapRequest.newPut()..setPayloadMediaRaw(payload, format);
-    _build(request, path, accept, type, options, block2Size, maxRetransmit,
+    _build(request, path, accept, type, options, earlyBlock2Negotiation,
+        maxRetransmit,
         etags: etags, matchEtags: matchEtags);
     return send(request,
         timeout: timeout, onMulticastResponse: onMulticastResponse);
   }
 
   /// Sends a DELETE request
-  /// block2Size: early negotiation blocksize (16, 32, 64, 128, 256, 512, or 1024)
   Future<CoapResponse> delete(
     String path, {
     int accept = CoapMediaType.textPlain,
     int type = CoapMessageType.con,
     List<CoapOption>? options,
-    int block2Size = 0,
+    bool earlyBlock2Negotiation = false,
     int maxRetransmit = 0,
     Duration? timeout,
     CoapMulticastResponseHandler? onMulticastResponse,
   }) {
     final request = CoapRequest.newDelete();
-    _build(request, path, accept, type, options, block2Size, maxRetransmit);
+    _build(request, path, accept, type, options, earlyBlock2Negotiation,
+        maxRetransmit);
     return send(request,
         timeout: timeout, onMulticastResponse: onMulticastResponse);
   }
@@ -303,7 +303,7 @@ class CoapClient {
     int accept,
     int type,
     List<CoapOption>? options,
-    int block2Size,
+    bool earlyBlock2Negotiation,
     int maxRetransmit, {
     MatchEtags matchEtags = MatchEtags.onMatch,
     List<typed.Uint8Buffer>? etags,
@@ -325,8 +325,10 @@ class CoapClient {
           etags.forEach(request.addIfNoneMatchOpaque);
       }
     }
-    if (block2Size != 0) {
-      request.setBlock2(CoapBlockOption.encodeSZX(block2Size), 0, m: false);
+    if (earlyBlock2Negotiation) {
+      request.setBlock2(
+          CoapBlockOption.encodeSZX(_config.preferredBlockSize), 0,
+          m: false);
     }
   }
 

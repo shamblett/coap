@@ -11,7 +11,7 @@ ackRandomFactor: 1.5
 ackTimeoutScale: 2.0
 maxRetransmit: 8
 maxMessageSize: 1024
-defaultBlockSize: 512
+preferredBlockSize: 512
 blockwiseStatusLifetime: 60000 # ms
 useRandomIDStart: true
 notificationMaxAge: 128000 # ms

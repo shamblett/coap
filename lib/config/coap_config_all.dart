@@ -35,7 +35,7 @@ class CoapConfigAll extends DefaultCoapConfig {
   int get maxMessageSize => 8;
 
   @override
-  int get defaultBlockSize => 9;
+  int get preferredBlockSize => 9;
 
   @override
   int get blockwiseStatusLifetime => 10;

@@ -12,12 +12,12 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
   /// Constructs a blockwise layer.
   CoapBlockwiseLayer(DefaultCoapConfig config) {
     _maxMessageSize = config.maxMessageSize;
-    _defaultBlockSize = config.defaultBlockSize;
+    _preferredBlockSize = config.preferredBlockSize;
     _blockTimeout = config.blockwiseStatusLifetime;
   }
 
   late int _maxMessageSize;
-  late int _defaultBlockSize;
+  late int _preferredBlockSize;
   late int _blockTimeout;
 
   @override
@@ -358,7 +358,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     var status = exchange.requestBlockStatus;
     if (status == null) {
       status = CoapBlockwiseStatus(request.contentType);
-      status.currentSZX = CoapBlockOption.encodeSZX(_defaultBlockSize);
+      status.currentSZX = CoapBlockOption.encodeSZX(_preferredBlockSize);
       exchange.requestBlockStatus = status;
     }
     // sets a timeout to complete exchange
@@ -422,7 +422,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     var status = exchange.responseBlockStatus;
     if (status == null || exchange is CoapMulticastExchange) {
       status = CoapBlockwiseStatus(response!.contentType);
-      status.currentSZX = CoapBlockOption.encodeSZX(_defaultBlockSize);
+      status.currentSZX = CoapBlockOption.encodeSZX(_preferredBlockSize);
       final blockOptions = response.getOptions(optionTypeBlock2)!;
       status.currentNUM = blockOptions.toList()[0].value;
       status.complete = false;

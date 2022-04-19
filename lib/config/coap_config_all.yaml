@@ -13,7 +13,7 @@ ackRandomFactor: 5.0
 ackTimeoutScale: 6.0
 maxRetransmit: 7
 maxMessageSize: 8
-defaultBlockSize: 9
+preferredBlockSize: 9
 blockwiseStatusLifetime: 10
 useRandomIDStart: false
 notificationMaxAge: 11

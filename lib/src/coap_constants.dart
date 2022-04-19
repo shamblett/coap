@@ -57,9 +57,9 @@ class CoapConstants {
   static const int maxRetransmit = 8;
 
   ///
-  /// Default block size used for block-wise transfers
+  /// Default preferred size used for block-wise transfers
   ///
-  static const int defaultBlockSize = 512;
+  static const int preferredBlockSize = 512;
 
   ///
   /// Message cache size
