@@ -288,7 +288,7 @@ class CoapMessage {
   typed.Uint8Buffer? payload;
 
   /// The size of the payload of this CoAP message.
-  int get payloadSize => payload == null ? 0 : payload!.length;
+  int get payloadSize => payload?.length ?? 0;
 
   /// The payload of this CoAP message in string representation.
   String? get payloadString {
@@ -830,7 +830,7 @@ class CoapMessage {
   /// Content type
   int get contentType {
     final opt = getFirstOption(optionTypeContentType);
-    return opt == null ? CoapMediaType.undefined : opt.value;
+    return opt?.value ?? CoapMediaType.undefined;
   }
 
   set contentType(int value) {
@@ -850,7 +850,7 @@ class CoapMessage {
   /// The max-age of this CoAP message.
   int get maxAge {
     final opt = getFirstOption(optionTypeMaxAge);
-    return opt == null ? CoapConstants.defaultMaxAge : opt.value;
+    return opt?.value ?? CoapConstants.defaultMaxAge;
   }
 
   set maxAge(int value) {
@@ -867,7 +867,7 @@ class CoapMessage {
   /// Accept
   int get accept {
     final opt = getFirstOption(optionTypeAccept);
-    return opt == null ? CoapMediaType.undefined : opt.value;
+    return opt?.value ?? CoapMediaType.undefined;
   }
 
   set accept(int value) {
@@ -919,7 +919,7 @@ class CoapMessage {
   /// Observe
   int? get observe {
     final opt = getFirstOption(optionTypeObserve);
-    return opt == null ? -1 : opt.value;
+    return opt?.value ?? -1;
   }
 
   @protected
@@ -940,7 +940,7 @@ class CoapMessage {
   /// Size 1
   int get size1 {
     final opt = getFirstOption(optionTypeSize1);
-    return opt == null ? 0 : opt.value;
+    return opt?.value ?? 0;
   }
 
   set size1(int? value) {
@@ -954,7 +954,7 @@ class CoapMessage {
   /// Size 2
   int? get size2 {
     final opt = getFirstOption(optionTypeSize2);
-    return opt == null ? 0 : opt.value;
+    return opt?.value ?? 0;
   }
 
   set size2(int? value) {

@@ -94,8 +94,7 @@ class CoapExchange {
   CoapIOutbox? _outbox;
 
   /// Outbox
-  CoapIOutbox? get outbox =>
-      _outbox ?? (endpoint == null ? null : endpoint!.outbox);
+  CoapIOutbox? get outbox => _outbox ?? endpoint?.outbox;
 
   set outbox(CoapIOutbox? value) => _outbox = value;
 
@@ -228,7 +227,7 @@ class CoapKeyToken {
 class CoapKeyUri {
   /// Construction
   CoapKeyUri(this._uri, this._endpoint) {
-    _hash = _uri.hashCode * 31 + (_endpoint == null ? 0 : _endpoint.hashCode);
+    _hash = _uri.hashCode * 31 + (_endpoint?.hashCode ?? 0);
   }
 
   final Uri _uri;
