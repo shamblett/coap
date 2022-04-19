@@ -28,7 +28,7 @@ void main() {
     test('Negotiation Content', () {
       const defaultContentType = 10;
       final supported = <int>[11, 5];
-      var accepted = <CoapOption>[];
+      final accepted = <CoapOption>[];
       final opt1 = CoapOption.createVal(optionTypeMaxAge, 10);
       final opt2 = CoapOption.createVal(optionTypeContentFormat, 5);
       accepted.add(opt1);

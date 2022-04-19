@@ -288,8 +288,7 @@ class CoapMediaType {
       return null;
     }
     final res = <int>[];
-    var regex1 = regex.trim().substring(0, regex.indexOf('*')).trim();
-    regex1 += '.*';
+    final regex1 = regex.substring(0, regex.indexOf('*')).trim() + '.*';
     final r = RegExp(regex1);
     _registry.forEach((int key, List<String> value) {
       final mime = value[0];

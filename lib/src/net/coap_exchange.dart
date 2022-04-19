@@ -186,7 +186,7 @@ class CoapKeyId {
   @override
   bool operator ==(Object other) {
     if (other is CoapKeyId) {
-      return (_id == other._id) && (_hash == other._hash);
+      return _id == other._id && _hash == other._hash;
     }
     return false;
   }
@@ -241,7 +241,7 @@ class CoapKeyUri {
   @override
   bool operator ==(Object other) {
     if (other is CoapKeyUri) {
-      return (_uri == other._uri) && (_endpoint == other._endpoint);
+      return _uri == other._uri && _endpoint == other._endpoint;
     }
     return false;
   }

@@ -179,8 +179,7 @@ class CoapOption {
   @override
   int get hashCode {
     const prime = 31;
-    var result = 1;
-    return result = prime * result + _type;
+    return prime + _type;
   }
 
   @override
@@ -268,22 +267,17 @@ class CoapOption {
 
   /// Joins the string values of a set of options.
   static String? join(List<CoapOption>? options, String delimiter) {
-    String? s;
-    if (null == options) {
-      return s;
-    } else {
-      final sb = StringBuffer();
-      var append = false;
-      for (final opt in options) {
-        if (append) {
-          sb.write(delimiter);
-        } else {
-          append = true;
-        }
-        sb.write(opt.stringValue);
-      }
-      return sb.toString();
+    if (options == null) {
+      return null;
     }
+    final sb = StringBuffer();
+    for (final opt in options) {
+      if (opt != options.first) {
+        sb.write(delimiter);
+      }
+      sb.write(opt.stringValue);
+    }
+    return sb.toString();
   }
 
   /// Returns a string representation of the option type.

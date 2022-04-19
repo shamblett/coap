@@ -294,7 +294,7 @@ class CoapMatcher implements CoapIMatcher {
   void _removeNotificatoinsOf(CoapObserveRelation relation) {
     for (final previous in relation.clearNotifications()) {
       // Notifications are local MID namespace
-      var keyId = CoapKeyId(previous!.id);
+      final keyId = CoapKeyId(previous!.id);
       _exchangesById.remove(keyId);
     }
   }

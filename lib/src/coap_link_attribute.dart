@@ -62,10 +62,8 @@ class CoapLinkAttribute {
   @override
   bool operator ==(Object other) {
     if (other is CoapLinkAttribute) {
-      if (_name == other.name) {
-        if (_value == other.value) {
-          return true;
-        }
+      if (_name == other.name && _value == other.value) {
+        return true;
       }
     }
     return false;

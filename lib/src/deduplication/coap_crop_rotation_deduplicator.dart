@@ -44,7 +44,7 @@ class CoapCropRotationDeduplicator implements CoapIDeduplicator {
       prev = _maps[_first][key];
     }
     _maps[_first][key] = exchange;
-    if ((prev != null) || (_first == _second)) {
+    if (prev != null || _first == _second) {
       return prev;
     }
     if (_maps[_second].containsKey(key)) {
@@ -56,7 +56,7 @@ class CoapCropRotationDeduplicator implements CoapIDeduplicator {
 
   @override
   CoapExchange? find(CoapKeyId key) {
-    if ((_maps[_first].containsKey(key)) || (_first == _second)) {
+    if (_maps[_first].containsKey(key) || _first == _second) {
       return _maps[_first][key];
     }
     if (_maps[_second].containsKey(key)) {

@@ -45,7 +45,7 @@ FutureOr main() async {
 
     print('Sending 10 sync requests...');
     for (var i = 0; i < 10; i++) {
-      var resp = await client.get('test');
+      final resp = await client.get('test');
       if (resp.code != CoapCode.content) {
         print('Request failed!');
       }

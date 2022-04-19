@@ -25,7 +25,7 @@ FutureOr<void> main(List<String> args) async {
     final helloRespFuture = client.get('hello');
 
     print('Sending async get /doesNotExist to ${uri.host}');
-    var ignoreThisFuture = client.send(cancelThisReq);
+    final ignoreThisFuture = client.send(cancelThisReq);
 
     print('Cancelling get /doesNotExist retries');
     client.cancel(cancelThisReq);

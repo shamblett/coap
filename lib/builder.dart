@@ -62,7 +62,7 @@ String _generateDataScript(YamlMap data) {
   for (final k in data.keys) {
     buff.writeln('  @override');
     if (data[k] is String) {
-      if ('true' == data[k] || 'false' == data[k]) {
+      if (data[k] == 'true' || data[k] == 'false') {
         buff.writeln('  bool get $k => ${data[k]};');
         continue;
       }

@@ -288,7 +288,7 @@ class CoapMessage {
   typed.Uint8Buffer? payload;
 
   /// The size of the payload of this CoAP message.
-  int get payloadSize => null == payload ? 0 : payload!.length;
+  int get payloadSize => payload == null ? 0 : payload!.length;
 
   /// The payload of this CoAP message in string representation.
   String? get payloadString {
@@ -540,9 +540,9 @@ class CoapMessage {
 
   /// URI path
   String get uriPath {
-    var join = CoapOption.join(
+    final join = CoapOption.join(
         getOptions(optionTypeUriPath) as List<CoapOption>?, '/')!;
-    return join += '/';
+    return join + '/';
   }
 
   /// Sets a number of Uri path options from a string, ignores any trailing / character
@@ -830,7 +830,7 @@ class CoapMessage {
   /// Content type
   int get contentType {
     final opt = getFirstOption(optionTypeContentType);
-    return (null == opt) ? CoapMediaType.undefined : opt.value;
+    return opt == null ? CoapMediaType.undefined : opt.value;
   }
 
   set contentType(int value) {
@@ -850,7 +850,7 @@ class CoapMessage {
   /// The max-age of this CoAP message.
   int get maxAge {
     final opt = getFirstOption(optionTypeMaxAge);
-    return (null == opt) ? CoapConstants.defaultMaxAge : opt.value;
+    return opt == null ? CoapConstants.defaultMaxAge : opt.value;
   }
 
   set maxAge(int value) {
@@ -867,7 +867,7 @@ class CoapMessage {
   /// Accept
   int get accept {
     final opt = getFirstOption(optionTypeAccept);
-    return (null == opt) ? CoapMediaType.undefined : opt.value;
+    return opt == null ? CoapMediaType.undefined : opt.value;
   }
 
   set accept(int value) {

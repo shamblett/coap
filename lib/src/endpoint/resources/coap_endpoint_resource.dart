@@ -112,19 +112,14 @@ abstract class CoapEndpointResource {
 
   /// Gets the URI of this resource.
   String get path {
-    var sb = StringBuffer();
-    sb.write(name);
     if (_parent == null) {
-      sb.write('/');
-    } else {
-      var res = _parent;
-      while (res != null) {
-        final tmp = StringBuffer('${res.name}/${sb.toString()}');
-        sb = tmp;
-        res = res._parent;
-      }
+      return '/$name';
     }
-    return sb.toString();
+    var names = [name];
+    for (var res = _parent; res != null; res = res._parent) {
+      names.add(res.name);
+    }
+    return names.reversed.join('/');
   }
 
   /// Attributes
@@ -187,7 +182,7 @@ abstract class CoapEndpointResource {
 
   /// Removes a sub-resource from this resource.
   void removeSubResource(CoapEndpointResource? resource) {
-    if (null == resource) {
+    if (resource == null) {
       return;
     }
     if ((_subResources.remove(resource.name)) != null) {
