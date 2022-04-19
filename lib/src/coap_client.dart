@@ -67,14 +67,14 @@ class CoapClient {
   final Uri uri;
 
   /// The default request timeout
-  late Duration timeout;
+  Duration timeout;
 
   final DefaultCoapConfig _config;
   CoapIEndPoint? _endpoint;
   String get _namespace => hashCode.toString();
   final _lock = sync.Lock();
 
-  /// Performs a CoAP ping and gives up after the given number of milliseconds.
+  /// Performs a CoAP ping and gives up after the given timeout.
   Future<bool> ping({Duration? timeout}) async {
     final request = CoapRequest(CoapCode.empty, confirmable: true);
     request.token = CoapConstants.emptyToken;

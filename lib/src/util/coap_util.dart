@@ -9,14 +9,12 @@ part of coap;
 
 /// Cancellable asynchronous sleep support class
 class CoapCancellableAsyncSleep {
-  /// Timeout value in milliseconds
   CoapCancellableAsyncSleep(this._timeout);
 
-  /// Millisecond timeout
-  final int _timeout;
+  final Duration _timeout;
 
   /// Timeout
-  int get timeout => _timeout;
+  Duration get timeout => _timeout;
 
   /// The completer
   final Completer<void> _completer = Completer<void>();
@@ -33,7 +31,7 @@ class CoapCancellableAsyncSleep {
   /// Start the timer
   Future<void> sleep() {
     if (!_running) {
-      _timer = Timer(Duration(milliseconds: _timeout), _timerCallback);
+      _timer = Timer(_timeout, _timerCallback);
       _running = true;
     }
     return _completer.future;
@@ -182,11 +180,6 @@ class CoapUtil {
   static RegExp regIP = RegExp(
       r'(\\[[0-9a-f:]+\\]|[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})',
       caseSensitive: false);
-
-  /// Sleep function that allows asynchronous activity to continue.
-  /// Time units are milliseconds
-  static Future<void> asyncSleep(int milliseconds) =>
-      Future<void>.delayed(Duration(milliseconds: milliseconds));
 
   /// Puts a value associated with a key into a Map,
   /// and returns the old value, or null if not exists.

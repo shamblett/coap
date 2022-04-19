@@ -316,9 +316,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           assembled.type = response.type;
 
           // Set overall transfer RTT
-          assembled.rtt = (DateTime.now().difference(exchange.timestamp!))
-              .inMilliseconds
-              .toDouble();
+          assembled.rtt = DateTime.now().difference(exchange.timestamp!);
 
           // Check if this response is a notification
           final observe = status.observe;

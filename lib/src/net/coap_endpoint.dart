@@ -133,9 +133,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
       if (!response.isCancelled) {
         final exchange = _matcher.receiveResponse(response);
         if (exchange != null) {
-          response.rtt =
-              ((DateTime.now().difference(exchange.timestamp!)).inMilliseconds)
-                  .toDouble();
+          response.rtt = DateTime.now().difference(exchange.timestamp!);
           exchange.endpoint = this;
           _coapStack.receiveResponse(exchange, response);
         } else if (response.type != CoapMessageType.ack) {

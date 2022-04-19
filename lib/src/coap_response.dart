@@ -22,12 +22,12 @@ class CoapResponse extends CoapMessage {
   /// Status code as a string
   String get statusCodeString => CoapCode.codeToString(_statusCode);
 
-  double? _rtt;
+  Duration? _rtt;
 
   /// The Round-Trip Time of this response.
-  double? get rtt => _rtt;
+  Duration? get rtt => _rtt;
   @protected
-  set rtt(double? val) => _rtt = val;
+  set rtt(Duration? val) => _rtt = val;
 
   bool _last = true;
 
