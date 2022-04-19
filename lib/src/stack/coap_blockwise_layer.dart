@@ -57,7 +57,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       final block1 = request.block1!;
 
       var status = _findRequestBlockStatus(exchange, request);
-      if (block1.num == 0 && status.currentNUM! > 0) {
+      if (block1.num == 0 && status.currentNUM > 0) {
         // Reset the blockwise transfer
         status = CoapBlockwiseStatus(request.contentType);
         exchange.requestBlockStatus = status;
@@ -79,7 +79,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           return;
         }
 
-        status.currentNUM = status.currentNUM! + 1;
+        status.currentNUM++;
         if (block1.m) {
           final piggybacked =
               CoapResponse.createResponse(request, CoapCode.continues);
@@ -189,9 +189,9 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       CoapBlockwiseStatus? oldBlockwiseStatus, int currentSZX) {
     final newStatus = CoapBlockwiseStatus.withSize(
         oldBlockwiseStatus?.contentFormat,
-        oldBlockwiseStatus?.currentNUM,
+        oldBlockwiseStatus!.currentNUM,
         currentSZX);
-    newStatus.blocks = oldBlockwiseStatus!.blocks;
+    newStatus.blocks = oldBlockwiseStatus.blocks;
     return newStatus;
   }
 
@@ -236,7 +236,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
         // Send next block
         final currentSize = 1 << (4 + status.currentSZX);
         final nextNum =
-            (status.currentNUM! + currentSize / block1.size()).toInt();
+            (status.currentNUM + currentSize / block1.size()).toInt();
         status.currentNUM = nextNum;
         status.currentSZX = block1.szx;
         final nextBlock = _getNextRequestBlock(exchange.request!, status);
@@ -261,7 +261,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     if (block2 != null) {
       var status = _findResponseBlockStatus(exchange, response);
       final blockStatus = CoapBlockOption(optionTypeBlock2);
-      blockStatus.rawValue = status.currentNUM!;
+      blockStatus.rawValue = status.currentNUM;
       if (block2.num == blockStatus.num) {
         // We got the block we expected
         status.addBlock(response.payload);
@@ -370,7 +370,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
 
   CoapRequest _getNextRequestBlock(
       CoapRequest request, CoapBlockwiseStatus status) {
-    final num = status.currentNUM!;
+    final num = status.currentNUM;
     final szx = status.currentSZX;
     final block = CoapRequest(request.method);
     block.endpoint = request.endpoint;
@@ -440,7 +440,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       CoapResponse response, CoapBlockwiseStatus status) {
     CoapResponse block;
     final szx = status.currentSZX;
-    final num = status.currentNUM!;
+    final num = status.currentNUM;
 
     if (response.hasOption(optionTypeObserve)) {
       // A blockwise notification transmits the first block only
