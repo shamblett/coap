@@ -14,7 +14,7 @@ class CoapObserveRelation {
   /// The observing endpoint
   /// The observed resource
   /// The exchange that tries to establish the observe relation
-  CoapObserveRelation(this.cfg, CoapObservingEndpoint endpoint,
+  CoapObserveRelation(this.config, CoapObservingEndpoint endpoint,
       CoapIResource resource, CoapExchange exchange) {
     _endpoint = endpoint;
     _resource = resource;
@@ -22,7 +22,7 @@ class CoapObserveRelation {
     _key = '$source#${exchange.request!.tokenString}';
   }
 
-  DefaultCoapConfig cfg;
+  DefaultCoapConfig config;
 
   late CoapObservingEndpoint _endpoint;
 
@@ -86,10 +86,10 @@ class CoapObserveRelation {
     final now = DateTime.now();
     check = check ||
         _interestCheckTime
-            .add(Duration(milliseconds: cfg.notificationCheckIntervalTime))
+            .add(Duration(milliseconds: config.notificationCheckIntervalTime))
             .isBefore(now);
     check = check ||
-        (++_interestCheckCounter >= cfg.notificationCheckIntervalCount);
+        (++_interestCheckCounter >= config.notificationCheckIntervalCount);
     if (check) {
       _interestCheckTime = now;
       _interestCheckCounter = 0;
