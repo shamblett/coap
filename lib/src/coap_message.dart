@@ -21,12 +21,6 @@ class CoapMessage {
   /// Indicates that no ID has been set.
   static const int none = -1;
 
-  /// Initial message id limit
-  static const int initialIdLimit = 32767;
-
-  /// Invalid message ID.
-  static const int invalidID = none;
-
   /// The type of this CoAP message.
   int type = CoapMessageType.unknown;
 
