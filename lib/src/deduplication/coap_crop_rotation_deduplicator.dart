@@ -11,10 +11,9 @@ part of coap;
 class CoapCropRotationDeduplicator implements CoapIDeduplicator {
   /// Construction
   CoapCropRotationDeduplicator(this._config)
-      : _maps = List<Map<CoapKeyId, CoapExchange>>.filled(
-            3, <CoapKeyId, CoapExchange>{});
+      : _maps = List<Map<int?, CoapExchange>>.filled(3, <int?, CoapExchange>{});
 
-  final List<Map<CoapKeyId, CoapExchange>> _maps;
+  final List<Map<int?, CoapExchange>> _maps;
   int _first = 0;
   int _second = 1;
   late Timer _timer;
@@ -38,7 +37,7 @@ class CoapCropRotationDeduplicator implements CoapIDeduplicator {
   }
 
   @override
-  CoapExchange? findPrevious(CoapKeyId key, CoapExchange exchange) {
+  CoapExchange? findPrevious(int? key, CoapExchange exchange) {
     CoapExchange? prev;
     if (_maps[_first].containsKey(key)) {
       prev = _maps[_first][key];
@@ -55,7 +54,7 @@ class CoapCropRotationDeduplicator implements CoapIDeduplicator {
   }
 
   @override
-  CoapExchange? find(CoapKeyId key) {
+  CoapExchange? find(int? key) {
     if (_maps[_first].containsKey(key) || _first == _second) {
       return _maps[_first][key];
     }

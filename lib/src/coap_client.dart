@@ -224,7 +224,7 @@ class CoapClient {
       ..observe = 0
       ..maxRetransmit = maxRetransmit;
     await _prepare(request);
-    final relation = CoapObserveClientRelation(request, _config);
+    final relation = CoapObserveClientRelation(request);
     unawaited(() async {
       _endpoint!.sendEpRequest(request);
       final response = await _waitForResponse(request, timeout ?? this.timeout);

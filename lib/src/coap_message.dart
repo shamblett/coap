@@ -148,8 +148,8 @@ class CoapMessage {
   typed.Uint8Buffer? get token => _token;
 
   /// As a string
-  String? get tokenString =>
-      _token != null ? CoapByteArrayUtil.toHexString(_token!) : null;
+  String get tokenString =>
+      _token != null ? CoapByteArrayUtil.toHexString(_token!) : '';
 
   set token(typed.Uint8Buffer? value) {
     if (value != null && value.length > 8) {
@@ -337,9 +337,9 @@ class CoapMessage {
   @override
   String toString() => '\nType: ${type.toString()}, Code: $codeString, '
       'Id: ${id.toString()}, '
-      'Token: $tokenString, '
-      '\nOptions =\n[\n${CoapUtil.optionsToString(this)}], '
-      '\nPayload :\n$payloadString';
+      'Token: \'$tokenString\',\n'
+      'Options: ${CoapUtil.optionsToString(this)},\n'
+      'Payload: $payloadString';
 
   /// Select options helper
   Iterable<CoapOption> _selectOptions(int optionType) {
@@ -376,7 +376,7 @@ class CoapMessage {
       final opt = CoapUtil.firstOrDefault(
           list,
           (CoapOption o) =>
-              CoapUtil.areSequenceEqualTo(opaque, o.valueBytes, equality));
+              CoapUtil.areSequenceEqualTo(opaque, o.byteValue, equality));
       if (opt != null) {
         _optionMap[optionTypeIfMatch]!.remove(opt);
         if (_optionMap[optionTypeIfMatch]!.isEmpty) {
@@ -409,7 +409,7 @@ class CoapMessage {
   /// Contains an opaque E-tag
   bool containsETagOpaque(typed.Uint8Buffer what) => CoapUtil.contains(
       getOptions(optionTypeETag)!,
-      (CoapOption o) => CoapUtil.areSequenceEqualTo(what, o.valueBytes));
+      (CoapOption o) => CoapUtil.areSequenceEqualTo(what, o.byteValue));
 
   /// Add an opaque ETag
   CoapMessage addETagOpaque(typed.Uint8Buffer? opaque) {
@@ -443,7 +443,7 @@ class CoapMessage {
       final opt = CoapUtil.firstOrDefault(
           list,
           (CoapOption o) =>
-              CoapUtil.areSequenceEqualTo(opaque, o.valueBytes, equality));
+              CoapUtil.areSequenceEqualTo(opaque, o.byteValue, equality));
       if (opt != null) {
         _optionMap[optionTypeETag]!.remove(opt);
         if (_optionMap[optionTypeETag]!.isEmpty) {
@@ -493,7 +493,7 @@ class CoapMessage {
       final opt = CoapUtil.firstOrDefault(
           list,
           (CoapOption o) =>
-              CoapUtil.areSequenceEqualTo(opaque, o.valueBytes, equality));
+              CoapUtil.areSequenceEqualTo(opaque, o.byteValue, equality));
       if (opt != null) {
         _optionMap[optionTypeIfNoneMatch]!.remove(opt);
         if (_optionMap[optionTypeIfNoneMatch]!.isEmpty) {
@@ -562,14 +562,12 @@ class CoapMessage {
   String get uriPathsString {
     final sb = StringBuffer();
     for (final option in uriPaths) {
-      sb.write('${option.stringValue}/');
+      sb.write(option.stringValue);
+      if (option != uriPaths.last) {
+        sb.write('/');
+      }
     }
-    final out = sb.toString();
-    if (out.isNotEmpty) {
-      return out.substring(0, out.length - 1);
-    } else {
-      return out;
-    }
+    return sb.toString();
   }
 
   /// Add a URI path
@@ -626,14 +624,12 @@ class CoapMessage {
   String get uriQueriesString {
     final sb = StringBuffer();
     for (final option in uriQueries) {
-      sb.write('${option.stringValue}&');
+      sb.write(option.stringValue);
+      if (option != uriQueries.last) {
+        sb.write('&');
+      }
     }
-    final out = sb.toString();
-    if (out.isNotEmpty) {
-      return '?${out.substring(0, out.length - 1)}';
-    } else {
-      return '?$out';
-    }
+    return '?${sb.toString()}';
   }
 
   /// Add a URI query
@@ -688,14 +684,12 @@ class CoapMessage {
   String get locationPathsString {
     final sb = StringBuffer();
     for (final option in locationPaths) {
-      sb.write('${option.stringValue}/');
+      sb.write(option.stringValue);
+      if (option != locationPaths.last) {
+        sb.write('/');
+      }
     }
-    final out = sb.toString();
-    if (out.isNotEmpty) {
-      return out.substring(0, out.length - 1);
-    } else {
-      return out;
-    }
+    return sb.toString();
   }
 
   /// Set the location path from a string
@@ -780,14 +774,12 @@ class CoapMessage {
   String get locationQueriesString {
     final sb = StringBuffer();
     for (final option in locationQueries) {
-      sb.write('${option.stringValue}&');
+      sb.write(option.stringValue);
+      if (option != locationQueries.last) {
+        sb.write('&');
+      }
     }
-    final out = sb.toString();
-    if (out.isNotEmpty) {
-      return '?${out.substring(0, out.length - 1)}';
-    } else {
-      return '?$out';
-    }
+    return '?${sb.toString()}';
   }
 
   /// Add a location query
@@ -919,7 +911,7 @@ class CoapMessage {
   /// Observe
   int? get observe {
     final opt = getFirstOption(optionTypeObserve);
-    return opt?.value ?? -1;
+    return opt?.value;
   }
 
   @protected

@@ -99,7 +99,7 @@ class CoapConstants {
   ///
   /// Empty token
   ///
-  static typed.Uint8Buffer emptyToken = typed.Uint8Buffer(1);
+  static typed.Uint8Buffer emptyToken = typed.Uint8Buffer(0);
 
   ///
   /// The lowest value of a request code.

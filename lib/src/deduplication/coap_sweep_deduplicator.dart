@@ -14,8 +14,7 @@ class CoapSweepDeduplicator implements CoapIDeduplicator {
     _config = config;
   }
 
-  final Map<CoapKeyId, CoapExchange> _incomingMessages =
-      <CoapKeyId, CoapExchange>{};
+  final Map<int?, CoapExchange> _incomingMessages = <int?, CoapExchange>{};
   Timer? _timer;
   late DefaultCoapConfig _config;
 
@@ -38,7 +37,7 @@ class CoapSweepDeduplicator implements CoapIDeduplicator {
   }
 
   @override
-  CoapExchange? findPrevious(CoapKeyId key, CoapExchange exchange) {
+  CoapExchange? findPrevious(int? key, CoapExchange exchange) {
     CoapExchange? prev;
     if (_incomingMessages.containsKey(key)) {
       prev = _incomingMessages[key];
@@ -48,7 +47,7 @@ class CoapSweepDeduplicator implements CoapIDeduplicator {
   }
 
   @override
-  CoapExchange? find(CoapKeyId key) {
+  CoapExchange? find(int? key) {
     if (_incomingMessages.containsKey(key)) {
       return _incomingMessages[key];
     }
@@ -58,12 +57,7 @@ class CoapSweepDeduplicator implements CoapIDeduplicator {
   void _sweep(Timer timer) {
     final oldestAllowed = DateTime.now()
       ..add(Duration(milliseconds: _config.exchangeLifetime));
-    final keysToRemove = <CoapKeyId>[];
-    _incomingMessages.forEach((CoapKeyId key, CoapExchange value) {
-      if (value.timestamp!.isBefore(oldestAllowed)) {
-        keysToRemove.add(key);
-      }
-    });
-    keysToRemove.forEach(_incomingMessages.remove);
+    _incomingMessages.removeWhere((int? key, CoapExchange value) =>
+        value.timestamp!.isBefore(oldestAllowed));
   }
 }

@@ -146,10 +146,7 @@ class CoapLinkFormat {
   }
 
   static void _serializeResource(CoapIResource resource, StringBuffer sb) {
-    sb.write('<');
-    sb.write(resource.path);
-    sb.write(resource.name);
-    sb.write('>');
+    sb.write('<${resource.path}${resource.name}>');
     _serializeAttributes(resource.attributes!, sb);
   }
 
@@ -169,13 +166,9 @@ class CoapLinkFormat {
 
   static void _serializeAttribute(
       String name, Iterable<String?> values, StringBuffer sb) {
-    const delimiter = '=';
     sb.write(name);
     for (final value in values) {
-      sb.write(delimiter);
-      sb.write('"');
-      sb.write(value);
-      sb.write('"');
+      sb.write('="$value"');
     }
   }
 
@@ -189,9 +182,7 @@ class CoapLinkFormat {
     // always skip non-matching resources.
     if ((!resource.hidden && resource.name.isNotEmpty || !recursive) &&
         _matchesOption(resource, query)) {
-      linkFormat.write('<');
-      linkFormat.write(resource.path);
-      linkFormat.write('>');
+      linkFormat.write('<${resource.path}>');
 
       // Reverse the attribute list to re-create the original
       final attrs = resource.attributes.toList().reversed.toList();
@@ -269,7 +260,7 @@ class CoapLinkFormat {
           value ??= 0;
         }
       }
-      return CoapLinkAttribute(name, value);
+      return CoapLinkAttribute(name!, value);
     }
     return null;
   }

@@ -26,7 +26,7 @@ void main() {
     expect(message.optionMap.isEmpty, isTrue);
     expect(message.bindAddress, isNull);
     expect(message.token, isNull);
-    expect(message.tokenString, isNull);
+    expect(message.tokenString, '');
     expect(message.destination, isNull);
     expect(message.source, isNull);
     expect(message.isAcknowledged, isFalse);
@@ -177,7 +177,7 @@ void main() {
     expect(message.ifMatches.length, 2);
     expect(message.ifMatches.toList()[0].stringValue, 'ETag-1');
     expect(message.ifMatches.toList()[1].stringValue, 'ETag-2');
-    message.removeIfMatchOpaque(message.ifMatches.toList()[0].valueBytes);
+    message.removeIfMatchOpaque(message.ifMatches.toList()[0].byteValue);
     expect(message.ifMatches.length, 1);
     expect(message.ifMatches.toList()[0].stringValue, 'ETag-2');
     message.clearIfMatches();
@@ -203,9 +203,9 @@ void main() {
     expect(() => message.addEtag(none), throwsArgumentError);
     message.addEtag(etag1);
     expect(message.etags.length, 1);
-    message.addETagOpaque(etag2.valueBytes);
+    message.addETagOpaque(etag2.byteValue);
     expect(message.etags.length, 2);
-    message.removeETagOpaque(etag2.valueBytes);
+    message.removeETagOpaque(etag2.byteValue);
     expect(message.etags.length, 1);
     expect(message.etags.toList()[0] == etag1, isTrue);
     message.clearETags();
@@ -231,9 +231,9 @@ void main() {
     expect(() => message.addIfNoneMatch(none), throwsArgumentError);
     final inm3 = CoapOption(optionTypeIfNoneMatch);
     inm3.stringValue = 'Inm3';
-    message.addIfNoneMatchOpaque(inm3.valueBytes);
+    message.addIfNoneMatchOpaque(inm3.byteValue);
     expect(message.ifNoneMatches.length, 3);
-    message.removeIfNoneMatchOpaque(inm2.valueBytes);
+    message.removeIfNoneMatchOpaque(inm2.byteValue);
     expect(message.ifNoneMatches.length, 2);
     expect(() => message.removeIfNoneMatch(none), throwsArgumentError);
     message.clearIfNoneMatches();

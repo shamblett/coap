@@ -158,14 +158,12 @@ class CoapEntry<TFilter, TNextFilter>
     // Add the current filter
     sb.write('(');
     sb.write(name);
-    sb.write('\'');
 
     // Add the previous filter
     sb.write(', prev: ');
 
     if (prevEntry != null) {
-      sb.write(prevEntry!.name);
-      sb.write(':');
+      sb.write('${prevEntry!.name}:');
       sb.write(prevEntry!.filter.getType().name);
     } else {
       sb.write('null');
@@ -175,8 +173,7 @@ class CoapEntry<TFilter, TNextFilter>
     sb.write(', next: ');
 
     if (nextEntry != null) {
-      sb.write(nextEntry!.name);
-      sb.write(':');
+      sb.write('${nextEntry!.name}:');
       sb.write(nextEntry!.filter.getType().name);
     } else {
       sb.write('null');

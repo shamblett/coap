@@ -10,17 +10,14 @@ part of coap;
 /// Class for linkformat attributes.
 class CoapLinkAttribute {
   /// Initializes an attribute.
-  CoapLinkAttribute(String? name, Object? value) {
-    _name = name;
-    _value = value;
-  }
+  CoapLinkAttribute(this._name, this._value);
 
-  String? _name;
+  final String _name;
 
   /// Name
-  String? get name => _name;
+  String get name => _name;
 
-  Object? _value;
+  final Object? _value;
 
   /// Value
   Object? get value => _value;
@@ -34,18 +31,15 @@ class CoapLinkAttribute {
   /// Serializes this attribute into its string representation.
   void serialize(StringBuffer builder) {
     // check if there's something to write
-    if (_name != null && _value != null) {
+    if (_value != null) {
       if (_value is bool) {
         // flag attribute
         builder.write(_name);
       } else {
         // name-value-pair
-        builder.write(_name);
-        builder.write('=');
+        builder.write('$_name=');
         if (_value is String) {
-          builder.write('"');
-          builder.write(_value);
-          builder.write('"');
+          builder.write('"$_value"');
         } else if (_value is int) {
           builder.write(_value);
         } else {
@@ -61,14 +55,12 @@ class CoapLinkAttribute {
 
   @override
   bool operator ==(Object other) {
-    if (other is CoapLinkAttribute) {
-      if (_name == other.name && _value == other.value) {
-        return true;
-      }
+    if (other is! CoapLinkAttribute) {
+      return false;
     }
-    return false;
+    return _name == other.name && _value == other.value;
   }
 
   @override
-  int get hashCode => name.hashCode;
+  int get hashCode => _name.hashCode;
 }

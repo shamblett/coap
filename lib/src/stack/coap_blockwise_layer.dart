@@ -348,9 +348,8 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     if (request.method == CoapCode.methodPUT ||
         request.method == CoapCode.methodPOST) {
       return request.payloadSize > _maxMessageSize;
-    } else {
-      return false;
     }
+    return false;
   }
 
   CoapBlockwiseStatus _findRequestBlockStatus(

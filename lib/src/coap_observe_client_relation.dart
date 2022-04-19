@@ -13,14 +13,7 @@ part of coap;
 /// established and to cancel or refresh the relation.
 class CoapObserveClientRelation {
   /// Construction
-  CoapObserveClientRelation(this._request, this._config)
-      : _orderer = CoapObserveNotificationOrderer(_config) {
-    _request.eventBus!
-        .on<CoapReregisteringEvent>()
-        .where((e) => e.resp.token!.equals(_request.token!))
-        .takeWhile((_) => !_request.isTimedOut && !_request.isCancelled)
-        .listen(_onReregister);
-  }
+  CoapObserveClientRelation(this._request);
 
   /// Response stream
   Stream<CoapRespondEvent> get stream => _request.eventBus!
@@ -28,13 +21,7 @@ class CoapObserveClientRelation {
       .where((CoapRespondEvent e) => e.resp.token!.equals(_request.token!))
       .takeWhile((_) => !_request.isTimedOut && !_request.isCancelled);
 
-  final DefaultCoapConfig _config;
   final CoapRequest _request;
-
-  CoapObserveNotificationOrderer _orderer;
-
-  /// Orderer
-  CoapObserveNotificationOrderer? get orderer => _orderer;
 
   bool _cancelled = false;
 
@@ -61,11 +48,5 @@ class CoapObserveClientRelation {
     cancel.copyEventHandler(_request);
 
     return cancel;
-  }
-
-  void _onReregister(CoapReregisteringEvent e) {
-    // Reset orderer to accept any sequence number since server
-    // might have rebooted.
-    _orderer = CoapObserveNotificationOrderer(_config);
   }
 }

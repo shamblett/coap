@@ -45,35 +45,15 @@ class CoapTransmissionContext {
     // Do not retransmit a message if it has been acknowledged,
     // rejected, canceled or already been retransmitted for the maximum
     // number of times.
-    if (_message!.isAcknowledged) {
-      _exchange.timedOut = true;
-      _message!.isTimedOut = true;
-      _exchange.remove(CoapReliabilityLayer.transmissionContextKey);
-      cancel();
-      return;
-    } else if (_message!.isRejected) {
-      _exchange.timedOut = true;
-      _message!.isTimedOut = true;
-      _exchange.remove(CoapReliabilityLayer.transmissionContextKey);
-      cancel();
-      return;
-    } else if (_message!.isCancelled) {
-      _exchange.timedOut = true;
-      _message!.isTimedOut = true;
-      _exchange.remove(CoapReliabilityLayer.transmissionContextKey);
-      cancel();
-      return;
-    } else if (failedTransmissionCount <=
-        (_message!.maxRetransmit != 0
-            ? _message!.maxRetransmit
-            : _config!.maxRetransmit)) {
-      // Message might have canceled
-      if (_message!.isCancelled ||
-          _message!.maxRetransmit == CoapMessage.none) {
-      } else {
-        _message!.fireRetransmitting();
-        _retransmit(this);
-      }
+    if (!_message!.isCancelled &&
+        !_message!.isRejected &&
+        !_message!.isTimedOut &&
+        failedTransmissionCount <=
+            (_message!.maxRetransmit != 0
+                ? _message!.maxRetransmit
+                : _config!.maxRetransmit)) {
+      _message!.fireRetransmitting();
+      _retransmit(this);
     } else {
       _exchange.timedOut = true;
       _message!.isTimedOut = true;

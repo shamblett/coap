@@ -58,14 +58,11 @@ class CoapMessageEncoderRfc7252 extends CoapMessageEncoder {
 
       // Write option value, reverse byte order for numeric options
       if (CoapOption.getFormatByType(opt.type) == OptionFormat.integer) {
-        final valueBytes = opt.valueBytes;
-        if (valueBytes != null) {
-          final reversedBytes = valueBytes.reversed;
-          final reversedBuffer = typed.Uint8Buffer()..addAll(reversedBytes);
-          writer.writeBytes(reversedBuffer);
-        }
+        final reversedBuffer = typed.Uint8Buffer()
+          ..addAll(opt.byteValue.reversed);
+        writer.writeBytes(reversedBuffer);
       } else {
-        writer.writeBytes(opt.valueBytes);
+        writer.writeBytes(opt.byteValue);
       }
 
       lastOptionNumber = optNum;

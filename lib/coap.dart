@@ -15,7 +15,6 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart' as collection;
-import 'package:date_format/date_format.dart' as df;
 import 'package:event_bus/event_bus.dart' as events;
 import 'package:executor/executor.dart' as tasking;
 import 'package:hex/hex.dart' as hex;
@@ -69,7 +68,6 @@ part 'src/net/coap_matcher.dart';
 part 'src/net/coap_multicast_exchange.dart';
 part 'src/network/coap_inetwork.dart';
 part 'src/network/coap_network_udp.dart';
-part 'src/observe/coap_observe_notification_orderer.dart';
 part 'src/observe/coap_observe_relation.dart';
 part 'src/observe/coap_observing_endpoint.dart';
 part 'src/resources/coap_iresource.dart';

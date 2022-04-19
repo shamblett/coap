@@ -9,7 +9,6 @@ environment:
 dependencies:
  build: '^2.2.1'
  collection: '^1.15.0'
- date_format: '^2.0.5'
  event_bus: '^2.0.0'
  executor: '^2.2.2'
  hex: '^0.2.0'
