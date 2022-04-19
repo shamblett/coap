@@ -6,7 +6,6 @@ version: "RFC7252"
 defaultPort: 5683
 defaultSecurePort: 5684
 httpPort: 8080
-defaultTimeout: 32767 # ms
 ackTimeout: 3000 # ms
 ackRandomFactor: 1.5
 ackTimeoutScale: 2.0

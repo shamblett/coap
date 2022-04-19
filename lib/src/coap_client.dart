@@ -57,7 +57,8 @@ class CoapClient {
   /// in which case it is not resolved.
   CoapClient(this.uri, this._config,
       {this.addressType = InternetAddressType.IPv4, Duration? timeout})
-      : timeout = timeout ?? Duration(milliseconds: _config.defaultTimeout);
+      : timeout =
+            timeout ?? Duration(milliseconds: CoapConstants.defaultTimeout);
 
   /// Address type used for DNS lookups.
   final InternetAddressType addressType;

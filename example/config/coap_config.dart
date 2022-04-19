@@ -20,9 +20,6 @@ class CoapConfig extends DefaultCoapConfig {
   int get httpPort => 8080;
 
   @override
-  int get defaultTimeout => 32767;
-
-  @override
   int get ackTimeout => 3000;
 
   @override

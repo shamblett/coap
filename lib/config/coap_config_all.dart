@@ -20,55 +20,52 @@ class CoapConfigAll extends DefaultCoapConfig {
   int get httpPort => 3;
 
   @override
-  int get defaultTimeout => 4;
+  int get ackTimeout => 4;
 
   @override
-  int get ackTimeout => 5;
+  double get ackRandomFactor => 5.0;
 
   @override
-  double get ackRandomFactor => 6.0;
+  double get ackTimeoutScale => 6.0;
 
   @override
-  double get ackTimeoutScale => 7.0;
+  int get maxRetransmit => 7;
 
   @override
-  int get maxRetransmit => 8;
+  int get maxMessageSize => 8;
 
   @override
-  int get maxMessageSize => 9;
+  int get defaultBlockSize => 9;
 
   @override
-  int get defaultBlockSize => 10;
-
-  @override
-  int get blockwiseStatusLifetime => 11;
+  int get blockwiseStatusLifetime => 10;
 
   @override
   bool get useRandomIDStart => false;
 
   @override
-  int get notificationMaxAge => 12;
+  int get notificationMaxAge => 11;
 
   @override
-  int get notificationCheckIntervalTime => 13;
+  int get notificationCheckIntervalTime => 12;
 
   @override
-  int get notificationCheckIntervalCount => 14;
+  int get notificationCheckIntervalCount => 13;
 
   @override
-  int get notificationReregistrationBackoff => 15;
+  int get notificationReregistrationBackoff => 14;
 
   @override
-  int get cropRotationPeriod => 16;
+  int get cropRotationPeriod => 15;
 
   @override
-  int get exchangeLifetime => 17;
+  int get exchangeLifetime => 16;
 
   @override
-  int get markAndSweepInterval => 18;
+  int get markAndSweepInterval => 17;
 
   @override
-  int get channelReceivePacketSize => 19;
+  int get channelReceivePacketSize => 18;
 
   @override
   String get deduplicator => 'MarkAndSweep';
