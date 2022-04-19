@@ -36,7 +36,7 @@ class CoapObservingEndpoint {
   /// Finds the observe relation by token.
   CoapObserveRelation? getObserveRelation(typed.Uint8Buffer token) {
     for (final relation in _relations) {
-      if (CoapByteArrayUtil.equals(token, relation.exchange!.request!.token)) {
+      if (CoapByteArrayUtil.equals(token, relation.exchange.request!.token)) {
         return relation;
       }
     }
