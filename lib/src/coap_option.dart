@@ -10,79 +10,74 @@ part of coap;
 /// This class describes the options of the CoAP messages.
 class CoapOption {
   /// Construction
-  CoapOption(this._type) {
-    valueBytes = typed.Uint8Buffer();
-  }
+  CoapOption(this._type) : _buffer = typed.Uint8Buffer();
 
   final int _type;
 
   /// Type
   int get type => _type;
 
-  /// Value bytes
-  typed.Uint8Buffer? valueBytes;
+  final typed.Uint8Buffer _buffer;
 
-  /// From list
-  set valueBytesList(List<int> bytes) {
-    valueBytes!.clear();
-    valueBytes!.addAll(bytes);
+  @override
+  int get hashCode => Object.hash(_type, _buffer);
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! CoapOption) {
+      return false;
+    }
+    return _type == other._type && _buffer.equals(other._buffer);
+  }
+
+  /// Value in bytes
+  typed.Uint8Buffer get byteValue => _buffer;
+
+  /// raw byte representation of value bytes
+  set byteValue(typed.Uint8Buffer val) {
+    _buffer.clear();
+    _buffer.addAll(val);
   }
 
   /// String representation of value bytes
   String get stringValue =>
-      const convertor.Utf8Decoder().convert(valueBytes!.toList());
+      const convertor.Utf8Decoder().convert(_buffer.toList());
 
-  set stringValue(String val) => valueBytes!.addAll(val.codeUnits);
+  set stringValue(String val) {
+    _buffer.clear();
+    _buffer.addAll(val.codeUnits);
+  }
 
-  /// Integer value
+  /// Int representation of value bytes
   int get intValue {
-    if (valueBytes!.isEmpty) {
-      return 0;
-    }
-    if (valueBytes!.length == 1) {
-      return valueBytes![0];
-    } else if (valueBytes!.length == 2) {
-      final buff = Uint16List.view(valueBytes!.buffer);
-      return buff[0];
-    } else {
-      final buff = Uint16List.view(valueBytes!.buffer);
-      return buff[0];
-    }
-  }
-
-  set intValue(int? val) {
-    if (val == 0) {
-      valueBytes!.add(0);
-    } else {
-      valueBytes!.clear();
-      if (val! <= 255) {
-        valueBytes!.add(val);
-      } else if (val <= 65535) {
-        final buff = Uint16List(1);
-        buff[0] = val;
-        valueBytes!.addAll(buff.buffer.asUint8List());
-      } else {
-        final buff = Uint32List(1);
-        buff[0] = val;
-        valueBytes!.addAll(buff.buffer.asUint8List());
-      }
+    switch (_buffer.length) {
+      case 0:
+        return 0;
+      case 1:
+        return _buffer[0];
+      case 2:
+        return Uint16List.view(_buffer.buffer)[0];
+      case 3:
+      case 4:
+        return Uint32List.view(_buffer.buffer)[0];
+      default:
+        return Uint64List.view(_buffer.buffer)[0];
     }
   }
 
-  /// Int64 representation of value bytes
-  int get longValue {
-    final buff = Uint64List.view(valueBytes!.buffer);
-    return buff[0];
-  }
-
-  set longValue(int val) {
-    if (val == 0) {
-      valueBytes!.add(0);
+  set intValue(int val) {
+    _buffer.clear();
+    if (val < 0 || val >= (1 << 32)) {
+      final buff = Uint64List(1)..first = val;
+      _buffer.addAll(buff.buffer.asUint8List());
+    } else if (val < (1 << 8)) {
+      _buffer.add(val);
+    } else if (val < (1 << 16)) {
+      final buff = Uint16List(1)..first = val;
+      _buffer.addAll(buff.buffer.asUint8List());
     } else {
-      final buff = Uint64List(1);
-      buff[0] = val;
-      valueBytes!.clear();
-      valueBytes!.addAll(buff.buffer.asUint8List());
+      final buff = Uint32List(1)..first = val;
+      _buffer.addAll(buff.buffer.asUint8List());
     }
   }
 
@@ -90,7 +85,7 @@ class CoapOption {
   String get name => CoapOption.stringify(_type);
 
   /// Gets the value's length in bytes of the option.
-  int get length => valueBytes!.lengthInBytes;
+  int get length => _buffer.lengthInBytes;
 
   /// Gets the value of the option according to its type.
   dynamic get value {
@@ -139,7 +134,7 @@ class CoapOption {
       case OptionFormat.string:
         return stringValue;
       default:
-        return CoapByteArrayUtil.toHexString(valueBytes!);
+        return CoapByteArrayUtil.toHexString(_buffer);
     }
   }
 
@@ -176,30 +171,6 @@ class CoapOption {
     }
   }
 
-  @override
-  int get hashCode {
-    const prime = 31;
-    var result = 1;
-    return result = prime * result + _type;
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    if (other is! CoapOption) {
-      return false;
-    }
-    if (_type != other.type) {
-      return false;
-    }
-    if (length != other.length) {
-      return false;
-    }
-    if (valueBytes.toString() != other.valueBytes.toString()) {
-      return false;
-    }
-    return true;
-  }
-
   /// Creates an option.
   static CoapOption create(int type) {
     switch (type) {
@@ -212,31 +183,23 @@ class CoapOption {
   }
 
   /// Creates an option.
-  static CoapOption createRaw(int type, typed.Uint8Buffer? raw) {
-    final opt = create(type);
-    opt.valueBytes = raw;
-    return opt;
+  static CoapOption createRaw(int type, typed.Uint8Buffer raw) {
+    return create(type)..byteValue = raw;
   }
 
   /// Creates an option.
   static CoapOption createString(int type, String str) {
-    final opt = create(type);
-    opt.stringValue = str;
-    return opt;
+    return create(type)..stringValue = str;
+  }
+
+  /// Creates a query option (shorthand because it's so common).
+  static CoapOption createUriQuery(String str) {
+    return create(optionTypeUriQuery)..stringValue = str;
   }
 
   /// Creates an option.
-  static CoapOption createVal(int type, int? val) {
-    final opt = create(type);
-    opt.intValue = val;
-    return opt;
-  }
-
-  /// Creates an option.
-  static CoapOption createLongVal(int type, int val) {
-    final opt = create(type);
-    opt.longValue = val;
-    return opt;
+  static CoapOption createVal(int type, int val) {
+    return create(type)..intValue = val;
   }
 
   /// Splits a string into a set of options, e.g. a uri path.
@@ -261,22 +224,17 @@ class CoapOption {
 
   /// Joins the string values of a set of options.
   static String? join(List<CoapOption>? options, String delimiter) {
-    String? s;
-    if (null == options) {
-      return s;
-    } else {
-      final sb = StringBuffer();
-      var append = false;
-      for (final opt in options) {
-        if (append) {
-          sb.write(delimiter);
-        } else {
-          append = true;
-        }
-        sb.write(opt.stringValue);
-      }
-      return sb.toString();
+    if (options == null) {
+      return null;
     }
+    final sb = StringBuffer();
+    for (final opt in options) {
+      if (opt != options.first) {
+        sb.write(delimiter);
+      }
+      sb.write(opt.stringValue);
+    }
+    return sb.toString();
   }
 
   /// Returns a string representation of the option type.
@@ -323,7 +281,7 @@ class CoapOption {
       case optionTypeProxyScheme:
         return 'Proxy-Scheme';
       default:
-        return 'Unknown ({type})';
+        return 'Unknown ($type)';
     }
   }
 

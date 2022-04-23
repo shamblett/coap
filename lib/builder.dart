@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:build/build.dart';
-import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as path;
+import 'package:yaml/yaml.dart';
 
 Builder configBuilder(BuilderOptions options) => _ConfigBuilder();
 
@@ -54,34 +54,30 @@ import 'package:coap/coap.dart';
 /// the config file to contain only those entries that override the defaults.
 /// The file can't be empty, so version must as a minimum be present.
 class $className extends DefaultCoapConfig {
-  $className() {
-    DefaultCoapConfig.inst = this;
-  }
-
-  @override
-  CoapISpec? spec;
 ${_generateDataScript(data)}}
 """;
 
 String _generateDataScript(YamlMap data) {
   final buff = StringBuffer();
-  data.forEach((k, v) {
-    buff.writeln('');
+  for (final k in data.keys) {
     buff.writeln('  @override');
-    if (v is String) {
-      if ('true' == v || 'false' == v) {
-        buff.writeln('  bool get $k => $v;');
-        return;
+    if (data[k] is String) {
+      if (data[k] == 'true' || data[k] == 'false') {
+        buff.writeln('  bool get $k => ${data[k]};');
+        continue;
       }
-      buff.writeln("  String get $k => '$v';");
-    } else if (v is bool) {
-      buff.writeln('  bool get $k => $v;');
-    } else if (v is int) {
-      buff.writeln('  int get $k => $v;');
-    } else if (v is double) {
-      buff.writeln('  double get $k => $v;');
+      buff.writeln("  String get $k => '${data[k]}';");
+    } else if (data[k] is bool) {
+      buff.writeln('  bool get $k => ${data[k]};');
+    } else if (data[k] is int) {
+      buff.writeln('  int get $k => ${data[k]};');
+    } else if (data[k] is double) {
+      buff.writeln('  double get $k => ${data[k]};');
     }
-  });
+    if (k != data.keys.last) {
+      buff.writeln();
+    }
+  }
   return buff.toString();
 }
 

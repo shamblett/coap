@@ -10,22 +10,14 @@ part of coap;
 /// Crop rotation deduplicator
 class CoapCropRotationDeduplicator implements CoapIDeduplicator {
   /// Construction
-  CoapCropRotationDeduplicator(DefaultCoapConfig config) {
-    _maps = List<Map<CoapKeyId, CoapExchange>?>.filled(
-        3, <CoapKeyId, CoapExchange>{});
-    _maps[0] = <CoapKeyId, CoapExchange>{};
-    _maps[1] = <CoapKeyId, CoapExchange>{};
-    _maps[2] = <CoapKeyId, CoapExchange>{};
-    _first = 0;
-    _second = 1;
-    _config = config;
-  }
+  CoapCropRotationDeduplicator(this._config)
+      : _maps = List<Map<int?, CoapExchange>>.filled(3, <int?, CoapExchange>{});
 
-  late List<Map<CoapKeyId, CoapExchange>?> _maps;
-  int? _first;
-  int? _second;
+  final List<Map<int?, CoapExchange>> _maps;
+  int _first = 0;
+  int _second = 1;
   late Timer _timer;
-  late DefaultCoapConfig _config;
+  final DefaultCoapConfig _config;
 
   @override
   void start() {
@@ -45,37 +37,37 @@ class CoapCropRotationDeduplicator implements CoapIDeduplicator {
   }
 
   @override
-  CoapExchange? findPrevious(CoapKeyId key, CoapExchange exchange) {
+  CoapExchange? findPrevious(int? key, CoapExchange exchange) {
     CoapExchange? prev;
-    if (_maps[_first!]!.containsKey(key)) {
-      prev = _maps[_first!]![key];
+    if (_maps[_first].containsKey(key)) {
+      prev = _maps[_first][key];
     }
-    _maps[_first!]![key] = exchange;
-    if ((prev != null) || (_first == _second)) {
+    _maps[_first][key] = exchange;
+    if (prev != null || _first == _second) {
       return prev;
     }
-    if (_maps[_second!]!.containsKey(key)) {
-      prev = _maps[_second!]![key];
+    if (_maps[_second].containsKey(key)) {
+      prev = _maps[_second][key];
     }
-    _maps[_second!]![key] = exchange;
+    _maps[_second][key] = exchange;
     return prev;
   }
 
   @override
-  CoapExchange? find(CoapKeyId key) {
-    if ((_maps[_first!]!.containsKey(key)) || (_first == _second)) {
-      return _maps[_first!]![key];
+  CoapExchange? find(int? key) {
+    if (_maps[_first].containsKey(key) || _first == _second) {
+      return _maps[_first][key];
     }
-    if (_maps[_second!]!.containsKey(key)) {
-      return _maps[_second!]![key];
+    if (_maps[_second].containsKey(key)) {
+      return _maps[_second][key];
     }
     return null;
   }
 
   void _rotation(Timer timer) {
-    final third = _first!;
+    final third = _first;
     _first = _second;
-    _second = (_second! + 1) % 3;
-    _maps[third]!.clear();
+    _second = (_second + 1) % 3;
+    _maps[third].clear();
   }
 }

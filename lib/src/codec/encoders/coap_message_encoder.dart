@@ -10,21 +10,21 @@ part of coap;
 /// Base class for message encoders.
 abstract class CoapMessageEncoder implements CoapIMessageEncoder {
   @override
-  typed.Uint8Buffer? encodeRequest(CoapRequest request) {
+  typed.Uint8Buffer encodeRequest(CoapRequest request) {
     final writer = CoapDatagramWriter();
     serialize(writer, request, request.code);
     return writer.toByteArray();
   }
 
   @override
-  typed.Uint8Buffer? encodeResponse(CoapResponse response) {
+  typed.Uint8Buffer encodeResponse(CoapResponse response) {
     final writer = CoapDatagramWriter();
     serialize(writer, response, response.code);
     return writer.toByteArray();
   }
 
   @override
-  typed.Uint8Buffer? encodeEmpty(CoapEmptyMessage message) {
+  typed.Uint8Buffer encodeEmpty(CoapEmptyMessage message) {
     final writer = CoapDatagramWriter();
     serialize(writer, message, CoapCode.empty);
     return writer.toByteArray();
@@ -49,5 +49,5 @@ abstract class CoapMessageEncoder implements CoapIMessageEncoder {
   }
 
   /// Serializes a message.
-  void serialize(CoapDatagramWriter writer, CoapMessage message, int? code);
+  void serialize(CoapDatagramWriter writer, CoapMessage message, int code);
 }

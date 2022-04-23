@@ -30,11 +30,11 @@ FutureOr<void> main(List<String> args) async {
   final client = CoapClient(uri, conf);
 
   // Adjust the response timeout if needed, defaults to 32767 milliseconds
-  client.timeout = 10000;
+  client.timeout = Duration(milliseconds: 10000);
 
   print('EXAMPLE - Sending get request to $host, waiting for response....');
 
-  final response = await client.get();
+  final response = await client.get('');
   print('EXAMPLE - ${response.payloadString}');
 
   // Clean up

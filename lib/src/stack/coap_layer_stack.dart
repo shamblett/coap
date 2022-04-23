@@ -58,7 +58,7 @@ class CoapStackTopLayer extends CoapAbstractLayer {
       CoapINextLayer nextLayer, CoapExchange? exchange, CoapRequest request) {
     var nexchange = exchange;
     if (exchange == null) {
-      if (request.multicast ?? false) {
+      if (request.isMulticast) {
         nexchange = CoapMulticastExchange(request, CoapOrigin.local,
             namespace: request.eventBus!.namespace);
       } else {
@@ -73,7 +73,7 @@ class CoapStackTopLayer extends CoapAbstractLayer {
 
   @override
   void sendResponse(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse? response) {
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
     exchange.response = response;
     super.sendResponse(nextLayer, exchange, response);
   }
@@ -83,9 +83,6 @@ class CoapStackTopLayer extends CoapAbstractLayer {
       CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
     // If there is no BlockwiseLayer we still have to set it
     exchange.request ??= request;
-    if (exchange.deliverer != null) {
-      exchange.deliverer!.deliverRequest(exchange);
-    }
   }
 
   @override
@@ -95,10 +92,7 @@ class CoapStackTopLayer extends CoapAbstractLayer {
         exchange is! CoapMulticastExchange) {
       exchange.complete = true;
     }
-    if (exchange.deliverer != null) {
-      // Notify request that response has arrived
-      exchange.deliverer!.deliverResponse(exchange, response);
-    }
+    exchange.fireRespond(response);
   }
 
   @override
@@ -118,7 +112,7 @@ class CoapStackBottomLayer extends CoapAbstractLayer {
 
   @override
   void sendResponse(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse? response) {
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
     exchange.outbox!.sendResponse(exchange, response);
   }
 

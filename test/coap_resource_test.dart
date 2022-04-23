@@ -17,7 +17,7 @@ void main() {
       var res = CoapRemoteResource('billy');
       expect(res.name, 'billy');
       expect(res.hidden, isFalse);
-      res = CoapRemoteResource.hide('fred', hidden: true);
+      res = CoapRemoteResource.hide('fred');
       expect(res.name, 'fred');
       expect(res.hidden, isTrue);
     });
@@ -111,7 +111,7 @@ void main() {
       final res = CoapRemoteResource.newRoot(format);
 
       final query = <CoapOption>[];
-      query.add(CoapOption.createString(optionTypeUriQuery, 'rt=MyName'));
+      query.add(CoapOption.createUriQuery('rt=MyName'));
 
       final queried =
           CoapLinkFormat.serializeOptions(res, query, recursive: true);

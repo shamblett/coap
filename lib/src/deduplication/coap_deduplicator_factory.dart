@@ -9,8 +9,6 @@ part of coap;
 
 /// Deduplicator factory
 class CoapDeduplicatorFactory {
-  static final CoapILogger? _log = CoapLogManager().logger;
-
   /// Mark and sweep
   static const String markAndSweepDeduplicator = 'MarkAndSweep';
 
@@ -27,8 +25,6 @@ class CoapDeduplicatorFactory {
       return CoapSweepDeduplicator(config);
     } else if (type == cropRotationDeduplicator) {
       return CoapCropRotationDeduplicator(config);
-    } else if (type == noopDeduplicator) {
-      _log!.warn('Unknown deduplicator type: $type');
     }
     return CoapNoopDeduplicator();
   }

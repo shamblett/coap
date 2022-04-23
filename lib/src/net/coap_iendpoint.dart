@@ -15,22 +15,19 @@ abstract class CoapIEndPoint {
   CoapInternetAddress? get destination;
 
   /// Gets this endpoint's configuration.
-  DefaultCoapConfig? get config;
+  DefaultCoapConfig get config;
 
   /// The next message id to use
   int get nextMessageId;
-
-  /// Gets the local internetAddress this endpoint is associated with.
-  CoapInternetAddress? get localEndpoint;
-
-  /// Gets or sets the message deliverer.
-  CoapIMessageDeliverer? deliverer;
 
   /// Gets the outbox.
   CoapIOutbox get outbox;
 
   /// Starts this endpoint and all its components.
   Future<void> start();
+
+  /// The namespace which the endpoint belongs to
+  String get namespace;
 
   /// Stops this endpoint and all its components
   void stop();
@@ -42,7 +39,7 @@ abstract class CoapIEndPoint {
   void sendEpRequest(CoapRequest request);
 
   /// Sends the specified response.
-  void sendEpResponse(CoapExchange exchange, CoapResponse? response);
+  void sendEpResponse(CoapExchange exchange, CoapResponse response);
 
   /// Sends the specified empty message.
   void sendEpEmptyMessage(CoapExchange exchange, CoapEmptyMessage message);

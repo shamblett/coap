@@ -8,16 +8,39 @@
 part of coap;
 
 /// Acknowledged event
-class CoapAcknowledgedEvent {}
+class CoapAcknowledgedEvent {
+  CoapAcknowledgedEvent(this.msg);
+
+  CoapMessage msg;
+}
 
 /// Rejected event
-class CoapRejectedEvent {}
+class CoapRejectedEvent {
+  CoapRejectedEvent(this.msg);
+
+  CoapMessage msg;
+}
+
+/// Retransmitted event
+class CoapRetransmitEvent {
+  CoapRetransmitEvent(this.msg);
+
+  CoapMessage msg;
+}
 
 /// Timed out event
-class CoapTimedOutEvent {}
+class CoapTimedOutEvent {
+  CoapTimedOutEvent(this.msg);
+
+  CoapMessage msg;
+}
 
 /// Cancelled event
-class CoapCancelledEvent {}
+class CoapCancelledEvent {
+  CoapCancelledEvent(this.msg);
+
+  CoapMessage msg;
+}
 
 /// Response event
 class CoapRespondEvent {
@@ -25,7 +48,7 @@ class CoapRespondEvent {
   CoapRespondEvent(this.resp);
 
   /// Response
-  CoapResponse? resp;
+  CoapResponse resp;
 }
 
 /// Responding event
@@ -49,19 +72,19 @@ class CoapReregisteringEvent {
 /// Occurs when a request is about to be sent.
 class CoapSendingRequestEvent {
   /// Construction
-  CoapSendingRequestEvent(this.request);
+  CoapSendingRequestEvent(this.req);
 
   /// The request
-  CoapRequest request;
+  CoapRequest req;
 }
 
 /// Occurs when a response is about to be sent.
 class CoapSendingResponseEvent {
   /// Construction
-  CoapSendingResponseEvent(this.response);
+  CoapSendingResponseEvent(this.resp);
 
   /// The response
-  CoapResponse? response;
+  CoapResponse resp;
 }
 
 /// Occurs when a an empty message is about to be sent.
@@ -76,19 +99,19 @@ class CoapSendingEmptyMessageEvent {
 /// Occurs when a request has been received.
 class CoapReceivingRequestEvent {
   /// Construction
-  CoapReceivingRequestEvent(this.request);
+  CoapReceivingRequestEvent(this.req);
 
   /// The request
-  CoapRequest? request;
+  CoapRequest req;
 }
 
 /// Occurs when a response has been received.
 class CoapReceivingResponseEvent {
   /// Construction
-  CoapReceivingResponseEvent(this.response);
+  CoapReceivingResponseEvent(this.resp);
 
   /// The response
-  CoapResponse response;
+  CoapResponse resp;
 }
 
 /// Occurs when an empty message has been received.
@@ -143,18 +166,14 @@ class CoapEventBus {
   /// Last event fired, useful for testing
   dynamic lastEvent;
 
-  final CoapILogger? _log = CoapLogManager().logger;
-  final events.EventBus _eventBus;
-  final bool _destroyed = false;
+  late final events.EventBus _eventBus;
+  bool _destroyed = false;
 
   /// Fire
   void fire(dynamic event) {
     if (!_destroyed) {
       lastEvent = event;
       _eventBus.fire(event);
-    } else {
-      _log!.warn('Event Bus - attempting to raise event on '
-          'destroyed event bus : $event');
     }
   }
 
@@ -164,6 +183,7 @@ class CoapEventBus {
   /// Destroy
   void destroy() {
     _eventBus.destroy();
+    _destroyed = true;
   }
 
   static final _singletons = <String, CoapEventBus>{};

@@ -48,18 +48,16 @@ class CoapLinkFormat {
   static final RegExp resourceNameRegex = RegExp('<[^>]*>');
 
   /// Word
-  static final RegExp wordRegex = RegExp('\\w+');
+  static final RegExp wordRegex = RegExp(r'\w+');
 
   /// Quoted string
   static final RegExp quotedStringRegex = RegExp('".*?"');
 
   /// Cardinal
-  static final RegExp cardinalRegex = RegExp('\\d+');
+  static final RegExp cardinalRegex = RegExp(r'\d+');
 
   /// Equal
   static final RegExp equalRegex = RegExp('=');
-
-  static final CoapILogger? _log = CoapLogManager().logger;
 
   /// Serialize
   static String serialize(CoapIResource root) => _serializeQueries(root, null);
@@ -139,7 +137,7 @@ class CoapLinkFormat {
       sb.write(',');
     }
     // sort by resource name
-    final children = resource.children as List<CoapIResource>;
+    final children = resource.children! as List<CoapIResource>;
     children.sort(
         (CoapIResource r1, CoapIResource r2) => r1.name!.compareTo(r2.name!));
     for (final child in children) {
@@ -148,10 +146,7 @@ class CoapLinkFormat {
   }
 
   static void _serializeResource(CoapIResource resource, StringBuffer sb) {
-    sb.write('<');
-    sb.write(resource.path);
-    sb.write(resource.name);
-    sb.write('>');
+    sb.write('<${resource.path}${resource.name}>');
     _serializeAttributes(resource.attributes!, sb);
   }
 
@@ -160,7 +155,7 @@ class CoapLinkFormat {
     final keys = attributes.keys as List<String>;
     keys.sort();
     for (final name in keys) {
-      final values = attributes.getValues(name) as List<String?>;
+      final values = attributes.getValues(name)! as List<String?>;
       if (values.isEmpty) {
         continue;
       }
@@ -171,13 +166,9 @@ class CoapLinkFormat {
 
   static void _serializeAttribute(
       String name, Iterable<String?> values, StringBuffer sb) {
-    const delimiter = '=';
     sb.write(name);
     for (final value in values) {
-      sb.write(delimiter);
-      sb.write('"');
-      sb.write(value);
-      sb.write('"');
+      sb.write('="$value"');
     }
   }
 
@@ -189,11 +180,9 @@ class CoapLinkFormat {
 
     // Skip hidden and empty root in recursive mode,
     // always skip non-matching resources.
-    if ((!resource.hidden! && (resource.name.isNotEmpty) || !recursive) &&
+    if ((!resource.hidden && resource.name.isNotEmpty || !recursive) &&
         _matchesOption(resource, query)) {
-      linkFormat.write('<');
-      linkFormat.write(resource.path);
-      linkFormat.write('>');
+      linkFormat.write('<${resource.path}>');
 
       // Reverse the attribute list to re-create the original
       final attrs = resource.attributes.toList().reversed.toList();
@@ -271,7 +260,7 @@ class CoapLinkFormat {
           value ??= 0;
         }
       }
-      return CoapLinkAttribute(name, value);
+      return CoapLinkAttribute(name!, value);
     }
     return null;
   }
@@ -393,8 +382,6 @@ class CoapLinkFormat {
     if (isSingle(attrToAdd.name)) {
       for (final attr in attributes) {
         if (attr.name == attrToAdd.name) {
-          _log!.warn('CoapLinkFormat::addAttribute - Found existing '
-              'singleton attribute: ${attr.name}');
           return false;
         }
       }

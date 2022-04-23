@@ -35,6 +35,11 @@ class CoapConstants {
   static const int defaultSecurePort = 5684;
 
   ///
+  /// Default request timeout
+  ///
+  static const int defaultTimeout = 32767;
+
+  ///
   /// The initial time (ms) for a CoAP message
   ///
   static const int ackTimeout = 3000;
@@ -52,9 +57,9 @@ class CoapConstants {
   static const int maxRetransmit = 8;
 
   ///
-  /// Default block size used for block-wise transfers
+  /// Default preferred size used for block-wise transfers
   ///
-  static const int defaultBlockSize = 512;
+  static const int preferredBlockSize = 512;
 
   ///
   /// Message cache size
@@ -94,7 +99,7 @@ class CoapConstants {
   ///
   /// Empty token
   ///
-  static typed.Uint8Buffer emptyToken = typed.Uint8Buffer(1);
+  static typed.Uint8Buffer emptyToken = typed.Uint8Buffer(0);
 
   ///
   /// The lowest value of a request code.

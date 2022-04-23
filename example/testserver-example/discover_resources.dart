@@ -29,13 +29,13 @@ FutureOr<void> main(List<String> args) async {
   final client = CoapClient(uri, conf);
 
   // Adjust the response timeout if needed, defaults to 32767 milliseconds
-  client.timeout = 10000;
+  client.timeout = Duration(milliseconds: 10000);
 
   print('EXAMPLE - Discover client, sending discover request to '
       '$host, waiting for response....');
 
   // Do the discovery, note that using this method forces the path to be .well-known/core
-  final links = await client.discover(null);
+  final links = await client.discover();
 
   print('EXAMPLE  - Discovered resources:');
   links?.forEach(print);

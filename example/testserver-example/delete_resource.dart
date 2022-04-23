@@ -35,11 +35,10 @@ FutureOr<void> main(List<String> args) async {
   // Create the request for the delete request
   final request = CoapRequest.newDelete();
   request.addUriPath('storage');
-  client.request = request;
 
   print('EXAMPLE - Sending delete request to $host, waiting for response....');
 
-  final response = await client.delete();
+  final response = await client.send(request);
   print('EXAMPLE - delete response received, sending get');
   print('EXAMPLE - Payload: ${response.payloadString}');
   print('EXAMPLE - response code is ${response.codeString}');

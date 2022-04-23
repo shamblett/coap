@@ -29,17 +29,16 @@ FutureOr<void> main(List<String> args) async {
   final client = CoapClient(uri, conf);
 
   // Adjust the response timeout if needed, defaults to 32767 milliseconds
-  client.timeout = 10000;
+  client.timeout = Duration(milliseconds: 10000);
 
   // Create the request for the get request
   final request = CoapRequest.newGet();
   request.addUriPath('fibonacci');
   request.addUriQuery('n=10');
-  client.request = request;
 
   print('EXAMPLE - Sending get request to $host, waiting for response....');
 
-  final response = await client.get();
+  final response = await client.send(request);
   print('EXAMPLE - ${response.payloadString}');
 
   // Clean up

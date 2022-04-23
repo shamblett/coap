@@ -36,13 +36,14 @@ class CoapRfc7252 implements CoapISpec {
   /// Payload marker
   static const int payloadMarker = 0xFF;
 
-  static final CoapILogger? _log = CoapLogManager().logger;
-
   @override
   String get name => 'RFC 7252';
 
   @override
   int get defaultPort => 5683;
+
+  @override
+  int get defaultSecurePort => 5684;
 
   @override
   CoapIMessageEncoder newMessageEncoder() => CoapMessageEncoderRfc7252();
@@ -70,8 +71,7 @@ class CoapRfc7252 implements CoapISpec {
     } else if (nibble == 14) {
       return datagram!.read(16) + 269;
     } else {
-      _log!.warn('Unsupported option delta $nibble');
-      return 0;
+      throw FormatException('Unsupported option delta $nibble');
     }
   }
 
@@ -84,8 +84,7 @@ class CoapRfc7252 implements CoapISpec {
     } else if (optionValue <= 65535 + 269) {
       return 14;
     } else {
-      _log!.warn('Unsupported option delta $optionValue');
-      return 0;
+      throw FormatException('Unsupported option delta $optionValue');
     }
   }
 }

@@ -35,11 +35,10 @@ FutureOr<void> main(List<String> args) async {
   // Create the request for the get request
   final request = CoapRequest.newGet();
   request.addUriPath('large');
-  client.request = request;
 
   print('EXAMPLE - Sending get request to $host, waiting for response....');
 
-  final response = await client.get();
+  final response = await client.send(request);
   print('EXAMPLE - response received');
   print(response.payloadString);
 

@@ -4,7 +4,7 @@
  * Date   : 06/06/2018
  * Copyright :  S.Hamblett
  *
- * A post request is used to create data on the storage testserver resource
+ * A request demonstrating a blockwise (block1) post
  */
 
 import 'dart:async';
@@ -12,35 +12,14 @@ import 'package:coap/coap.dart';
 import 'config/coap_config.dart';
 
 FutureOr<void> main(List<String> args) async {
-  // Create a configuration class. Logging levels can be specified
-  // in the configuration file.
   final conf = CoapConfig();
-
-  // Build the request uri, note that the request paths/query parameters can be changed
-  // on the request anytime after this initial setup.
-  const host = 'coap.me';
-
-  final uri = Uri(scheme: 'coap', host: host, port: conf.defaultPort);
-
-  // Create the client.
-  // The method we are using creates its own request so we do not
-  // need to supply one.
-  // The current request is always available from the client.
+  final uri = Uri(scheme: 'coap', host: 'coap.me', port: conf.defaultPort);
   final client = CoapClient(uri, conf);
 
-  // Adjust the response timeout if needed, defaults to 32767 milliseconds
-  //client.timeout = 10000;
+  final opt = CoapOption.createUriQuery(
+      '${CoapLinkFormat.title}=This is an SJH Post request');
 
-  // Create the request for the post request
-  final request = CoapRequest.newPost();
-  request.addUriPath('large-create');
-  // Add a title
-  request.addUriQuery('${CoapLinkFormat.title}=This is an SJH Post request');
-  client.request = request;
-
-  print('EXAMPLE - Sending post request to $host, waiting for response....');
-
-  var response = await client.post('''
+  const payload = '''
      0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -71,18 +50,21 @@ FutureOr<void> main(List<String> args) async {
       request, the Code field indicates the Request Method; in case of a
       response a Response Code.  Possible values are maintained in the
       CoAP Code Registries (Section 12.1).  The semantics of requests
-      and responses are defined in Section 5.''');
-  print('EXAMPLE - post response received, sending get');
-  print('EXAMPLE -  Payload: ${response.payloadString}');
-  // Now get and check the payload
-  final getRequest = CoapRequest.newGet();
-  getRequest.addUriPath('large-create');
-  client.request = getRequest;
-  response = await client.get();
-  print('EXAMPLE - get response received');
-  print('EXAMPLE - Payload: ${response.payloadString}');
-  print('EXAMPLE - E-Tags : ${CoapUtil.iterableToString(response.etags)}');
+      and responses are defined in Section 5.''';
 
-  // Clean up
-  client.close();
+  try {
+    print('Sending post /large-create to ${uri.host}');
+    var response =
+        await client.post('large-create', payload: payload, options: [opt]);
+    print('/large-create response status: ${response.statusCodeString}');
+
+    print('Sending get /large-create to ${uri.host}');
+    response = await client.get('large-create');
+    print('/large-create response:\n${response.payloadString}');
+    print('E-Tags : ${CoapUtil.iterableToString(response.etags)}');
+
+    client.close();
+  } catch (e) {
+    print('CoAP encountered an exception: $e');
+  }
 }

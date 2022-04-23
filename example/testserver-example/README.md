@@ -2,7 +2,7 @@ This directory contains a simple .NET based CoAP test server to use with the exa
 Windows only unfortunately as its .NET based.
 It returns the following resource links :-
 
-``````
+```
 </fibonacci> 
 </storage> 
 </careless> 
@@ -28,7 +28,7 @@ It returns the following resource links :-
 	rt:	["CurrentTime"]
 	obs
 </mirror> 
-``````
+```
 You can use these as path examples in any testing you do for instance the time path returns as it says the current time and is observable.
 The examples in this directory show the usage of each resource.
 

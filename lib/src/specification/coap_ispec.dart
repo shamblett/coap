@@ -15,6 +15,9 @@ abstract class CoapISpec {
   /// Gets the default CoAP port in this draft.
   int get defaultPort;
 
+  /// Gets the default CoAPS port in this draft.
+  int get defaultSecurePort;
+
   /// Encodes a CoAP message into a bytes array.
   /// Returns the encoded bytes, or null if the message can not be encoded,
   /// i.e. the message is not a Request, a Response or an EmptyMessage.

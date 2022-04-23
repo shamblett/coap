@@ -7,13 +7,6 @@ import 'package:coap/coap.dart';
 /// the config file to contain only those entries that override the defaults.
 /// The file can't be empty, so version must as a minimum be present.
 class CoapConfig extends DefaultCoapConfig {
-  CoapConfig() {
-    DefaultCoapConfig.inst = this;
-  }
-
-  @override
-  CoapISpec? spec;
-
   @override
   String get version => 'RFC7252';
 
@@ -42,7 +35,7 @@ class CoapConfig extends DefaultCoapConfig {
   int get maxMessageSize => 1024;
 
   @override
-  int get defaultBlockSize => 512;
+  int get preferredBlockSize => 512;
 
   @override
   int get blockwiseStatusLifetime => 60000;
@@ -55,9 +48,6 @@ class CoapConfig extends DefaultCoapConfig {
 
   @override
   int get notificationCheckIntervalTime => 86400000;
-
-  @override
-  bool get poolUdpConnectionsByClient => false;
 
   @override
   int get notificationCheckIntervalCount => 100;
@@ -79,19 +69,4 @@ class CoapConfig extends DefaultCoapConfig {
 
   @override
   String get deduplicator => 'MarkAndSweep';
-
-  @override
-  String get logTarget => 'console';
-
-  @override
-  bool get logError => true;
-
-  @override
-  bool get logDebug => true;
-
-  @override
-  bool get logWarn => true;
-
-  @override
-  bool get logInfo => true;
 }

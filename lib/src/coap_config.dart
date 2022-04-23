@@ -12,24 +12,32 @@ part of coap;
 /// the config file to contain only those entries that override the defaults.
 /// The file can't be empty, so version must as a minimum be present.
 abstract class DefaultCoapConfig {
-  /// Instance
-  static DefaultCoapConfig? inst;
-
   /// Protocol options
 
   /// The version of the CoAP protocol.
-  String get version => '';
+  String get version => 'RFC7252';
 
-  CoapISpec? spec;
+  /// The CoAP specification derived from the protocol version.
+  CoapISpec get spec {
+    switch (version) {
+      case 'RFC7252':
+        return CoapRfc7252();
+      default:
+        throw ArgumentError("Invalid or missing version");
+    }
+  }
 
   /// The default CoAP port for normal CoAP communication (not secure).
   int defaultPort = CoapConstants.defaultPort;
 
   /// The default CoAP port for secure CoAP communication (coaps).
-  int get defaultSecurePort => CoapConstants.defaultSecurePort;
+  int defaultSecurePort = CoapConstants.defaultSecurePort;
 
   /// The port which HTTP proxy is on.
   int get httpPort => 8080;
+
+  /// Default request timeout
+  int get defaultTimeout => CoapConstants.defaultTimeout;
 
   /// The initial time (ms) for a CoAP message
   int get ackTimeout => CoapConstants.ackTimeout;
@@ -48,9 +56,9 @@ abstract class DefaultCoapConfig {
 
   int get maxMessageSize => 1024;
 
-  /// The default preferred size of block in blockwise transfer.
+  /// The preferred size of block in blockwise transfer.
 
-  int get defaultBlockSize => CoapConstants.defaultBlockSize;
+  int get preferredBlockSize => CoapConstants.preferredBlockSize;
 
   int get blockwiseStatusLifetime => 10 * 60 * 1000; // ms
 
@@ -75,20 +83,4 @@ abstract class DefaultCoapConfig {
   int get markAndSweepInterval => 10 * 1000; // ms
 
   int get channelReceivePacketSize => 2048;
-
-  /// Logging options
-
-  /// Log to null, console or file
-
-  String get logTarget => 'none';
-
-  /// Log level options
-
-  bool get logError => true;
-
-  bool get logWarn => false;
-
-  bool get logDebug => false;
-
-  bool get logInfo => false;
 }

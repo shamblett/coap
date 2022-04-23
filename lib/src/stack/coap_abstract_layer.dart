@@ -20,7 +20,7 @@ class CoapAbstractLayer implements CoapILayer {
 
   @override
   void sendResponse(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse? response) {
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
     nextLayer.sendResponse(exchange, response);
   }
 
