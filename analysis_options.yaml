@@ -9,3 +9,9 @@ analyzer:
   exclude:
     - 'example/flutter_example/**'
     - '**coap_config**.dart'
+  errors:
+    unawaited_futures: warning
+
+linter:
+  rules:
+    - unawaited_futures
