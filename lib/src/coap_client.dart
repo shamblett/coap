@@ -51,7 +51,10 @@ class CoapClient {
     this._config, {
     this.addressType = InternetAddressType.IPv4,
     this.bindAddress,
-  }) {
+    EcdsaKeys? ecdsaKeys,
+    PskCredentialsCallback? pskCredentialsCallback,
+  })  : _ecdsaKeys = ecdsaKeys,
+        _pskCredentialsCallback = pskCredentialsCallback {
     _eventBus = CoapEventBus(namespace: hashCode.toString());
   }
 
@@ -73,6 +76,13 @@ class CoapClient {
   final DefaultCoapConfig _config;
   CoapIEndPoint? _endpoint;
   final _lock = sync.Lock();
+
+  /// Raw Public Keys for CoAPS with tinyDtls.
+  final EcdsaKeys? _ecdsaKeys;
+
+  /// Callback for providing [PskCredentials] (combination of a Pre-shared Key
+  /// and an Identity) for DTLS, optionally based on an Identity Hint.
+  final PskCredentialsCallback? _pskCredentialsCallback;
 
   /// Performs a CoAP ping.
   Future<bool> ping() async {
@@ -218,8 +228,8 @@ class CoapClient {
   Future<Iterable<CoapWebLink>?> discover({
     String query = '',
   }) async {
-    final discover = CoapRequest.newGet();
-    discover.uriPath = CoapConstants.defaultWellKnownURI;
+    final discover = CoapRequest.newGet()
+      ..uriPath = CoapConstants.defaultWellKnownURI;
     if (query.isNotEmpty) {
       discover.uriQuery = query;
     }
@@ -339,7 +349,9 @@ class CoapClient {
         final socket = CoapINetwork.fromUri(uri,
             address: destination,
             config: _config,
-            namespace: _eventBus.namespace);
+            namespace: _eventBus.namespace,
+            pskCredentialsCallback: _pskCredentialsCallback,
+            ecdsaKeys: _ecdsaKeys);
         await socket.bind();
         _endpoint =
             CoapEndPoint(socket, _config, namespace: _eventBus.namespace);

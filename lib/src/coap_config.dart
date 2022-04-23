@@ -7,6 +7,10 @@
 
 part of coap;
 
+enum DtlsBackend {
+  TinyDtls,
+}
+
 /// Configuration loading class. The config file itself is a YAML
 /// file. The configuration items below are marked as optional to allow
 /// the config file to contain only those entries that override the defaults.
@@ -80,4 +84,11 @@ abstract class DefaultCoapConfig {
   int get markAndSweepInterval => 10 * 1000; // ms
 
   int get channelReceivePacketSize => 2048;
+
+  /// Indicates which [DtlsBackend] a new [CoapClient] should use.
+  DtlsBackend? get dtlsBackend => null;
+
+  /// Custom [tinydtls.TinyDTLS] instance that can be registered if tinyDTLS
+  /// should not be available at the default locations.
+  tinydtls.TinyDTLS? get tinyDtlsInstance => null;
 }

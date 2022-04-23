@@ -67,11 +67,28 @@ String _generateDataScript(YamlMap data, String prefix, {firstLine = true}) {
     }
     final variableName =
         prefix.isEmpty ? key : prefix + key[0].toUpperCase() + key.substring(1);
+
+    if (variableName == 'dtlsBackend') {
+      if (value == 'TinyDtls') {
+        if (!firstLine) {
+          buff.writeln('');
+        }
+        firstLine = false;
+        buff.writeln('  @override');
+        buff.writeln('  DtlsBackend? get $variableName => DtlsBackend.$value;');
+      }
+
+      return;
+    } else if (['tinyDtlsInstance'].contains(variableName) && value == null) {
+      return;
+    }
+
     if (!firstLine) {
       buff.writeln('');
     }
     firstLine = false;
     buff.writeln('  @override');
+
     if (value is String) {
       if (value == 'true' || value == 'false') {
         buff.writeln('  bool get $variableName => $value;');
