@@ -33,7 +33,7 @@ abstract class CoapINetwork {
 
   /// Send, returns the number of bytes sent or null
   /// if not bound.
-  int send(typed.Uint8Buffer data, [CoapInternetAddress? address]);
+  Future<int> send(typed.Uint8Buffer data, [CoapInternetAddress? address]);
 
   /// Starts the receive listener
   void receive();

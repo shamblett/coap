@@ -43,7 +43,8 @@ class CoapNetworkUDP implements CoapINetwork {
   bool get bound => _bound;
 
   @override
-  int send(typed.Uint8Buffer data, [CoapInternetAddress? address]) {
+  Future<int> send(typed.Uint8Buffer data,
+      [CoapInternetAddress? address]) async {
     if (_bound) {
       _socket?.send(
           data.toList(), address?.address ?? this.address!.address, port);
