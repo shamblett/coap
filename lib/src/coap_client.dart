@@ -62,7 +62,9 @@ class CoapClient {
     this.bindAddress,
     Duration? timeout,
   }) : timeout =
-            timeout ?? Duration(milliseconds: CoapConstants.defaultTimeout);
+            timeout ?? Duration(milliseconds: CoapConstants.defaultTimeout) {
+    _eventBus = CoapEventBus(namespace: hashCode.toString());
+  }
 
   /// Address type used for DNS lookups.
   final InternetAddressType addressType;
@@ -77,9 +79,13 @@ class CoapClient {
   /// The default request timeout
   Duration timeout;
 
+  late final CoapEventBus _eventBus;
+
+  /// The internal request/response event stream
+  CoapEventBus get events => _eventBus;
+
   final DefaultCoapConfig _config;
   CoapIEndPoint? _endpoint;
-  String get _namespace => hashCode.toString();
   final _lock = sync.Lock();
 
   /// Performs a CoAP ping and gives up after the given timeout.
@@ -267,7 +273,7 @@ class CoapClient {
       if (onMulticastResponse == null) {
         throw ArgumentError('Missing onMulticastResponse argument');
       }
-      request.eventBus!
+      _eventBus
           .on<CoapRespondEvent>()
           .where((CoapRespondEvent e) => e.resp.token!.equals(request.token!))
           .takeWhile((_) => !request.isTimedOut && !request.isCancelled)
@@ -343,7 +349,7 @@ class CoapClient {
   Future<void> _prepare(CoapRequest request) async {
     request.uri = uri;
     request.timestamp = DateTime.now();
-    request.setEventBus(CoapEventBus(namespace: _namespace));
+    request.setEventBus(_eventBus);
 
     // Set a default accept
     if (request.accept == CoapMediaType.undefined) {
@@ -356,9 +362,12 @@ class CoapClient {
         final destination =
             await CoapUtil.lookupHost(uri.host, addressType, bindAddress);
         final socket = CoapINetwork.fromUri(uri,
-            address: destination, config: _config, namespace: _namespace);
+            address: destination,
+            config: _config,
+            namespace: _eventBus.namespace);
         await socket.bind();
-        _endpoint = CoapEndPoint(socket, _config, namespace: _namespace);
+        _endpoint =
+            CoapEndPoint(socket, _config, namespace: _eventBus.namespace);
         await _endpoint!.start();
       }
     });
@@ -370,7 +379,7 @@ class CoapClient {
   /// Returns the response, or null if timeout occured.
   FutureOr<CoapResponse> _waitForResponse(CoapRequest req, Duration timeout) {
     final completer = Completer<CoapResponse>();
-    req.eventBus!
+    _eventBus
         .on<CoapRespondEvent>()
         .where((CoapRespondEvent e) => e.resp.token!.equals(req.token!))
         .take(1)
@@ -394,7 +403,7 @@ class CoapClient {
   /// Returns the rejected message, or null if timeout occured.
   FutureOr<CoapMessage> _waitForReject(CoapRequest req, Duration timeout) {
     final completer = Completer<CoapMessage>();
-    req.eventBus!
+    _eventBus
         .on<CoapRejectedEvent>()
         .where((CoapRejectedEvent e) => e.msg.token!.equals(req.token!))
         .take(1)

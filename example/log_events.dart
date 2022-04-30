@@ -4,7 +4,7 @@
  * Date   : 06/06/2018
  * Copyright :  S.Hamblett
  *
- * A request demonstrating a blockwise (block1) post
+ * Using the internal request/response stream (for debugging for example)
  */
 
 import 'dart:async';
@@ -24,15 +24,11 @@ FutureOr<void> main(List<String> args) async {
   final payload = getRandomString(length: 2000);
 
   try {
-    print('Sending post /large-create to ${uri.host}');
-    var response =
-        await client.post('large-create', payload: payload, options: [opt]);
-    print('/large-create response status: ${response.statusCodeString}');
+    print('Listening to the internal request/response event stream');
+    client.events.on().listen(print);
 
-    print('Sending get /large-create to ${uri.host}');
-    response = await client.get('large-create');
-    print('/large-create response:\n${response.payloadString}');
-    print('E-Tags : ${CoapUtil.iterableToString(response.etags)}');
+    print('Sending post /large-create to ${uri.host}');
+    await client.post('large-create', payload: payload, options: [opt]);
 
     client.close();
   } catch (e) {
