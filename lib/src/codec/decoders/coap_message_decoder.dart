@@ -10,12 +10,11 @@ part of coap;
 /// Base class for message encoders.
 abstract class CoapMessageDecoder implements CoapIMessageDecoder {
   /// Instantiates.
-  CoapMessageDecoder(typed.Uint8Buffer data) {
-    _reader = CoapDatagramReader(data);
-  }
+  CoapMessageDecoder(typed.Uint8Buffer data)
+      : _reader = CoapDatagramReader(data);
 
   /// The bytes reader
-  CoapDatagramReader? _reader;
+  final CoapDatagramReader _reader;
 
   /// The version of the decoding message
   int? _version;
@@ -24,13 +23,13 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
   int? get version => _version;
 
   /// The type of the decoding message
-  int? _type;
+  abstract int _type;
 
   /// The length of token
   late int _tokenLength;
 
   /// The code of the decoding message
-  int? _code;
+  abstract int _code;
 
   /// The id of the decoding message
   int? _id;
@@ -44,13 +43,13 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
 
   @override
   bool get isRequest =>
-      _code! >= CoapConstants.requestCodeLowerBound &&
-      _code! <= CoapConstants.requestCodeUpperBound;
+      _code >= CoapConstants.requestCodeLowerBound &&
+      _code <= CoapConstants.requestCodeUpperBound;
 
   @override
   bool get isResponse =>
-      _code! >= CoapConstants.responseCodeLowerBound &&
-      _code! <= CoapConstants.responseCodeUpperBound;
+      _code >= CoapConstants.responseCodeLowerBound &&
+      _code <= CoapConstants.responseCodeUpperBound;
 
   @override
   bool get isEmpty => _code == CoapCode.empty;
@@ -58,13 +57,12 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
   @override
   CoapRequest? decodeRequest() {
     if (isRequest) {
-      final request = CoapRequest.withType(_code);
+      final request = CoapRequest(_code);
       request.type = _type;
       request.id = _id;
       parseMessage(request);
       return request;
     }
-
     return null;
   }
 
@@ -77,7 +75,6 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
       parseMessage(response);
       return response;
     }
-
     return null;
   }
 
@@ -90,7 +87,6 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
       parseMessage(message);
       return message;
     }
-
     return null;
   }
 

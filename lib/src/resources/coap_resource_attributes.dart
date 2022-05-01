@@ -28,16 +28,13 @@ class CoapResourceAttributes {
   Iterable<String> get keys => _attributes.keys;
 
   /// The resource title.
-  String? get title => getValues(CoapLinkFormat.title) == null
-      ? null
-      : getValues(CoapLinkFormat.title)!.first;
+  String? get title => getValues(CoapLinkFormat.title)?.firstOrNull;
 
   set title(String? value) => set(CoapLinkFormat.title, value);
 
   /// Gets or sets a value indicating if the resource is observable.
-  bool? get observable => getValues(CoapLinkFormat.observable) == null
-      ? null
-      : getValues(CoapLinkFormat.observable)!.first!.isNotEmpty;
+  bool? get observable =>
+      getValues(CoapLinkFormat.observable)?.firstOrNull?.isNotEmpty;
 
   set observable(bool? value) => set(CoapLinkFormat.observable, '');
 

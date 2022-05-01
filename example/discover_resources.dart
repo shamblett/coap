@@ -12,33 +12,19 @@ import 'package:coap/coap.dart';
 import 'config/coap_config.dart';
 
 FutureOr<void> main(List<String> args) async {
-  // Create a configuration class. Logging levels can be specified in
-  // the configuration file.
   final conf = CoapConfig();
-
-  // Build the request uri, note that the request paths/query parameters can be changed
-  // on the request anytime after this initial setup.
-  const host = 'coap.me';
-
-  final uri = Uri(scheme: 'coap', host: host, port: conf.defaultPort);
-
-  // Create the client.
-  // The method we are using creates its own request so we do not
-  // need to supply one.
-  // The current request is always available from the client.
+  final uri = Uri(scheme: 'coap', host: 'coap.me', port: conf.defaultPort);
   final client = CoapClient(uri, conf);
 
-  // Adjust the response timeout if needed, defaults to 32767 milliseconds
-  client.timeout = 10000;
+  try {
+    print('Sending get /discover/.well-known/core to ${uri.host}');
+    final links = await client.discover();
 
-  print('EXAMPLE - Discover client, sending discover request to '
-      '$host, waiting for response....');
+    print('Discovered resources:');
+    links?.forEach(print);
 
-  // Do the discovery, note that using this method forces the path to be .well-known/core
-  final links = await client.discover(null);
-  print('EXAMPLE  - Discovered resources:');
-  links?.forEach(print);
-
-  // Clean up
-  client.close();
+    client.close();
+  } catch (e) {
+    print('CoAP encountered an exception: $e');
+  }
 }

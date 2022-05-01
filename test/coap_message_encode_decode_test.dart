@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_use_of_protected_member
+
 /*
  * Package : Coap
  * Author : S. Hamblett <steve.hamblett@linux.com>
@@ -5,7 +7,7 @@
  * Copyright :  S.Hamblett
  */
 import 'package:coap/coap.dart';
-import 'package:coap/config/coap_config_logging.dart';
+import 'package:coap/config/coap_config_default.dart';
 import 'package:collection/collection.dart';
 import 'package:test/test.dart';
 import 'package:typed_data/typed_data.dart' as typed;
@@ -13,7 +15,7 @@ import 'package:typed_data/typed_data.dart' as typed;
 void main() {
   const leq = ListEquality<dynamic>();
   // ignore: unused_local_variable
-  final DefaultCoapConfig conf = CoapConfigLogging();
+  final DefaultCoapConfig conf = CoapConfigDefault();
   group('COAP All', () {
     final check = <String, List<List<int>>>{
       'RFC 7252': <List<int>>[
@@ -223,7 +225,7 @@ void main() {
 
     void testMessage(CoapISpec spec, int testNo) {
       final CoapMessage msg =
-          CoapRequest.isConfirmable(CoapCode.methodGET, confirmable: true);
+          CoapRequest(CoapCode.methodGET, confirmable: true);
 
       msg.id = 12345;
       msg.payload = typed.Uint8Buffer()..addAll('payload'.codeUnits);
@@ -241,7 +243,7 @@ void main() {
 
     void testMessageWithOptions(CoapISpec spec, int testNo) {
       final CoapMessage msg =
-          CoapRequest.isConfirmable(CoapCode.methodGET, confirmable: true);
+          CoapRequest(CoapCode.methodGET, confirmable: true);
 
       msg.id = 12345;
       msg.payload = typed.Uint8Buffer()..addAll('payload'.codeUnits);
@@ -271,7 +273,7 @@ void main() {
 
     void testMessageWithExtendedOption(CoapISpec spec, int testNo) {
       final CoapMessage msg =
-          CoapRequest.isConfirmable(CoapCode.methodGET, confirmable: true);
+          CoapRequest(CoapCode.methodGET, confirmable: true);
 
       msg.id = 12345;
       msg.addOption(CoapOption.createVal(12, 0));
@@ -302,8 +304,7 @@ void main() {
     }
 
     void testRequestParsing(CoapISpec spec, int testNo) {
-      final request =
-          CoapRequest.isConfirmable(CoapCode.methodPOST, confirmable: false);
+      final request = CoapRequest(CoapCode.methodPOST, confirmable: false);
       request.id = 7;
       request.token = typed.Uint8Buffer()..addAll(<int>[11, 82, 165, 77, 3]);
       request

@@ -35,17 +35,13 @@ FutureOr<void> main(List<String> args) async {
   // Create the request for the get request
   final request = CoapRequest.newGet();
   request.addUriPath('time');
-  // Mark the request as observable
-  request.markObserve();
-
-  client.request = request;
 
   print('EXAMPLE - Sending get observable request to '
       '$host, waiting for responses ....');
-  await client.get();
+  final obs = await client.observe(request);
 
   // Getting responses form the observable resource
-  request.responses.listen((CoapResponse? response) {
-    print('EXAMPLE - payload: ${response!.payloadString}');
+  obs.stream.listen((CoapRespondEvent e) {
+    print('EXAMPLE - payload: ${e.resp.payloadString}');
   });
 }

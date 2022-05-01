@@ -14,35 +14,28 @@ typedef HookFunction = void Function();
 /// each of which has a MessageType, a message identifier,
 /// a token (0-8 bytes), a collection of Options and a payload.
 class CoapMessage {
-  /// Default
-  CoapMessage();
-
-  /// Instantiates a message with the given type.
-  CoapMessage.withType(this.type);
-
-  /// Instantiates a message with the given type and code.
-  CoapMessage.withCode(this.type, this.code);
+  /// Constructor
+  CoapMessage(
+      {this.type = CoapMessageType.unknown, this.code = CoapCode.notSet});
 
   /// Indicates that no ID has been set.
   static const int none = -1;
 
-  /// Initial message id limit
-  static const int initialIdLimit = 32767;
-
-  /// Invalid message ID.
-  static const int invalidID = none;
-
   /// The type of this CoAP message.
-  int? type = CoapMessageType.unknown;
+  int type = CoapMessageType.unknown;
 
   /// The code of this CoAP message.
-  int? code = CoapCode.notSet;
+  int code = CoapCode.notSet;
 
   /// The codestring
   String get codeString => CoapCode.codeToString(code);
 
+  int? _id;
+
   /// The ID of this CoAP message.
-  int? id;
+  int? get id => _id;
+  @protected
+  set id(int? val) => _id = val;
 
   final Map<int, List<CoapOption>> _optionMap = <int, List<CoapOption>>{};
   CoapEventBus? _eventBus = CoapEventBus(namespace: '');
@@ -56,11 +49,14 @@ class CoapMessage {
   /// Bind address if not using the default
   InternetAddress? bindAddress;
 
+  @protected
   void setEventBus(CoapEventBus eventBus) {
     _eventBus = eventBus;
   }
 
   CoapEventBus? get eventBus => _eventBus;
+
+  String? get namespace => _eventBus?.namespace;
 
   /// Adds an option to the list of options of this CoAP message.
   CoapMessage addOption(CoapOption option) {
@@ -152,8 +148,8 @@ class CoapMessage {
   typed.Uint8Buffer? get token => _token;
 
   /// As a string
-  String? get tokenString =>
-      _token != null ? CoapByteArrayUtil.toHexString(_token!) : null;
+  String get tokenString =>
+      _token != null ? CoapByteArrayUtil.toHexString(_token!) : '';
 
   set token(typed.Uint8Buffer? value) {
     if (value != null && value.length > 8) {
@@ -165,11 +161,11 @@ class CoapMessage {
 
   /// Gets a value that indicates whether this CoAP message is a
   /// request message.
-  bool get isRequest => CoapCode.isRequest(code!);
+  bool get isRequest => CoapCode.isRequest(code);
 
   /// Gets a value that indicates whether this CoAP message is a
   /// response message.
-  bool get isResponse => CoapCode.isResponse(code!);
+  bool get isResponse => CoapCode.isResponse(code);
 
   /// Gets a value that indicates whether this CoAP message is
   /// an empty message.
@@ -177,87 +173,100 @@ class CoapMessage {
 
   /// Gets a value that indicates whether this CoAP message is a
   /// valid message.
-  bool get isValid => CoapCode.isValid(code!);
+  bool get isValid => CoapCode.isValid(code);
 
   /// The destination endpoint.
+  @protected
   CoapInternetAddress? destination;
 
   /// The source endpoint.
+  @protected
   CoapInternetAddress? source;
+
+  /// Acknowledged hook for attaching a callback if needed
+  HookFunction? acknowledgedHook;
 
   bool _acknowledged = false;
 
   /// Indicates whether this message has been acknowledged.
   bool get isAcknowledged => _acknowledged;
-
-  /// Acknowledged hook for attaching a callback if needed
-  HookFunction? acknowledgedHook;
-
+  @protected
   set isAcknowledged(bool value) {
     _acknowledged = value;
-    if (acknowledgedHook == null) {
-      _eventBus?.fire(CoapAcknowledgedEvent());
-    } else {
-      acknowledgedHook!();
-    }
+    _eventBus?.fire(CoapAcknowledgedEvent(this));
+    acknowledgedHook?.call();
   }
 
   bool _rejected = false;
 
   /// Indicates whether this message has been rejected.
   bool get isRejected => _rejected;
-
+  @protected
   set isRejected(bool value) {
     _rejected = value;
-    _eventBus?.fire(CoapRejectedEvent());
+    _eventBus?.fire(CoapRejectedEvent(this));
   }
+
+  /// Timed out hook function for attaching a callback if needed
+  HookFunction? timedOutHook;
 
   bool _timedOut = false;
 
   /// Indicates whether this message has been timed out.
   bool get isTimedOut => _timedOut;
-
-  /// Timed out hook function for attaching a callback if needed
-  HookFunction? timedOutHook;
-
+  @protected
   set isTimedOut(bool value) {
     _timedOut = value;
-    if (timedOutHook == null) {
-      _eventBus?.fire(CoapTimedOutEvent());
-    } else {
-      timedOutHook!();
-    }
+    _eventBus?.fire(CoapTimedOutEvent(this));
+    timedOutHook?.call();
   }
 
   /// Retransmit hook function
   HookFunction? retransmittingHook;
 
+  int _retransmits = 0;
+
+  /// The current number of retransmits
+  int get retransmits => _retransmits;
+
   /// Fire retransmitting event
   void fireRetransmitting() {
-    if (retransmittingHook != null) {
-      retransmittingHook!();
-    }
+    _retransmits++;
+    _eventBus?.fire(CoapRetransmitEvent(this));
+    retransmittingHook?.call();
   }
 
   bool _cancelled = false;
 
   /// Indicates whether this message has been cancelled.
   bool get isCancelled => _cancelled;
-
+  @protected
   set isCancelled(bool value) {
     _cancelled = value;
-    _eventBus?.fire(CoapCancelledEvent());
+    _eventBus?.fire(CoapCancelledEvent(this));
   }
 
+  bool _duplicate = false;
+
   /// Indicates whether this message is a duplicate.
-  bool duplicate = false;
+  bool get duplicate => _duplicate;
+  @protected
+  set duplicate(bool val) => _duplicate = val;
+
+  typed.Uint8Buffer? _bytes;
 
   /// The serialized message as byte array, or null if not serialized yet.
-  typed.Uint8Buffer? bytes;
+  typed.Uint8Buffer? get bytes => _bytes;
+  @protected
+  set bytes(typed.Uint8Buffer? val) => _bytes = val;
+
+  DateTime? _timestamp;
 
   /// The timestamp when this message has been received or sent,
   /// or null if neither has happened yet.
-  DateTime? timestamp;
+  DateTime? get timestamp => _timestamp;
+  @protected
+  set timestamp(DateTime? val) => _timestamp = val;
 
   /// The max times this message should be retransmitted if no ACK received.
   /// A value of 0 means that the CoapConstants.maxRetransmit time
@@ -279,7 +288,7 @@ class CoapMessage {
   typed.Uint8Buffer? payload;
 
   /// The size of the payload of this CoAP message.
-  int get payloadSize => null == payload ? 0 : payload!.length;
+  int get payloadSize => payload?.length ?? 0;
 
   /// The payload of this CoAP message in string representation.
   String? get payloadString {
@@ -325,17 +334,12 @@ class CoapMessage {
     return this;
   }
 
-  /// Cancels this message.
-  void cancel() {
-    isCancelled = true;
-  }
-
   @override
   String toString() => '\nType: ${type.toString()}, Code: $codeString, '
       'Id: ${id.toString()}, '
-      'Token: $tokenString, '
-      '\nOptions =\n[\n${CoapUtil.optionsToString(this)}], '
-      '\nPayload :\n$payloadString';
+      'Token: \'$tokenString\',\n'
+      'Options: ${CoapUtil.optionsToString(this)},\n'
+      'Payload: $payloadString';
 
   /// Select options helper
   Iterable<CoapOption> _selectOptions(int optionType) {
@@ -352,9 +356,8 @@ class CoapMessage {
       _selectOptions(optionTypeIfMatch).toList();
 
   /// Add an if match option, if a null string is passed the if match is not set
-  CoapMessage addIfMatch(String etag) {
-    return addOption(CoapOption.createString(optionTypeIfMatch, etag));
-  }
+  CoapMessage addIfMatch(String etag) =>
+      addOption(CoapOption.createString(optionTypeIfMatch, etag));
 
   /// Add an opaque if match
   CoapMessage addIfMatchOpaque(typed.Uint8Buffer opaque) {
@@ -373,7 +376,7 @@ class CoapMessage {
       final opt = CoapUtil.firstOrDefault(
           list,
           (CoapOption o) =>
-              CoapUtil.areSequenceEqualTo(opaque, o.valueBytes, equality));
+              CoapUtil.areSequenceEqualTo(opaque, o.byteValue, equality));
       if (opt != null) {
         _optionMap[optionTypeIfMatch]!.remove(opt);
         if (_optionMap[optionTypeIfMatch]!.isEmpty) {
@@ -406,7 +409,7 @@ class CoapMessage {
   /// Contains an opaque E-tag
   bool containsETagOpaque(typed.Uint8Buffer what) => CoapUtil.contains(
       getOptions(optionTypeETag)!,
-      (CoapOption o) => CoapUtil.areSequenceEqualTo(what, o.valueBytes));
+      (CoapOption o) => CoapUtil.areSequenceEqualTo(what, o.byteValue));
 
   /// Add an opaque ETag
   CoapMessage addETagOpaque(typed.Uint8Buffer? opaque) {
@@ -440,7 +443,7 @@ class CoapMessage {
       final opt = CoapUtil.firstOrDefault(
           list,
           (CoapOption o) =>
-              CoapUtil.areSequenceEqualTo(opaque, o.valueBytes, equality));
+              CoapUtil.areSequenceEqualTo(opaque, o.byteValue, equality));
       if (opt != null) {
         _optionMap[optionTypeETag]!.remove(opt);
         if (_optionMap[optionTypeETag]!.isEmpty) {
@@ -490,7 +493,7 @@ class CoapMessage {
       final opt = CoapUtil.firstOrDefault(
           list,
           (CoapOption o) =>
-              CoapUtil.areSequenceEqualTo(opaque, o.valueBytes, equality));
+              CoapUtil.areSequenceEqualTo(opaque, o.byteValue, equality));
       if (opt != null) {
         _optionMap[optionTypeIfNoneMatch]!.remove(opt);
         if (_optionMap[optionTypeIfNoneMatch]!.isEmpty) {
@@ -523,6 +526,7 @@ class CoapMessage {
     return host?.toString();
   }
 
+  @protected
   set uriHost(String? value) {
     if (value == null) {
       throw ArgumentError.notNull('Message::uriHost');
@@ -536,9 +540,9 @@ class CoapMessage {
 
   /// URI path
   String get uriPath {
-    var join = CoapOption.join(
+    final join = CoapOption.join(
         getOptions(optionTypeUriPath) as List<CoapOption>?, '/')!;
-    return join += '/';
+    return join + '/';
   }
 
   /// Sets a number of Uri path options from a string, ignores any trailing / character
@@ -558,14 +562,12 @@ class CoapMessage {
   String get uriPathsString {
     final sb = StringBuffer();
     for (final option in uriPaths) {
-      sb.write('${option.stringValue}/');
+      sb.write(option.stringValue);
+      if (option != uriPaths.last) {
+        sb.write('/');
+      }
     }
-    final out = sb.toString();
-    if (out.isNotEmpty) {
-      return out.substring(0, out.length - 1);
-    } else {
-      return out;
-    }
+    return sb.toString();
   }
 
   /// Add a URI path
@@ -622,14 +624,12 @@ class CoapMessage {
   String get uriQueriesString {
     final sb = StringBuffer();
     for (final option in uriQueries) {
-      sb.write('${option.stringValue}&');
+      sb.write(option.stringValue);
+      if (option != uriQueries.last) {
+        sb.write('&');
+      }
     }
-    final out = sb.toString();
-    if (out.isNotEmpty) {
-      return '?${out.substring(0, out.length - 1)}';
-    } else {
-      return '?$out';
-    }
+    return '?${sb.toString()}';
   }
 
   /// Add a URI query
@@ -641,7 +641,7 @@ class CoapMessage {
       throw ArgumentError.value(query.length, 'Message::addUriQuery',
           'Uri Query option\'s length must be between 0 and 255 inclusive');
     }
-    return addOption(CoapOption.createString(optionTypeUriQuery, query));
+    return addOption(CoapOption.createUriQuery(query));
   }
 
   /// Remove a URI query
@@ -667,12 +667,12 @@ class CoapMessage {
   }
 
   /// Uri port
-  int? get uriPort {
+  int get uriPort {
     final opt = getFirstOption(optionTypeUriPort);
-    return opt?.value;
+    return opt?.value ?? 0;
   }
 
-  set uriPort(int? value) {
+  set uriPort(int value) {
     if (value == 0) {
       removeOptions(optionTypeUriPort);
     } else {
@@ -684,14 +684,12 @@ class CoapMessage {
   String get locationPathsString {
     final sb = StringBuffer();
     for (final option in locationPaths) {
-      sb.write('${option.stringValue}/');
+      sb.write(option.stringValue);
+      if (option != locationPaths.last) {
+        sb.write('/');
+      }
     }
-    final out = sb.toString();
-    if (out.isNotEmpty) {
-      return out.substring(0, out.length - 1);
-    } else {
-      return out;
-    }
+    return sb.toString();
   }
 
   /// Set the location path from a string
@@ -776,14 +774,12 @@ class CoapMessage {
   String get locationQueriesString {
     final sb = StringBuffer();
     for (final option in locationQueries) {
-      sb.write('${option.stringValue}&');
+      sb.write(option.stringValue);
+      if (option != locationQueries.last) {
+        sb.write('&');
+      }
     }
-    final out = sb.toString();
-    if (out.isNotEmpty) {
-      return '?${out.substring(0, out.length - 1)}';
-    } else {
-      return '?$out';
-    }
+    return '?${sb.toString()}';
   }
 
   /// Add a location query
@@ -824,12 +820,12 @@ class CoapMessage {
   }
 
   /// Content type
-  int? get contentType {
+  int get contentType {
     final opt = getFirstOption(optionTypeContentType);
-    return (null == opt) ? CoapMediaType.undefined : opt.value;
+    return opt?.value ?? CoapMediaType.undefined;
   }
 
-  set contentType(int? value) {
+  set contentType(int value) {
     if (value == CoapMediaType.undefined) {
       removeOptions(optionTypeContentType);
     } else {
@@ -839,14 +835,14 @@ class CoapMessage {
 
   /// The content-format of this CoAP message,
   /// Same as ContentType, only another name.
-  int? get contentFormat => contentType;
+  int get contentFormat => contentType;
 
-  set contentFormat(int? value) => contentType = value;
+  set contentFormat(int value) => contentType = value;
 
   /// The max-age of this CoAP message.
   int get maxAge {
     final opt = getFirstOption(optionTypeMaxAge);
-    return (null == opt) ? CoapConstants.defaultMaxAge : opt.value;
+    return opt?.value ?? CoapConstants.defaultMaxAge;
   }
 
   set maxAge(int value) {
@@ -861,12 +857,12 @@ class CoapMessage {
   }
 
   /// Accept
-  int? get accept {
+  int get accept {
     final opt = getFirstOption(optionTypeAccept);
-    return (null == opt) ? CoapMediaType.undefined : opt.value;
+    return opt?.value ?? CoapMediaType.undefined;
   }
 
-  set accept(int? value) {
+  set accept(int value) {
     if (value == CoapMediaType.undefined) {
       removeOptions(optionTypeAccept);
     } else {
@@ -915,13 +911,10 @@ class CoapMessage {
   /// Observe
   int? get observe {
     final opt = getFirstOption(optionTypeObserve);
-    if (opt == null) {
-      return -1;
-    } else {
-      return opt.value;
-    }
+    return opt?.value;
   }
 
+  @protected
   set observe(int? value) {
     if (value == null) {
       removeOptions(optionTypeObserve);
@@ -937,9 +930,9 @@ class CoapMessage {
   }
 
   /// Size 1
-  int? get size1 {
+  int get size1 {
     final opt = getFirstOption(optionTypeSize1);
-    return opt == null ? 0 : opt.value;
+    return opt?.value ?? 0;
   }
 
   set size1(int? value) {
@@ -953,7 +946,7 @@ class CoapMessage {
   /// Size 2
   int? get size2 {
     final opt = getFirstOption(optionTypeSize2);
-    return opt == null ? 0 : opt.value;
+    return opt?.value ?? 0;
   }
 
   set size2(int? value) {

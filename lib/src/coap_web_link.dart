@@ -10,14 +10,12 @@ part of coap;
 /// This class can be used to programmatically browse a remote CoAP endoint.
 class CoapWebLink extends Comparable<CoapWebLink> {
   /// Instantiates.
-  CoapWebLink(String uri) {
-    _uri = uri;
-  }
+  CoapWebLink(this._uri);
 
-  String? _uri;
+  final String _uri;
 
   /// The URI
-  String? get uri => _uri;
+  String get uri => _uri;
   final CoapResourceAttributes _attributes = CoapResourceAttributes();
 
   /// Attributes
@@ -28,50 +26,36 @@ class CoapWebLink extends Comparable<CoapWebLink> {
     if (other == null) {
       throw ArgumentError.notNull('CoapWebLink::other');
     }
-    return _uri!.compareTo(other._uri);
+    return _uri.compareTo(other._uri);
   }
 
   @override
   String toString() {
     final sb = StringBuffer();
-    sb.write('<');
-    sb.write(_uri);
-    sb.write('>');
-    sb.write(' ');
+    sb.write('<$_uri> ');
     if (_attributes.isNotEmpty) {
       if (_attributes.contains(CoapLinkFormat.title)) {
-        sb.write('\n\t');
-        sb.write(CoapLinkFormat.title);
-        sb.write(':\t');
+        sb.write('\n\t${CoapLinkFormat.title}:\t');
         sb.write(_attributes.title);
       }
       if (_attributes.contains(CoapLinkFormat.resourceType)) {
-        sb.write('\n\t');
-        sb.write(CoapLinkFormat.resourceType);
-        sb.write(':\t');
+        sb.write('\n\t${CoapLinkFormat.resourceType}:\t');
         sb.write(_attributes.getResourceTypes());
       }
       if (_attributes.contains(CoapLinkFormat.interfaceDescription)) {
-        sb.write('\n\t');
-        sb.write(CoapLinkFormat.interfaceDescription);
-        sb.write(':\t');
+        sb.write('\n\t${CoapLinkFormat.interfaceDescription}:\t');
         sb.write(_attributes.getInterfaceDescriptions());
       }
       if (_attributes.contains(CoapLinkFormat.contentType)) {
-        sb.write('\n\t');
-        sb.write(CoapLinkFormat.contentType);
-        sb.write(':\t');
+        sb.write('\n\t${CoapLinkFormat.contentType}:\t');
         sb.write(_attributes.getContentTypes());
       }
       if (_attributes.contains(CoapLinkFormat.maxSizeEstimate)) {
-        sb.write('\n\t');
-        sb.write(CoapLinkFormat.maxSizeEstimate);
-        sb.write(':\t');
+        sb.write('\n\t${CoapLinkFormat.maxSizeEstimate}:\t');
         sb.write(_attributes.maximumSizeEstimate);
       }
       if (_attributes.observable != null) {
-        sb.write('\n\t');
-        sb.write(CoapLinkFormat.observable);
+        sb.write('\n\t${CoapLinkFormat.observable}');
       }
     }
     return sb.toString();

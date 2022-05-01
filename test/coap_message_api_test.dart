@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_use_of_protected_member
+
 /*
  * Package : Coap
  * Author : S. Hamblett <steve.hamblett@linux.com>
@@ -6,14 +8,14 @@
  */
 
 import 'package:coap/coap.dart';
-import 'package:coap/config/coap_config_logging.dart';
+import 'package:coap/config/coap_config_default.dart';
 import 'package:test/test.dart';
 
 // Note that nnot all API methods are tested here, some are tested in other unit test suites,
 // some in dynamic testing.
 void main() {
   // ignore: unused_local_variable
-  final DefaultCoapConfig conf = CoapConfigLogging();
+  final DefaultCoapConfig conf = CoapConfigDefault();
 
   test('Construction', () {
     final message = CoapMessage();
@@ -24,7 +26,7 @@ void main() {
     expect(message.optionMap.isEmpty, isTrue);
     expect(message.bindAddress, isNull);
     expect(message.token, isNull);
-    expect(message.tokenString, isNull);
+    expect(message.tokenString, '');
     expect(message.destination, isNull);
     expect(message.source, isNull);
     expect(message.isAcknowledged, isFalse);
@@ -115,7 +117,7 @@ void main() {
     message.isAcknowledged = false;
     expect(message.isAcknowledged, isFalse);
     expect(acked, isTrue);
-    expect(eventBus.lastEvent, isNull);
+    expect(eventBus.lastEvent is CoapAcknowledgedEvent, isTrue);
   });
 
   test('Rejected', () {
@@ -143,7 +145,7 @@ void main() {
     message.isTimedOut = false;
     expect(message.isTimedOut, isFalse);
     expect(timedOut, isTrue);
-    expect(eventBus.lastEvent, isNull);
+    expect(eventBus.lastEvent is CoapTimedOutEvent, isTrue);
   });
 
   test('Retransmitting', () {
@@ -158,17 +160,6 @@ void main() {
     message.retransmittingHook = retransHook;
     message.fireRetransmitting();
     expect(retrans, isTrue);
-  });
-
-  test('Cancelled', () {
-    final message = CoapMessage();
-    message.isCancelled = true;
-    expect(message.isCancelled, isTrue);
-    final eventBus = CoapEventBus(namespace: '');
-    expect(eventBus.lastEvent is CoapCancelledEvent, isTrue);
-    message.isCancelled = false;
-    message.cancel();
-    expect(message.isCancelled, isTrue);
   });
 
   test('Payload', () {
@@ -186,7 +177,7 @@ void main() {
     expect(message.ifMatches.length, 2);
     expect(message.ifMatches.toList()[0].stringValue, 'ETag-1');
     expect(message.ifMatches.toList()[1].stringValue, 'ETag-2');
-    message.removeIfMatchOpaque(message.ifMatches.toList()[0].valueBytes);
+    message.removeIfMatchOpaque(message.ifMatches.toList()[0].byteValue);
     expect(message.ifMatches.length, 1);
     expect(message.ifMatches.toList()[0].stringValue, 'ETag-2');
     message.clearIfMatches();
@@ -212,9 +203,9 @@ void main() {
     expect(() => message.addEtag(none), throwsArgumentError);
     message.addEtag(etag1);
     expect(message.etags.length, 1);
-    message.addETagOpaque(etag2.valueBytes);
+    message.addETagOpaque(etag2.byteValue);
     expect(message.etags.length, 2);
-    message.removeETagOpaque(etag2.valueBytes);
+    message.removeETagOpaque(etag2.byteValue);
     expect(message.etags.length, 1);
     expect(message.etags.toList()[0] == etag1, isTrue);
     message.clearETags();
@@ -240,9 +231,9 @@ void main() {
     expect(() => message.addIfNoneMatch(none), throwsArgumentError);
     final inm3 = CoapOption(optionTypeIfNoneMatch);
     inm3.stringValue = 'Inm3';
-    message.addIfNoneMatchOpaque(inm3.valueBytes);
+    message.addIfNoneMatchOpaque(inm3.byteValue);
     expect(message.ifNoneMatches.length, 3);
-    message.removeIfNoneMatchOpaque(inm2.valueBytes);
+    message.removeIfNoneMatchOpaque(inm2.byteValue);
     expect(message.ifNoneMatches.length, 2);
     expect(() => message.removeIfNoneMatch(none), throwsArgumentError);
     message.clearIfNoneMatches();

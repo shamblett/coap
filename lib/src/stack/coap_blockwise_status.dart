@@ -22,7 +22,7 @@ class CoapBlockwiseStatus {
   static const int noObserve = -1;
 
   /// Current num
-  int? currentNUM = 0;
+  int currentNUM = 0;
 
   /// Vurrent SZX
   int currentSZX = 0;

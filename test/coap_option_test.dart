@@ -5,7 +5,6 @@
  * Copyright :  S.Hamblett
  */
 import 'dart:convert';
-import 'dart:math';
 import 'package:coap/coap.dart';
 import 'package:test/test.dart';
 import 'package:typed_data/typed_data.dart' as typed;
@@ -18,41 +17,31 @@ void main() {
       final raw = typed.Uint8Buffer(3);
       raw.addAll(encoder.convert('raw'));
       final opt = CoapOption.createRaw(optionTypeContentType, raw);
-      expect(opt.valueBytes, raw);
+      expect(opt.byteValue, raw);
       expect(opt.type, optionTypeContentType);
     });
 
     test('IntValue', () {
       const oneByteValue = 255;
       const twoByteValue = oneByteValue + 1;
-      const fourByteValue = 65535 + 1;
+      final fourByteValue = (1 << 32) - 1;
+      final fiveByteValue = fourByteValue + 1;
       final opt1 = CoapOption.createVal(optionTypeContentType, oneByteValue);
       final opt2 = CoapOption.createVal(optionTypeContentType, twoByteValue);
       final opt3 = CoapOption.createVal(optionTypeContentType, fourByteValue);
+      final opt4 = CoapOption.createVal(optionTypeContentType, fiveByteValue);
       expect(opt1.length, 1);
       expect(opt2.length, 2);
       expect(opt3.length, 4);
+      expect(opt4.length, 8);
       expect(opt1.intValue, oneByteValue);
       expect(opt2.intValue, twoByteValue);
-      expect(opt3.intValue, 0);
+      expect(opt3.intValue, fourByteValue);
+      expect(opt4.intValue, fiveByteValue);
       expect(opt1.type, optionTypeContentType);
       expect(opt2.type, optionTypeContentType);
       expect(opt3.type, optionTypeContentType);
-    });
-
-    test('LongValue', () {
-      final fourByteValue = pow(2, 32) - 1;
-      final fiveByteValue = fourByteValue + 1;
-      final opt1 =
-          CoapOption.createLongVal(optionTypeContentType, fourByteValue as int);
-      final opt2 =
-          CoapOption.createLongVal(optionTypeContentType, fiveByteValue as int);
-      expect(opt1.length, 8);
-      expect(opt2.length, 8);
-      expect(opt1.longValue, fourByteValue);
-      expect(opt2.longValue, fiveByteValue);
-      expect(opt1.type, optionTypeContentType);
-      expect(opt2.type, optionTypeContentType);
+      expect(opt4.type, optionTypeContentType);
     });
 
     test('String', () {
@@ -71,17 +60,12 @@ void main() {
     test('Value', () {
       final opt = CoapOption.createVal(optionTypeMaxAge, 10);
       expect(opt.value, 10);
-      final opt1 = CoapOption.createString(optionTypeUriQuery, 'Hello');
+      final opt1 = CoapOption.createUriQuery('Hello');
       expect(opt1.value, 'Hello');
       final opt2 = CoapOption.create(optionTypeReserved);
       expect(opt2.value, isNull);
       final opt3 = CoapOption.create(1000);
       expect(opt3.value, isNull);
-    });
-
-    test('Long value', () {
-      final opt = CoapOption.createLongVal(optionTypeMaxAge, 10);
-      expect(opt.value, 10);
     });
 
     test('Is default', () {
@@ -107,31 +91,16 @@ void main() {
       expect(CoapOption.getFormatByType(1000), OptionFormat.unknown);
     });
 
-    test('Hash code', () {
-      final opt = CoapOption.createVal(optionTypeMaxAge, 10);
-      expect(opt.hashCode, 45);
-    });
-
     test('Equality', () {
       const oneByteValue = 255;
       const twoByteValue = 256;
 
       final opt1 = CoapOption.createVal(optionTypeContentType, oneByteValue);
       final opt2 = CoapOption.createVal(optionTypeContentType, twoByteValue);
-      final opt22 = CoapOption.createVal(optionTypeContentType, twoByteValue);
+      final opt3 = CoapOption.createVal(optionTypeContentType, twoByteValue);
 
       expect(opt1 == opt2, isFalse);
-      expect(opt2 == opt22, isTrue);
-    });
-
-    test('Set value', () {
-      final option = CoapOption.create(optionTypeReserved);
-
-      option.valueBytes = typed.Uint8Buffer(4);
-      expect(option.length, 4);
-
-      option.valueBytesList = <int>[69, 152, 35, 55, 152, 116, 35, 152];
-      expect(option.valueBytes, <int>[69, 152, 35, 55, 152, 116, 35, 152]);
+      expect(opt2 == opt3, isTrue);
     });
 
     test('Set string value', () {
@@ -148,90 +117,58 @@ void main() {
       final option = CoapOption.create(optionTypeReserved);
 
       option.intValue = 0;
-      expect(option.valueBytes![0], 0);
+      expect(option.byteValue[0], 0);
 
       option.intValue = 11;
-      expect(option.valueBytes![0], 11);
+      expect(option.byteValue[0], 11);
 
       option.intValue = 255;
-      expect(option.valueBytes![0], 255);
+      expect(option.byteValue[0], 255);
 
       option.intValue = 256;
-      expect(option.valueBytes![0], 0);
-      expect(option.valueBytes![1], 1);
+      expect(option.byteValue[0], 0);
+      expect(option.byteValue[1], 1);
 
       option.intValue = 18273;
-      expect(option.valueBytes![0], 97);
-      expect(option.valueBytes![1], 71);
+      expect(option.byteValue[0], 97);
+      expect(option.byteValue[1], 71);
 
       option.intValue = 1 << 16;
-      expect(option.valueBytes![0], 0);
-      expect(option.valueBytes![1], 0);
-      expect(option.valueBytes![2], 1);
+      expect(option.byteValue[0], 0);
+      expect(option.byteValue[1], 0);
+      expect(option.byteValue[2], 1);
 
       option.intValue = 23984773;
-      expect(option.valueBytes![0], 133);
-      expect(option.valueBytes![1], 250);
-      expect(option.valueBytes![2], 109);
-      expect(option.valueBytes![3], 1);
+      expect(option.byteValue[0], 133);
+      expect(option.byteValue[1], 250);
+      expect(option.byteValue[2], 109);
+      expect(option.byteValue[3], 1);
 
       option.intValue = 0xFFFFFFFF;
-      expect(option.valueBytes![0], 0xFF);
-      expect(option.valueBytes![1], 0xFF);
-      expect(option.valueBytes![2], 0xFF);
-      expect(option.valueBytes![3], 0xFF);
-    });
+      expect(option.byteValue[0], 0xFF);
+      expect(option.byteValue[1], 0xFF);
+      expect(option.byteValue[2], 0xFF);
+      expect(option.byteValue[3], 0xFF);
 
-    test('Set long value', () {
-      final option = CoapOption.create(optionTypeReserved);
+      option.intValue = 0x9823749837239845;
+      expect(option.byteValue[0], 69);
+      expect(option.byteValue[1], 152);
+      expect(option.byteValue[2], 35);
+      expect(option.byteValue[3], 55);
+      expect(option.byteValue[4], 152);
+      expect(option.byteValue[5], 116);
+      expect(option.byteValue[6], 35);
+      expect(option.byteValue[7], 152);
 
-      option.longValue = 0;
-      expect(option.valueBytes![0], 0);
-
-      option.longValue = 11;
-      expect(option.valueBytes![0], 11);
-
-      option.longValue = 255;
-      expect(option.valueBytes![0], 255);
-
-      option.longValue = 256;
-      expect(option.valueBytes![0], 0);
-      expect(option.valueBytes![1], 1);
-
-      option.longValue = 18273;
-      expect(option.valueBytes![0], 97);
-      expect(option.valueBytes![1], 71);
-
-      option.longValue = 1 << 16;
-      expect(option.valueBytes![0], 0);
-      expect(option.valueBytes![1], 0);
-      expect(option.valueBytes![2], 1);
-
-      option.longValue = 23984773;
-      expect(option.valueBytes![0], 133);
-      expect(option.valueBytes![1], 250);
-      expect(option.valueBytes![2], 109);
-      expect(option.valueBytes![3], 1);
-
-      option.longValue = 0xFFFFFFFF;
-      expect(option.valueBytes![0], 0xFF);
-      expect(option.valueBytes![1], 0xFF);
-      expect(option.valueBytes![2], 0xFF);
-      expect(option.valueBytes![3], 0xFF);
-
-      option.longValue = 0x9823749837239845;
-      expect(option.valueBytes!.toList(),
-          <int>[69, 152, 35, 55, 152, 116, 35, 152]);
-
-      option.longValue = 0xFFFFFFFFFFFFFFFF;
-      expect(option.valueBytes![0], 0xFF);
-      expect(option.valueBytes![1], 0xFF);
-      expect(option.valueBytes![2], 0xFF);
-      expect(option.valueBytes![3], 0xFF);
-      expect(option.valueBytes![4], 0xFF);
-      expect(option.valueBytes![5], 0xFF);
-      expect(option.valueBytes![6], 0xFF);
-      expect(option.valueBytes![7], 0xFF);
+      option.intValue = 0xFFFFFFFFFFFFFFFF;
+      expect(option.byteValue[0], 0xFF);
+      expect(option.byteValue[1], 0xFF);
+      expect(option.byteValue[2], 0xFF);
+      expect(option.byteValue[3], 0xFF);
+      expect(option.byteValue[4], 0xFF);
+      expect(option.byteValue[5], 0xFF);
+      expect(option.byteValue[6], 0xFF);
+      expect(option.byteValue[7], 0xFF);
     });
 
     test('Split', () {
@@ -310,7 +247,7 @@ void main() {
         final block =
             CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m: m);
         final copy = CoapBlockOption(optionTypeBlock1);
-        copy.valueBytes = block.valueBytes;
+        copy.byteValue = block.byteValue;
         expect(block.szx, copy.szx);
         expect(block.m, copy.m);
         expect(block.num, copy.num);

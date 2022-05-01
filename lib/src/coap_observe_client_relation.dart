@@ -13,63 +13,40 @@ part of coap;
 /// established and to cancel or refresh the relation.
 class CoapObserveClientRelation {
   /// Construction
-  CoapObserveClientRelation(
-      CoapRequest request, CoapIEndPoint? endpoint, DefaultCoapConfig config,
-      {required String namespace}) {
-    _config = config;
-    _request = request;
-    _endpoint = endpoint;
-    _eventBus = CoapEventBus(namespace: namespace);
-    _orderer = CoapObserveNotificationOrderer(config);
-    _eventBus.on<CoapReregisteringEvent>().listen(_onReregister);
-  }
+  CoapObserveClientRelation(this._request);
 
-  DefaultCoapConfig? _config;
-  CoapRequest? _request;
-  late final CoapEventBus _eventBus;
+  /// Response stream
+  Stream<CoapRespondEvent> get stream => _request.eventBus!
+      .on<CoapRespondEvent>()
+      .where((CoapRespondEvent e) => e.resp.token!.equals(_request.token!))
+      .takeWhile((_) => !_request.isTimedOut && !_request.isCancelled);
 
-  /// Request
-  CoapRequest? get request => _request;
-  CoapIEndPoint? _endpoint;
+  final CoapRequest _request;
+
+  bool _cancelled = false;
 
   /// Cancelled
-  bool? cancelled;
-
-  /// Current response
-  CoapResponse? current;
-  CoapObserveNotificationOrderer? _orderer;
-
-  /// Orderer
-  CoapObserveNotificationOrderer? get orderer => _orderer;
-
-  /// Cancel after the fact
-  void reactiveCancel() {
-    _request!.isCancelled = true;
-    cancelled = true;
+  bool get isCancelled => _cancelled;
+  @protected
+  set isCancelled(bool val) {
+    _request.isCancelled = val;
+    _cancelled = val;
   }
 
-  /// Cancel
-  void proactiveCancel() {
+  /// Create a cancellation request
+  @protected
+  CoapRequest newCancel() {
     final cancel = CoapRequest.newGet();
     // Copy options, but set Observe to cancel
-    cancel.setOptions(_request!.getAllOptions());
-    cancel.markObserveCancel();
+    cancel.setOptions(_request.getAllOptions());
+    cancel.observe = 1;
     // Use same Token
-    cancel.token = _request!.token;
-    cancel.destination = _request!.destination;
+    cancel.token = _request.token;
+    cancel.destination = _request.destination;
 
     // Dispatch final response to the same message observers
-    cancel.copyEventHandler(_request!);
+    cancel.copyEventHandler(_request);
 
-    cancel.sendWithEndpoint(_endpoint);
-    // Cancel old ongoing request
-    _request!.isCancelled = true;
-    cancelled = true;
-  }
-
-  void _onReregister(CoapReregisteringEvent e) {
-    // Reset orderer to accept any sequence number since server
-    // might have rebooted.
-    _orderer = CoapObserveNotificationOrderer(_config);
+    return cancel;
   }
 }

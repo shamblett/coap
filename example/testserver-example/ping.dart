@@ -33,7 +33,7 @@ FutureOr<void> main(List<String> args) async {
       '$host, waiting for response....');
 
   // Perform the ping
-  final pingOk = await client.ping(10000);
+  final pingOk = await client.ping();
 
   if (pingOk) {
     print('EXAMPLE - Ping response OK ');

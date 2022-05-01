@@ -268,38 +268,19 @@ class CoapMediaType {
   }
 
   /// Parse
-  static int? parse(String? type) {
-    if (type == null) {
-      return CoapMediaType.undefined;
-    }
-    int? keyRet;
-    _registry.forEach((int key, List<String> value) {
-      if (value[0].toLowerCase() == type.toLowerCase()) {
-        keyRet = key;
-      }
-    });
-    if (keyRet != null) {
-      return keyRet;
-    } else {
-      return CoapMediaType.undefined;
-    }
-  }
+  static int? parse(String type) =>
+      _registry.keys.firstWhereOrNull((int key) =>
+          _registry[key]![0].toLowerCase() == type.toLowerCase()) ??
+      CoapMediaType.undefined;
 
   /// Wildcard parse
   static List<int>? parseWildcard(String? regex) {
     if (regex == null) {
       return null;
     }
-    final res = <int>[];
-    var regex1 = regex.trim().substring(0, regex.indexOf('*')).trim();
-    regex1 += '.*';
-    final r = RegExp(regex1);
-    _registry.forEach((int key, List<String> value) {
-      final mime = value[0];
-      if (r.hasMatch(mime)) {
-        res.add(key);
-      }
-    });
-    return res;
+    final r = RegExp(regex.substring(0, regex.indexOf('*')).trim() + '.*');
+    return _registry.keys
+        .where((int key) => r.hasMatch(_registry[key]![0]))
+        .toList();
   }
 }

@@ -34,14 +34,9 @@ class CoapObservingEndpoint {
   }
 
   /// Finds the observe relation by token.
-  CoapObserveRelation? getObserveRelation(typed.Uint8Buffer token) {
-    for (final relation in _relations) {
-      if (CoapByteArrayUtil.equals(token, relation.exchange!.request!.token)) {
-        return relation;
-      }
-    }
-    return null;
-  }
+  CoapObserveRelation? getObserveRelation(typed.Uint8Buffer token) =>
+      _relations.firstWhereOrNull((CoapObserveRelation relation) =>
+          token.equals(relation.exchange.request!.token!));
 
   /// Cancels all observe relations that this endpoint has established with
   /// resources from this server.

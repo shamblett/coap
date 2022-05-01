@@ -123,7 +123,7 @@ class CoapCode {
 
   /// Checks whether a code indicates an empty message
   /// Returns true iff the code indicates an empty message
-  static bool isEmpty(int? code) => code == 0;
+  static bool isEmpty(int code) => code == 0;
 
   /// Checks whether a code represents a success code.
   static bool isSuccess(int code) => code >= 64 && code < 96;
@@ -134,10 +134,7 @@ class CoapCode {
       (code >= 0) && (code <= 255); // allow unknown custom codes;
 
   /// Returns a string representation of the code
-  static String codeToString(int? code) {
-    if (code == null) {
-      return 'Null status code';
-    }
+  static String codeToString(int code) {
     switch (code) {
       case notSet:
         return 'Not Set';

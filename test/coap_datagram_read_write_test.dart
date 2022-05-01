@@ -6,7 +6,7 @@
  */
 
 import 'package:coap/coap.dart';
-import 'package:coap/config/coap_config_logging.dart';
+import 'package:coap/config/coap_config_default.dart';
 import 'package:collection/collection.dart';
 import 'package:test/test.dart';
 import 'package:typed_data/typed_data.dart' as typed;
@@ -14,7 +14,7 @@ import 'package:typed_data/typed_data.dart' as typed;
 void main() {
   const leq = ListEquality<dynamic>();
   // ignore: unused_local_variable
-  final DefaultCoapConfig conf = CoapConfigLogging();
+  final DefaultCoapConfig conf = CoapConfigDefault();
 
   test('Test32BitInt', () {
     const intIn = 0x87654321;
@@ -215,7 +215,7 @@ void main() {
     writer.write(codeIn, codeSz);
     writer.write(msgIdIn, msgIdSz);
 
-    final data = writer.toByteArray()!;
+    final data = writer.toByteArray();
     final dataRef = typed.Uint8Buffer()..addAll(<int>[0x41, 0x01, 0x12, 0x34]);
 
     expect(leq.equals(dataRef.toList(), data.toList()), isTrue);

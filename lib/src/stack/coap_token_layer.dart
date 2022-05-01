@@ -24,10 +24,10 @@ class CoapTokenLayer extends CoapAbstractLayer {
 
   @override
   void sendResponse(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse? response) {
+      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
     // A response must have the same token as the request it belongs to. If
     // the token is empty, we must use a byte array of length 0.
-    response!.token ??= exchange.currentRequest!.token;
+    response.token ??= exchange.currentRequest!.token;
     super.sendResponse(nextLayer, exchange, response);
   }
 

@@ -31,7 +31,7 @@ class CoapBlockOption extends CoapOption {
   }
 
   /// Set the raw value directly
-  set rawValue(int? num) => intValue = num;
+  set rawValue(int num) => intValue = num;
 
   /// Block number.
   int get num => intValue >> 4;
@@ -85,11 +85,11 @@ class CoapBlockOption extends CoapOption {
 
   /// Strips leading zeros for 32 bit integers
   typed.Uint8Buffer? _compressValueBytes() {
-    if (valueBytes!.length == 4) {
-      if (valueBytes![3] == 0) {
-        return typed.Uint8Buffer()..addAll(valueBytes!.take(3).toList());
+    if (byteValue.length == 4) {
+      if (byteValue[3] == 0) {
+        return typed.Uint8Buffer()..addAll(byteValue.take(3).toList());
       }
     }
-    return valueBytes;
+    return byteValue;
   }
 }

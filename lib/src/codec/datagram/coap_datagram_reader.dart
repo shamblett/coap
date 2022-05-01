@@ -11,19 +11,17 @@ part of coap;
 /// datagrams on bit-level.
 class CoapDatagramReader {
   /// Initializes a new DatagramReader object
-  CoapDatagramReader(typed.Uint8Buffer? buffer) {
-    _buffer = buffer;
-    _currentByte = ByteData(1);
-    _currentBitIndex = -1;
-  }
+  CoapDatagramReader(this._buffer)
+      : _currentByte = ByteData(1),
+        _currentBitIndex = -1;
 
-  typed.Uint8Buffer? _buffer;
+  final typed.Uint8Buffer _buffer;
 
   /// Bytes available
-  bool get bytesAvailable => _buffer!.isNotEmpty;
+  bool get bytesAvailable => _buffer.isNotEmpty;
 
-  late ByteData _currentByte;
-  late int _currentBitIndex;
+  final ByteData _currentByte;
+  int _currentBitIndex;
 
   /// Reads a sequence of bits from the stream
   int read(int numBits) {
@@ -52,7 +50,7 @@ class CoapDatagramReader {
     // For negative count values, read all bytes left
     var bufferCount = count;
     if (count < 0) {
-      bufferCount = _buffer!.length;
+      bufferCount = _buffer.length;
     }
 
     final bytes = typed.Uint8Buffer();
@@ -64,9 +62,9 @@ class CoapDatagramReader {
       }
     } else {
       final removed =
-          _buffer!.getRange(0, min(bufferCount, _buffer!.length)).toList();
+          _buffer.getRange(0, min(bufferCount, _buffer.length)).toList();
       bytes.insertAll(0, removed);
-      _buffer!.removeRange(0, bytes.length);
+      _buffer.removeRange(0, bytes.length);
     }
 
     return bytes;
@@ -79,7 +77,7 @@ class CoapDatagramReader {
   typed.Uint8Buffer readBytesLeft() => readBytes(-1);
 
   void _readCurrentByte() {
-    final val = bytesAvailable ? _buffer!.removeAt(0) : 0;
+    final val = bytesAvailable ? _buffer.removeAt(0) : 0;
 
     if (val >= 0) {
       _currentByte.setUint8(0, val);

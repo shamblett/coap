@@ -94,18 +94,9 @@ class CoapExchange {
   CoapIOutbox? _outbox;
 
   /// Outbox
-  CoapIOutbox? get outbox =>
-      _outbox ?? (endpoint == null ? null : endpoint!.outbox);
+  CoapIOutbox? get outbox => _outbox ?? endpoint?.outbox;
 
   set outbox(CoapIOutbox? value) => _outbox = value;
-
-  CoapIMessageDeliverer? _deliverer;
-
-  /// Deliverer
-  CoapIMessageDeliverer? get deliverer =>
-      _deliverer ?? (endpoint == null ? null : endpoint!.deliverer);
-
-  set deliverer(CoapIMessageDeliverer? value) => _deliverer = value;
 
   /// Reject this exchange and therefore the request.
   /// Sends an RST back to the client.
@@ -133,7 +124,24 @@ class CoapExchange {
   void sendResponse(CoapResponse resp) {
     resp.destination = request!.source;
     response = resp;
-    endpoint!.sendEpResponse(this, response);
+    endpoint!.sendEpResponse(this, resp);
+  }
+
+  /// Fire the reregistering event
+  void fireReregistering(CoapRequest req) {
+    _eventBus.fire(CoapReregisteringEvent(req));
+  }
+
+  /// Fire the responding event
+  void fireResponding(CoapResponse resp) {
+    _eventBus.fire(CoapRespondingEvent(resp));
+  }
+
+  // Fire the respond event
+  void fireRespond(CoapResponse resp) {
+    // block1 requests only have token set on their blocks
+    request!.token ??= currentRequest!.token;
+    _eventBus.fire(CoapRespondEvent(resp));
   }
 
   /// Attributes
@@ -159,84 +167,4 @@ class CoapExchange {
 
   /// Remove
   Object? remove(Object key) => _attributes.remove(key);
-}
-
-/// Key identifier
-class CoapKeyId {
-  /// Construction
-  CoapKeyId(this._id) {
-    _hash = _id! * 31;
-  }
-
-  final int? _id;
-  int? _hash;
-
-  @override
-  int get hashCode => _hash!;
-
-  @override
-  bool operator ==(Object other) {
-    if (other is CoapKeyId) {
-      return (_id == other._id) && (_hash == other._hash);
-    }
-    return false;
-  }
-
-  @override
-  String toString() => 'KeyID[$_id])';
-}
-
-/// Key token
-class CoapKeyToken {
-  /// Construction
-  CoapKeyToken(typed.Uint8Buffer? token) {
-    if (token == null) {
-      throw ArgumentError.notNull('CoapKeyToken::token');
-    }
-    _token = token;
-    _hash = CoapByteArrayUtil.computeHash(_token);
-  }
-
-  late typed.Uint8Buffer _token;
-  int? _hash;
-
-  @override
-  int get hashCode => _hash!;
-
-  @override
-  bool operator ==(Object other) {
-    if (other is CoapKeyToken) {
-      return _hash == other.hashCode;
-    }
-    return false;
-  }
-
-  @override
-  String toString() => 'KeyToken[${CoapByteArrayUtil.toHexString(_token)}]';
-}
-
-/// Key URI
-class CoapKeyUri {
-  /// Construction
-  CoapKeyUri(this._uri, this._endpoint) {
-    _hash = _uri.hashCode * 31 + (_endpoint == null ? 0 : _endpoint.hashCode);
-  }
-
-  final Uri _uri;
-  final CoapInternetAddress? _endpoint;
-  late int _hash;
-
-  @override
-  int get hashCode => _hash;
-
-  @override
-  bool operator ==(Object other) {
-    if (other is CoapKeyUri) {
-      return (_uri == other._uri) && (_endpoint == other._endpoint);
-    }
-    return false;
-  }
-
-  @override
-  String toString() => 'KeyUri[$_uri for $_endpoint]';
 }

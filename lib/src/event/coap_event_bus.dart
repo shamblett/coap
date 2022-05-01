@@ -7,106 +7,121 @@
 
 part of coap;
 
+abstract class CoapMessageEvent {
+  CoapMessageEvent(this.msg);
+
+  /// Event message
+  CoapMessage msg;
+
+  @override
+  String toString() => '$runtimeType: $msg';
+}
+
+abstract class CoapRequestEvent {
+  CoapRequestEvent(this.req);
+
+  /// Event request
+  CoapRequest req;
+
+  @override
+  String toString() => '$runtimeType: $req';
+}
+
+abstract class CoapResponseEvent {
+  CoapResponseEvent(this.resp);
+
+  /// Event response
+  CoapResponse resp;
+
+  @override
+  String toString() => '$runtimeType: $resp';
+}
+
+abstract class CoapExchangeEvent {
+  CoapExchangeEvent(this.exchange);
+
+  /// Event exchange
+  CoapExchange exchange;
+
+  @override
+  String toString() =>
+      '$runtimeType:\nExchange for request ${exchange.request?.id} '
+      '(token \'${exchange.request?.tokenString}\')';
+}
+
 /// Acknowledged event
-class CoapAcknowledgedEvent {}
+class CoapAcknowledgedEvent extends CoapMessageEvent {
+  CoapAcknowledgedEvent(CoapMessage msg) : super(msg);
+}
 
 /// Rejected event
-class CoapRejectedEvent {}
+class CoapRejectedEvent extends CoapMessageEvent {
+  CoapRejectedEvent(CoapMessage msg) : super(msg);
+}
+
+/// Retransmitted event
+class CoapRetransmitEvent extends CoapMessageEvent {
+  CoapRetransmitEvent(CoapMessage msg) : super(msg);
+}
 
 /// Timed out event
-class CoapTimedOutEvent {}
+class CoapTimedOutEvent extends CoapMessageEvent {
+  CoapTimedOutEvent(CoapMessage msg) : super(msg);
+}
 
 /// Cancelled event
-class CoapCancelledEvent {}
+class CoapCancelledEvent extends CoapMessageEvent {
+  CoapCancelledEvent(CoapMessage msg) : super(msg);
+}
 
 /// Response event
-class CoapRespondEvent {
-  /// Construction
-  CoapRespondEvent(this.resp);
-
-  /// Response
-  CoapResponse? resp;
+class CoapRespondEvent extends CoapResponseEvent {
+  CoapRespondEvent(CoapResponse resp) : super(resp);
 }
 
 /// Responding event
-class CoapRespondingEvent {
-  /// Construction
-  CoapRespondingEvent(this.resp);
-
-  /// Response
-  CoapResponse resp;
+class CoapRespondingEvent extends CoapResponseEvent {
+  CoapRespondingEvent(CoapResponse resp) : super(resp);
 }
 
 /// Registering event
-class CoapReregisteringEvent {
-  /// Construction
-  CoapReregisteringEvent(this.resp);
-
-  /// Response
-  CoapRequest resp;
+class CoapReregisteringEvent extends CoapRequestEvent {
+  CoapReregisteringEvent(CoapRequest req) : super(req);
 }
 
 /// Occurs when a request is about to be sent.
-class CoapSendingRequestEvent {
-  /// Construction
-  CoapSendingRequestEvent(this.request);
-
-  /// The request
-  CoapRequest request;
+class CoapSendingRequestEvent extends CoapRequestEvent {
+  CoapSendingRequestEvent(CoapRequest req) : super(req);
 }
 
 /// Occurs when a response is about to be sent.
-class CoapSendingResponseEvent {
-  /// Construction
-  CoapSendingResponseEvent(this.response);
-
-  /// The response
-  CoapResponse? response;
+class CoapSendingResponseEvent extends CoapResponseEvent {
+  CoapSendingResponseEvent(CoapResponse resp) : super(resp);
 }
 
 /// Occurs when a an empty message is about to be sent.
-class CoapSendingEmptyMessageEvent {
-  /// Construction
-  CoapSendingEmptyMessageEvent(this.empty);
-
-  /// The empty message
-  CoapEmptyMessage empty;
+class CoapSendingEmptyMessageEvent extends CoapMessageEvent {
+  CoapSendingEmptyMessageEvent(CoapMessage empty) : super(empty);
 }
 
 /// Occurs when a request has been received.
-class CoapReceivingRequestEvent {
-  /// Construction
-  CoapReceivingRequestEvent(this.request);
-
-  /// The request
-  CoapRequest? request;
+class CoapReceivingRequestEvent extends CoapRequestEvent {
+  CoapReceivingRequestEvent(CoapRequest req) : super(req);
 }
 
 /// Occurs when a response has been received.
-class CoapReceivingResponseEvent {
-  /// Construction
-  CoapReceivingResponseEvent(this.response);
-
-  /// The response
-  CoapResponse response;
+class CoapReceivingResponseEvent extends CoapResponseEvent {
+  CoapReceivingResponseEvent(CoapResponse resp) : super(resp);
 }
 
 /// Occurs when an empty message has been received.
-class CoapReceivingEmptyMessageEvent {
-  /// Construction
-  CoapReceivingEmptyMessageEvent(this.empty);
-
-  /// The empty message
-  CoapEmptyMessage empty;
+class CoapReceivingEmptyMessageEvent extends CoapMessageEvent {
+  CoapReceivingEmptyMessageEvent(CoapEmptyMessage empty) : super(empty);
 }
 
 /// Completed event
-class CoapCompletedEvent {
-  /// Construction
-  CoapCompletedEvent(this.exchange);
-
-  /// The exchange
-  CoapExchange exchange;
+class CoapCompletedEvent extends CoapExchangeEvent {
+  CoapCompletedEvent(CoapExchange exchange) : super(exchange);
 }
 
 /// The origin of an exchange.
@@ -128,6 +143,9 @@ class CoapDataReceivedEvent {
 
   /// The address
   CoapInternetAddress? address;
+
+  @override
+  String toString() => '$runtimeType:\n$data from ${address!.address}';
 }
 
 /// Event bus class
@@ -143,18 +161,14 @@ class CoapEventBus {
   /// Last event fired, useful for testing
   dynamic lastEvent;
 
-  final CoapILogger? _log = CoapLogManager().logger;
-  final events.EventBus _eventBus;
-  final bool _destroyed = false;
+  late final events.EventBus _eventBus;
+  bool _destroyed = false;
 
   /// Fire
   void fire(dynamic event) {
     if (!_destroyed) {
       lastEvent = event;
       _eventBus.fire(event);
-    } else {
-      _log!.warn('Event Bus - attempting to raise event on '
-          'destroyed event bus : $event');
     }
   }
 
@@ -164,6 +178,7 @@ class CoapEventBus {
   /// Destroy
   void destroy() {
     _eventBus.destroy();
+    _destroyed = true;
   }
 
   static final _singletons = <String, CoapEventBus>{};

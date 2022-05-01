@@ -37,18 +37,17 @@ FutureOr<void> main(List<String> args) async {
   request.addUriPath('storage');
   // Add a title
   request.addUriQuery('${CoapLinkFormat.title}=This is an SJH Put request');
-  client.request = request;
+  request.payloadString = 'SJHTestPut';
 
   print('EXAMPLE - Sending put request to $host, waiting for response....');
 
-  var response = await client.put('SJHTestPut');
+  var response = await client.send(request);
   print('EXAMPLE - put response received, sending get');
   print(response.payloadString);
   // Now get and check the payload
   final getRequest = CoapRequest.newGet();
   getRequest.addUriPath('storage');
-  client.request = getRequest;
-  response = await client.get();
+  response = await client.send(getRequest);
   print('EXAMPLE - get response received');
   print(response.payloadString);
   final options = response.getAllOptions();
