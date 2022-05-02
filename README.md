@@ -15,11 +15,22 @@ not guaranteed. All CoAP options(if-match, if-none match, uri path/query, locati
 etags et al.) are supported
 
 Observation of resources is supported with the client 'listening' for observed resource updates
-when configured for this. The client supports both IPV4 and IPV6 communications and multicast operation. CoAP
-over DTLS(secure CoAP) is not supported.
+when configured for this. The client supports both IPV4 and IPV6 communications and multicast operation.
+
+Experimental CoAPS support (secure CoAP over DTLS) is provided with via an OpenSSL binding
+using the [dtls](https://pub.dev/packages/dtls) library for certificate support and an
+[Eclipse tinydtls](https://github.com/eclipse/tinydtls/tree/develop) binding for Pre-Shared Keys and
+Raw Public Keys.
+In order to use CoAPS, OpenSSL and/or tinydtls binaries need to be available on your/the target system, and you
+need to enable at least one of the two backends in the config you are using.
+
+For Flutter apps, you can provide tinydtls binaries for Linux, Android, and Windows via the Plugin
+[dart_tinydtls_libs](https://pub.dev/packages/dart_tinydtls_libs). Alternatively, you can also download
+the binaries directly from the Plugin's [GitHub Repository](https://github.com/namib-project/dart_tinydtls_libs).
+
 Many examples of usage are provided in the examples directory using the [coap.me](https://coap.me/) and [californium](https://www.eclipse.org/californium/) test servers.
 
-# Setup
+## Setup
 * Add this as dependency in your `pubspec.yaml`:
 ```yaml
 dependencies:
