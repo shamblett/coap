@@ -7,6 +7,9 @@
  *
  * Get requests with different accepted media types using CoAPS and a Pre-Shared
  * Key.
+ *
+ * You need to have a compiled tinyDTLS version available in order to be able
+ * to use this example.
  */
 
 import 'dart:async';
@@ -31,24 +34,22 @@ FutureOr<void> main(List<String> args) async {
       scheme: 'coaps',
       host: 'californium.eclipseprojects.io',
       port: conf.defaultSecurePort);
-  final client = CoapClient(uri, conf);
+  final client =
+      CoapClient(uri, conf, pskCredentialsCallback: pskCredentialsCallback);
 
   try {
     print('Sending get /test to ${uri.host}');
-    var response = await client.get('test',
-        pskCredentialsCallback: pskCredentialsCallback);
-    print('/test response: ${response.payloadString}');
+    var response = await client.get('test');
+    print('/test response: ${response?.payloadString}');
 
     print('Sending get /multi-format (text) to ${uri.host}');
-    response = await client.get('multi-format',
-        pskCredentialsCallback: pskCredentialsCallback);
-    print('/multi-format (text) response: ${response.payloadString}');
+    response = await client.get('multi-format');
+    print('/multi-format (text) response: ${response?.payloadString}');
 
     print('Sending get /multi-format (xml) to ${uri.host}');
-    response = await client.get('multi-format',
-        accept: CoapMediaType.applicationXml,
-        pskCredentialsCallback: pskCredentialsCallback);
-    print('/multi-format (xml) response: ${response.payloadString}');
+    response =
+        await client.get('multi-format', accept: CoapMediaType.applicationXml);
+    print('/multi-format (xml) response: ${response?.payloadString}');
 
     client.close();
   } catch (e) {
