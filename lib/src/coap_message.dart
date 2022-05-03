@@ -334,13 +334,6 @@ class CoapMessage {
     return this;
   }
 
-  @override
-  String toString() => '\nType: ${type.toString()}, Code: $codeString, '
-      'Id: ${id.toString()}, '
-      'Token: \'$tokenString\',\n'
-      'Options: ${CoapUtil.optionsToString(this)},\n'
-      'Payload: $payloadString';
-
   /// Select options helper
   Iterable<CoapOption> _selectOptions(int optionType) {
     final ret = <CoapOption>[];
@@ -945,5 +938,53 @@ class CoapMessage {
     acknowledgedHook = msg.acknowledgedHook;
     retransmittingHook = msg.retransmittingHook;
     timedOutHook = msg.timedOutHook;
+  }
+
+  @override
+  String toString() => '\nType: ${type.toString()}, Code: $codeString, '
+      'Id: ${id.toString()}, '
+      'Token: \'$tokenString\',\n'
+      'Options: ${_optionsToString()},\n'
+      'Payload: $payloadString';
+
+  String _optionsToString() {
+    final sb = StringBuffer();
+    sb.writeln('[');
+    sb.write(_optionString('If-Match', ifMatches));
+    sb.write(_optionString('Uri Host', uriHost));
+    sb.write(_optionString('E-tags', etags));
+    sb.write(_optionString('If-None Match', ifNoneMatches));
+    sb.write(_optionString('Uri Port', uriPort > 0 ? uriPort : null));
+    sb.write(_optionString('Location Paths', locationPaths));
+    sb.write(_optionString('Uri Paths', uriPathsString));
+    sb.write(_optionString('Content-Type', CoapMediaType.name(contentType)));
+    sb.write(_optionString('Max Age', maxAge));
+    sb.write(_optionString('Uri Queries', uriQueries));
+    if (accept != CoapMediaType.undefined) {
+      sb.write(_optionString('Accept', CoapMediaType.name(accept)));
+    }
+    sb.write(_optionString('Location Queries', locationQueries));
+    sb.write(_optionString('Proxy Uri', proxyUri));
+    sb.write(_optionString('Proxy Scheme', proxyScheme));
+    sb.write(_optionString('Block 1', block1));
+    sb.write(_optionString('Block 2', block2));
+    sb.write(_optionString('Observe', observe));
+    sb.write(_optionString('Size 1', size1));
+    sb.write(_optionString('Size 2', size2));
+    sb.write(']');
+    return sb.toString();
+  }
+
+  String _optionString(String name, Object? value) {
+    if (value == null) {
+      return '';
+    }
+    var str = '';
+    if (value is Iterable) {
+      str = value.join(',');
+    } else {
+      str = value.toString();
+    }
+    return str != '' ? '  $name: $str,\n' : '';
   }
 }

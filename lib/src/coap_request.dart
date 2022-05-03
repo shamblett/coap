@@ -50,7 +50,7 @@ class CoapRequest extends CoapMessage {
     final host = value.host;
     var port = value.port;
     if (host.isNotEmpty &&
-        !CoapUtil.regIP.hasMatch(host) &&
+        InternetAddress.tryParse(host) == null &&
         host != 'localhost') {
       uriHost = host;
     }

@@ -331,7 +331,7 @@ class CoapClient {
       // Set endpoint if missing
       if (_endpoint == null) {
         final destination =
-            await CoapUtil.lookupHost(uri.host, addressType, bindAddress);
+            await _lookupHost(uri.host, addressType, bindAddress);
         final socket = CoapINetwork.fromUri(uri,
             address: destination,
             config: _config,
@@ -344,6 +344,21 @@ class CoapClient {
     });
 
     request.endpoint = _endpoint;
+  }
+
+  Future<CoapInternetAddress?> _lookupHost(String host,
+      InternetAddressType addressType, InternetAddress? bindAddress) async {
+    final parsedAddress = InternetAddress.tryParse(host);
+    if (parsedAddress != null) {
+      return CoapInternetAddress(
+          parsedAddress.type, parsedAddress, bindAddress);
+    }
+
+    final addresses = await InternetAddress.lookup(host, type: addressType);
+    if (addresses.isNotEmpty) {
+      return CoapInternetAddress(addressType, addresses[0], bindAddress);
+    }
+    return null;
   }
 
   /// Wait for a response.

@@ -89,4 +89,3 @@ part 'src/tasks/coap_executor.dart';
 part 'src/tasks/coap_iexecutor.dart';
 part 'src/util/coap_byte_array_util.dart';
 part 'src/util/coap_scanner.dart';
-part 'src/util/coap_util.dart';
