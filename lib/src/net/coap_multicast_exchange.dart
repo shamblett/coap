@@ -8,7 +8,7 @@
 part of coap;
 
 class CoapMulticastExchange extends CoapExchange {
-  CoapMulticastExchange(CoapRequest? request, CoapOrigin origin,
+  CoapMulticastExchange(CoapRequest request, CoapOrigin origin,
       {required namespace})
       : super(request, origin, namespace: namespace);
 

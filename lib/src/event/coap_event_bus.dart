@@ -142,10 +142,10 @@ class CoapDataReceivedEvent {
   typed.Uint8Buffer data;
 
   /// The address
-  CoapInternetAddress? address;
+  CoapInternetAddress address;
 
   @override
-  String toString() => '$runtimeType:\n$data from ${address!.address}';
+  String toString() => '$runtimeType:\n$data from ${address.address}';
 }
 
 /// Event bus class

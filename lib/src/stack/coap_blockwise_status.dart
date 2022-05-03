@@ -10,9 +10,7 @@ part of coap;
 /// Represents the status of a blockwise transfer of a request or a response.
 class CoapBlockwiseStatus {
   /// Instantiates a new blockwise status.
-  CoapBlockwiseStatus(int? contentFormat) {
-    _contentFormat = contentFormat;
-  }
+  CoapBlockwiseStatus(this._contentFormat);
 
   /// Instantiates a new blockwise status.
   CoapBlockwiseStatus.withSize(
@@ -34,10 +32,10 @@ class CoapBlockwiseStatus {
   bool get isRandomAccess => randomAccess;
 
   /// The Content-Format must stay the same for the whole transfer.
-  int? _contentFormat;
+  final int _contentFormat;
 
   /// Content format
-  int? get contentFormat => _contentFormat;
+  int get contentFormat => _contentFormat;
 
   /// Complete
   bool complete = false;

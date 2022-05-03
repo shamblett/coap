@@ -23,8 +23,8 @@ class CoapMessageEncoderRfc7252 extends CoapMessageEncoder {
 
     var lastOptionNumber = 0;
     final options = message.getAllOptions() as List<CoapOption>;
-    CoapUtil.insertionSort(
-        options, (dynamic a, dynamic b) => a.type.compareTo(b.type));
+    collection.insertionSort(options,
+        compare: (dynamic a, dynamic b) => a.type.compareTo(b.type));
 
     for (final opt in options) {
       if (opt.type == optionTypeUriHost || opt.type == optionTypeUriPort) {

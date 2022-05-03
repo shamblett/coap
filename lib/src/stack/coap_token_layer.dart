@@ -53,7 +53,8 @@ class CoapTokenLayer extends CoapAbstractLayer {
 
   typed.Uint8Buffer _newToken() {
     final buff = typed.Uint8Buffer()
-      ..addAll(List<int>.generate(8, (i) => _random.nextInt(256)));
+      ..addAll(List<int>.generate(
+          CoapConstants.tokenLength, (i) => _random.nextInt(256)));
     return buff;
   }
 }

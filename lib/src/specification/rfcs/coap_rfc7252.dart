@@ -62,14 +62,13 @@ class CoapRfc7252 implements CoapISpec {
 
   /// Calculates the value used in the extended option fields as specified
   /// in RFC 7252, section 3.1.
-  static int getValueFromOptionNibble(
-      int nibble, CoapDatagramReader? datagram) {
+  static int getValueFromOptionNibble(int nibble, CoapDatagramReader datagram) {
     if (nibble < 13) {
       return nibble;
     } else if (nibble == 13) {
-      return datagram!.read(8) + 13;
+      return datagram.read(8) + 13;
     } else if (nibble == 14) {
-      return datagram!.read(16) + 269;
+      return datagram.read(16) + 269;
     } else {
       throw FormatException('Unsupported option delta $nibble');
     }

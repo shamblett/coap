@@ -7,88 +7,8 @@
 
 part of coap;
 
-/// Cancellable asynchronous sleep support class
-class CoapCancellableAsyncSleep {
-  CoapCancellableAsyncSleep(this._timeout);
-
-  final Duration _timeout;
-
-  /// Timeout
-  Duration get timeout => _timeout;
-
-  /// The completer
-  final Completer<void> _completer = Completer<void>();
-
-  /// The timer
-  late Timer _timer;
-
-  /// Timer running flag
-  bool _running = false;
-
-  /// Running
-  bool get isRunning => _running;
-
-  /// Start the timer
-  Future<void> sleep() {
-    if (!_running) {
-      _timer = Timer(_timeout, _timerCallback);
-      _running = true;
-    }
-    return _completer.future;
-  }
-
-  /// Cancel the timer
-  void cancel() {
-    if (_running) {
-      _timer.cancel();
-      _running = false;
-      _completer.complete();
-    }
-  }
-
-  /// The timer callback
-  void _timerCallback() {
-    _running = false;
-    _completer.complete();
-  }
-}
-
 /// Utility methods
 class CoapUtil {
-  /// Insertion sort, to make the options list stably ordered.
-  static void insertionSort<T>(List<T> list, Comparator<T> comparison) {
-    collection.insertionSort(list, compare: comparison);
-  }
-
-  /// Checks if all items in both of the two enumerables are equal.
-  static bool areSequenceEqualTo<T>(Iterable<T>? first, Iterable<T>? second,
-      [collection.Equality<T>? equality]) {
-    final ie = collection.IterableEquality<T>(equality!);
-    return ie.equals(first, second);
-  }
-
-  /// Finds the first matched item.
-  /// Returns the item found, or null if none is matched.
-  static T? firstOrDefault<T>(Iterable<T> source, bool Function(T) condition) =>
-      source.firstWhereOrNull(condition);
-
-  /// Checks if matched item exists.
-  /// Returns true if exists any matched item, otherwise false.
-  static bool contains<T>(Iterable<T> source, bool Function(T) condition) =>
-      source.takeWhile(condition).isNotEmpty;
-
-  /// Stringify an iterable.
-  static String iterableToString<T>(Iterable<T> source) {
-    final sb = StringBuffer();
-    for (final item in source) {
-      sb.write(item.toString());
-      if (item != source.last) {
-        sb.write(',');
-      }
-    }
-    return sb.toString();
-  }
-
   /// Stringify options in a message.
   static String optionsToString(CoapMessage msg) {
     final sb = StringBuffer();
@@ -124,7 +44,7 @@ class CoapUtil {
     }
     var str = '';
     if (value is Iterable) {
-      str = iterableToString(value);
+      str = value.join(',');
     } else {
       str = value.toString();
     }
@@ -139,23 +59,16 @@ class CoapUtil {
   /// Host lookup, does not use the resolver if the host is an IP address.
   static Future<CoapInternetAddress?> lookupHost(String host,
       InternetAddressType addressType, InternetAddress? bindAddress) async {
-    final completer = Completer<CoapInternetAddress?>();
     final parsedAddress = InternetAddress.tryParse(host);
     if (parsedAddress != null) {
-      final coapAddress =
-          CoapInternetAddress(parsedAddress.type, parsedAddress, bindAddress);
-      completer.complete(coapAddress);
-      return completer.future;
+      return CoapInternetAddress(
+          parsedAddress.type, parsedAddress, bindAddress);
     }
 
     final addresses = await InternetAddress.lookup(host, type: addressType);
     if (addresses.isNotEmpty) {
-      final coapAddress =
-          CoapInternetAddress(addressType, addresses[0], bindAddress);
-      completer.complete(coapAddress);
-    } else {
-      completer.complete(null);
+      return CoapInternetAddress(addressType, addresses[0], bindAddress);
     }
-    return completer.future;
+    return null;
   }
 }
