@@ -387,10 +387,10 @@ class CoapLinkFormat {
       }
     }
     // Special rules
-    if ((attrToAdd.name == contentType) && (attrToAdd.valueAsInt! < 0)) {
+    if (attrToAdd.name == contentType && attrToAdd.valueAsInt! < 0) {
       return false;
     }
-    if ((attrToAdd.name == maxSizeEstimate) && (attrToAdd.valueAsInt! < 0)) {
+    if (attrToAdd.name == maxSizeEstimate && attrToAdd.valueAsInt! < 0) {
       return false;
     }
     attributes.add(attrToAdd);
