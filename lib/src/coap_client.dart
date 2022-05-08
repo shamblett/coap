@@ -275,6 +275,10 @@ class CoapClient {
   /// Cancels a request
   void cancel(CoapRequest request) {
     request.isCancelled = true;
+    final response = CoapResponse(CoapCode.empty)
+      ..id = request.id
+      ..token = request.token;
+    _eventBus.fire(CoapRespondEvent(response));
   }
 
   /// Cancel all ongoing requests
@@ -370,7 +374,7 @@ class CoapClient {
         .where((CoapRespondEvent e) => e.resp.token!.equals(req.token!))
         .take(1)
         .listen((CoapRespondEvent e) {
-      if (req.isTimedOut) {
+      if (req.isTimedOut || req.isCancelled) {
         completer.complete(null);
       } else {
         e.resp.timestamp = DateTime.now();
@@ -386,10 +390,10 @@ class CoapClient {
     final completer = Completer<CoapMessage?>();
     _eventBus
         .on<CoapRejectedEvent>()
-        .where((CoapRejectedEvent e) => e.msg.token!.equals(req.token!))
+        .where((CoapRejectedEvent e) => e.msg.id == req.id)
         .take(1)
         .listen((CoapRejectedEvent e) {
-      if (req.isTimedOut) {
+      if (req.isTimedOut || req.isCancelled) {
         completer.complete(null);
       } else {
         e.msg.timestamp = DateTime.now();
