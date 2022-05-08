@@ -23,13 +23,13 @@ class UnsupportedProtocolException implements Exception {
 /// UDP, test etc.
 abstract class CoapINetwork {
   /// The internet address
-  CoapInternetAddress? address;
+  CoapInternetAddress get address;
 
   /// The namespace
   String get namespace;
 
   /// The port
-  abstract int port;
+  int get port;
 
   /// Send, returns the number of bytes sent or null
   /// if not bound.
@@ -47,7 +47,7 @@ abstract class CoapINetwork {
   /// Creates a new CoapINetwork from a given URI
   static CoapINetwork fromUri(
     Uri uri, {
-    required CoapInternetAddress? address,
+    required CoapInternetAddress address,
     required DefaultCoapConfig config,
     String namespace = '',
   }) {

@@ -10,9 +10,8 @@ part of coap;
 /// UDP network
 class CoapNetworkUDP implements CoapINetwork {
   /// Initialize with an address and a port
-  CoapNetworkUDP(this.address, this.port, {String namespace = ''}) {
-    _eventBus = CoapEventBus(namespace: namespace);
-  }
+  CoapNetworkUDP(this.address, this.port, {String namespace = ''})
+      : _eventBus = CoapEventBus(namespace: namespace);
 
   CoapNetworkUDP.from(CoapNetworkUDP src, {required String namespace})
       : address = src.address,
@@ -21,17 +20,14 @@ class CoapNetworkUDP implements CoapINetwork {
         _socket = src.socket,
         _bound = src.bound;
 
-  late final CoapEventBus _eventBus;
+  final CoapEventBus _eventBus;
 
-  /// The internet address
   @override
-  CoapInternetAddress? address;
+  final CoapInternetAddress address;
 
-  /// The port to use for sending.
   @override
-  int port;
+  final int port;
 
-  /// The namespace to use
   @override
   String get namespace => _eventBus.namespace;
 
@@ -47,7 +43,7 @@ class CoapNetworkUDP implements CoapINetwork {
       [CoapInternetAddress? address]) async {
     if (_bound) {
       _socket?.send(
-          data.toList(), address?.address ?? this.address!.address, port);
+          data.toList(), address?.address ?? this.address.address, port);
     }
     return -1;
   }
@@ -85,7 +81,7 @@ class CoapNetworkUDP implements CoapINetwork {
     }
     // Use a port of 0 here as we are a client, this will generate
     // a random source port.
-    _socket = await RawDatagramSocket.bind(address!.bind, 0);
+    _socket = await RawDatagramSocket.bind(address.bind, 0);
     _bound = true;
     receive();
   }
