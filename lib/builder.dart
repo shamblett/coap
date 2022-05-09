@@ -69,7 +69,7 @@ String _generateDataScript(YamlMap data, String prefix, {firstLine = true}) {
         prefix.isEmpty ? key : prefix + key[0].toUpperCase() + key.substring(1);
 
     if (variableName == 'dtlsBackend') {
-      if (value == 'TinyDtls') {
+      if (value == 'TinyDtls' || value == 'OpenSsl') {
         if (!firstLine) {
           buff.writeln('');
         }
@@ -79,7 +79,8 @@ String _generateDataScript(YamlMap data, String prefix, {firstLine = true}) {
       }
 
       return;
-    } else if (['tinyDtlsInstance'].contains(variableName) && value == null) {
+    } else if (['dtlsCiphers', 'tinyDtlsInstance'].contains(variableName) &&
+        value == null) {
       return;
     }
 

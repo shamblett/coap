@@ -111,6 +111,11 @@ abstract class CoapINetwork {
         throw CoapCredentialsException(
             "A PSK credentials callback and/or ECDSA keys have been expected "
             "to use CoAPS, but neither have been found!");
+      case DtlsBackend.OpenSsl:
+        return CoapNetworkOpenSSL(address, port,
+            verify: config.dtlsVerify,
+            withTrustedRoots: config.dtlsWithTrustedRoots,
+            ciphers: config.dtlsCiphers);
       default:
         throw CoapDtlsException(
             "Encountered a coaps:// URI scheme but no DTLS backend has been "

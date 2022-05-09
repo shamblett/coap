@@ -14,7 +14,6 @@
 
 import 'dart:async';
 import 'package:coap/coap.dart';
-import 'config/coap_config.dart';
 
 final pskCredentials =
     PskCredentials(identity: 'Client_identity', preSharedKey: 'secretPSK');
@@ -29,7 +28,7 @@ class DtlsConfig extends DefaultCoapConfig {
 }
 
 FutureOr<void> main(List<String> args) async {
-  final conf = CoapConfig();
+  final conf = DtlsConfig();
   final uri = Uri(
       scheme: 'coaps',
       host: 'californium.eclipseprojects.io',

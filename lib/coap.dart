@@ -23,6 +23,7 @@ import 'package:string_scanner/string_scanner.dart' as scanner;
 import 'package:synchronized/synchronized.dart' as sync;
 import 'package:typed_data/typed_data.dart' as typed;
 import 'package:dart_tinydtls/dart_tinydtls.dart' as tinydtls;
+import 'package:dtls/dtls.dart' as dtls;
 
 export 'package:dart_tinydtls/dart_tinydtls.dart' show TinyDTLS;
 
@@ -74,6 +75,7 @@ part 'src/network/coap_network_udp.dart';
 part 'src/network/credentials/psk_credentials.dart';
 part 'src/network/credentials/ecdsa_keys.dart';
 part 'src/network/coap_network_tinydtls.dart';
+part 'src/network/coap_network_openssl.dart';
 part 'src/observe/coap_observe_relation.dart';
 part 'src/observe/coap_observing_endpoint.dart';
 part 'src/resources/coap_iresource.dart';

@@ -8,6 +8,7 @@
 part of coap;
 
 enum DtlsBackend {
+  OpenSsl,
   TinyDtls,
 }
 
@@ -91,4 +92,16 @@ abstract class DefaultCoapConfig {
   /// Custom [tinydtls.TinyDTLS] instance that can be registered if tinyDTLS
   /// should not be available at the default locations.
   tinydtls.TinyDTLS? get tinyDtlsInstance => null;
+
+  /// Whether OpenSSL bindings via the [dtls] package should be used for CoAPS.
+  bool get dtlsUseOpenSSL => false;
+
+  /// Whether certificates should be verified by OpenSSL.
+  bool get dtlsVerify => true;
+
+  /// Whether OpenSSL should be used with trusted Root Certificates.
+  bool get dtlsWithTrustedRoots => true;
+
+  /// Can be used to specify the Ciphers that should be used by OpenSSL.
+  String? get dtlsCiphers => null;
 }
