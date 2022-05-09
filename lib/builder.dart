@@ -54,30 +54,40 @@ import 'package:coap/coap.dart';
 /// the config file to contain only those entries that override the defaults.
 /// The file can't be empty, so version must as a minimum be present.
 class $className extends DefaultCoapConfig {
-${_generateDataScript(data)}}
+${_generateDataScript(data, '')}}
 """;
 
-String _generateDataScript(YamlMap data) {
+String _generateDataScript(YamlMap data, String prefix, {firstLine = true}) {
   final buff = StringBuffer();
-  for (final k in data.keys) {
+
+  data.forEach((key, value) {
+    if (value is YamlMap) {
+      buff.write(_generateDataScript(value, key, firstLine: false));
+      return;
+    }
+    final variableName =
+        prefix.isEmpty ? key : prefix + key[0].toUpperCase() + key.substring(1);
+    if (!firstLine) {
+      buff.writeln('');
+    }
+    firstLine = false;
     buff.writeln('  @override');
-    if (data[k] is String) {
-      if (data[k] == 'true' || data[k] == 'false') {
-        buff.writeln('  bool get $k => ${data[k]};');
-        continue;
+    if (value is String) {
+      if (value == 'true' || value == 'false') {
+        buff.writeln('  bool get $variableName => $value;');
+        return;
       }
-      buff.writeln("  String get $k => '${data[k]}';");
-    } else if (data[k] is bool) {
-      buff.writeln('  bool get $k => ${data[k]};');
-    } else if (data[k] is int) {
-      buff.writeln('  int get $k => ${data[k]};');
-    } else if (data[k] is double) {
-      buff.writeln('  double get $k => ${data[k]};');
+      buff.writeln("  String get $variableName => '$value';");
+    } else if (value is bool) {
+      buff.writeln('  bool get $variableName => $value;');
+    } else if (value is int) {
+      buff.writeln('  int get $variableName => $value;');
+    } else if (value is double) {
+      buff.writeln('  double get $variableName => $value;');
+    } else if (value == null) {
+      buff.writeln('  Null get $variableName => null;');
     }
-    if (k != data.keys.last) {
-      buff.writeln();
-    }
-  }
+  });
   return buff.toString();
 }
 
