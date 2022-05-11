@@ -1,3 +1,10 @@
+# 4.0.0
+PR's 76, 83, 84, 82, 85 and 87.
+
+Issue 72 and 78
+
+***** Breaking API changes *****
+
 # 3.6.0
 Issue 28, PR's 70, 71, 68
 
