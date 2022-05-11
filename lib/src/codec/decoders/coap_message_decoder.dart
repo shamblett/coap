@@ -80,7 +80,7 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
 
   @override
   CoapEmptyMessage? decodeEmptyMessage() {
-    if ((!isResponse) && (!isRequest)) {
+    if (!isResponse && !isRequest) {
       final message = CoapEmptyMessage(_code);
       message.type = _type;
       message.id = _id;

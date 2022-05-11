@@ -23,12 +23,12 @@ FutureOr<void> main(List<String> args) async {
     print('Sending post /large-create to ${uri.host}');
     var response = await client.post('large-create',
         options: [opt], payload: 'SJHTestPost');
-    print('/large-create response status: ${response.statusCodeString}');
+    print('/large-create response status: ${response?.statusCodeString}');
 
     print('Sending get /large-create to ${uri.host}');
     response = await client.get('large-create');
-    print('/large-create response: ${response.payloadString}');
-    print('E-Tags : ${CoapUtil.iterableToString(response.etags)}');
+    print('/large-create response: ${response?.payloadString}');
+    print('E-Tags : ${response?.etags.join(',')}');
 
     client.close();
   } catch (e) {

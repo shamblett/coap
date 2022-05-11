@@ -50,7 +50,7 @@ class CoapBlockOption extends CoapOption {
   set more(bool m) => setValue(num, szx, m: m);
 
   /// Block bytes
-  typed.Uint8Buffer? get blockValueBytes => _compressValueBytes();
+  typed.Uint8Buffer get blockValueBytes => _compressValueBytes();
 
   /// Gets the real block size which is 2 ^ (SZX + 4).
   static int decodeSZX(int szx) => 1 << (szx + 4);
@@ -84,7 +84,7 @@ class CoapBlockOption extends CoapOption {
   }
 
   /// Strips leading zeros for 32 bit integers
-  typed.Uint8Buffer? _compressValueBytes() {
+  typed.Uint8Buffer _compressValueBytes() {
     if (byteValue.length == 4) {
       if (byteValue[3] == 0) {
         return typed.Uint8Buffer()..addAll(byteValue.take(3).toList());

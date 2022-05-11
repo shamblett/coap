@@ -29,13 +29,15 @@ FutureOr main() async {
 
     print('Sending get /doesNotExist to ${uri.host}');
     print('Waiting for timeout, this might take a while...');
-    await client.send(request);
+    final resp = await client.send(request);
 
     if (request.isTimedOut) {
       print('Timeout! Client retransmitted ${request.retransmits} times');
     } else {
       print('Expected timeout did not happen, something could be wrong');
     }
+
+    print('Response: $resp');
 
     client.close();
   } catch (e) {

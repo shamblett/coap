@@ -58,6 +58,10 @@ class CoapTransmissionContext {
       _exchange.timedOut = true;
       _message!.isTimedOut = true;
       _exchange.remove(CoapReliabilityLayer.transmissionContextKey);
+      final response = CoapResponse(CoapCode.empty)
+        ..id = _message!.id
+        ..token = _message!.token;
+      _exchange.fireRespond(response);
       cancel();
     }
   }

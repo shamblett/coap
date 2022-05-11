@@ -10,11 +10,6 @@ part of coap;
 /// Package wide constants
 class CoapConstants {
   ///
-  /// RFC 7252 CoAP version.
-  ///
-  static const int version = 0x01;
-
-  ///
   /// The CoAP URI scheme.
   ///
   static const String uriScheme = 'coap';
@@ -33,11 +28,6 @@ class CoapConstants {
   /// The default CoAP port for secure CoAP communication (coaps).
   ///
   static const int defaultSecurePort = 5684;
-
-  ///
-  /// Default request timeout
-  ///
-  static const int defaultTimeout = 32767;
 
   ///
   /// The initial time (ms) for a CoAP message
@@ -62,21 +52,6 @@ class CoapConstants {
   static const int preferredBlockSize = 512;
 
   ///
-  /// Message cache size
-  ///
-  static const int messageCacheSize = 32;
-
-  ///
-  /// Receive bufefr size
-  /// ///
-  static const int receiveBufferSize = 4096;
-
-  ///
-  /// Overall request timeout
-  ///
-  static const int defaultOverallTimeout = 100000;
-
-  ///
   /// Default URI for well known resource
   ///
   static const String defaultWellKnownURI = '/.well-known/core';
@@ -90,11 +65,6 @@ class CoapConstants {
   /// Max age
   ///
   static const int defaultMaxAge = 60;
-
-  ///
-  /// The number of notifications until a CON notification will be used.
-  ///
-  static const int observingRefreshInterval = 10;
 
   ///
   /// Empty token

@@ -34,7 +34,7 @@ FutureOr<void> main(List<String> args) async {
     ignoreThisFuture.ignore();
 
     final resp = await helloRespFuture;
-    print('/hello response: ${resp.payloadString}');
+    print('/hello response: ${resp?.payloadString}');
 
     if (cancelThisReq.retransmits > 0) {
       print('Expected 0 retransmits!');

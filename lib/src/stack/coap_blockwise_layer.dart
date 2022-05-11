@@ -188,8 +188,8 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
   CoapBlockwiseStatus _copyBlockStatus(
       CoapBlockwiseStatus? oldBlockwiseStatus, int currentSZX) {
     final newStatus = CoapBlockwiseStatus.withSize(
-        oldBlockwiseStatus?.contentFormat,
-        oldBlockwiseStatus!.currentNUM,
+        oldBlockwiseStatus!.contentFormat,
+        oldBlockwiseStatus.currentNUM,
         currentSZX);
     newStatus.blocks = oldBlockwiseStatus.blocks;
     return newStatus;

@@ -30,7 +30,7 @@ FutureOr main() async {
     final futures = <Future<void>>[];
     for (var i = 0; i < 10; i++) {
       futures.add(client.get('test').then((resp) {
-        if (resp.code != CoapCode.content) {
+        if (resp?.code != CoapCode.content) {
           print('Request failed!');
         }
       }));
@@ -46,7 +46,7 @@ FutureOr main() async {
     print('Sending 10 sync requests...');
     for (var i = 0; i < 10; i++) {
       final resp = await client.get('test');
-      if (resp.code != CoapCode.content) {
+      if (resp?.code != CoapCode.content) {
         print('Request failed!');
       }
     }

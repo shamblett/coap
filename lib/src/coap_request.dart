@@ -49,14 +49,13 @@ class CoapRequest extends CoapMessage {
   set uri(Uri value) {
     final host = value.host;
     var port = value.port;
-    if ((host.isNotEmpty) &&
-        (!CoapUtil.regIP.hasMatch(host)) &&
-        (host != 'localhost')) {
+    if (host.isNotEmpty &&
+        InternetAddress.tryParse(host) == null &&
+        host != 'localhost') {
       uriHost = host;
     }
     if (port <= 0) {
-      if ((value.scheme.isNotEmpty) ||
-          (value.scheme == CoapConstants.uriScheme)) {
+      if (value.scheme.isNotEmpty || value.scheme == CoapConstants.uriScheme) {
         port = CoapConstants.defaultPort;
       } else if (value.scheme == CoapConstants.secureUriScheme) {
         port = CoapConstants.defaultSecurePort;

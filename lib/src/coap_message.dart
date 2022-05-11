@@ -334,13 +334,6 @@ class CoapMessage {
     return this;
   }
 
-  @override
-  String toString() => '\nType: ${type.toString()}, Code: $codeString, '
-      'Id: ${id.toString()}, '
-      'Token: \'$tokenString\',\n'
-      'Options: ${CoapUtil.optionsToString(this)},\n'
-      'Payload: $payloadString';
-
   /// Select options helper
   Iterable<CoapOption> _selectOptions(int optionType) {
     final ret = <CoapOption>[];
@@ -369,20 +362,11 @@ class CoapMessage {
   }
 
   /// Remove an opaque if match
-  CoapMessage removeIfMatchOpaque(typed.Uint8Buffer? opaque) {
-    final list = getOptions(optionTypeIfMatch);
-    if (list != null) {
-      const equality = collection.Equality<typed.Uint8Buffer>();
-      final opt = CoapUtil.firstOrDefault(
-          list,
-          (CoapOption o) =>
-              CoapUtil.areSequenceEqualTo(opaque, o.byteValue, equality));
-      if (opt != null) {
-        _optionMap[optionTypeIfMatch]!.remove(opt);
-        if (_optionMap[optionTypeIfMatch]!.isEmpty) {
-          _optionMap.remove(optionTypeIfMatch);
-        }
-      }
+  CoapMessage removeIfMatchOpaque(typed.Uint8Buffer opaque) {
+    final opts = _optionMap[optionTypeIfMatch];
+    opts?.removeWhere((CoapOption o) => o.byteValue.equals(opaque));
+    if (opts != null && opts.isEmpty) {
+      _optionMap.remove(optionTypeIfMatch);
     }
     return this;
   }
@@ -407,15 +391,13 @@ class CoapMessage {
   Iterable<CoapOption> get etags => _selectOptions(optionTypeETag).toList();
 
   /// Contains an opaque E-tag
-  bool containsETagOpaque(typed.Uint8Buffer what) => CoapUtil.contains(
-      getOptions(optionTypeETag)!,
-      (CoapOption o) => CoapUtil.areSequenceEqualTo(what, o.byteValue));
+  bool containsETagOpaque(typed.Uint8Buffer opaque) =>
+      getOptions(optionTypeETag)
+          ?.firstWhereOrNull((CoapOption o) => o.byteValue.equals(opaque)) !=
+      null;
 
   /// Add an opaque ETag
-  CoapMessage addETagOpaque(typed.Uint8Buffer? opaque) {
-    if (opaque == null) {
-      throw ArgumentError.notNull('Message::addETag');
-    }
+  CoapMessage addETagOpaque(typed.Uint8Buffer opaque) {
     return addOption(CoapOption.createRaw(optionTypeETag, opaque));
   }
 
@@ -436,20 +418,11 @@ class CoapMessage {
   }
 
   /// Remove an opaque ETag
-  CoapMessage removeETagOpaque(typed.Uint8Buffer? opaque) {
-    final list = getOptions(optionTypeETag) as List<CoapOption>?;
-    if (list != null) {
-      const equality = collection.Equality<typed.Uint8Buffer>();
-      final opt = CoapUtil.firstOrDefault(
-          list,
-          (CoapOption o) =>
-              CoapUtil.areSequenceEqualTo(opaque, o.byteValue, equality));
-      if (opt != null) {
-        _optionMap[optionTypeETag]!.remove(opt);
-        if (_optionMap[optionTypeETag]!.isEmpty) {
-          _optionMap.remove(optionTypeETag);
-        }
-      }
+  CoapMessage removeETagOpaque(typed.Uint8Buffer opaque) {
+    final opts = _optionMap[optionTypeETag];
+    opts?.removeWhere((CoapOption o) => o.byteValue.equals(opaque));
+    if (opts != null && opts.isEmpty) {
+      _optionMap.remove(optionTypeETag);
     }
     return this;
   }
@@ -486,20 +459,11 @@ class CoapMessage {
   }
 
   /// Remove an opaque if none match
-  CoapMessage removeIfNoneMatchOpaque(typed.Uint8Buffer? opaque) {
-    final list = getOptions(optionTypeIfNoneMatch);
-    if (list != null) {
-      const equality = collection.Equality<typed.Uint8Buffer>();
-      final opt = CoapUtil.firstOrDefault(
-          list,
-          (CoapOption o) =>
-              CoapUtil.areSequenceEqualTo(opaque, o.byteValue, equality));
-      if (opt != null) {
-        _optionMap[optionTypeIfNoneMatch]!.remove(opt);
-        if (_optionMap[optionTypeIfNoneMatch]!.isEmpty) {
-          _optionMap.remove(optionTypeIfNoneMatch);
-        }
-      }
+  CoapMessage removeIfNoneMatchOpaque(typed.Uint8Buffer opaque) {
+    final opts = _optionMap[optionTypeIfNoneMatch];
+    opts?.removeWhere((CoapOption o) => o.byteValue.equals(opaque));
+    if (opts != null && opts.isEmpty) {
+      _optionMap.remove(optionTypeIfNoneMatch);
     }
     return this;
   }
@@ -584,15 +548,10 @@ class CoapMessage {
 
   /// Remove a URI path
   CoapMessage removeUriPath(String path) {
-    final list = uriPaths as List<CoapOption>;
-
-    final opt =
-        CoapUtil.firstOrDefault(list, (CoapOption o) => path == o.stringValue);
-    if (opt != null) {
-      _optionMap[optionTypeUriPath]!.remove(opt);
-      if (_optionMap[optionTypeUriPath]!.isEmpty) {
-        _optionMap.remove(optionTypeUriPath);
-      }
+    final opts = _optionMap[optionTypeUriPath];
+    opts?.removeWhere((CoapOption o) => o.stringValue == path);
+    if (opts != null && opts.isEmpty) {
+      _optionMap.remove(optionTypeUriPath);
     }
     return this;
   }
@@ -646,16 +605,10 @@ class CoapMessage {
 
   /// Remove a URI query
   CoapMessage removeUriQuery(String query) {
-    final list = getOptions(optionTypeUriQuery) as List<CoapOption>?;
-    if (list != null) {
-      final opt = CoapUtil.firstOrDefault(
-          list, (CoapOption o) => query == o.stringValue);
-      if (opt != null) {
-        _optionMap[optionTypeUriQuery]!.remove(opt);
-        if (_optionMap[optionTypeUriQuery]!.isEmpty) {
-          _optionMap.remove(optionTypeUriQuery);
-        }
-      }
+    final opts = _optionMap[optionTypeUriQuery];
+    opts?.removeWhere((CoapOption o) => o.stringValue == query);
+    if (opts != null && opts.isEmpty) {
+      _optionMap.remove(optionTypeUriQuery);
     }
     return this;
   }
@@ -733,16 +686,10 @@ class CoapMessage {
 
   /// Remove a location path
   CoapMessage removelocationPath(String path) {
-    final list = getOptions(optionTypeLocationPath) as List<CoapOption>?;
-    if (list != null) {
-      final opt = CoapUtil.firstOrDefault(
-          list, (CoapOption o) => path == o.stringValue);
-      if (opt != null) {
-        _optionMap[optionTypeLocationPath]!.remove(opt);
-        if (_optionMap[optionTypeLocationPath]!.isEmpty) {
-          _optionMap.remove(optionTypeLocationPath);
-        }
-      }
+    final opts = _optionMap[optionTypeLocationPath];
+    opts?.removeWhere((CoapOption o) => o.stringValue == path);
+    if (opts != null && opts.isEmpty) {
+      _optionMap.remove(optionTypeLocationPath);
     }
     return this;
   }
@@ -799,16 +746,10 @@ class CoapMessage {
 
   /// Remove a location query
   CoapMessage removeLocationQuery(String query) {
-    final list = getOptions(optionTypeLocationQuery) as List<CoapOption>?;
-    if (list != null) {
-      final opt = CoapUtil.firstOrDefault(
-          list, (CoapOption o) => query == o.stringValue);
-      if (opt != null) {
-        _optionMap[optionTypeLocationQuery]!.remove(opt);
-        if (_optionMap[optionTypeLocationQuery]!.isEmpty) {
-          _optionMap.remove(optionTypeLocationQuery);
-        }
-      }
+    final opts = _optionMap[optionTypeLocationQuery];
+    opts?.removeWhere((CoapOption o) => o.stringValue == query);
+    if (opts != null && opts.isEmpty) {
+      _optionMap.remove(optionTypeLocationQuery);
     }
     return this;
   }
@@ -997,5 +938,53 @@ class CoapMessage {
     acknowledgedHook = msg.acknowledgedHook;
     retransmittingHook = msg.retransmittingHook;
     timedOutHook = msg.timedOutHook;
+  }
+
+  @override
+  String toString() => '\nType: ${type.toString()}, Code: $codeString, '
+      'Id: ${id.toString()}, '
+      'Token: \'$tokenString\',\n'
+      'Options: ${_optionsToString()},\n'
+      'Payload: $payloadString';
+
+  String _optionsToString() {
+    final sb = StringBuffer();
+    sb.writeln('[');
+    sb.write(_optionString('If-Match', ifMatches));
+    sb.write(_optionString('Uri Host', uriHost));
+    sb.write(_optionString('E-tags', etags));
+    sb.write(_optionString('If-None Match', ifNoneMatches));
+    sb.write(_optionString('Uri Port', uriPort > 0 ? uriPort : null));
+    sb.write(_optionString('Location Paths', locationPaths));
+    sb.write(_optionString('Uri Paths', uriPathsString));
+    sb.write(_optionString('Content-Type', CoapMediaType.name(contentType)));
+    sb.write(_optionString('Max Age', maxAge));
+    sb.write(_optionString('Uri Queries', uriQueries));
+    if (accept != CoapMediaType.undefined) {
+      sb.write(_optionString('Accept', CoapMediaType.name(accept)));
+    }
+    sb.write(_optionString('Location Queries', locationQueries));
+    sb.write(_optionString('Proxy Uri', proxyUri));
+    sb.write(_optionString('Proxy Scheme', proxyScheme));
+    sb.write(_optionString('Block 1', block1));
+    sb.write(_optionString('Block 2', block2));
+    sb.write(_optionString('Observe', observe));
+    sb.write(_optionString('Size 1', size1));
+    sb.write(_optionString('Size 2', size2));
+    sb.write(']');
+    return sb.toString();
+  }
+
+  String _optionString(String name, Object? value) {
+    if (value == null) {
+      return '';
+    }
+    var str = '';
+    if (value is Iterable) {
+      str = value.join(',');
+    } else {
+      str = value.toString();
+    }
+    return str != '' ? '  $name: $str,\n' : '';
   }
 }

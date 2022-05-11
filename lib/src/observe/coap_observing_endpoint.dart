@@ -13,14 +13,12 @@ part of coap;
 /// reachable and cancels all relations that it has established to resources.
 class CoapObservingEndpoint {
   /// Constructs a new observing endpoint.
-  CoapObservingEndpoint(InternetAddress ep) {
-    _endpoint = ep;
-  }
+  CoapObservingEndpoint(this._endpoint);
 
-  InternetAddress? _endpoint;
+  final InternetAddress _endpoint;
 
   /// The endpoint
-  InternetAddress? get endpoint => _endpoint;
+  InternetAddress get endpoint => _endpoint;
   final List<CoapObserveRelation> _relations = <CoapObserveRelation>[];
 
   /// Adds the specified observe relation.

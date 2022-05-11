@@ -173,7 +173,7 @@ abstract class CoapEndpointResource {
     if (resource == null) {
       return;
     }
-    if ((_subResources.remove(resource.name)) != null) {
+    if (_subResources.remove(resource.name) != null) {
       var p = resource._parent;
       while (p != null) {
         p._totalSubResourceCount--;

@@ -42,16 +42,16 @@ FutureOr main() async {
 
     final futures = <Future<void>>[];
     print('Sending get /large to ${uri.host}');
-    futures.add(client.get('large').then((CoapResponse resp) =>
-        print('/large response: ${resp.payloadString}')));
+    futures.add(client.get('large').then((CoapResponse? resp) =>
+        print('/large response: ${resp?.payloadString}')));
 
     print('Sending get /test to ${uri.host}');
-    futures.add(client.get('test').then(
-        (CoapResponse resp) => print('/test response: ${resp.payloadString}')));
+    futures.add(client.get('test').then((CoapResponse? resp) =>
+        print('/test response: ${resp?.payloadString}')));
 
     print('Sending get /separate to ${uri.host}');
-    futures.add(client.get('separate').then((CoapResponse resp) =>
-        print('/separate response: ${resp.payloadString}')));
+    futures.add(client.get('separate').then((CoapResponse? resp) =>
+        print('/separate response: ${resp?.payloadString}')));
 
     print('Waiting until get requests are done');
     await Future.wait(futures);

@@ -20,7 +20,7 @@ FutureOr<void> main(List<String> args) async {
     print('Sending get /large to ${uri.host}');
     final response = await client.get('large');
 
-    print('/large response: ${response.payloadString}');
+    print('/large response: ${response?.payloadString}');
 
     client.close();
   } catch (e) {

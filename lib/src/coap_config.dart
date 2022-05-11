@@ -36,9 +36,6 @@ abstract class DefaultCoapConfig {
   /// The port which HTTP proxy is on.
   int get httpPort => 8080;
 
-  /// Default request timeout
-  int get defaultTimeout => CoapConstants.defaultTimeout;
-
   /// The initial time (ms) for a CoAP message
   int get ackTimeout => CoapConstants.ackTimeout;
 
