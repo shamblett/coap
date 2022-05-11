@@ -350,7 +350,7 @@ class CoapClient {
     request.endpoint = _endpoint;
   }
 
-  Future<CoapInternetAddress?> _lookupHost(String host,
+  Future<CoapInternetAddress> _lookupHost(String host,
       InternetAddressType addressType, InternetAddress? bindAddress) async {
     final parsedAddress = InternetAddress.tryParse(host);
     if (parsedAddress != null) {
@@ -362,7 +362,8 @@ class CoapClient {
     if (addresses.isNotEmpty) {
       return CoapInternetAddress(addressType, addresses[0], bindAddress);
     }
-    return null;
+
+    throw SocketException("Failed host lookup: '$host'");
   }
 
   /// Wait for a response.
