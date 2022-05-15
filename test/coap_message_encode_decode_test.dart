@@ -244,9 +244,9 @@ void main() {
       request.id = 7;
       request.token = typed.Uint8Buffer()..addAll(<int>[11, 82, 165, 77, 3]);
       request
-          .addIfMatchOpaque(typed.Uint8Buffer()..addAll(<int>[34, 239]))
-          .addIfMatchOpaque(
-              typed.Uint8Buffer()..addAll(<int>[88, 12, 254, 157, 5]));
+        ..addIfMatchOpaque(typed.Uint8Buffer()..addAll(<int>[34, 239]))
+        ..addIfMatchOpaque(
+            typed.Uint8Buffer()..addAll(<int>[88, 12, 254, 157, 5]));
       request.contentType = 40;
       request.accept = 40;
 

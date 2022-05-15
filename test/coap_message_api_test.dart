@@ -170,7 +170,9 @@ void main() {
   test('If match', () {
     final message = CoapMessage();
     expect(message.ifMatches.length, 0);
-    message.addIfMatch('ETag-1').addIfMatch('ETag-2');
+    message
+      ..addIfMatch('ETag-1')
+      ..addIfMatch('ETag-2');
     expect(message.ifMatches.length, 2);
     expect(message.ifMatches.toList()[0].stringValue, 'ETag-1');
     expect(message.ifMatches.toList()[1].stringValue, 'ETag-2');
@@ -223,7 +225,9 @@ void main() {
     inm1.stringValue = 'Inm1';
     final inm2 = CoapOption(OptionType.ifNoneMatch);
     inm2.stringValue = 'Inm2';
-    message.addIfNoneMatch(inm1).addIfNoneMatch(inm2);
+    message
+      ..addIfNoneMatch(inm1)
+      ..addIfNoneMatch(inm2);
     expect(message.ifNoneMatches.length, 2);
     expect(() => message.addIfNoneMatch(none), throwsArgumentError);
     final inm3 = CoapOption(OptionType.ifNoneMatch);
