@@ -61,12 +61,11 @@ class CoapMessage {
   String? get namespace => _eventBus?.namespace;
 
   /// Adds an option to the list of options of this CoAP message.
-  CoapMessage addOption(CoapOption option) {
+  void addOption(CoapOption option) {
     if (!_optionMap.containsKey(option.type)) {
       _optionMap[option.type] = <CoapOption>[];
     }
     _optionMap[option.type]!.add(option);
-    return this;
   }
 
   /// Remove a specific option, returns true if the option has been removed.
@@ -306,28 +305,25 @@ class CoapMessage {
       setPayloadMedia(value, CoapMediaType.textPlain);
 
   /// Sets the payload.
-  CoapMessage setPayload(String payload) {
+  void setPayload(String payload) {
     this.payload ??= typed.Uint8Buffer();
     this.payload!.addAll(_utfEncoder.convert(payload));
-    return this;
   }
 
   /// Sets the payload and media type of this CoAP message.
-  CoapMessage setPayloadMedia(String? payload, int mediaType) {
+  void setPayloadMedia(String? payload, int mediaType) {
     if (payload == null) {
-      return this;
+      return;
     }
     this.payload ??= typed.Uint8Buffer();
     this.payload!.addAll(_utfEncoder.convert(payload));
     contentType = mediaType;
-    return this;
   }
 
   /// Sets the payload of this CoAP message.
-  CoapMessage setPayloadMediaRaw(typed.Uint8Buffer payload, int mediaType) {
+  void setPayloadMediaRaw(typed.Uint8Buffer payload, int mediaType) {
     this.payload = payload;
     contentType = mediaType;
-    return this;
   }
 
   /// Select options helper
@@ -344,42 +340,39 @@ class CoapMessage {
   List<CoapOption> get ifMatches => _selectOptions(OptionType.ifMatch).toList();
 
   /// Add an if match option, if a null string is passed the if match is not set
-  CoapMessage addIfMatch(String etag) =>
+  void addIfMatch(String etag) =>
       addOption(CoapOption.createString(OptionType.ifMatch, etag));
 
   /// Add an opaque if match
-  CoapMessage addIfMatchOpaque(typed.Uint8Buffer opaque) {
+  void addIfMatchOpaque(typed.Uint8Buffer opaque) {
     if (opaque.length > 8) {
       throw ArgumentError.value(opaque.length, 'Message::addIfMatch',
           'Content of If-Match option is too large');
     }
-    return addOption(CoapOption.createRaw(OptionType.ifMatch, opaque));
+    addOption(CoapOption.createRaw(OptionType.ifMatch, opaque));
   }
 
   /// Remove an opaque if match
-  CoapMessage removeIfMatchOpaque(typed.Uint8Buffer opaque) {
+  void removeIfMatchOpaque(typed.Uint8Buffer opaque) {
     final opts = _optionMap[OptionType.ifMatch];
     opts?.removeWhere((CoapOption o) => o.byteValue.equals(opaque));
     if (opts != null && opts.isEmpty) {
       _optionMap.remove(OptionType.ifMatch);
     }
-    return this;
   }
 
   /// Remove an if match option
-  CoapMessage removeIfMatch(CoapOption option) {
+  void removeIfMatch(CoapOption option) {
     if (option.type != OptionType.ifMatch) {
       throw ArgumentError.value(
           option.type, 'Message::removeIfMatch', 'Not an if match option');
     }
     removeOption(option);
-    return this;
   }
 
   /// Clear the if matches
-  CoapMessage clearIfMatches() {
+  void clearIfMatches() {
     removeOptions(OptionType.ifMatch);
-    return this;
   }
 
   /// Etags
@@ -392,16 +385,16 @@ class CoapMessage {
       null;
 
   /// Add an opaque ETag
-  CoapMessage addETagOpaque(typed.Uint8Buffer opaque) {
-    return addOption(CoapOption.createRaw(OptionType.eTag, opaque));
+  void addETagOpaque(typed.Uint8Buffer opaque) {
+    addOption(CoapOption.createRaw(OptionType.eTag, opaque));
   }
 
   /// Adds an ETag option
-  CoapMessage addEtag(CoapOption option) {
+  void addEtag(CoapOption option) {
     if (option.type != OptionType.eTag) {
       throw ArgumentError.notNull('Message::addETag, option is not an etag');
     }
-    return addOption(option);
+    addOption(option);
   }
 
   /// Remove an ETag, true indicates success
@@ -413,19 +406,17 @@ class CoapMessage {
   }
 
   /// Remove an opaque ETag
-  CoapMessage removeETagOpaque(typed.Uint8Buffer opaque) {
+  void removeETagOpaque(typed.Uint8Buffer opaque) {
     final opts = _optionMap[OptionType.eTag];
     opts?.removeWhere((CoapOption o) => o.byteValue.equals(opaque));
     if (opts != null && opts.isEmpty) {
       _optionMap.remove(OptionType.eTag);
     }
-    return this;
   }
 
   /// Clear the E tags
-  CoapMessage clearETags() {
+  void clearETags() {
     removeOptions(OptionType.eTag);
-    return this;
   }
 
   /// If-None Matches.
@@ -433,16 +424,16 @@ class CoapMessage {
       _selectOptions(OptionType.ifNoneMatch).toList();
 
   /// Add an if none match option
-  CoapMessage addIfNoneMatch(CoapOption option) {
+  void addIfNoneMatch(CoapOption option) {
     if (option.type != OptionType.ifNoneMatch) {
       throw ArgumentError.value(
           'Message::addIfNoneMatch', 'Option is not an if none match');
     }
-    return addOption(option);
+    addOption(option);
   }
 
   /// Add an opaque if none match
-  CoapMessage addIfNoneMatchOpaque(typed.Uint8Buffer? opaque) {
+  void addIfNoneMatchOpaque(typed.Uint8Buffer? opaque) {
     if (opaque == null) {
       throw ArgumentError.notNull('Message::addIfNoneMatch');
     }
@@ -450,33 +441,30 @@ class CoapMessage {
       throw ArgumentError.value(opaque.length, 'Message::addIfNoneMatch',
           'Content of If-None Match option is too large');
     }
-    return addOption(CoapOption.createRaw(OptionType.ifNoneMatch, opaque));
+    addOption(CoapOption.createRaw(OptionType.ifNoneMatch, opaque));
   }
 
   /// Remove an opaque if none match
-  CoapMessage removeIfNoneMatchOpaque(typed.Uint8Buffer opaque) {
+  void removeIfNoneMatchOpaque(typed.Uint8Buffer opaque) {
     final opts = _optionMap[OptionType.ifNoneMatch];
     opts?.removeWhere((CoapOption o) => o.byteValue.equals(opaque));
     if (opts != null && opts.isEmpty) {
       _optionMap.remove(OptionType.ifNoneMatch);
     }
-    return this;
   }
 
   /// Remove an if none match option
-  CoapMessage removeIfNoneMatch(CoapOption option) {
+  void removeIfNoneMatch(CoapOption option) {
     if (option.type != OptionType.ifNoneMatch) {
       throw ArgumentError.value(option.type, 'Message::removeIfNoneMatch',
           'Not an if none match option');
     }
     removeOption(option);
-    return this;
   }
 
   /// Clear the if none matches
-  CoapMessage clearIfNoneMatches() {
+  void clearIfNoneMatches() {
     removeOptions(OptionType.ifNoneMatch);
-    return this;
   }
 
   /// Uri's
@@ -530,7 +518,7 @@ class CoapMessage {
   }
 
   /// Add a URI path
-  CoapMessage addUriPath(String? path) {
+  void addUriPath(String? path) {
     if (path == null) {
       throw ArgumentError.notNull('Message::addUriPath');
     }
@@ -538,23 +526,21 @@ class CoapMessage {
       throw ArgumentError.value(path.length, 'Message::addUriPath',
           'Uri Path option\'s length must be between 0 and 255 inclusive');
     }
-    return addOption(CoapOption.createString(OptionType.uriPath, path));
+    addOption(CoapOption.createString(OptionType.uriPath, path));
   }
 
   /// Remove a URI path
-  CoapMessage removeUriPath(String path) {
+  void removeUriPath(String path) {
     final opts = _optionMap[OptionType.uriPath];
     opts?.removeWhere((CoapOption o) => o.stringValue == path);
     if (opts != null && opts.isEmpty) {
       _optionMap.remove(OptionType.uriPath);
     }
-    return this;
   }
 
   /// Clear URI paths
-  CoapMessage clearUriPath() {
+  void clearUriPath() {
     _optionMap.remove(OptionType.uriPath);
-    return this;
   }
 
   /// URI query
@@ -587,7 +573,7 @@ class CoapMessage {
   }
 
   /// Add a URI query
-  CoapMessage addUriQuery(String? query) {
+  void addUriQuery(String? query) {
     if (query == null) {
       throw ArgumentError.notNull('Message::addUriQuery');
     }
@@ -595,23 +581,21 @@ class CoapMessage {
       throw ArgumentError.value(query.length, 'Message::addUriQuery',
           'Uri Query option\'s length must be between 0 and 255 inclusive');
     }
-    return addOption(CoapOption.createUriQuery(query));
+    addOption(CoapOption.createUriQuery(query));
   }
 
   /// Remove a URI query
-  CoapMessage removeUriQuery(String query) {
+  void removeUriQuery(String query) {
     final opts = _optionMap[OptionType.uriQuery];
     opts?.removeWhere((CoapOption o) => o.stringValue == query);
     if (opts != null && opts.isEmpty) {
       _optionMap.remove(OptionType.uriQuery);
     }
-    return this;
   }
 
   /// Clear URI queries
-  CoapMessage clearUriQuery() {
+  void clearUriQuery() {
     removeOptions(OptionType.uriQuery);
-    return this;
   }
 
   /// Uri port
@@ -668,7 +652,7 @@ class CoapMessage {
   }
 
   /// Add a location path
-  CoapMessage addLocationPath(String? path) {
+  void addLocationPath(String? path) {
     if (path == null) {
       throw ArgumentError.notNull('Message::addLocationPath');
     }
@@ -676,23 +660,21 @@ class CoapMessage {
       throw ArgumentError.value(path.length, 'Message::addLocationPath',
           'Location Path option\'s length must be between 0 and 255 inclusive');
     }
-    return addOption(CoapOption.createString(OptionType.locationPath, path));
+    addOption(CoapOption.createString(OptionType.locationPath, path));
   }
 
   /// Remove a location path
-  CoapMessage removelocationPath(String path) {
+  void removelocationPath(String path) {
     final opts = _optionMap[OptionType.locationPath];
     opts?.removeWhere((CoapOption o) => o.stringValue == path);
     if (opts != null && opts.isEmpty) {
       _optionMap.remove(OptionType.locationPath);
     }
-    return this;
   }
 
   /// Clear location path
-  CoapMessage clearLocationPath() {
+  void clearLocationPath() {
     _optionMap.remove(OptionType.locationPath);
-    return this;
   }
 
   /// Location query
@@ -725,7 +707,7 @@ class CoapMessage {
   }
 
   /// Add a location query
-  CoapMessage addLocationQuery(String? query) {
+  void addLocationQuery(String? query) {
     if (query == null) {
       throw ArgumentError.notNull('Message::addLocationQuery');
     }
@@ -736,23 +718,21 @@ class CoapMessage {
           'Location Query option\'s length must be between '
               '0 and 255 inclusive');
     }
-    return addOption(CoapOption.createString(OptionType.locationQuery, query));
+    addOption(CoapOption.createString(OptionType.locationQuery, query));
   }
 
   /// Remove a location query
-  CoapMessage removeLocationQuery(String query) {
+  void removeLocationQuery(String query) {
     final opts = _optionMap[OptionType.locationQuery];
     opts?.removeWhere((CoapOption o) => o.stringValue == query);
     if (opts != null && opts.isEmpty) {
       _optionMap.remove(OptionType.locationQuery);
     }
-    return this;
   }
 
   /// Clear location  queries
-  CoapMessage clearLocationQuery() {
+  void clearLocationQuery() {
     removeOptions(OptionType.locationQuery);
-    return this;
   }
 
   /// Content type
