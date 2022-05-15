@@ -10,14 +10,14 @@ part of coap;
 /// This class describes the block options of the CoAP messages
 class CoapBlockOption extends CoapOption {
   /// Base construction
-  CoapBlockOption(int type) : super(type) {
+  CoapBlockOption(OptionType type) : super(type) {
     intValue = 0;
   }
 
   /// num - Block number
   /// szx - Block size
   /// m - More flag
-  CoapBlockOption.fromParts(int type, int num, int szx, {bool m = false})
+  CoapBlockOption.fromParts(OptionType type, int num, int szx, {bool m = false})
       : super(type) {
     intValue = _encode(num, szx, m);
   }

@@ -45,22 +45,6 @@ void main() {
           57,
           193,
           0,
-          221,
-          172,
-          0,
-          101,
-          120,
-          116,
-          101,
-          110,
-          100,
-          32,
-          111,
-          112,
-          116,
-          105,
-          111,
-          110,
           255,
           112,
           97,
@@ -163,48 +147,6 @@ void main() {
           116,
           101,
           110,
-          234,
-          73,
-          240,
-          65,
-          114,
-          98,
-          105,
-          116,
-          114,
-          97,
-          114,
-          121,
-          49,
-          10,
-          65,
-          114,
-          98,
-          105,
-          116,
-          114,
-          97,
-          114,
-          121,
-          50,
-          10,
-          65,
-          114,
-          98,
-          105,
-          116,
-          114,
-          97,
-          114,
-          121,
-          51,
-          228,
-          148,
-          91,
-          159,
-          148,
-          202,
-          113
         ]
       ]
     };
@@ -248,10 +190,10 @@ void main() {
       msg.id = 12345;
       msg.payload = typed.Uint8Buffer()..addAll('payload'.codeUnits);
       msg.addOption(CoapOption.createVal(
-          optionTypeContentFormat, CoapMediaType.textPlain));
-      msg.addOption(CoapOption.createVal(optionTypeMaxAge, 30));
-      expect(msg.getFirstOption(optionTypeContentType)!.intValue, 0);
-      expect(msg.getFirstOption(optionTypeMaxAge)!.value, 30);
+          OptionType.contentFormat, CoapMediaType.textPlain));
+      msg.addOption(CoapOption.createVal(OptionType.maxAge, 30));
+      expect(msg.getFirstOption(OptionType.contentFormat)!.intValue, 0);
+      expect(msg.getFirstOption(OptionType.maxAge)!.value, 30);
       final data = spec.encode(msg)!;
       checkData(spec.name, data, testNo);
       final convMsg = spec.decode(data)!;
@@ -264,9 +206,9 @@ void main() {
           leq.equals(
               msg.getAllOptions().toList(), convMsg.getAllOptions().toList()),
           isTrue);
-      expect(convMsg.getFirstOption(optionTypeContentType)!.intValue,
+      expect(convMsg.getFirstOption(OptionType.contentFormat)!.intValue,
           CoapMediaType.textPlain);
-      expect(convMsg.getFirstOption(optionTypeMaxAge)!.value, 30);
+      expect(convMsg.getFirstOption(OptionType.maxAge)!.value, 30);
       expect(
           leq.equals(msg.payload!.toList(), convMsg.payload!.toList()), isTrue);
     }
@@ -276,10 +218,8 @@ void main() {
           CoapRequest(CoapCode.methodGET, confirmable: true);
 
       msg.id = 12345;
-      msg.addOption(CoapOption.createVal(12, 0));
-      msg.addOption(CoapOption.createString(197, 'extend option'));
-      expect(msg.getFirstOption(12)!.value, 0);
-      expect(msg.getFirstOption(197)!.stringValue, 'extend option');
+      msg.addOption(CoapOption.createVal(OptionType.contentFormat, 0));
+      expect(msg.getFirstOption(OptionType.contentFormat)!.value, 0);
       msg.payload = typed.Uint8Buffer()..addAll('payload'.codeUnits);
 
       final data = spec.encode(msg)!;
@@ -294,13 +234,9 @@ void main() {
           leq.equals(
               msg.getAllOptions().toList(), convMsg.getAllOptions().toList()),
           isTrue);
-      expect(convMsg.getFirstOption(12)!.value, 0);
+      expect(convMsg.getFirstOption(OptionType.contentFormat)!.value, 0);
       expect(
           leq.equals(msg.payload!.toList(), convMsg.payload!.toList()), isTrue);
-
-      final extendOpt = convMsg.getFirstOption(197)!;
-      expect(extendOpt, isNotNull);
-      expect(extendOpt.stringValue, 'extend option');
     }
 
     void testRequestParsing(CoapISpec spec, int testNo) {
@@ -336,13 +272,8 @@ void main() {
       response.token = typed.Uint8Buffer()
         ..addAll(<int>[22, 255, 0, 78, 100, 22]);
       response
-          .addETagOpaque(typed.Uint8Buffer()..addAll(<int>[1, 0, 0, 0, 0, 1]))
-        ..addLocationPath('/one/two/three/four/five/six/seven/eight/nine/ten')
-        ..addOption(CoapOption.createVal(
-            57453, 0x71ca949f)) // C# 'Arbitrary'.hashCode()
-        ..addOption(CoapOption.createString(19205, 'Arbitrary1'))
-        ..addOption(CoapOption.createString(19205, 'Arbitrary2'))
-        ..addOption(CoapOption.createString(19205, 'Arbitrary3'));
+        ..addETagOpaque(typed.Uint8Buffer()..addAll(<int>[1, 0, 0, 0, 0, 1]))
+        ..addLocationPath('/one/two/three/four/five/six/seven/eight/nine/ten');
 
       final bytes = spec.encode(response)!;
       checkData(spec.name, bytes, testNo);
@@ -354,14 +285,6 @@ void main() {
       expect(response.id, result.id);
       expect(
           leq.equals(response.token!.toList(), result.token!.toList()), isTrue);
-      expect(
-          leq.equals(response.getOptions(57453)!.toList(),
-              result.getOptions(57453)!.toList()),
-          isTrue);
-      expect(
-          leq.equals(response.getOptions(19205)!.toList(),
-              result.getOptions(19205)!.toList()),
-          isTrue);
       expect(
           response.etags.toList().toString(), result.etags.toList().toString());
       expect(

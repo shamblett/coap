@@ -83,12 +83,12 @@ class CoapMatcher implements CoapIMatcher {
     }
 
     // Blockwise transfers are identified by token
-    if (response.hasOption(optionTypeBlock2)) {
+    if (response.hasOption(OptionType.block2)) {
       final request = exchange.currentRequest!;
       // Observe notifications only send the first block,
       // hence do not store them as ongoing.
       if (exchange.responseBlockStatus != null &&
-          !response.hasOption(optionTypeObserve)) {
+          !response.hasOption(OptionType.observe)) {
         // Remember ongoing blockwise GET requests
         _ongoingExchanges[request.tokenString] = exchange;
       } else {
@@ -135,8 +135,8 @@ class CoapMatcher implements CoapIMatcher {
     // all exchanges that do not need blockwise transfer have simpler and
     // faster code than exchanges with blockwise transfer.
 
-    if (!request.hasOption(optionTypeBlock1) &&
-        !request.hasOption(optionTypeBlock2)) {
+    if (!request.hasOption(OptionType.block1) &&
+        !request.hasOption(OptionType.block2)) {
       final exchange =
           CoapExchange(request, CoapOrigin.remote, namespace: namespace);
       final previous = _deduplicator.findPrevious(request.id, exchange);
@@ -156,7 +156,7 @@ class CoapMatcher implements CoapIMatcher {
           // The exchange is continuing, we can (i.e., must)
           // clean up the previous response.
           if (ongoing.currentResponse!.type != CoapMessageType.ack &&
-              !ongoing.currentResponse!.hasOption(optionTypeObserve)) {
+              !ongoing.currentResponse!.hasOption(OptionType.observe)) {
             _exchangesById.remove(ongoing.currentResponse!.id);
           }
         }
@@ -256,8 +256,8 @@ class CoapMatcher implements CoapIMatcher {
 
       final request = exchange.currentRequest;
       if (request != null &&
-          (request.hasOption(optionTypeBlock1) ||
-              (response != null && response.hasOption(optionTypeBlock2)))) {
+          (request.hasOption(OptionType.block1) ||
+              (response != null && response.hasOption(OptionType.block2)))) {
         _ongoingExchanges.remove(request.tokenString);
       }
 

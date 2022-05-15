@@ -29,8 +29,8 @@ void main() {
       const defaultContentType = 10;
       final supported = <int>[11, 5];
       final accepted = <CoapOption>[];
-      final opt1 = CoapOption.createVal(optionTypeMaxAge, 10);
-      final opt2 = CoapOption.createVal(optionTypeContentFormat, 5);
+      final opt1 = CoapOption.createVal(OptionType.maxAge, 10);
+      final opt2 = CoapOption.createVal(OptionType.contentFormat, 5);
       accepted.add(opt1);
       accepted.add(opt2);
       expect(

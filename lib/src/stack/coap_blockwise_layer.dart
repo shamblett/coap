@@ -23,7 +23,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
   @override
   void sendRequest(
       CoapINextLayer nextLayer, CoapExchange? exchange, CoapRequest request) {
-    if (request.hasOption(optionTypeBlock2) && request.block2!.num > 0) {
+    if (request.hasOption(OptionType.block2) && request.block2!.num > 0) {
       // This is the case if the user has explicitly added a block option
       // for random access.
       // Note: We do not regard it as random access when the block num is
@@ -52,7 +52,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
   @override
   void receiveRequest(
       CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
-    if (request.hasOption(optionTypeBlock1)) {
+    if (request.hasOption(OptionType.block1)) {
       // This must be a large POST or PUT request
       final block1 = request.block1!;
 
@@ -70,7 +70,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           final error = CoapResponse.createResponse(
               request, CoapCode.requestEntityIncomplete);
           error.addOption(CoapBlockOption.fromParts(
-              optionTypeBlock1, block1.num, block1.szx,
+              OptionType.block1, block1.num, block1.szx,
               m: block1.m));
           error.setPayload('Changed Content-Format');
 
@@ -84,7 +84,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           final piggybacked =
               CoapResponse.createResponse(request, CoapCode.continues);
           piggybacked.addOption(CoapBlockOption.fromParts(
-              optionTypeBlock1, block1.num, block1.szx,
+              OptionType.block1, block1.num, block1.szx,
               m: true));
           piggybacked.last = false;
 
@@ -111,14 +111,14 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
         final error = CoapResponse.createResponse(
             request, CoapCode.requestEntityIncomplete);
         error.addOption(CoapBlockOption.fromParts(
-            optionTypeBlock1, block1.num, block1.szx,
+            OptionType.block1, block1.num, block1.szx,
             m: block1.m));
         error.setPayload('Wrong block number');
         exchange.currentResponse = error;
         super.sendResponse(nextLayer, exchange, error);
       }
     } else if (exchange.response != null &&
-        request.hasOption(optionTypeBlock2)) {
+        request.hasOption(OptionType.block2)) {
       // The response has already been generated and the client just wants
       // the next block of it
       final block2 = request.block2!;
@@ -129,7 +129,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
 
       final block = _getNextResponseBlock(response, status);
       block.token = request.token;
-      block.removeOptions(optionTypeObserve);
+      block.removeOptions(OptionType.observe);
 
       if (status.complete) {
         // Clean up blockwise status
@@ -221,8 +221,8 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       return;
     }
 
-    if (!response.hasOption(optionTypeBlock1) &&
-        !response.hasOption(optionTypeBlock2)) {
+    if (!response.hasOption(OptionType.block1) &&
+        !response.hasOption(OptionType.block2)) {
       // There is no block1 or block2 option, therefore it is a normal response
       exchange.response = response;
       super.receiveResponse(nextLayer, exchange, response);
@@ -248,7 +248,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
         exchange.currentRequest = nextBlock;
         super.sendRequest(nextLayer, exchange, nextBlock);
         // Do not deliver response
-      } else if (!response.hasOption(optionTypeBlock2)) {
+      } else if (!response.hasOption(OptionType.block2)) {
         // All request block have been acknowledged and we
         // receive a piggy-backed response that needs no blockwise
         // transfer. Thus, deliver it.
@@ -260,7 +260,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     final block2 = response.block2;
     if (block2 != null) {
       var status = _findResponseBlockStatus(exchange, response);
-      final blockStatus = CoapBlockOption(optionTypeBlock2);
+      final blockStatus = CoapBlockOption(OptionType.block2);
       blockStatus.rawValue = status.currentNUM;
       if (block2.num == blockStatus.num) {
         // We got the block we expected
@@ -290,7 +290,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           block.type = request.type;
           block.setOptions(request.getAllOptions());
           final nextBlock =
-              CoapBlockOption.fromParts(optionTypeBlock2, num, szx, m: m);
+              CoapBlockOption.fromParts(OptionType.block2, num, szx, m: m);
           block.setOption(nextBlock);
           block.destination = response.source;
           block.uriHost = response.source?.address.host;
@@ -305,7 +305,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           }
 
           // Make sure not to use Observe for block retrieval
-          block.removeOptions(optionTypeObserve);
+          block.removeOptions(OptionType.observe);
           status.currentNUM = nextBlock.intValue;
           exchange.currentRequest = block;
           exchange.responseBlockStatus = status;
@@ -322,7 +322,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           final observe = status.observe;
           if (observe != CoapBlockwiseStatus.noObserve) {
             assembled
-                .addOption(CoapOption.createVal(optionTypeObserve, observe));
+                .addOption(CoapOption.createVal(OptionType.observe, observe));
             // This is necessary for notifications that are sent blockwise:
             // Reset block number AND container with all blocks
             exchange.responseBlockStatus = null;
@@ -384,8 +384,8 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       ..addAll(request.payload!.getRange(from, from + length));
 
     final m = to < request.payloadSize;
-    block
-        .addOption(CoapBlockOption.fromParts(optionTypeBlock1, num, szx, m: m));
+    block.addOption(
+        CoapBlockOption.fromParts(OptionType.block1, num, szx, m: m));
 
     status.complete = !m;
     return block;
@@ -394,7 +394,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
   void _earlyBlock2Negotiation(CoapExchange exchange, CoapRequest request) {
     // Call this method when a request has completely arrived (might have
     // been sent in one piece without blockwise).
-    if (request.hasOption(optionTypeBlock2)) {
+    if (request.hasOption(OptionType.block2)) {
       final block2 = request.block2!;
       final status2 = CoapBlockwiseStatus.withSize(
           request.contentType, block2.num, block2.szx);
@@ -422,7 +422,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     if (status == null || exchange is CoapMulticastExchange) {
       status = CoapBlockwiseStatus(response!.contentType);
       status.currentSZX = CoapBlockOption.encodeSZX(_preferredBlockSize);
-      final blockOptions = response.getOptions(optionTypeBlock2)!;
+      final blockOptions = response.getOptions(OptionType.block2)!;
       status.currentNUM = blockOptions.toList()[0].value;
       status.complete = false;
       exchange.responseBlockStatus = status;
@@ -439,7 +439,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     final szx = status.currentSZX;
     final num = status.currentNUM;
 
-    if (response.hasOption(optionTypeObserve)) {
+    if (response.hasOption(OptionType.observe)) {
       // A blockwise notification transmits the first block only
       block = response;
     } else {
@@ -465,12 +465,12 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       block.payload = blockPayload;
 
       // Do not complete notifications
-      block.last = !m && !response.hasOption(optionTypeObserve);
+      block.last = !m && !response.hasOption(OptionType.observe);
 
       status.complete = !m;
     } else {
       block.addOption(
-          CoapBlockOption.fromParts(optionTypeBlock2, num, szx, m: false));
+          CoapBlockOption.fromParts(OptionType.block2, num, szx, m: false));
       block.last = true;
       status.complete = true;
     }

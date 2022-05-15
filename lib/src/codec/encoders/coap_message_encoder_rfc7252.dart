@@ -23,16 +23,16 @@ class CoapMessageEncoderRfc7252 extends CoapMessageEncoder {
 
     var lastOptionNumber = 0;
     final options = message.getAllOptions() as List<CoapOption>;
-    collection.insertionSort(options,
-        compare: (dynamic a, dynamic b) => a.type.compareTo(b.type));
+    collection.insertionSort<CoapOption>(options,
+        compare: (CoapOption a, CoapOption b) => a.type.compareTo(b.type));
 
     for (final opt in options) {
-      if (opt.type == optionTypeUriHost || opt.type == optionTypeUriPort) {
+      if (opt.type == OptionType.uriHost || opt.type == OptionType.uriPort) {
         continue;
       }
 
       // Write 4-bit option delta
-      final optNum = opt.type;
+      final optNum = opt.type.optionNumber;
       final optionDelta = optNum - lastOptionNumber;
       final optionDeltaNibble = CoapRfc7252.getOptionNibble(optionDelta);
       writer.write(optionDeltaNibble, CoapRfc7252.optionDeltaBits);
@@ -57,7 +57,7 @@ class CoapMessageEncoderRfc7252 extends CoapMessageEncoder {
       }
 
       // Write option value, reverse byte order for numeric options
-      if (CoapOption.getFormatByType(opt.type) == OptionFormat.integer) {
+      if (opt.type.optionFormat == OptionFormat.integer) {
         final reversedBuffer = typed.Uint8Buffer()
           ..addAll(opt.byteValue.reversed);
         writer.writeBytes(reversedBuffer);

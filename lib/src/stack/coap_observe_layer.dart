@@ -128,7 +128,7 @@ class CoapObserveLayer extends CoapAbstractLayer {
   @override
   void receiveResponse(
       CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
-    if (response.hasOption(optionTypeObserve)) {
+    if (response.hasOption(OptionType.observe)) {
       if (exchange.request!.isCancelled) {
         // The request was canceled and we no longer want notifications
         final rst = CoapEmptyMessage.newRST(response);

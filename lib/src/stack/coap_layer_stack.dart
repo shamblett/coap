@@ -88,7 +88,7 @@ class CoapStackTopLayer extends CoapAbstractLayer {
   @override
   void receiveResponse(
       CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
-    if (!response.hasOption(optionTypeObserve) &&
+    if (!response.hasOption(OptionType.observe) &&
         exchange is! CoapMulticastExchange) {
       exchange.complete = true;
     }
