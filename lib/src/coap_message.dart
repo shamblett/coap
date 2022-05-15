@@ -62,10 +62,9 @@ class CoapMessage {
 
   /// Adds an option to the list of options of this CoAP message.
   void addOption(CoapOption option) {
-    if (!_optionMap.containsKey(option.type)) {
-      _optionMap[option.type] = <CoapOption>[];
-    }
-    _optionMap[option.type]!.add(option);
+    final optionTypeList = _optionMap[option.type] ?? [];
+    optionTypeList.add(option);
+    _optionMap[option.type] = optionTypeList;
   }
 
   /// Remove a specific option, returns true if the option has been removed.
@@ -143,8 +142,10 @@ class CoapMessage {
   typed.Uint8Buffer? get token => _token;
 
   /// As a string
-  String get tokenString =>
-      _token != null ? CoapByteArrayUtil.toHexString(_token!) : '';
+  String get tokenString {
+    final token = _token;
+    return token != null ? CoapByteArrayUtil.toHexString(token) : '';
+  }
 
   set token(typed.Uint8Buffer? value) {
     if (value != null && value.length > 8) {
@@ -287,9 +288,10 @@ class CoapMessage {
 
   /// The payload of this CoAP message in string representation.
   String? get payloadString {
-    if (payload != null && payload!.isNotEmpty) {
+    final payload = this.payload;
+    if (payload != null && payload.isNotEmpty) {
       try {
-        final ret = _utfDecoder.convert(payload!);
+        final ret = _utfDecoder.convert(payload);
         return ret;
       } on FormatException {
         // The payload may be incomplete, if so and the conversion
@@ -487,9 +489,8 @@ class CoapMessage {
 
   /// URI path
   String get uriPath {
-    final join = CoapOption.join(
-        getOptions(OptionType.uriPath) as List<CoapOption>?, '/')!;
-    return join + '/';
+    final join = CoapOption.join(getOptions(OptionType.uriPath)?.toList(), '/');
+    return '${join ?? ""}/';
   }
 
   /// Sets a number of Uri path options from a string, ignores any trailing / character
@@ -544,8 +545,8 @@ class CoapMessage {
   }
 
   /// URI query
-  String get uriQuery => CoapOption.join(
-      getOptions(OptionType.uriQuery) as List<CoapOption>?, '&')!;
+  String get uriQuery =>
+      CoapOption.join(getOptions(OptionType.uriQuery)?.toList(), '&') ?? "";
 
   /// Set a URI query
   set uriQuery(String value) {
@@ -678,8 +679,9 @@ class CoapMessage {
   }
 
   /// Location query
-  String get locationQuery => CoapOption.join(
-      getOptions(OptionType.locationQuery) as List<CoapOption>?, '&')!;
+  String get locationQuery =>
+      CoapOption.join(getOptions(OptionType.locationQuery)?.toList(), '&') ??
+      "";
 
   /// Set a location query
   set locationQuery(String value) {
