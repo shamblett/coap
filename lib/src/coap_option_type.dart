@@ -42,7 +42,7 @@ enum OptionType implements Comparable<OptionType> {
   /// E, sequence of bytes, 1-4 B, -
   eTag(_eTag, 'ETag', OptionFormat.opaque),
 
-  ifNoneMatch(_ifNoneMatch, 'If-None-Match', OptionFormat.integer),
+  ifNoneMatch(_ifNoneMatch, 'If-None-Match', OptionFormat.empty),
 
   /// E, Duration, 1 B, 0
   observe(_observe, 'Observe', OptionFormat.integer),
@@ -165,4 +165,4 @@ enum OptionType implements Comparable<OptionType> {
 }
 
 /// CoAP option formats.
-enum OptionFormat { integer, string, opaque, unknown }
+enum OptionFormat { integer, string, opaque, empty, unknown }
