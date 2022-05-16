@@ -25,3 +25,9 @@ exchangeLifetime: 16
 markAndSweepInterval: 17
 channelReceivePacketSize: 18
 deduplicator: "MarkAndSweep"
+dtls:
+  backend: null
+  verify: false
+  withTrustedRoots: false
+  ciphers: null
+tinyDtlsInstance: null

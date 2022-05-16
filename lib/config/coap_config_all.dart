@@ -69,4 +69,10 @@ class CoapConfigAll extends DefaultCoapConfig {
 
   @override
   String get deduplicator => 'MarkAndSweep';
+
+  @override
+  bool get dtlsVerify => false;
+
+  @override
+  bool get dtlsWithTrustedRoots => false;
 }
