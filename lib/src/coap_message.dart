@@ -93,11 +93,10 @@ class CoapMessage {
   }
 
   /// Gets all options of the given type.
-  Iterable<CoapOption>? getOptions(OptionType optionType) =>
-      _optionMap[optionType];
+  List<CoapOption>? getOptions(OptionType optionType) => _optionMap[optionType];
 
   /// Gets a list of all options.
-  Iterable<CoapOption> getAllOptions() {
+  List<CoapOption> getAllOptions() {
     final list = <CoapOption>[];
     for (final Iterable<CoapOption> opts in _optionMap.values) {
       if (opts.isNotEmpty) {
@@ -125,8 +124,7 @@ class CoapMessage {
   /// Returns the first option of the specified type, or null
   CoapOption? getFirstOption(OptionType optionType) {
     return getOptions(optionType)
-        ?.toList()
-        .firstWhereOrNull((element) => element.type == optionType);
+        ?.firstWhereOrNull((element) => element.type == optionType);
   }
 
   /// Clear all options
@@ -330,16 +328,11 @@ class CoapMessage {
 
   /// Select options helper
   List<CoapOption> _selectOptions(OptionType optionType) {
-    final ret = <CoapOption>[];
-    final opts = getOptions(optionType);
-    if (opts != null) {
-      opts.forEach(ret.add);
-    }
-    return ret;
+    return getOptions(optionType) ?? [];
   }
 
   /// If-Matches.
-  List<CoapOption> get ifMatches => _selectOptions(OptionType.ifMatch).toList();
+  List<CoapOption> get ifMatches => _selectOptions(OptionType.ifMatch);
 
   /// Add an if match option, if a null string is passed the if match is not set
   void addIfMatch(String etag) =>
@@ -378,7 +371,7 @@ class CoapMessage {
   }
 
   /// Etags
-  Iterable<CoapOption> get etags => _selectOptions(OptionType.eTag).toList();
+  List<CoapOption> get etags => _selectOptions(OptionType.eTag);
 
   /// Contains an opaque E-tag
   bool containsETagOpaque(typed.Uint8Buffer opaque) =>
@@ -422,8 +415,7 @@ class CoapMessage {
   }
 
   /// If-None Matches.
-  Iterable<CoapOption> get ifNoneMatches =>
-      _selectOptions(OptionType.ifNoneMatch).toList();
+  List<CoapOption> get ifNoneMatches => _selectOptions(OptionType.ifNoneMatch);
 
   /// Add an if none match option
   void addIfNoneMatch(CoapOption option) {
@@ -489,7 +481,7 @@ class CoapMessage {
 
   /// URI path
   String get uriPath {
-    final join = CoapOption.join(getOptions(OptionType.uriPath)?.toList(), '/');
+    final join = CoapOption.join(getOptions(OptionType.uriPath), '/');
     return '${join ?? ""}/';
   }
 
@@ -503,8 +495,7 @@ class CoapMessage {
   }
 
   /// URI paths
-  Iterable<CoapOption> get uriPaths =>
-      _selectOptions(OptionType.uriPath).toList();
+  List<CoapOption> get uriPaths => _selectOptions(OptionType.uriPath);
 
   /// URI paths as a string with no trailing '/'
   String get uriPathsString {
@@ -546,7 +537,7 @@ class CoapMessage {
 
   /// URI query
   String get uriQuery =>
-      CoapOption.join(getOptions(OptionType.uriQuery)?.toList(), '&') ?? "";
+      CoapOption.join(getOptions(OptionType.uriQuery), '&') ?? "";
 
   /// Set a URI query
   set uriQuery(String value) {
@@ -558,8 +549,7 @@ class CoapMessage {
   }
 
   /// URI queries
-  Iterable<CoapOption> get uriQueries =>
-      _selectOptions(OptionType.uriQuery).toList();
+  List<CoapOption> get uriQueries => _selectOptions(OptionType.uriQuery);
 
   /// URI queries as a string with no trailing '/'
   String get uriQueriesString {
@@ -639,8 +629,7 @@ class CoapMessage {
   }
 
   /// Location paths
-  Iterable<CoapOption> get locationPaths =>
-      _selectOptions(OptionType.locationPath);
+  List<CoapOption> get locationPaths => _selectOptions(OptionType.locationPath);
 
   /// Location
   String get location {
@@ -680,8 +669,7 @@ class CoapMessage {
 
   /// Location query
   String get locationQuery =>
-      CoapOption.join(getOptions(OptionType.locationQuery)?.toList(), '&') ??
-      "";
+      CoapOption.join(getOptions(OptionType.locationQuery), '&') ?? "";
 
   /// Set a location query
   set locationQuery(String value) {
@@ -693,8 +681,8 @@ class CoapMessage {
   }
 
   /// Location queries
-  Iterable<CoapOption> get locationQueries =>
-      _selectOptions(OptionType.locationQuery).toList();
+  List<CoapOption> get locationQueries =>
+      _selectOptions(OptionType.locationQuery);
 
   /// Location queries as a string with no trailing '/'
   String get locationQueriesString {
