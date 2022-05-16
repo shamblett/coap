@@ -48,46 +48,42 @@ void main() {
   test('Options', () {
     final message = CoapMessage();
     final opt1 = CoapOption(OptionType.uriHost);
-    final opt2 = CoapOption(OptionType.unknown);
-    final options = <CoapOption>[opt1, opt2];
+    expect(() => CoapOption.create(9000),
+        throwsA(TypeMatcher<UnknownElectiveOptionException>()));
+    expect(() => CoapOption.create(9001),
+        throwsA(TypeMatcher<UnknownCriticalOptionException>()));
+    final options = <CoapOption>[
+      opt1,
+    ];
     message.addOptions(options);
-    expect(message.optionMap.length, 2);
+    expect(message.optionMap.length, 1);
     expect(message.getOptions(OptionType.uriHost)!.length, 1);
-    expect(message.getOptions(OptionType.unknown)!.length, 1);
     message.setOption(opt1);
-    message.setOption(opt2);
-    expect(message.optionMap.length, 2);
+    expect(message.optionMap.length, 1);
     expect(message.getOptions(OptionType.uriHost)!.length, 1);
-    expect(message.getOptions(OptionType.unknown)!.length, 1);
     message.setOptions(options);
-    expect(message.optionMap.length, 2);
+    expect(message.optionMap.length, 1);
     expect(message.getOptions(OptionType.uriHost)!.length, 1);
-    expect(message.getOptions(OptionType.unknown)!.length, 1);
-    expect(
-        message.getFirstOption(OptionType.unknown)!.type, OptionType.unknown);
     expect(
         message.getFirstOption(OptionType.uriHost)!.type, OptionType.uriHost);
     expect(message.getFirstOption(OptionType.uriPort), isNull);
     expect(message.hasOption(OptionType.uriHost), isTrue);
     expect(message.hasOption(OptionType.uriPort), isFalse);
     message.removeOptions(OptionType.uriHost);
-    expect(message.optionMap.length, 1);
-    expect(message.getOptions(OptionType.uriHost), isNull);
-    expect(message.getOptions(OptionType.unknown)!.length, 1);
-    message.removeOptions(OptionType.unknown);
     expect(message.optionMap.length, 0);
     expect(message.getOptions(OptionType.uriHost), isNull);
-    expect(message.getOptions(OptionType.unknown), isNull);
+    expect(message.optionMap.length, 0);
+    expect(message.getOptions(OptionType.uriHost), isNull);
     message.addOptions(options);
-    expect(message.optionMap.length, 2);
-    final opt3 = CoapOption(OptionType.uriHost);
-    message.addOption(opt3);
-    expect(message.optionMap.length, 2);
+    expect(message.optionMap.length, 1);
+    final opt2 = CoapOption(OptionType.uriHost);
+    message.addOption(opt2);
+    expect(message.optionMap.length, 1);
     expect(message.getOptions(OptionType.uriHost)!.length, 2);
     final ret = message.removeOption(opt1);
     expect(ret, isTrue);
     expect(message.getOptions(OptionType.uriHost)!.length, 1);
-    expect(message.getOptions(OptionType.uriHost)!.toList()[0] == opt3, isTrue);
+    expect(message.getOptions(OptionType.uriHost)!.toList()[0] == opt2, isTrue);
     message.clearOptions();
     expect(message.optionMap.length, 0);
   });

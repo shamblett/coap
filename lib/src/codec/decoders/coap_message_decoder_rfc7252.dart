@@ -65,7 +65,17 @@ class CoapMessageDecoder18 extends CoapMessageDecoder {
             CoapRfc7252.getValueFromOptionNibble(optionLengthNibble, _reader);
 
         // Read option
-        final opt = CoapOption.create(currentOption);
+        final CoapOption opt;
+        try {
+          opt = CoapOption.create(currentOption);
+        } on UnknownElectiveOptionException {
+          // Unknown elective options must be silently ignored
+          continue;
+        } on UnknownCriticalOptionException {
+          // Messages with unknown critical options must be rejected
+          message.hasUnknownCriticalOption = true;
+          return;
+        }
         opt.byteValue = _reader.readBytes(optionLength);
         // Reverse byte order for numeric options
         if (opt.type.optionFormat == OptionFormat.integer) {

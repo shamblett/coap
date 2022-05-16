@@ -97,7 +97,7 @@ void main() {
     });
 
     test('Set string value', () {
-      final option = CoapOption.create(9000);
+      final option = CoapOption.create(11);
 
       option.stringValue = '';
       expect(option.length, 0);
@@ -107,7 +107,7 @@ void main() {
     });
 
     test('Set int value', () {
-      final option = CoapOption.create(9001);
+      final option = CoapOption.create(12);
 
       option.intValue = 0;
       expect(option.byteValue[0], 0);

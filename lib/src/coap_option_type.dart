@@ -28,11 +28,33 @@ const _proxyUri = 35;
 const _proxyScheme = 39;
 const _size1 = 60;
 
+/// Base class for [Exception]s that are thrown when an unknown [CoapOption]
+/// number is encountered during the parsing of a [CoapMessage].
+abstract class UnknownOptionException implements Exception {
+  /// The unknown option number that was encountered.
+  int optionNumber;
+
+  /// Constructor.
+  UnknownOptionException(this.optionNumber);
+}
+
+/// [Exception] that is thrown when an unknown elective [CoapOption] number is
+/// encountered during the parsing of a [CoapMessage].
+class UnknownElectiveOptionException extends UnknownOptionException {
+  /// Constructor.
+  UnknownElectiveOptionException(super.optionNumber);
+}
+
+/// [Exception] that is thrown when an unknown critical [CoapOption] number is
+/// encountered during the parsing of a [CoapMessage].
+class UnknownCriticalOptionException extends UnknownOptionException {
+  /// Constructor.
+  UnknownCriticalOptionException(super.optionNumber);
+}
+
 /// CoAP option types as defined in
 /// RFC 7252, Section 12.2 and other CoAP extensions.
 enum OptionType implements Comparable<OptionType> {
-  unknown(-1, "Unkown", OptionFormat.unknown),
-
   /// C, opaque, 0-8 B, -
   ifMatch(_ifMatch, 'If-Match', OptionFormat.opaque),
 
@@ -132,9 +154,11 @@ enum OptionType implements Comparable<OptionType> {
       case _size1:
         return OptionType.size1;
       default:
-        // TODO: Throw Exceptions if option is unknown?
-        //       c.f. https://datatracker.ietf.org/doc/html/rfc7252#section-5.4.1
-        return OptionType.unknown;
+        if (type.isOdd) {
+          throw UnknownCriticalOptionException(type);
+        } else {
+          throw UnknownElectiveOptionException(type);
+        }
     }
   }
 

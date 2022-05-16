@@ -21,6 +21,8 @@ class CoapMessage {
   /// Indicates that no ID has been set.
   static const int none = -1;
 
+  bool hasUnknownCriticalOption = false;
+
   /// The type of this CoAP message.
   int type = CoapMessageType.unknown;
 
