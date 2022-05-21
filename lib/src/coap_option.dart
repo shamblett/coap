@@ -12,10 +12,10 @@ class CoapOption {
   /// Construction
   CoapOption(this._type) : _buffer = typed.Uint8Buffer();
 
-  final int _type;
+  final OptionType _type;
 
   /// Type
-  int get type => _type;
+  OptionType get type => _type;
 
   final typed.Uint8Buffer _buffer;
 
@@ -82,33 +82,17 @@ class CoapOption {
   }
 
   /// Gets the name of the option that corresponds to its type.
-  String get name => CoapOption.stringify(_type);
+  String get name => _type.name;
 
   /// Gets the value's length in bytes of the option.
   int get length => _buffer.lengthInBytes;
 
   /// Gets the value of the option according to its type.
   dynamic get value {
-    switch (_type) {
-      case optionTypeReserved:
-        return null;
-      case optionTypeContentType:
-      case optionTypeMaxAge:
-      case optionTypeUriPort:
-      case optionTypeObserve:
-      case optionTypeBlock2:
-      case optionTypeBlock1:
-      case optionTypeAccept:
+    switch (_type.optionFormat) {
+      case OptionFormat.integer:
         return intValue;
-      case optionTypeProxyUri:
-      case optionTypeETag:
-      case optionTypeUriHost:
-      case optionTypeLocationPath:
-      case optionTypeLocationQuery:
-      case optionTypeUriPath:
-      case optionTypeUriQuery:
-      case optionTypeIfMatch:
-      case optionTypeIfNoneMatch:
+      case OptionFormat.string:
         return stringValue;
       default:
         return null;
@@ -117,18 +101,16 @@ class CoapOption {
 
   /// Checks whether the option value is the default.
   bool isDefault() {
-    switch (_type) {
-      case optionTypeMaxAge:
-        return intValue == CoapConstants.defaultMaxAge;
-      default:
-        return false;
+    if (_type == OptionType.maxAge) {
+      return intValue == CoapConstants.defaultMaxAge;
     }
+    return false;
   }
 
   String _toValueString() {
-    switch (getFormatByType(_type)) {
+    switch (_type.optionFormat) {
       case OptionFormat.integer:
-        return (_type == optionTypeAccept || _type == optionTypeContentFormat)
+        return (_type == OptionType.accept || _type == OptionType.contentFormat)
             ? CoapMediaType.name(intValue)
             : intValue.toString();
       case OptionFormat.string:
@@ -141,41 +123,12 @@ class CoapOption {
   @override
   String toString() => '$name: ${_toValueString()}';
 
-  /// Returns the option format based on the option type.
-  static OptionFormat getFormatByType(int type) {
-    switch (type) {
-      case optionTypeContentFormat:
-      case optionTypeMaxAge:
-      case optionTypeUriPort:
-      case optionTypeObserve:
-      case optionTypeBlock2:
-      case optionTypeBlock1:
-      case optionTypeSize2:
-      case optionTypeSize1:
-      case optionTypeIfNoneMatch:
-      case optionTypeAccept:
-        return OptionFormat.integer;
-      case optionTypeUriHost:
-      case optionTypeUriPath:
-      case optionTypeUriQuery:
-      case optionTypeLocationPath:
-      case optionTypeLocationQuery:
-      case optionTypeProxyUri:
-      case optionTypeProxyScheme:
-        return OptionFormat.string;
-      case optionTypeETag:
-      case optionTypeIfMatch:
-        return OptionFormat.opaque;
-      default:
-        return OptionFormat.unknown;
-    }
-  }
-
   /// Creates an option.
-  static CoapOption create(int type) {
+  static CoapOption create(int optionNumber) {
+    final type = OptionType.fromTypeNumber(optionNumber);
     switch (type) {
-      case optionTypeBlock1:
-      case optionTypeBlock2:
+      case OptionType.block1:
+      case OptionType.block2:
         return CoapBlockOption(type);
       default:
         return CoapOption(type);
@@ -183,28 +136,28 @@ class CoapOption {
   }
 
   /// Creates an option.
-  static CoapOption createRaw(int type, typed.Uint8Buffer raw) {
-    return create(type)..byteValue = raw;
+  static CoapOption createRaw(OptionType type, typed.Uint8Buffer raw) {
+    return create(type.optionNumber)..byteValue = raw;
   }
 
   /// Creates an option.
-  static CoapOption createString(int type, String str) {
-    return create(type)..stringValue = str;
+  static CoapOption createString(OptionType type, String str) {
+    return create(type.optionNumber)..stringValue = str;
   }
 
   /// Creates a query option (shorthand because it's so common).
   static CoapOption createUriQuery(String str) {
-    return create(optionTypeUriQuery)..stringValue = str;
+    return create(OptionType.uriQuery.optionNumber)..stringValue = str;
   }
 
   /// Creates an option.
-  static CoapOption createVal(int type, int val) {
-    return create(type)..intValue = val;
+  static CoapOption createVal(OptionType type, int val) {
+    return create(type.optionNumber)..intValue = val;
   }
 
   /// Splits a string into a set of options, e.g. a uri path.
   /// Remove any leading /
-  static List<CoapOption> split(int type, String s, String delimiter) {
+  static List<CoapOption> split(OptionType type, String s, String delimiter) {
     final opts = <CoapOption>[];
     final exp = RegExp(r'^\/*\/');
     final Match? pos = exp.firstMatch(s);
@@ -236,64 +189,4 @@ class CoapOption {
     }
     return sb.toString();
   }
-
-  /// Returns a string representation of the option type.
-  static String stringify(int type) {
-    switch (type) {
-      case optionTypeReserved:
-        return 'Reserved';
-      case optionTypeContentFormat:
-        return 'Content-Format';
-      case optionTypeMaxAge:
-        return 'Max-Age';
-      case optionTypeProxyUri:
-        return 'Proxy-Uri';
-      case optionTypeETag:
-        return 'ETag';
-      case optionTypeUriHost:
-        return 'Uri-Host';
-      case optionTypeLocationPath:
-        return 'Location-Path';
-      case optionTypeUriPort:
-        return 'Uri-Port';
-      case optionTypeLocationQuery:
-        return 'Location-Query';
-      case optionTypeUriPath:
-        return 'Uri-Path';
-      case optionTypeUriQuery:
-        return 'Uri-Query';
-      case optionTypeObserve:
-        return 'Observe';
-      case optionTypeAccept:
-        return 'Accept';
-      case optionTypeIfMatch:
-        return 'If-Match';
-      case optionTypeBlock2:
-        return 'Block2';
-      case optionTypeBlock1:
-        return 'Block1';
-      case optionTypeSize2:
-        return 'Size2';
-      case optionTypeSize1:
-        return 'Size1';
-      case optionTypeIfNoneMatch:
-        return 'If-None-Match';
-      case optionTypeProxyScheme:
-        return 'Proxy-Scheme';
-      default:
-        return 'Unknown ($type)';
-    }
-  }
-
-  /// Checks whether an option is critical.
-  static bool isCritical(int type) => type.isOdd;
-
-  /// Checks whether an option is elective.
-  static bool isElective(int type) => type.isEven;
-
-  /// Checks whether an option is unsafe.
-  static bool isUnsafe(int type) => (type & 2) > 0;
-
-  /// Checks whether an option is safe.
-  static bool isSafe(int type) => !isUnsafe(type);
 }

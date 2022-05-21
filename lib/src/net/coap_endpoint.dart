@@ -130,7 +130,9 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
 
       _eventBus.fire(CoapReceivingResponseEvent(response));
 
-      if (!response.isCancelled) {
+      if (response.hasUnknownCriticalOption) {
+        _reject(response);
+      } else if (!response.isCancelled) {
         final exchange = _matcher.receiveResponse(response);
         if (exchange != null) {
           response.rtt = DateTime.now().difference(exchange.timestamp!);

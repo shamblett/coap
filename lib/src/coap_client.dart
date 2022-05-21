@@ -217,7 +217,7 @@ class CoapClient {
     unawaited(() async {
       _endpoint!.sendEpRequest(request);
       final resp = await _waitForResponse(request);
-      if (resp == null || !resp.hasOption(optionTypeObserve)) {
+      if (resp == null || !resp.hasOption(OptionType.observe)) {
         relation.isCancelled = true;
       }
     }());
