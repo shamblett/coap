@@ -70,7 +70,7 @@ class CoapMessage {
   /// Remove a specific option, returns true if the option has been removed.
   bool removeOption(CoapOption option) {
     var ret = false;
-    final options = getOptions(option.type) as List<CoapOption>?;
+    final options = getOptions(option.type);
     if (options == null) {
       return ret;
     }

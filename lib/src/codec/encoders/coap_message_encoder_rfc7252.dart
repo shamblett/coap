@@ -22,7 +22,7 @@ class CoapMessageEncoderRfc7252 extends CoapMessageEncoder {
     writer.writeBytes(message.token);
 
     var lastOptionNumber = 0;
-    final options = message.getAllOptions() as List<CoapOption>;
+    final options = message.getAllOptions();
     collection.insertionSort<CoapOption>(options,
         compare: (CoapOption a, CoapOption b) => a.type.compareTo(b.type));
 
