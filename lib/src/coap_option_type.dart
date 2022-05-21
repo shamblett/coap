@@ -36,6 +36,11 @@ abstract class UnknownOptionException implements Exception {
 
   /// Constructor.
   UnknownOptionException(this.optionNumber);
+
+  @override
+  String toString() {
+    return '$runtimeType:  Encountered unknown option number $optionNumber';
+  }
 }
 
 /// [Exception] that is thrown when an unknown elective [CoapOption] number is

@@ -9,33 +9,43 @@ part of coap;
 
 /// This [Exception] is thrown when an unsupported URI scheme is encountered.
 class UnsupportedProtocolException implements Exception {
-  /// The error message of this [Exception].
-  String get message => 'Unsupported URI scheme $uriScheme encountered.';
-
   /// The unsupported Uri Scheme that was encountered.
   final String uriScheme;
 
   /// Constructor.
   UnsupportedProtocolException(this.uriScheme);
+
+  @override
+  String toString() {
+    return '$runtimeType: Unsupported URI scheme $uriScheme encountered.';
+  }
 }
 
 /// This [Exception] is thrown when Credentials for secure CoAP communication
 /// are missing.
 class CoapCredentialsException implements Exception {
-  /// The error message of this [Exception].
-  final String message;
+  final String _message;
 
-  /// Constructor.
-  CoapCredentialsException(this.message);
+  /// Create a new [Exception] that prints out the given [_message].
+  CoapCredentialsException(this._message);
+
+  @override
+  toString() {
+    return "$runtimeType: $_message";
+  }
 }
 
 /// This [Exception] is thrown when a DTLS related problem occurs.
 class CoapDtlsException implements Exception {
-  /// The error message of this [Exception].
-  final String message;
+  final String _message;
 
-  /// Constructor.
-  CoapDtlsException(this.message);
+  /// Create a new [Exception] that prints out the given [_message].
+  CoapDtlsException(this._message);
+
+  @override
+  toString() {
+    return "$runtimeType: $_message";
+  }
 }
 
 /// Abstract networking class, allows different implementations for
