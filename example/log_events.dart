@@ -29,9 +29,9 @@ FutureOr<void> main(List<String> args) async {
 
     print('Sending post /large-create to ${uri.host}');
     await client.post('large-create', payload: payload, options: [opt]);
-
-    client.close();
   } catch (e) {
     print('CoAP encountered an exception: $e');
   }
+
+  client.close();
 }

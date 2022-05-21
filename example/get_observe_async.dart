@@ -44,17 +44,17 @@ FutureOr main() async {
     print('Sending get /large to ${uri.host}');
     futures.add(client
         .get('large')
-        .then((resp) => print('/large response: ${resp?.payloadString}')));
+        .then((resp) => print('/large response: ${resp.payloadString}')));
 
     print('Sending get /test to ${uri.host}');
     futures.add(client
         .get('test')
-        .then((resp) => print('/test response: ${resp?.payloadString}')));
+        .then((resp) => print('/test response: ${resp.payloadString}')));
 
     print('Sending get /separate to ${uri.host}');
     futures.add(client
         .get('separate')
-        .then((resp) => print('/separate response: ${resp?.payloadString}')));
+        .then((resp) => print('/separate response: ${resp.payloadString}')));
 
     print('Waiting until get requests are done');
     await Future.wait(futures);
@@ -65,9 +65,9 @@ FutureOr main() async {
     await Future.delayed(Duration(seconds: 20));
 
     await client.cancelObserveProactive(obsNon);
-
-    client.close();
   } catch (e) {
     print('CoAP encountered an exception: $e');
   }
+
+  client.close();
 }

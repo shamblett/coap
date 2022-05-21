@@ -22,9 +22,9 @@ FutureOr<void> main(List<String> args) async {
 
     print('Discovered resources:');
     links?.forEach(print);
-
-    client.close();
   } catch (e) {
     print('CoAP encountered an exception: $e');
   }
+
+  client.close();
 }

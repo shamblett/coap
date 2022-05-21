@@ -38,9 +38,9 @@ FutureOr main() async {
     }
 
     print('Response: $resp');
-
-    client.close();
   } catch (e) {
     print('CoAP encountered an exception: $e');
   }
+
+  client.close();
 }
