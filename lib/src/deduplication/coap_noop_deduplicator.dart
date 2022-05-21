@@ -5,7 +5,8 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import '../net/coap_exchange.dart';
+import 'coap_ideduplicator.dart';
 
 /// A dummy implementation that does no deduplication.
 class CoapNoopDeduplicator implements CoapIDeduplicator {

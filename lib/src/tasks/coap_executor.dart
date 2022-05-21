@@ -5,12 +5,14 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'package:executor/executor.dart';
+
+import 'coap_iexecutor.dart';
 
 /// Task executor
 class CoapExecutor implements CoapIExecutor {
   /// The executor
-  tasking.Executor executor = tasking.Executor(concurrency: 10);
+  Executor executor = Executor(concurrency: 10);
 
   @override
   void start(Action task) {

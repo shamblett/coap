@@ -5,7 +5,13 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'dart:io';
+
+import 'package:typed_data/typed_data.dart';
+
+import '../event/coap_event_bus.dart';
+import '../net/coap_internet_address.dart';
+import 'coap_inetwork.dart';
 
 /// UDP network
 class CoapNetworkUDP implements CoapINetwork {
@@ -39,8 +45,7 @@ class CoapNetworkUDP implements CoapINetwork {
   bool get bound => _bound;
 
   @override
-  Future<int> send(typed.Uint8Buffer data,
-      [CoapInternetAddress? address]) async {
+  Future<int> send(Uint8Buffer data, [CoapInternetAddress? address]) async {
     if (_bound) {
       _socket?.send(
           data.toList(), address?.address ?? this.address.address, port);
@@ -55,7 +60,7 @@ class CoapNetworkUDP implements CoapINetwork {
         case RawSocketEvent.read:
           final d = _socket?.receive();
           if (d != null) {
-            final buff = typed.Uint8Buffer();
+            final buff = Uint8Buffer();
             if (d.data.isNotEmpty) {
               buff.addAll(d.data.toList());
               final coapAddress =

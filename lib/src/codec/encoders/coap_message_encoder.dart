@@ -5,33 +5,41 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'package:typed_data/typed_data.dart';
+
+import '../../coap_code.dart';
+import '../../coap_empty_message.dart';
+import '../../coap_message.dart';
+import '../../coap_request.dart';
+import '../../coap_response.dart';
+import '../coap_imessage_encoder.dart';
+import '../datagram/coap_datagram_writer.dart';
 
 /// Base class for message encoders.
 abstract class CoapMessageEncoder implements CoapIMessageEncoder {
   @override
-  typed.Uint8Buffer encodeRequest(CoapRequest request) {
+  Uint8Buffer encodeRequest(CoapRequest request) {
     final writer = CoapDatagramWriter();
     serialize(writer, request, request.code);
     return writer.toByteArray();
   }
 
   @override
-  typed.Uint8Buffer encodeResponse(CoapResponse response) {
+  Uint8Buffer encodeResponse(CoapResponse response) {
     final writer = CoapDatagramWriter();
     serialize(writer, response, response.code);
     return writer.toByteArray();
   }
 
   @override
-  typed.Uint8Buffer encodeEmpty(CoapEmptyMessage message) {
+  Uint8Buffer encodeEmpty(CoapEmptyMessage message) {
     final writer = CoapDatagramWriter();
     serialize(writer, message, CoapCode.empty);
     return writer.toByteArray();
   }
 
   @override
-  typed.Uint8Buffer? encodeMessage(CoapMessage message) {
+  Uint8Buffer? encodeMessage(CoapMessage message) {
     if (message.isRequest) {
       return encodeRequest(message as CoapRequest);
     } else if (message.isResponse) {

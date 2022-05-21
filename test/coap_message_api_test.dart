@@ -9,6 +9,8 @@
 
 import 'package:coap/coap.dart';
 import 'package:coap/config/coap_config_default.dart';
+import 'package:coap/src/coap_message.dart';
+import 'package:coap/src/event/coap_event_bus.dart';
 import 'package:test/test.dart';
 
 // Note that nnot all API methods are tested here, some are tested in other unit test suites,

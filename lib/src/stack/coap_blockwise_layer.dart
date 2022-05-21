@@ -5,7 +5,26 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'dart:async';
+import 'dart:math';
+
+import 'package:typed_data/typed_data.dart';
+
+import '../coap_block_option.dart';
+import '../coap_code.dart';
+import '../coap_config.dart';
+import '../coap_empty_message.dart';
+import '../coap_message.dart';
+import '../coap_message_type.dart';
+import '../coap_option.dart';
+import '../coap_option_type.dart';
+import '../coap_request.dart';
+import '../coap_response.dart';
+import '../net/coap_exchange.dart';
+import '../net/coap_multicast_exchange.dart';
+import 'coap_abstract_layer.dart';
+import 'coap_blockwise_status.dart';
+import 'coap_ilayer.dart';
 
 /// Blockwise layer
 class CoapBlockwiseLayer extends CoapAbstractLayer {
@@ -199,8 +218,8 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       CoapMulticastExchange exchange, CoapRequest block) {
     final endpoint = exchange.endpoint;
     final originalRequest = exchange.request;
-    final newExchange = CoapExchange(block, exchange.origin,
-        namespace: exchange._eventBus.namespace);
+    final newExchange =
+        CoapExchange(block, exchange.origin, namespace: exchange.namespace);
     newExchange.originalMulticastRequest = originalRequest;
     newExchange.endpoint = endpoint;
     block.type = CoapMessageType.con;
@@ -380,7 +399,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     final from = num * currentSize;
     final to = min((num + 1) * currentSize, request.payloadSize);
     final length = to - from;
-    block.payload = typed.Uint8Buffer()
+    block.payload = Uint8Buffer()
       ..addAll(request.payload!.getRange(from, from + length));
 
     final m = to < request.payloadSize;
@@ -411,7 +430,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     message.type = last.type;
     message.setOptions(last.getAllOptions());
 
-    final payload = typed.Uint8Buffer();
+    final payload = Uint8Buffer();
     status.blocks.forEach(payload.addAll);
     message.payload = payload;
   }
@@ -456,7 +475,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
     if (payloadSize > 0 && payloadSize > from) {
       final to = min((num + 1) * currentSize, response.payloadSize);
       final length = to - from;
-      final blockPayload = typed.Uint8Buffer();
+      final blockPayload = Uint8Buffer();
       final m = to < response.payloadSize;
       block.setBlock2(szx, num, m: m);
 

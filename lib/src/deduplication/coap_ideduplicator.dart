@@ -5,7 +5,7 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import '../net/coap_exchange.dart';
 
 /// Provides methods to detect duplicates.
 /// Note that CONs and NONs can be duplicates.

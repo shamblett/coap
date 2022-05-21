@@ -5,21 +5,26 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'package:typed_data/typed_data.dart';
+
+import '../coap_empty_message.dart';
+import '../coap_message.dart';
+import '../coap_request.dart';
+import '../coap_response.dart';
 
 /// Provides methods to serialize outgoing messages to byte arrays.
 abstract class CoapIMessageEncoder {
   /// Encodes a request into a bytes array.
-  typed.Uint8Buffer encodeRequest(CoapRequest request);
+  Uint8Buffer encodeRequest(CoapRequest request);
 
   /// Encodes a response into a bytes array.
-  typed.Uint8Buffer encodeResponse(CoapResponse response);
+  Uint8Buffer encodeResponse(CoapResponse response);
 
   /// Encodes an empty message into a bytes array.
-  typed.Uint8Buffer encodeEmpty(CoapEmptyMessage message);
+  Uint8Buffer encodeEmpty(CoapEmptyMessage message);
 
   /// Encodes a CoAP message into a bytes array.
   /// Returns the encoded bytes, or null if the message can not be encoded,
   /// i.e. the message is not a Request, a Response or an EmptyMessage.
-  typed.Uint8Buffer? encodeMessage(CoapMessage message);
+  Uint8Buffer? encodeMessage(CoapMessage message);
 }

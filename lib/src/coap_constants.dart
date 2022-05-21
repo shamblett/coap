@@ -5,7 +5,7 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'package:typed_data/typed_data.dart';
 
 /// Package wide constants
 class CoapConstants {
@@ -69,7 +69,7 @@ class CoapConstants {
   ///
   /// Empty token
   ///
-  static typed.Uint8Buffer emptyToken = typed.Uint8Buffer(0);
+  static Uint8Buffer emptyToken = Uint8Buffer(0);
 
   ///
   /// The lowest value of a request code.

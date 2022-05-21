@@ -5,7 +5,28 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'dart:async';
+import 'dart:math';
+
+import 'package:typed_data/typed_data.dart';
+
+import '../coap_config.dart';
+import '../coap_empty_message.dart';
+import '../coap_message.dart';
+import '../coap_message_type.dart';
+import '../coap_request.dart';
+import '../coap_response.dart';
+import '../event/coap_event_bus.dart';
+import '../network/coap_inetwork.dart';
+import '../stack/coap_stack.dart';
+import '../tasks/coap_executor.dart';
+import '../tasks/coap_iexecutor.dart';
+import 'coap_exchange.dart';
+import 'coap_iendpoint.dart';
+import 'coap_imatcher.dart';
+import 'coap_internet_address.dart';
+import 'coap_ioutbox.dart';
+import 'coap_matcher.dart';
 
 /// EndPoint encapsulates the stack that executes the CoAP protocol.
 class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
@@ -96,7 +117,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
 
   void _receiveData(CoapDataReceivedEvent event) {
     // clone the data, in case other objects want to do stuff with it, too
-    final data = typed.Uint8Buffer();
+    final data = Uint8Buffer();
     data.addAll(event.data);
     // Return if we have no data, should not happen but be defensive
     final decoder = config.spec.newMessageDecoder(data);
@@ -203,7 +224,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
     }
   }
 
-  typed.Uint8Buffer _serializeEmpty(CoapEmptyMessage message) {
+  Uint8Buffer _serializeEmpty(CoapEmptyMessage message) {
     var bytes = message.bytes;
     if (bytes == null) {
       bytes = _config.spec.newMessageEncoder().encodeMessage(message);
@@ -212,7 +233,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
     return bytes!;
   }
 
-  typed.Uint8Buffer _serializeRequest(CoapMessage message) {
+  Uint8Buffer _serializeRequest(CoapMessage message) {
     var bytes = message.bytes;
     if (bytes == null) {
       bytes = _config.spec.newMessageEncoder().encodeMessage(message);
@@ -221,7 +242,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
     return bytes!;
   }
 
-  typed.Uint8Buffer _serializeResponse(CoapMessage message) {
+  Uint8Buffer _serializeResponse(CoapMessage message) {
     var bytes = message.bytes;
     if (bytes == null) {
       bytes = _config.spec.newMessageEncoder().encodeMessage(message);

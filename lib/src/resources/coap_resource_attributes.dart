@@ -5,7 +5,9 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import '../coap_link_format.dart';
+
+import 'package:collection/collection.dart';
 
 /// Wraps different attributes that the CoAP protocol defines
 /// such as title, resource type or interface description. These attributes will

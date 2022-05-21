@@ -5,7 +5,9 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'package:collection/collection.dart';
+
+import 'coap_option.dart';
 
 /// This class describes the CoAP Media Type Registry as defined in
 /// RFC 7252, Section 12.3.

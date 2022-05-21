@@ -5,7 +5,17 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'dart:math';
+
+import 'package:typed_data/typed_data.dart';
+
+import '../coap_config.dart';
+import '../coap_constants.dart';
+import '../coap_request.dart';
+import '../coap_response.dart';
+import '../net/coap_exchange.dart';
+import 'coap_abstract_layer.dart';
+import 'coap_ilayer.dart';
 
 /// Doesn't do much yet except for setting a simple token. Notice that empty
 /// tokens must be represented as byte array of length 0 (not null).
@@ -51,8 +61,8 @@ class CoapTokenLayer extends CoapAbstractLayer {
     super.receiveResponse(nextLayer, exchange, response);
   }
 
-  typed.Uint8Buffer _newToken() {
-    final buff = typed.Uint8Buffer()
+  Uint8Buffer _newToken() {
+    final buff = Uint8Buffer()
       ..addAll(List<int>.generate(
           CoapConstants.tokenLength, (i) => _random.nextInt(256)));
     return buff;

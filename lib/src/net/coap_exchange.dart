@@ -5,7 +5,16 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import '../coap_block_option.dart';
+import '../coap_empty_message.dart';
+import '../coap_message_type.dart';
+import '../coap_request.dart';
+import '../coap_response.dart';
+import '../event/coap_event_bus.dart';
+import '../observe/coap_observe_relation.dart';
+import '../stack/coap_blockwise_status.dart';
+import 'coap_iendpoint.dart';
+import 'coap_ioutbox.dart';
 
 /// Represents the complete state of an exchange of one request
 /// and one or more responses. The lifecycle of an exchange ends
@@ -15,10 +24,12 @@ part of coap;
 /// i.e., has reached the retransmission limit without being acknowledged.
 class CoapExchange {
   /// Construction
-  CoapExchange(this.request, this._origin, {required String namespace}) {
+  CoapExchange(this.request, this._origin, {required this.namespace}) {
     _eventBus = CoapEventBus(namespace: namespace);
     _timestamp = DateTime.now();
   }
+
+  final String namespace;
 
   late final CoapEventBus _eventBus;
 

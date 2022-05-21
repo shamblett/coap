@@ -6,7 +6,15 @@
  * Copyright :  Jan Romann
  */
 
-part of coap;
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:dtls/dtls.dart';
+import 'package:typed_data/typed_data.dart';
+
+import '../event/coap_event_bus.dart';
+import '../net/coap_internet_address.dart';
+import 'coap_inetwork.dart';
 
 /// DTLS network using OpenSSL
 class CoapNetworkOpenSSL implements CoapINetwork {
@@ -32,7 +40,7 @@ class CoapNetworkOpenSSL implements CoapINetwork {
   final CoapEventBus _eventBus;
 
   void _processFrame(Uint8List frame) {
-    final buff = typed.Uint8Buffer();
+    final buff = Uint8Buffer();
     if (frame.isNotEmpty) {
       buff.addAll(frame.toList());
       final rxEvent = CoapDataReceivedEvent(buff, address);
@@ -40,7 +48,7 @@ class CoapNetworkOpenSSL implements CoapINetwork {
     }
   }
 
-  dtls.DtlsClientConnection? _dtlsConnection;
+  DtlsClientConnection? _dtlsConnection;
 
   RawDatagramSocket? _socket;
 
@@ -64,8 +72,7 @@ class CoapNetworkOpenSSL implements CoapINetwork {
   bool _bound = false;
 
   @override
-  Future<int> send(typed.Uint8Buffer data,
-      [CoapInternetAddress? address]) async {
+  Future<int> send(Uint8Buffer data, [CoapInternetAddress? address]) async {
     // FIXME: There is currently no way for reconnecting if the connection has
     //        been lost in the meantime
 
@@ -106,8 +113,8 @@ class CoapNetworkOpenSSL implements CoapINetwork {
     // a random source port.
     final bindAddress = address.bind;
     _socket = await RawDatagramSocket.bind(bindAddress, 0);
-    _dtlsConnection = dtls.DtlsClientConnection(
-        context: dtls.DtlsClientContext(
+    _dtlsConnection = DtlsClientConnection(
+        context: DtlsClientContext(
           verify: _verify,
           withTrustedRoots: _withTrustedRoots,
           ciphers: _ciphers,

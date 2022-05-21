@@ -6,6 +6,7 @@
  */
 import 'package:coap/coap.dart';
 import 'package:coap/config/coap_config_all.dart';
+import 'package:coap/src/endpoint/resources/coap_remote_resource.dart';
 import 'package:test/test.dart';
 
 void main() {

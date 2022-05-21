@@ -5,7 +5,15 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'package:collection/collection.dart';
+import 'package:typed_data/typed_data.dart';
+
+import '../../coap_message.dart';
+import '../../coap_option.dart';
+import '../../coap_option_type.dart';
+import '../../specification/rfcs/coap_rfc7252.dart';
+import '../datagram/coap_datagram_writer.dart';
+import 'coap_message_encoder.dart';
 
 /// Message encoder RFC 7252
 class CoapMessageEncoderRfc7252 extends CoapMessageEncoder {
@@ -23,7 +31,7 @@ class CoapMessageEncoderRfc7252 extends CoapMessageEncoder {
 
     var lastOptionNumber = 0;
     final options = message.getAllOptions();
-    collection.insertionSort<CoapOption>(options,
+    insertionSort<CoapOption>(options,
         compare: (CoapOption a, CoapOption b) => a.type.compareTo(b.type));
 
     for (final opt in options) {
@@ -58,8 +66,7 @@ class CoapMessageEncoderRfc7252 extends CoapMessageEncoder {
 
       // Write option value, reverse byte order for numeric options
       if (opt.type.optionFormat == OptionFormat.integer) {
-        final reversedBuffer = typed.Uint8Buffer()
-          ..addAll(opt.byteValue.reversed);
+        final reversedBuffer = Uint8Buffer()..addAll(opt.byteValue.reversed);
         writer.writeBytes(reversedBuffer);
       } else {
         writer.writeBytes(opt.byteValue);

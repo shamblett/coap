@@ -5,10 +5,19 @@
  * Copyright :  Jan Romann
  */
 
-part of coap;
+import 'package:dart_tinydtls/dart_tinydtls.dart';
+import 'package:typed_data/typed_data.dart';
 
-tinydtls.PskCallback? _createTinyDtlsPskCallback(
-    PskCredentialsCallback? coapPskCredentialsCallback) {
+import '../event/coap_event_bus.dart';
+import '../net/coap_internet_address.dart';
+import 'coap_inetwork.dart';
+import 'credentials/psk_credentials.dart' as internal;
+import 'credentials/ecdsa_keys.dart' as internal;
+
+/// Maps an [internal.PskCredentialsCallback] to one provided by the tinydtls
+/// libary.
+PskCallback? _createTinyDtlsPskCallback(
+    internal.PskCredentialsCallback? coapPskCredentialsCallback) {
   if (coapPskCredentialsCallback == null) {
     return null;
   }
@@ -16,27 +25,29 @@ tinydtls.PskCallback? _createTinyDtlsPskCallback(
   return (String identityHint) {
     final pskCredentials = coapPskCredentialsCallback(identityHint);
 
-    return tinydtls.PskCredentials(
+    return PskCredentials(
         identity: pskCredentials.identity,
         preSharedKey: pskCredentials.preSharedKey);
   };
 }
 
-tinydtls.EcdsaCurve _mapEcdsaCurve(EcdsaCurve ecdsaCurve) {
+/// Maps an [internal.EcdsaCurve] to one provided by the tinydtls
+/// libary.
+EcdsaCurve _mapEcdsaCurve(internal.EcdsaCurve ecdsaCurve) {
   switch (ecdsaCurve) {
-    case EcdsaCurve.secp256r1:
-      return tinydtls.EcdsaCurve.secp256r1;
+    case internal.EcdsaCurve.secp256r1:
+      return EcdsaCurve.secp256r1;
   }
 }
 
-tinydtls.EcdsaKeys? _createTinyDtlsEcdsaKeys(EcdsaKeys? coapEcdsaKeys) {
+EcdsaKeys? _createTinyDtlsEcdsaKeys(internal.EcdsaKeys? coapEcdsaKeys) {
   if (coapEcdsaKeys == null) {
     return null;
   }
 
   final ecdsaCurve = _mapEcdsaCurve(coapEcdsaKeys.ecdsaCurve);
 
-  return tinydtls.EcdsaKeys(ecdsaCurve,
+  return EcdsaKeys(ecdsaCurve,
       privateKey: coapEcdsaKeys.privateKey,
       publicKeyX: coapEcdsaKeys.publicKeyX,
       publicKeyY: coapEcdsaKeys.publicKeyY);
@@ -53,11 +64,11 @@ class CoapNetworkTinyDtls implements CoapINetwork {
   /// Cryptography).
   ///
   /// An optional [_tinyDtlsInstance] object can be passed in case
-  /// [tinydtls.TinyDTLS] should not be available at the default locations.
+  /// [TinyDTLS] should not be available at the default locations.
   CoapNetworkTinyDtls(this.address, this.port, this._tinyDtlsInstance,
       {String namespace = '',
-      PskCredentialsCallback? pskCredentialsCallback,
-      EcdsaKeys? ecdsaKeys})
+      internal.PskCredentialsCallback? pskCredentialsCallback,
+      internal.EcdsaKeys? ecdsaKeys})
       : _tinydtlsPskCallback =
             _createTinyDtlsPskCallback(pskCredentialsCallback),
         _ecdsaKeys = _createTinyDtlsEcdsaKeys(ecdsaKeys),
@@ -65,11 +76,11 @@ class CoapNetworkTinyDtls implements CoapINetwork {
 
   final CoapEventBus _eventBus;
 
-  final tinydtls.PskCallback? _tinydtlsPskCallback;
+  final PskCallback? _tinydtlsPskCallback;
 
-  final tinydtls.EcdsaKeys? _ecdsaKeys;
+  final EcdsaKeys? _ecdsaKeys;
 
-  final tinydtls.TinyDTLS? _tinyDtlsInstance;
+  final TinyDTLS? _tinyDtlsInstance;
 
   @override
   final CoapInternetAddress address;
@@ -82,9 +93,9 @@ class CoapNetworkTinyDtls implements CoapINetwork {
 
   bool _bound = false;
 
-  tinydtls.DtlsClient? _dtlsClient;
+  DtlsClient? _dtlsClient;
 
-  tinydtls.DtlsConnection? _connection;
+  DtlsConnection? _connection;
 
   void _checkConnectionStatus() {
     if (_connection?.connected != true) {
@@ -95,8 +106,7 @@ class CoapNetworkTinyDtls implements CoapINetwork {
   }
 
   @override
-  Future<int> send(typed.Uint8Buffer data,
-      [CoapInternetAddress? address]) async {
+  Future<int> send(Uint8Buffer data, [CoapInternetAddress? address]) async {
     if (_connection?.connected != true) {
       _bound = false;
       await bind();
@@ -110,7 +120,7 @@ class CoapNetworkTinyDtls implements CoapINetwork {
   @override
   void receive() {
     _connection?.listen((datagram) {
-      final buff = typed.Uint8Buffer();
+      final buff = Uint8Buffer();
       if (datagram.data.isNotEmpty) {
         buff.addAll(datagram.data.toList());
         final coapAddress =
@@ -129,8 +139,8 @@ class CoapNetworkTinyDtls implements CoapINetwork {
     // Use a port of 0 here as we are a client, this will generate
     // a random source port.
     final bindAddress = address.bind;
-    _dtlsClient ??= await tinydtls.DtlsClient.bind(bindAddress, 0,
-        tinyDtls: _tinyDtlsInstance);
+    _dtlsClient ??=
+        await DtlsClient.bind(bindAddress, 0, tinyDtls: _tinyDtlsInstance);
     _connection = await _dtlsClient!.connect(address.address, port,
         pskCallback: _tinydtlsPskCallback, ecdsaKeys: _ecdsaKeys);
     _checkConnectionStatus();

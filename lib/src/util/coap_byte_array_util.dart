@@ -5,18 +5,18 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'package:hex/hex.dart';
+import 'package:typed_data/typed_data.dart';
 
 /// Utility methods for bytes array.
 class CoapByteArrayUtil {
   /// Returns a hex string representation of the given bytes array.
-  static String toHexString(typed.Uint8Buffer data) =>
-      hex.HEX.encode(data.toList());
+  static String toHexString(Uint8Buffer data) => HEX.encode(data.toList());
 
   /// Parses a bytes array from its hex string representation.
-  static typed.Uint8Buffer fromHexString(String data) {
-    final ret = typed.Uint8Buffer();
-    ret.addAll(hex.HEX.decode(data));
+  static Uint8Buffer fromHexString(String data) {
+    final ret = Uint8Buffer();
+    ret.addAll(HEX.decode(data));
     return ret;
   }
 }

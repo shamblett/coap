@@ -5,7 +5,12 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'package:dart_tinydtls/dart_tinydtls.dart';
+
+import 'specification/coap_ispec.dart';
+import 'specification/rfcs/coap_rfc7252.dart';
+import 'coap_constants.dart';
+import 'deduplication/coap_deduplicator_factory.dart';
 
 enum DtlsBackend {
   OpenSsl,
@@ -89,9 +94,9 @@ abstract class DefaultCoapConfig {
   /// Indicates which [DtlsBackend] a new [CoapClient] should use.
   DtlsBackend? get dtlsBackend => null;
 
-  /// Custom [tinydtls.TinyDTLS] instance that can be registered if tinyDTLS
+  /// Custom [TinyDTLS] instance that can be registered if tinyDTLS
   /// should not be available at the default locations.
-  tinydtls.TinyDTLS? get tinyDtlsInstance => null;
+  TinyDTLS? get tinyDtlsInstance => null;
 
   /// Whether OpenSSL bindings via the [dtls] package should be used for CoAPS.
   bool get dtlsUseOpenSSL => false;

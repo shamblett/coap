@@ -5,7 +5,7 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'package:typed_data/typed_data.dart';
 
 /// Represents the status of a blockwise transfer of a request or a response.
 class CoapBlockwiseStatus {
@@ -44,13 +44,13 @@ class CoapBlockwiseStatus {
   int observe = noObserve;
 
   /// Blocks
-  List<typed.Uint8Buffer> blocks = <typed.Uint8Buffer>[];
+  List<Uint8Buffer> blocks = <Uint8Buffer>[];
 
   /// Block count
   int get blockCount => blocks.length;
 
   /// Adds the specified block to the current list of blocks.
-  void addBlock(typed.Uint8Buffer? block) {
+  void addBlock(Uint8Buffer? block) {
     if (block != null) {
       blocks.add(block);
     }

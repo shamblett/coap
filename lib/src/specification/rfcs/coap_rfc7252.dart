@@ -5,7 +5,15 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'package:typed_data/typed_data.dart';
+
+import '../../coap_message.dart';
+import '../../codec/coap_imessage_decoder.dart';
+import '../../codec/coap_imessage_encoder.dart';
+import '../../codec/datagram/coap_datagram_reader.dart';
+import '../../codec/decoders/coap_message_decoder_rfc7252.dart';
+import '../../codec/encoders/coap_message_encoder_rfc7252.dart';
+import '../coap_ispec.dart';
 
 /// RFC 7252
 class CoapRfc7252 implements CoapISpec {
@@ -49,15 +57,15 @@ class CoapRfc7252 implements CoapISpec {
   CoapIMessageEncoder newMessageEncoder() => CoapMessageEncoderRfc7252();
 
   @override
-  CoapIMessageDecoder newMessageDecoder(typed.Uint8Buffer data) =>
+  CoapIMessageDecoder newMessageDecoder(Uint8Buffer data) =>
       CoapMessageDecoder18(data);
 
   @override
-  typed.Uint8Buffer? encode(CoapMessage msg) =>
+  Uint8Buffer? encode(CoapMessage msg) =>
       newMessageEncoder().encodeMessage(msg);
 
   @override
-  CoapMessage? decode(typed.Uint8Buffer bytes) =>
+  CoapMessage? decode(Uint8Buffer bytes) =>
       newMessageDecoder(bytes).decodeMessage();
 
   /// Calculates the value used in the extended option fields as specified

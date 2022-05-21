@@ -5,7 +5,10 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import '../coap_empty_message.dart';
+import '../coap_message.dart';
+import '../coap_request.dart';
+import '../coap_response.dart';
 
 /// Provides methods to parse incoming byte arrays to messages.
 abstract class CoapIMessageDecoder {

@@ -5,7 +5,21 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'dart:async';
+
+import '../coap_config.dart';
+import '../coap_empty_message.dart';
+import '../coap_message_type.dart';
+import '../coap_option_type.dart';
+import '../coap_request.dart';
+import '../coap_response.dart';
+import '../deduplication/coap_deduplicator_factory.dart';
+import '../deduplication/coap_ideduplicator.dart';
+import '../event/coap_event_bus.dart';
+import '../observe/coap_observe_relation.dart';
+import 'coap_exchange.dart';
+import 'coap_imatcher.dart';
+import 'coap_multicast_exchange.dart';
 
 /// Matcher class
 class CoapMatcher implements CoapIMatcher {
