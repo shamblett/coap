@@ -95,7 +95,9 @@ class CoapClient {
   CoapEventBus get events => _eventBus;
 
   final DefaultCoapConfig _config;
-  CoapIEndPoint? _endpoint;
+
+  final Map<Uri, CoapIEndPoint> _endpointCache = {};
+
   final _lock = Lock();
 
   /// Performs a CoAP ping.
@@ -110,7 +112,8 @@ class CoapClient {
         pskCredentialsCallback: pskCredentialsCallback)
       ..token = CoapConstants.emptyToken;
     await _prepare(request);
-    _endpoint!.sendEpRequest(request);
+    final endpoint = _getEndpointforRequest(request);
+    endpoint!.sendEpRequest(request);
     await _waitForReject(request);
     return request.isRejected;
   }
@@ -258,7 +261,8 @@ class CoapClient {
     await _prepare(request);
     final relation = CoapObserveClientRelation(request);
     unawaited(() async {
-      _endpoint!.sendEpRequest(request);
+      final endpoint = _getEndpointforRequest(request);
+      endpoint!.sendEpRequest(request);
       final resp = await _waitForResponse(request);
       if (!resp.hasOption(OptionType.observe)) {
         relation.isCancelled = true;
@@ -309,7 +313,8 @@ class CoapClient {
             cancelOnError: onMulticastResponse.cancelOnError,
           );
     }
-    _endpoint!.sendEpRequest(request);
+    final endpoint = _getEndpointforRequest(request);
+    endpoint!.sendEpRequest(request);
     return _waitForResponse(request);
   }
 
@@ -337,7 +342,11 @@ class CoapClient {
 
   /// Cancel all ongoing requests
   void close() {
-    _endpoint?.stop();
+    for (final endpoint in _endpointCache.values) {
+      endpoint.stop();
+    }
+
+    _endpointCache.clear();
   }
 
   void _build(
@@ -374,6 +383,21 @@ class CoapClient {
     }
   }
 
+  static Uri _getEndpointKey(CoapRequest request) {
+    final uri = request.uri;
+    return Uri(host: uri.host, scheme: uri.scheme, port: uri.port);
+  }
+
+  CoapIEndPoint? _getEndpointforRequest(CoapRequest request) {
+    final endpointKey = _getEndpointKey(request);
+    return _endpointCache[endpointKey];
+  }
+
+  void _setEndpointforRequest(CoapRequest request, CoapIEndPoint endPoint) {
+    final endpointKey = _getEndpointKey(request);
+    _endpointCache[endpointKey] = endPoint;
+  }
+
   Future<void> _prepare(CoapRequest request) async {
     request.timestamp = DateTime.now();
     request.setEventBus(_eventBus);
@@ -383,9 +407,11 @@ class CoapClient {
       request.accept = CoapMediaType.textPlain;
     }
 
+    var endpoint = _getEndpointforRequest(request);
+
     await _lock.synchronized(() async {
       // Set endpoint if missing
-      if (_endpoint == null) {
+      if (endpoint == null) {
         final destination =
             await _lookupHost(request.uri.host, addressType, bindAddress);
         final socket = CoapINetwork.fromUri(request.uri,
@@ -395,13 +421,15 @@ class CoapClient {
             pskCredentialsCallback: request.pskCredentialsCallback,
             ecdsaKeys: request.ecdsaKeys);
         await socket.bind();
-        _endpoint =
+        final newEndpoint =
             CoapEndPoint(socket, _config, namespace: _eventBus.namespace);
-        await _endpoint!.start();
+        await newEndpoint.start();
+        endpoint = newEndpoint;
+        _setEndpointforRequest(request, newEndpoint);
       }
     });
 
-    request.endpoint = _endpoint;
+    request.endpoint = endpoint;
   }
 
   Future<CoapInternetAddress> _lookupHost(String host,
