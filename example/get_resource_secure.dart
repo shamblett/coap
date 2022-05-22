@@ -30,12 +30,12 @@ class DtlsConfig extends DefaultCoapConfig {
 FutureOr<void> main(List<String> args) async {
   final conf = DtlsConfig();
   final uri = Uri.parse("coaps://californium.eclipseprojects.io/test");
-  final client =
-      CoapClient(conf, pskCredentialsCallback: pskCredentialsCallback);
+  final client = CoapClient(conf);
 
   try {
     print('Sending get /test to ${uri.host}');
-    var response = await client.get(uri);
+    var response =
+        await client.get(uri, pskCredentialsCallback: pskCredentialsCallback);
     print('/test response: ${response.payloadString}');
 
     final secondUri = uri.replace(path: 'multi-format');

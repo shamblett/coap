@@ -40,7 +40,9 @@ class CoapObserveClientRelation {
   /// Create a cancellation request
   @protected
   CoapRequest newCancel() {
-    final cancel = CoapRequest.newGet(_request.uri);
+    final cancel = CoapRequest.newGet(_request.uri,
+        ecdsaKeys: _request.ecdsaKeys,
+        pskCredentialsCallback: _request.pskCredentialsCallback);
     // Copy options, but set Observe to cancel
     cancel.setOptions(_request.getAllOptions());
     cancel.observe = 1;

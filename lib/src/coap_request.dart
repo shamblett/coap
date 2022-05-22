@@ -14,6 +14,8 @@ import 'coap_constants.dart';
 import 'coap_message.dart';
 import 'coap_message_type.dart';
 import 'net/coap_iendpoint.dart';
+import 'network/credentials/ecdsa_keys.dart';
+import 'network/credentials/psk_credentials.dart';
 
 /// This class describes the functionality of a CoAP Request as
 /// a subclass of a CoAP Message. It provides:
@@ -23,8 +25,13 @@ import 'net/coap_iendpoint.dart';
 class CoapRequest extends CoapMessage {
   /// Initializes a request message.
   /// Defaults to confirmable
-  CoapRequest(Uri uri, int code, {bool confirmable = true})
-      : super(
+  CoapRequest(
+    Uri uri,
+    int code, {
+    bool confirmable = true,
+    this.ecdsaKeys,
+    this.pskCredentialsCallback,
+  }) : super(
             code: code,
             type: confirmable ? CoapMessageType.con : CoapMessageType.non) {
     this.uri = uri;
@@ -32,6 +39,13 @@ class CoapRequest extends CoapMessage {
 
   /// The request method(code)
   int get method => super.code;
+
+  /// Raw Public Keys for CoAPS with tinyDtls.
+  final EcdsaKeys? ecdsaKeys;
+
+  /// Callback for providing [PskCredentials] (combination of a Pre-shared Key
+  /// and an Identity) for DTLS, optionally based on an Identity Hint.
+  final PskCredentialsCallback? pskCredentialsCallback;
 
   @override
   int get type {
@@ -100,15 +114,38 @@ class CoapRequest extends CoapMessage {
   String toString() => '\n<<< Request Message >>>${super.toString()}';
 
   /// Construct a GET request.
-  static CoapRequest newGet(Uri uri) => CoapRequest(uri, CoapCode.methodGET);
+  static CoapRequest newGet(
+    Uri uri, {
+    EcdsaKeys? ecdsaKeys,
+    PskCredentialsCallback? pskCredentialsCallback,
+  }) =>
+      CoapRequest(uri, CoapCode.methodGET,
+          ecdsaKeys: ecdsaKeys, pskCredentialsCallback: pskCredentialsCallback);
 
   /// Construct a POST request.
-  static CoapRequest newPost(Uri uri) => CoapRequest(uri, CoapCode.methodPOST);
+  static CoapRequest newPost(
+    Uri uri, {
+    EcdsaKeys? ecdsaKeys,
+    PskCredentialsCallback? pskCredentialsCallback,
+  }) =>
+      CoapRequest(uri, CoapCode.methodPOST,
+          ecdsaKeys: ecdsaKeys, pskCredentialsCallback: pskCredentialsCallback);
 
   /// Construct a PUT request.
-  static CoapRequest newPut(Uri uri) => CoapRequest(uri, CoapCode.methodPUT);
+  static CoapRequest newPut(
+    Uri uri, {
+    EcdsaKeys? ecdsaKeys,
+    PskCredentialsCallback? pskCredentialsCallback,
+  }) =>
+      CoapRequest(uri, CoapCode.methodPUT,
+          ecdsaKeys: ecdsaKeys, pskCredentialsCallback: pskCredentialsCallback);
 
   /// Construct a DELETE request.
-  static CoapRequest newDelete(Uri uri) =>
-      CoapRequest(uri, CoapCode.methodDELETE);
+  static CoapRequest newDelete(
+    Uri uri, {
+    EcdsaKeys? ecdsaKeys,
+    PskCredentialsCallback? pskCredentialsCallback,
+  }) =>
+      CoapRequest(uri, CoapCode.methodDELETE,
+          ecdsaKeys: ecdsaKeys, pskCredentialsCallback: pskCredentialsCallback);
 }

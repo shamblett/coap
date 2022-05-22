@@ -78,10 +78,7 @@ class CoapClient {
     this._config, {
     this.addressType = InternetAddressType.IPv4,
     this.bindAddress,
-    EcdsaKeys? ecdsaKeys,
-    PskCredentialsCallback? pskCredentialsCallback,
-  })  : _ecdsaKeys = ecdsaKeys,
-        _pskCredentialsCallback = pskCredentialsCallback {
+  }) {
     _eventBus = CoapEventBus(namespace: hashCode.toString());
   }
 
@@ -101,18 +98,17 @@ class CoapClient {
   CoapIEndPoint? _endpoint;
   final _lock = Lock();
 
-  /// Raw Public Keys for CoAPS with tinyDtls.
-  final EcdsaKeys? _ecdsaKeys;
-
-  /// Callback for providing [PskCredentials] (combination of a Pre-shared Key
-  /// and an Identity) for DTLS, optionally based on an Identity Hint.
-  final PskCredentialsCallback? _pskCredentialsCallback;
-
   /// Performs a CoAP ping.
-  Future<bool> ping(Uri uri) async {
-    final request = CoapRequest(uri, CoapCode.empty, confirmable: true)
-      ..token = CoapConstants.emptyToken
-      ..uri = uri;
+  Future<bool> ping(
+    Uri uri, {
+    EcdsaKeys? ecdsaKeys,
+    PskCredentialsCallback? pskCredentialsCallback,
+  }) async {
+    final request = CoapRequest(uri, CoapCode.empty,
+        confirmable: true,
+        ecdsaKeys: ecdsaKeys,
+        pskCredentialsCallback: pskCredentialsCallback)
+      ..token = CoapConstants.emptyToken;
     await _prepare(request);
     _endpoint!.sendEpRequest(request);
     await _waitForReject(request);
@@ -128,8 +124,11 @@ class CoapClient {
     bool earlyBlock2Negotiation = false,
     int maxRetransmit = 0,
     CoapMulticastResponseHandler? onMulticastResponse,
+    EcdsaKeys? ecdsaKeys,
+    PskCredentialsCallback? pskCredentialsCallback,
   }) {
-    final request = CoapRequest.newGet(uri);
+    final request = CoapRequest.newGet(uri,
+        ecdsaKeys: ecdsaKeys, pskCredentialsCallback: pskCredentialsCallback);
     _build(request, uri, accept, type, options, earlyBlock2Negotiation,
         maxRetransmit);
     return send(request, onMulticastResponse: onMulticastResponse);
@@ -146,8 +145,12 @@ class CoapClient {
     bool earlyBlock2Negotiation = false,
     int maxRetransmit = 0,
     CoapMulticastResponseHandler? onMulticastResponse,
+    EcdsaKeys? ecdsaKeys,
+    PskCredentialsCallback? pskCredentialsCallback,
   }) {
-    final request = CoapRequest.newPost(uri)..setPayloadMedia(payload, format);
+    final request = CoapRequest.newPost(uri,
+        ecdsaKeys: ecdsaKeys, pskCredentialsCallback: pskCredentialsCallback)
+      ..setPayloadMedia(payload, format);
     _build(request, uri, accept, type, options, earlyBlock2Negotiation,
         maxRetransmit);
     return send(request, onMulticastResponse: onMulticastResponse);
@@ -164,8 +167,11 @@ class CoapClient {
     bool earlyBlock2Negotiation = false,
     int maxRetransmit = 0,
     CoapMulticastResponseHandler? onMulticastResponse,
+    EcdsaKeys? ecdsaKeys,
+    PskCredentialsCallback? pskCredentialsCallback,
   }) {
-    final request = CoapRequest.newPost(uri)
+    final request = CoapRequest.newPost(uri,
+        ecdsaKeys: ecdsaKeys, pskCredentialsCallback: pskCredentialsCallback)
       ..setPayloadMediaRaw(payload, format);
     _build(request, uri, accept, type, options, earlyBlock2Negotiation,
         maxRetransmit);
@@ -185,8 +191,12 @@ class CoapClient {
     bool earlyBlock2Negotiation = false,
     int maxRetransmit = 0,
     CoapMulticastResponseHandler? onMulticastResponse,
+    EcdsaKeys? ecdsaKeys,
+    PskCredentialsCallback? pskCredentialsCallback,
   }) {
-    final request = CoapRequest.newPut(uri)..setPayloadMedia(payload, format);
+    final request = CoapRequest.newPut(uri,
+        ecdsaKeys: ecdsaKeys, pskCredentialsCallback: pskCredentialsCallback)
+      ..setPayloadMedia(payload, format);
     _build(request, uri, accept, type, options, earlyBlock2Negotiation,
         maxRetransmit,
         etags: etags, matchEtags: matchEtags);
@@ -206,8 +216,11 @@ class CoapClient {
     bool earlyBlock2Negotiation = false,
     int maxRetransmit = 0,
     CoapMulticastResponseHandler? onMulticastResponse,
+    EcdsaKeys? ecdsaKeys,
+    PskCredentialsCallback? pskCredentialsCallback,
   }) {
-    final request = CoapRequest.newPut(uri)
+    final request = CoapRequest.newPut(uri,
+        ecdsaKeys: ecdsaKeys, pskCredentialsCallback: pskCredentialsCallback)
       ..setPayloadMediaRaw(payload, format);
     _build(request, uri, accept, type, options, earlyBlock2Negotiation,
         maxRetransmit,
@@ -224,8 +237,11 @@ class CoapClient {
     bool earlyBlock2Negotiation = false,
     int maxRetransmit = 0,
     CoapMulticastResponseHandler? onMulticastResponse,
+    EcdsaKeys? ecdsaKeys,
+    PskCredentialsCallback? pskCredentialsCallback,
   }) {
-    final request = CoapRequest.newDelete(uri);
+    final request = CoapRequest.newDelete(uri,
+        ecdsaKeys: ecdsaKeys, pskCredentialsCallback: pskCredentialsCallback);
     _build(request, uri, accept, type, options, earlyBlock2Negotiation,
         maxRetransmit);
     return send(request, onMulticastResponse: onMulticastResponse);
@@ -255,8 +271,11 @@ class CoapClient {
   Future<Iterable<CoapWebLink>?> discover(
     Uri uri, {
     String query = '',
+    EcdsaKeys? ecdsaKeys,
+    PskCredentialsCallback? pskCredentialsCallback,
   }) async {
-    final discover = CoapRequest.newGet(uri)
+    final discover = CoapRequest.newGet(uri,
+        ecdsaKeys: ecdsaKeys, pskCredentialsCallback: pskCredentialsCallback)
       ..uriPath = CoapConstants.defaultWellKnownURI;
     if (query.isNotEmpty) {
       discover.uriQuery = query;
@@ -373,8 +392,8 @@ class CoapClient {
             address: destination,
             config: _config,
             namespace: _eventBus.namespace,
-            pskCredentialsCallback: _pskCredentialsCallback,
-            ecdsaKeys: _ecdsaKeys);
+            pskCredentialsCallback: request.pskCredentialsCallback,
+            ecdsaKeys: request.ecdsaKeys);
         await socket.bind();
         _endpoint =
             CoapEndPoint(socket, _config, namespace: _eventBus.namespace);
