@@ -27,3 +27,9 @@ export 'src/deduplication/coap_noop_deduplicator.dart';
 export 'src/deduplication/coap_sweep_deduplicator.dart';
 export 'src/network/credentials/psk_credentials.dart';
 export 'src/network/credentials/ecdsa_keys.dart';
+
+/// Pre-defined configs
+export 'config/coap_config_all.dart';
+export 'config/coap_config_default.dart';
+export 'config/coap_config_openssl.dart';
+export 'config/coap_config_tinydtls.dart';
