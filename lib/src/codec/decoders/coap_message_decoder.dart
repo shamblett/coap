@@ -49,9 +49,9 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
   bool get isEmpty => code == CoapCode.empty;
 
   @override
-  CoapRequest? decodeRequest() {
+  CoapRequest? decodeRequest(Uri requestUri) {
     if (isRequest) {
-      final request = CoapRequest(code);
+      final request = CoapRequest(requestUri, code);
       request.type = type;
       request.id = id;
       parseMessage(request);
@@ -85,9 +85,9 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
   }
 
   @override
-  CoapMessage? decodeMessage() {
+  CoapMessage? decodeMessage(Uri uri) {
     if (isRequest) {
-      return decodeRequest();
+      return decodeRequest(uri);
     } else if (isResponse) {
       return decodeResponse();
     } else if (isEmpty) {

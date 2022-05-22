@@ -13,47 +13,49 @@ import 'config/coap_config.dart';
 
 FutureOr main() async {
   final conf = CoapConfig();
-  final uri = Uri(
-    scheme: 'coap',
-    host: 'californium.eclipseprojects.io',
-    port: conf.defaultPort,
-  );
-  final client = CoapClient(uri, conf);
+  final baseUri = Uri.parse('coap://californium.eclipseprojects.io');
+  final client = CoapClient(conf);
 
   // Create the request for the get request
-  final reqObs = CoapRequest.newGet();
-  reqObs.addUriPath('obs');
+  final obsUri = baseUri.replace(path: "obs");
+  final reqObs = CoapRequest.newGet(obsUri);
 
   try {
-    print('Observing /obs on ${uri.host}');
+    print('Observing ${obsUri.path} on ${baseUri.host}');
     final obs = await client.observe(reqObs);
     obs.stream.listen((e) {
       print('/obs response: ${e.resp.payloadString}');
     });
 
-    final reqObsNon = CoapRequest(CoapCode.get, confirmable: false);
-    reqObsNon.addUriPath('obs-non');
+    final obsNonUri = baseUri.replace(path: "obs-non");
+    final reqObsNon = CoapRequest(obsNonUri, CoapCode.get, confirmable: false);
 
-    print('Observing /obs-non on ${uri.host}');
+    print('Observing ${obsNonUri.path} on ${obsNonUri.host}');
     final obsNon = await client.observe(reqObsNon);
     obsNon.stream.listen((e) {
-      print('/obs-non response: ${e.resp.payloadString}');
+      print('${obsNonUri.path} response: ${e.resp.payloadString}');
     });
 
+    final largeUri = baseUri.replace(path: "large");
+    final testUri = baseUri.replace(path: "test");
+    final separateUri = baseUri.replace(path: "separate");
+
+    print(largeUri);
+
     final futures = <Future<void>>[];
-    print('Sending get /large to ${uri.host}');
+    print('Sending get ${largeUri.path} to ${largeUri.host}');
     futures.add(client
-        .get('large')
+        .get(largeUri)
         .then((resp) => print('/large response: ${resp.payloadString}')));
 
-    print('Sending get /test to ${uri.host}');
+    print('Sending get ${testUri.path} to ${testUri.host}');
     futures.add(client
-        .get('test')
+        .get(testUri)
         .then((resp) => print('/test response: ${resp.payloadString}')));
 
-    print('Sending get /separate to ${uri.host}');
+    print('Sending get ${separateUri.path} to ${separateUri.host}');
     futures.add(client
-        .get('separate')
+        .get(separateUri)
         .then((resp) => print('/separate response: ${resp.payloadString}')));
 
     print('Waiting until get requests are done');

@@ -124,7 +124,8 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
     if (decoder.isRequest) {
       CoapRequest? request;
       try {
-        request = decoder.decodeRequest();
+        Uri uri = event.address.toUri()..replace(scheme: event.uriScheme);
+        request = decoder.decodeRequest(uri);
       } on Exception {
         if (!decoder.isReply) {
           // Manually build RST from raw information

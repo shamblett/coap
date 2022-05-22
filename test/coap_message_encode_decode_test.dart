@@ -171,13 +171,13 @@ void main() {
 
     void testMessage(CoapISpec spec, int testNo) {
       final CoapMessage msg =
-          CoapRequest(CoapCode.methodGET, confirmable: true);
+          CoapRequest(Uri(), CoapCode.methodGET, confirmable: true);
 
       msg.id = 12345;
       msg.payload = typed.Uint8Buffer()..addAll('payload'.codeUnits);
       final data = spec.encode(msg)!;
       checkData(spec.name, data, testNo);
-      final convMsg = spec.decode(data)!;
+      final convMsg = spec.decode(data, Uri())!;
       expect(msg.code, convMsg.code);
       expect(msg.type, convMsg.type);
       expect(msg.id, convMsg.id);
@@ -189,7 +189,7 @@ void main() {
 
     void testMessageWithOptions(CoapISpec spec, int testNo) {
       final CoapMessage msg =
-          CoapRequest(CoapCode.methodGET, confirmable: true);
+          CoapRequest(Uri(), CoapCode.methodGET, confirmable: true);
 
       msg.id = 12345;
       msg.payload = typed.Uint8Buffer()..addAll('payload'.codeUnits);
@@ -200,7 +200,7 @@ void main() {
       expect(msg.getFirstOption(OptionType.maxAge)!.value, 30);
       final data = spec.encode(msg)!;
       checkData(spec.name, data, testNo);
-      final convMsg = spec.decode(data)!;
+      final convMsg = spec.decode(data, Uri())!;
 
       expect(msg.code, convMsg.code);
       expect(msg.type, convMsg.type);
@@ -219,7 +219,7 @@ void main() {
 
     void testMessageWithExtendedOption(CoapISpec spec, int testNo) {
       final CoapMessage msg =
-          CoapRequest(CoapCode.methodGET, confirmable: true);
+          CoapRequest(Uri(), CoapCode.methodGET, confirmable: true);
 
       msg.id = 12345;
       msg.addOption(CoapOption.createVal(OptionType.contentFormat, 0));
@@ -228,7 +228,7 @@ void main() {
 
       final data = spec.encode(msg)!;
       checkData(spec.name, data, testNo);
-      final convMsg = spec.decode(data)!;
+      final convMsg = spec.decode(data, Uri())!;
 
       expect(msg.code, convMsg.code);
       expect(msg.type, convMsg.type);
@@ -244,7 +244,8 @@ void main() {
     }
 
     void testRequestParsing(CoapISpec spec, int testNo) {
-      final request = CoapRequest(CoapCode.methodPOST, confirmable: false);
+      final request =
+          CoapRequest(Uri(), CoapCode.methodPOST, confirmable: false);
       request.id = 7;
       request.token = typed.Uint8Buffer()..addAll(<int>[11, 82, 165, 77, 3]);
       request
@@ -259,7 +260,7 @@ void main() {
       final decoder = spec.newMessageDecoder(bytes);
       expect(decoder.isRequest, isTrue);
 
-      final result = decoder.decodeRequest()!;
+      final result = decoder.decodeRequest(Uri())!;
       expect(request.id, result.id);
       expect(
           leq.equals(request.token!.toList(), result.token!.toList()), isTrue);

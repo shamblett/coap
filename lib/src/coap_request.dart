@@ -23,10 +23,12 @@ import 'net/coap_iendpoint.dart';
 class CoapRequest extends CoapMessage {
   /// Initializes a request message.
   /// Defaults to confirmable
-  CoapRequest(int code, {bool confirmable = true})
+  CoapRequest(Uri uri, int code, {bool confirmable = true})
       : super(
             code: code,
-            type: confirmable ? CoapMessageType.con : CoapMessageType.non);
+            type: confirmable ? CoapMessageType.con : CoapMessageType.non) {
+    this.uri = uri;
+  }
 
   /// The request method(code)
   int get method => super.code;
@@ -98,14 +100,15 @@ class CoapRequest extends CoapMessage {
   String toString() => '\n<<< Request Message >>>${super.toString()}';
 
   /// Construct a GET request.
-  static CoapRequest newGet() => CoapRequest(CoapCode.methodGET);
+  static CoapRequest newGet(Uri uri) => CoapRequest(uri, CoapCode.methodGET);
 
   /// Construct a POST request.
-  static CoapRequest newPost() => CoapRequest(CoapCode.methodPOST);
+  static CoapRequest newPost(Uri uri) => CoapRequest(uri, CoapCode.methodPOST);
 
   /// Construct a PUT request.
-  static CoapRequest newPut() => CoapRequest(CoapCode.methodPUT);
+  static CoapRequest newPut(Uri uri) => CoapRequest(uri, CoapCode.methodPUT);
 
   /// Construct a DELETE request.
-  static CoapRequest newDelete() => CoapRequest(CoapCode.methodDELETE);
+  static CoapRequest newDelete(Uri uri) =>
+      CoapRequest(uri, CoapCode.methodDELETE);
 }

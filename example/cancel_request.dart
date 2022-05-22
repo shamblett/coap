@@ -13,28 +13,29 @@ import 'config/coap_config.dart';
 
 FutureOr<void> main(List<String> args) async {
   final conf = CoapConfig();
-  final uri = Uri(scheme: 'coap', host: 'coap.me', port: conf.defaultPort);
-  final client = CoapClient(uri, conf);
+  final client = CoapClient(conf);
 
-  final cancelThisReq = CoapRequest.newGet();
-  cancelThisReq.addUriPath('doesNotExist');
+  final cancelUri = Uri.parse("coap://coap.me/doesNotExist");
+  final helloUri = Uri.parse("coap://coap.me/hello");
+
+  final cancelThisReq = CoapRequest.newGet(cancelUri);
 
   try {
     // Ensure this request is not also cancelled
-    print('Sending async get /hello to ${uri.host}');
-    final helloRespFuture = client.get('hello');
+    print('Sending async get ${helloUri.path} to ${helloUri.host}');
+    final helloRespFuture = client.get(helloUri);
 
-    print('Sending async get /doesNotExist to ${uri.host}');
+    print('Sending async get ${cancelUri.path} to ${cancelUri.host}');
     final ignoreThisFuture = client.send(cancelThisReq);
 
-    print('Cancelling get /doesNotExist retries');
+    print('Cancelling get ${cancelUri.path} retries');
     client.cancel(cancelThisReq);
 
-    print('Ignoring /doesNotExist response future');
+    print('Ignoring ${cancelUri.path} response future');
     ignoreThisFuture.ignore();
 
     final resp = await helloRespFuture;
-    print('/hello response: ${resp.payloadString}');
+    print('${helloUri.path} response: ${resp.payloadString}');
 
     if (cancelThisReq.retransmits > 0) {
       print('Expected 0 retransmits!');

@@ -13,17 +13,16 @@ import 'config/coap_config.dart';
 
 FutureOr<void> main(List<String> args) async {
   final conf = CoapConfig();
-  final uri = Uri(scheme: 'coap', host: 'coap.me', port: conf.defaultPort);
-  final client = CoapClient(uri, conf);
+  final uri = Uri.parse("coap://coap.me/create1");
+  final client = CoapClient(conf);
 
   final opt = CoapOption.createUriQuery(
       '${CoapLinkFormat.title}=This is an SJH Put request');
 
   try {
-    print('Sending put /create1 to ${uri.host}');
-    var response =
-        await client.put('create1', options: [opt], payload: 'SJHTestPut');
-    print('/create1 response status: ${response.statusCodeString}');
+    print('Sending put ${uri.path} to ${uri.host}');
+    var response = await client.put(uri, options: [opt], payload: 'SJHTestPut');
+    print('${uri.path} response status: ${response.statusCodeString}');
   } catch (e) {
     print('CoAP encountered an exception: $e');
   }

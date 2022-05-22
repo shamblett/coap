@@ -12,6 +12,7 @@ import 'dart:typed_data';
 import 'package:dtls/dtls.dart';
 import 'package:typed_data/typed_data.dart';
 
+import '../coap_constants.dart';
 import '../event/coap_event_bus.dart';
 import '../net/coap_internet_address.dart';
 import 'coap_inetwork.dart';
@@ -43,7 +44,8 @@ class CoapNetworkOpenSSL implements CoapINetwork {
     final buff = Uint8Buffer();
     if (frame.isNotEmpty) {
       buff.addAll(frame.toList());
-      final rxEvent = CoapDataReceivedEvent(buff, address);
+      final rxEvent =
+          CoapDataReceivedEvent(buff, address, CoapConstants.secureUriScheme);
       _eventBus.fire(rxEvent);
     }
   }

@@ -9,6 +9,7 @@ import 'dart:io';
 
 import 'package:typed_data/typed_data.dart';
 
+import '../coap_constants.dart';
 import '../event/coap_event_bus.dart';
 import '../net/coap_internet_address.dart';
 import 'coap_inetwork.dart';
@@ -65,7 +66,8 @@ class CoapNetworkUDP implements CoapINetwork {
               buff.addAll(d.data.toList());
               final coapAddress =
                   CoapInternetAddress(d.address.type, d.address);
-              _eventBus.fire(CoapDataReceivedEvent(buff, coapAddress));
+              _eventBus.fire(CoapDataReceivedEvent(
+                  buff, coapAddress, CoapConstants.uriScheme));
             }
           }
           break;

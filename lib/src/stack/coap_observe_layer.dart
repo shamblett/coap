@@ -50,7 +50,7 @@ class CoapReregistrationContext {
   void _timerElapsed() {
     final request = _exchange.request!;
     if (!request.isCancelled) {
-      final refresh = CoapRequest.newGet();
+      final refresh = CoapRequest.newGet(request.uri);
       refresh.setOptions(request.getAllOptions());
       // Make sure Observe is set and zero
       refresh.observe = 0;

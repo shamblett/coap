@@ -65,8 +65,8 @@ class CoapRfc7252 implements CoapISpec {
       newMessageEncoder().encodeMessage(msg);
 
   @override
-  CoapMessage? decode(Uint8Buffer bytes) =>
-      newMessageDecoder(bytes).decodeMessage();
+  CoapMessage? decode(Uint8Buffer bytes, Uri uri) =>
+      newMessageDecoder(bytes).decodeMessage(uri);
 
   /// Calculates the value used in the extended option fields as specified
   /// in RFC 7252, section 3.1.

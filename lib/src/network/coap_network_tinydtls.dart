@@ -8,6 +8,7 @@
 import 'package:dart_tinydtls/dart_tinydtls.dart';
 import 'package:typed_data/typed_data.dart';
 
+import '../coap_constants.dart';
 import '../event/coap_event_bus.dart';
 import '../net/coap_internet_address.dart';
 import 'coap_inetwork.dart';
@@ -125,7 +126,8 @@ class CoapNetworkTinyDtls implements CoapINetwork {
         buff.addAll(datagram.data.toList());
         final coapAddress =
             CoapInternetAddress(datagram.address.type, datagram.address);
-        final rxEvent = CoapDataReceivedEvent(buff, coapAddress);
+        final rxEvent = CoapDataReceivedEvent(
+            buff, coapAddress, CoapConstants.secureUriScheme);
         _eventBus.fire(rxEvent);
       }
     });

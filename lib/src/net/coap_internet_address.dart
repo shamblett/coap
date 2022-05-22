@@ -39,4 +39,8 @@ class CoapInternetAddress {
       return ipv6DefaultBind;
     }
   }
+
+  Uri toUri() {
+    return Uri(host: address.host);
+  }
 }

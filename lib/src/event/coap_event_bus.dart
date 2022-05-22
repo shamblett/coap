@@ -144,13 +144,15 @@ enum CoapOrigin {
 /// Data received Event
 class CoapDataReceivedEvent {
   /// Construction
-  CoapDataReceivedEvent(this.data, this.address);
+  CoapDataReceivedEvent(this.data, this.address, this.uriScheme);
 
   /// The data
   Uint8Buffer data;
 
   /// The address
   CoapInternetAddress address;
+
+  final String uriScheme;
 
   @override
   String toString() => '$runtimeType:\n$data from ${address.address}';

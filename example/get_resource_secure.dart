@@ -29,26 +29,25 @@ class DtlsConfig extends DefaultCoapConfig {
 
 FutureOr<void> main(List<String> args) async {
   final conf = DtlsConfig();
-  final uri = Uri(
-      scheme: 'coaps',
-      host: 'californium.eclipseprojects.io',
-      port: conf.defaultSecurePort);
+  final uri = Uri.parse("coaps://californium.eclipseprojects.io/test");
   final client =
-      CoapClient(uri, conf, pskCredentialsCallback: pskCredentialsCallback);
+      CoapClient(conf, pskCredentialsCallback: pskCredentialsCallback);
 
   try {
     print('Sending get /test to ${uri.host}');
-    var response = await client.get('test');
+    var response = await client.get(uri);
     print('/test response: ${response.payloadString}');
 
-    print('Sending get /multi-format (text) to ${uri.host}');
-    response = await client.get('multi-format');
-    print('/multi-format (text) response: ${response.payloadString}');
+    final secondUri = uri.replace(path: 'multi-format');
 
-    print('Sending get /multi-format (xml) to ${uri.host}');
+    print('Sending get ${secondUri.path} (text) to ${secondUri.host}');
+    response = await client.get(secondUri);
+    print('${secondUri.path} (text) response: ${response.payloadString}');
+
+    print('Sending get ${secondUri.path} (xml) to ${secondUri.host}');
     response =
-        await client.get('multi-format', accept: CoapMediaType.applicationXml);
-    print('/multi-format (xml) response: ${response.payloadString}');
+        await client.get(secondUri, accept: CoapMediaType.applicationXml);
+    print('${secondUri.path} (xml) response: ${response.payloadString}');
   } catch (e) {
     print('CoAP encountered an exception: $e');
   }

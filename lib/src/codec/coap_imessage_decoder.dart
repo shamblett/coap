@@ -34,7 +34,7 @@ abstract class CoapIMessageDecoder {
   int? get id;
 
   /// Decodes as a Request.
-  CoapRequest? decodeRequest();
+  CoapRequest? decodeRequest(Uri requestUri);
 
   /// Decodes as a Response.
   CoapResponse? decodeResponse();
@@ -43,5 +43,5 @@ abstract class CoapIMessageDecoder {
   CoapEmptyMessage? decodeEmptyMessage();
 
   /// Decodes as a CoAP message.
-  CoapMessage? decodeMessage();
+  CoapMessage? decodeMessage(Uri requestUri);
 }
