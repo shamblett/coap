@@ -26,16 +26,16 @@ FutureOr<void> main(List<String> args) async {
   try {
     print('Sending get /hello to ${uri1.host}');
     var response = await client1.get('hello');
-    print('/hello response: ${response?.payloadString}');
+    print('/hello response: ${response.payloadString}');
 
     print('Sending get /test to ${uri2.host}');
     response = await client2.get('test');
-    print('/test response: ${response?.payloadString}');
-
-    // Clean up
-    client1.close();
-    client2.close();
+    print('/test response: ${response.payloadString}');
   } catch (e) {
     print('CoAP encountered an exception: $e');
   }
+
+  // Clean up
+  client1.close();
+  client2.close();
 }

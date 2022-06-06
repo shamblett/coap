@@ -8,6 +8,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:coap/src/exceptions/coap_request_exception.dart';
 import 'package:collection/collection.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:typed_data/typed_data.dart';
@@ -122,7 +123,7 @@ class CoapClient {
   }
 
   /// Sends a GET request.
-  Future<CoapResponse?> get(
+  Future<CoapResponse> get(
     String path, {
     int accept = CoapMediaType.textPlain,
     int type = CoapMessageType.con,
@@ -138,7 +139,7 @@ class CoapClient {
   }
 
   /// Sends a POST request.
-  Future<CoapResponse?> post(
+  Future<CoapResponse> post(
     String path, {
     required String payload,
     int format = CoapMediaType.textPlain,
@@ -156,7 +157,7 @@ class CoapClient {
   }
 
   /// Sends a POST request with the specified byte payload.
-  Future<CoapResponse?> postBytes(
+  Future<CoapResponse> postBytes(
     String path, {
     required Uint8Buffer payload,
     int format = CoapMediaType.textPlain,
@@ -174,7 +175,7 @@ class CoapClient {
   }
 
   /// Sends a PUT request.
-  Future<CoapResponse?> put(
+  Future<CoapResponse> put(
     String path, {
     required String payload,
     int format = CoapMediaType.textPlain,
@@ -195,7 +196,7 @@ class CoapClient {
   }
 
   /// Sends a PUT request with the specified byte payload.
-  Future<CoapResponse?> putBytes(
+  Future<CoapResponse> putBytes(
     String path, {
     required Uint8Buffer payload,
     int format = CoapMediaType.textPlain,
@@ -216,7 +217,7 @@ class CoapClient {
   }
 
   /// Sends a DELETE request
-  Future<CoapResponse?> delete(
+  Future<CoapResponse> delete(
     String path, {
     int accept = CoapMediaType.textPlain,
     int type = CoapMessageType.con,
@@ -244,7 +245,7 @@ class CoapClient {
     unawaited(() async {
       _endpoint!.sendEpRequest(request);
       final resp = await _waitForResponse(request);
-      if (resp == null || !resp.hasOption(OptionType.observe)) {
+      if (!resp.hasOption(OptionType.observe)) {
         relation.isCancelled = true;
       }
     }());
@@ -261,10 +262,7 @@ class CoapClient {
       discover.uriQuery = query;
     }
     final links = await send(discover);
-    if (links == null) {
-      // If no response, return null (e.g., timeout)
-      return null;
-    } else if (links.contentFormat != CoapMediaType.applicationLinkFormat) {
+    if (links.contentFormat != CoapMediaType.applicationLinkFormat) {
       return <CoapWebLink>[CoapWebLink('')];
     } else {
       return CoapLinkFormat.parse(links.payloadString!);
@@ -272,7 +270,7 @@ class CoapClient {
   }
 
   /// Send
-  Future<CoapResponse?> send(
+  Future<CoapResponse> send(
     CoapRequest request, {
     CoapMulticastResponseHandler? onMulticastResponse,
   }) async {
@@ -407,15 +405,17 @@ class CoapClient {
 
   /// Wait for a response.
   /// Returns the response, or null if timeout occured.
-  Future<CoapResponse?> _waitForResponse(CoapRequest req) {
-    final completer = Completer<CoapResponse?>();
+  Future<CoapResponse> _waitForResponse(CoapRequest req) {
+    final completer = Completer<CoapResponse>();
     _eventBus
         .on<CoapRespondEvent>()
         .where((CoapRespondEvent e) => e.resp.token!.equals(req.token!))
         .take(1)
         .listen((CoapRespondEvent e) {
-      if (req.isTimedOut || req.isCancelled) {
-        completer.complete(null);
+      if (req.isTimedOut) {
+        completer.completeError(CoapRequestTimeoutException(req.retransmits));
+      } else if (req.isCancelled) {
+        completer.completeError(CoapRequestCancellationException());
       } else {
         e.resp.timestamp = DateTime.now();
         completer.complete(e.resp);

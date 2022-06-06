@@ -20,10 +20,10 @@ FutureOr<void> main(List<String> args) async {
     print('Sending get /large to ${uri.host}');
     final response = await client.get('large');
 
-    print('/large response: ${response?.payloadString}');
-
-    client.close();
+    print('/large response: ${response.payloadString}');
   } catch (e) {
     print('CoAP encountered an exception: $e');
   }
+
+  client.close();
 }

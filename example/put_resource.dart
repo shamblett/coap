@@ -23,10 +23,10 @@ FutureOr<void> main(List<String> args) async {
     print('Sending put /create1 to ${uri.host}');
     var response =
         await client.put('create1', options: [opt], payload: 'SJHTestPut');
-    print('/create1 response status: ${response?.statusCodeString}');
-
-    client.close();
+    print('/create1 response status: ${response.statusCodeString}');
   } catch (e) {
     print('CoAP encountered an exception: $e');
   }
+
+  client.close();
 }

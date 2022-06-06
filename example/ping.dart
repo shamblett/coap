@@ -28,9 +28,9 @@ FutureOr<void> main(List<String> args) async {
     } else {
       print('Ping failed');
     }
-
-    client.close();
   } catch (e) {
     print('CoAP encountered an exception: $e');
   }
+
+  client.close();
 }

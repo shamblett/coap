@@ -25,6 +25,7 @@ export 'src/deduplication/coap_crop_rotation_deduplicator.dart';
 export 'src/deduplication/coap_ideduplicator.dart';
 export 'src/deduplication/coap_noop_deduplicator.dart';
 export 'src/deduplication/coap_sweep_deduplicator.dart';
+export 'src/exceptions/coap_request_exception.dart';
 export 'src/network/credentials/psk_credentials.dart';
 export 'src/network/credentials/ecdsa_keys.dart';
 

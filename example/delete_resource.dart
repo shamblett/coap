@@ -24,10 +24,10 @@ FutureOr<void> main(List<String> args) async {
     print('Sending delete /test to ${uri.host}');
     final response = await client.delete('test');
 
-    print('/test response status: ${response?.statusCodeString}');
-
-    client.close();
+    print('/test response status: ${response.statusCodeString}');
   } catch (e) {
     print('CoAP encountered an exception: $e');
   }
+
+  client.close();
 }
