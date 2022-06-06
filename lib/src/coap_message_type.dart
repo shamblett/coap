@@ -5,8 +5,6 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
-
 /// Types of CoAP messages.
 class CoapMessageType {
   /// Unknown type.

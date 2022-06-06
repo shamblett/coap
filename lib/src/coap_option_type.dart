@@ -5,8 +5,6 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
-
 // Option numbers
 const _ifMatch = 1;
 const _uriHost = 3;

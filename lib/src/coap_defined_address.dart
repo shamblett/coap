@@ -5,8 +5,6 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
-
 /// Defines standard addresses from RFC7252
 class CoapDefinedAddress {
   /// Multicast IPV4

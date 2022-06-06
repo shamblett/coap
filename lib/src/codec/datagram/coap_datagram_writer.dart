@@ -5,18 +5,20 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'dart:typed_data';
+
+import 'package:typed_data/typed_data.dart';
 
 /// This class describes the functionality to write raw network-ordered
 /// datagrams on bit-level.
 class CoapDatagramWriter {
   /// Initializes a new DatagramWriter object
   CoapDatagramWriter()
-      : _buffer = typed.Uint8Buffer(),
+      : _buffer = Uint8Buffer(),
         _currentByte = ByteData(1)..setUint8(0, 0),
         _currentBitIndex = 7;
 
-  final typed.Uint8Buffer _buffer;
+  final Uint8Buffer _buffer;
   final ByteData _currentByte;
   int _currentBitIndex;
 
@@ -42,7 +44,7 @@ class CoapDatagramWriter {
   }
 
   /// Writes a sequence of bytes to the stream
-  void writeBytes(typed.Uint8Buffer? bytes) {
+  void writeBytes(Uint8Buffer? bytes) {
     // Check if anything to do at all
     if (bytes == null) {
       return;
@@ -62,12 +64,12 @@ class CoapDatagramWriter {
 
   /// Writes one byte to the stream.
   void writeByte(int b) {
-    final buff = typed.Uint8Buffer()..add(b);
+    final buff = Uint8Buffer()..add(b);
     writeBytes(buff);
   }
 
   /// Returns a byte array containing the sequence of bits written
-  typed.Uint8Buffer toByteArray() {
+  Uint8Buffer toByteArray() {
     _writeCurrentByte();
     return _buffer;
   }

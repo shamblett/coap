@@ -5,7 +5,16 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'package:typed_data/typed_data.dart';
+
+import '../coap_config.dart';
+import '../coap_constants.dart';
+import '../net/coap_internet_address.dart';
+import 'coap_network_openssl.dart';
+import 'coap_network_tinydtls.dart';
+import 'coap_network_udp.dart';
+import 'credentials/ecdsa_keys.dart';
+import 'credentials/psk_credentials.dart';
 
 /// This [Exception] is thrown when an unsupported URI scheme is encountered.
 class UnsupportedProtocolException implements Exception {
@@ -52,7 +61,7 @@ abstract class CoapINetwork {
 
   /// Send, returns the number of bytes sent or null
   /// if not bound.
-  Future<int> send(typed.Uint8Buffer data, [CoapInternetAddress? address]);
+  Future<int> send(Uint8Buffer data, [CoapInternetAddress? address]);
 
   /// Starts the receive listener
   void receive();

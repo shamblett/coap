@@ -5,8 +5,6 @@
  * Copyright :  Jan Romann
  */
 
-part of coap;
-
 /// Function signature for a callback function for retrieving/generating
 /// [PskCredentials].
 ///

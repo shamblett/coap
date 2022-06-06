@@ -5,8 +5,6 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
-
 /// Class for linkformat attributes.
 class CoapLinkAttribute {
   /// Initializes an attribute.

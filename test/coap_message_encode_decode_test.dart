@@ -8,6 +8,10 @@
  */
 import 'package:coap/coap.dart';
 import 'package:coap/config/coap_config_default.dart';
+import 'package:coap/src/coap_message.dart';
+import 'package:coap/src/coap_response.dart';
+import 'package:coap/src/specification/coap_ispec.dart';
+import 'package:coap/src/specification/rfcs/coap_rfc7252.dart';
 import 'package:collection/collection.dart';
 import 'package:test/test.dart';
 import 'package:typed_data/typed_data.dart' as typed;

@@ -5,7 +5,13 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import '../coap_config.dart';
+import '../coap_empty_message.dart';
+import '../coap_request.dart';
+import '../coap_response.dart';
+import 'coap_exchange.dart';
+import 'coap_internet_address.dart';
+import 'coap_ioutbox.dart';
 
 /// Events
 /// Represents a communication endpoint multiplexing CoAP message exchanges

@@ -5,7 +5,11 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'dart:async';
+
+import '../coap_config.dart';
+import '../net/coap_exchange.dart';
+import 'coap_ideduplicator.dart';
 
 /// Sweep deduplicator
 class CoapSweepDeduplicator implements CoapIDeduplicator {

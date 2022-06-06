@@ -5,7 +5,11 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import '../net/coap_exchange.dart';
+import '../net/coap_iendpoint.dart';
+import '../observe/coap_observe_relation.dart';
+import '../tasks/coap_iexecutor.dart';
+import 'coap_resource_attributes.dart';
 
 /// Interface for a resource
 abstract class CoapIResource {

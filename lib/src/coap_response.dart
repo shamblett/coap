@@ -5,7 +5,11 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'package:meta/meta.dart';
+
+import 'coap_code.dart';
+import 'coap_message.dart';
+import 'coap_request.dart';
 
 /// Represents a CoAP response to a CoAP request.
 /// A response is either a piggy-backed response with type ACK

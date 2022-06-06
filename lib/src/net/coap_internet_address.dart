@@ -5,7 +5,7 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'dart:io';
 
 /// Internet address
 class CoapInternetAddress {

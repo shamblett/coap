@@ -5,7 +5,10 @@
  * Copyright :  Jan Romann
  */
 
-part of coap;
+import '../coap_request.dart';
+import '../coap_response.dart';
+import '../event/coap_event_bus.dart';
+import 'coap_exchange.dart';
 
 class CoapMulticastExchange extends CoapExchange {
   CoapMulticastExchange(CoapRequest request, CoapOrigin origin,

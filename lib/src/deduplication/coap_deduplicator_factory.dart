@@ -5,7 +5,11 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import '../coap_config.dart';
+import 'coap_crop_rotation_deduplicator.dart';
+import 'coap_ideduplicator.dart';
+import 'coap_noop_deduplicator.dart';
+import 'coap_sweep_deduplicator.dart';
 
 /// Deduplicator factory
 class CoapDeduplicatorFactory {

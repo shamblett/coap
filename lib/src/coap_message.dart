@@ -5,7 +5,24 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+//
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:collection/collection.dart';
+import 'package:meta/meta.dart';
+import 'package:typed_data/typed_data.dart';
+
+import 'coap_block_option.dart';
+import 'coap_code.dart';
+import 'coap_constants.dart';
+import 'coap_media_type.dart';
+import 'coap_message_type.dart';
+import 'coap_option.dart';
+import 'coap_option_type.dart';
+import 'event/coap_event_bus.dart';
+import 'net/coap_internet_address.dart';
+import 'util/coap_byte_array_util.dart';
 
 typedef HookFunction = void Function();
 
@@ -134,10 +151,10 @@ class CoapMessage {
   /// Returns true if options of the specified type exists.
   bool hasOption(OptionType type) => getFirstOption(type) != null;
 
-  typed.Uint8Buffer? _token;
+  Uint8Buffer? _token;
 
   /// The 0-8 byte token.
-  typed.Uint8Buffer? get token => _token;
+  Uint8Buffer? get token => _token;
 
   /// As a string
   String get tokenString {
@@ -145,7 +162,7 @@ class CoapMessage {
     return token != null ? CoapByteArrayUtil.toHexString(token) : '';
   }
 
-  set token(typed.Uint8Buffer? value) {
+  set token(Uint8Buffer? value) {
     if (value != null && value.length > 8) {
       throw ArgumentError.value(value, 'Message::token',
           'Token length must be between 0 and 8 inclusive.');
@@ -247,12 +264,12 @@ class CoapMessage {
   @protected
   set duplicate(bool val) => _duplicate = val;
 
-  typed.Uint8Buffer? _bytes;
+  Uint8Buffer? _bytes;
 
   /// The serialized message as byte array, or null if not serialized yet.
-  typed.Uint8Buffer? get bytes => _bytes;
+  Uint8Buffer? get bytes => _bytes;
   @protected
-  set bytes(typed.Uint8Buffer? val) => _bytes = val;
+  set bytes(Uint8Buffer? val) => _bytes = val;
 
   DateTime? _timestamp;
 
@@ -275,11 +292,11 @@ class CoapMessage {
   int ackTimeout = 0;
 
   /// UTF8 decoder and encoder helpers
-  final convertor.Utf8Decoder _utfDecoder = const convertor.Utf8Decoder();
-  final convertor.Utf8Encoder _utfEncoder = const convertor.Utf8Encoder();
+  final Utf8Decoder _utfDecoder = const Utf8Decoder();
+  final Utf8Encoder _utfEncoder = const Utf8Encoder();
 
   /// The payload of this CoAP message.
-  typed.Uint8Buffer? payload;
+  Uint8Buffer? payload;
 
   /// The size of the payload of this CoAP message.
   int get payloadSize => payload?.length ?? 0;
@@ -306,7 +323,7 @@ class CoapMessage {
 
   /// Sets the payload.
   void setPayload(String payload) {
-    this.payload ??= typed.Uint8Buffer();
+    this.payload ??= Uint8Buffer();
     this.payload!.addAll(_utfEncoder.convert(payload));
   }
 
@@ -315,13 +332,13 @@ class CoapMessage {
     if (payload == null) {
       return;
     }
-    this.payload ??= typed.Uint8Buffer();
+    this.payload ??= Uint8Buffer();
     this.payload!.addAll(_utfEncoder.convert(payload));
     contentType = mediaType;
   }
 
   /// Sets the payload of this CoAP message.
-  void setPayloadMediaRaw(typed.Uint8Buffer payload, int mediaType) {
+  void setPayloadMediaRaw(Uint8Buffer payload, int mediaType) {
     this.payload = payload;
     contentType = mediaType;
   }
@@ -339,7 +356,7 @@ class CoapMessage {
       addOption(CoapOption.createString(OptionType.ifMatch, etag));
 
   /// Add an opaque if match
-  void addIfMatchOpaque(typed.Uint8Buffer opaque) {
+  void addIfMatchOpaque(Uint8Buffer opaque) {
     if (opaque.length > 8) {
       throw ArgumentError.value(opaque.length, 'Message::addIfMatch',
           'Content of If-Match option is too large');
@@ -348,7 +365,7 @@ class CoapMessage {
   }
 
   /// Remove an opaque if match
-  void removeIfMatchOpaque(typed.Uint8Buffer opaque) {
+  void removeIfMatchOpaque(Uint8Buffer opaque) {
     final opts = _optionMap[OptionType.ifMatch];
     opts?.removeWhere((CoapOption o) => o.byteValue.equals(opaque));
     if (opts != null && opts.isEmpty) {
@@ -374,13 +391,13 @@ class CoapMessage {
   List<CoapOption> get etags => _selectOptions(OptionType.eTag);
 
   /// Contains an opaque E-tag
-  bool containsETagOpaque(typed.Uint8Buffer opaque) =>
+  bool containsETagOpaque(Uint8Buffer opaque) =>
       getOptions(OptionType.eTag)
           ?.firstWhereOrNull((CoapOption o) => o.byteValue.equals(opaque)) !=
       null;
 
   /// Add an opaque ETag
-  void addETagOpaque(typed.Uint8Buffer opaque) {
+  void addETagOpaque(Uint8Buffer opaque) {
     addOption(CoapOption.createRaw(OptionType.eTag, opaque));
   }
 
@@ -401,7 +418,7 @@ class CoapMessage {
   }
 
   /// Remove an opaque ETag
-  void removeETagOpaque(typed.Uint8Buffer opaque) {
+  void removeETagOpaque(Uint8Buffer opaque) {
     final opts = _optionMap[OptionType.eTag];
     opts?.removeWhere((CoapOption o) => o.byteValue.equals(opaque));
     if (opts != null && opts.isEmpty) {
@@ -427,7 +444,7 @@ class CoapMessage {
   }
 
   /// Add an opaque if none match
-  void addIfNoneMatchOpaque(typed.Uint8Buffer? opaque) {
+  void addIfNoneMatchOpaque(Uint8Buffer? opaque) {
     if (opaque == null) {
       throw ArgumentError.notNull('Message::addIfNoneMatch');
     }
@@ -439,7 +456,7 @@ class CoapMessage {
   }
 
   /// Remove an opaque if none match
-  void removeIfNoneMatchOpaque(typed.Uint8Buffer opaque) {
+  void removeIfNoneMatchOpaque(Uint8Buffer opaque) {
     final opts = _optionMap[OptionType.ifNoneMatch];
     opts?.removeWhere((CoapOption o) => o.byteValue.equals(opaque));
     if (opts != null && opts.isEmpty) {

@@ -5,7 +5,34 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'dart:async';
+import 'dart:io';
+
+import 'package:collection/collection.dart';
+import 'package:synchronized/synchronized.dart';
+import 'package:typed_data/typed_data.dart';
+
+import 'coap_block_option.dart';
+import 'coap_code.dart';
+import 'coap_config.dart';
+import 'coap_constants.dart';
+import 'coap_link_format.dart';
+import 'coap_media_type.dart';
+import 'coap_message.dart';
+import 'coap_message_type.dart';
+import 'coap_observe_client_relation.dart';
+import 'coap_option.dart';
+import 'coap_option_type.dart';
+import 'coap_request.dart';
+import 'coap_response.dart';
+import 'coap_web_link.dart';
+import 'event/coap_event_bus.dart';
+import 'net/coap_endpoint.dart';
+import 'net/coap_iendpoint.dart';
+import 'net/coap_internet_address.dart';
+import 'network/coap_inetwork.dart';
+import 'network/credentials/ecdsa_keys.dart';
+import 'network/credentials/psk_credentials.dart';
 
 /// The matching scheme to use for supplied ETags on PUT
 enum MatchEtags {
@@ -75,7 +102,7 @@ class CoapClient {
 
   final DefaultCoapConfig _config;
   CoapIEndPoint? _endpoint;
-  final _lock = sync.Lock();
+  final _lock = Lock();
 
   /// Raw Public Keys for CoAPS with tinyDtls.
   final EcdsaKeys? _ecdsaKeys;
@@ -131,7 +158,7 @@ class CoapClient {
   /// Sends a POST request with the specified byte payload.
   Future<CoapResponse?> postBytes(
     String path, {
-    required typed.Uint8Buffer payload,
+    required Uint8Buffer payload,
     int format = CoapMediaType.textPlain,
     int accept = CoapMediaType.textPlain,
     int type = CoapMessageType.con,
@@ -153,7 +180,7 @@ class CoapClient {
     int format = CoapMediaType.textPlain,
     int accept = CoapMediaType.textPlain,
     int type = CoapMessageType.con,
-    List<typed.Uint8Buffer>? etags,
+    List<Uint8Buffer>? etags,
     MatchEtags matchEtags = MatchEtags.onMatch,
     List<CoapOption>? options,
     bool earlyBlock2Negotiation = false,
@@ -170,10 +197,10 @@ class CoapClient {
   /// Sends a PUT request with the specified byte payload.
   Future<CoapResponse?> putBytes(
     String path, {
-    required typed.Uint8Buffer payload,
+    required Uint8Buffer payload,
     int format = CoapMediaType.textPlain,
     MatchEtags matchEtags = MatchEtags.onMatch,
-    List<typed.Uint8Buffer>? etags,
+    List<Uint8Buffer>? etags,
     int accept = CoapMediaType.textPlain,
     int type = CoapMessageType.con,
     List<CoapOption>? options,
@@ -305,7 +332,7 @@ class CoapClient {
     bool earlyBlock2Negotiation,
     int maxRetransmit, {
     MatchEtags matchEtags = MatchEtags.onMatch,
-    List<typed.Uint8Buffer>? etags,
+    List<Uint8Buffer>? etags,
   }) {
     request
       ..addUriPath(path)

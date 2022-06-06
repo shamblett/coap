@@ -5,7 +5,15 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'package:event_bus/event_bus.dart';
+import 'package:typed_data/typed_data.dart';
+
+import '../coap_empty_message.dart';
+import '../coap_message.dart';
+import '../coap_request.dart';
+import '../coap_response.dart';
+import '../net/coap_exchange.dart';
+import '../net/coap_internet_address.dart';
 
 abstract class CoapMessageEvent {
   CoapMessageEvent(this.msg);
@@ -139,7 +147,7 @@ class CoapDataReceivedEvent {
   CoapDataReceivedEvent(this.data, this.address);
 
   /// The data
-  typed.Uint8Buffer data;
+  Uint8Buffer data;
 
   /// The address
   CoapInternetAddress address;
@@ -156,12 +164,12 @@ class CoapEventBus {
 
   final String namespace;
 
-  CoapEventBus._internal(this.namespace) : _eventBus = events.EventBus();
+  CoapEventBus._internal(this.namespace) : _eventBus = EventBus();
 
   /// Last event fired, useful for testing
   dynamic lastEvent;
 
-  late final events.EventBus _eventBus;
+  late final EventBus _eventBus;
   bool _destroyed = false;
 
   /// Fire

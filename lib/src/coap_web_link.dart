@@ -5,7 +5,8 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'coap_link_format.dart';
+import 'resources/coap_resource_attributes.dart';
 
 /// This class can be used to programmatically browse a remote CoAP endoint.
 class CoapWebLink extends Comparable<CoapWebLink> {

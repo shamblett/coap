@@ -5,7 +5,10 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'dart:math';
+import 'dart:typed_data';
+
+import 'package:typed_data/typed_data.dart';
 
 /// This class describes the functionality to read raw network-ordered
 /// datagrams on bit-level.
@@ -15,7 +18,7 @@ class CoapDatagramReader {
       : _currentByte = ByteData(1),
         _currentBitIndex = -1;
 
-  final typed.Uint8Buffer _buffer;
+  final Uint8Buffer _buffer;
 
   /// Bytes available
   bool get bytesAvailable => _buffer.isNotEmpty;
@@ -46,14 +49,14 @@ class CoapDatagramReader {
   }
 
   /// Reads a sequence of bytes from the stream
-  typed.Uint8Buffer readBytes(int count) {
+  Uint8Buffer readBytes(int count) {
     // For negative count values, read all bytes left
     var bufferCount = count;
     if (count < 0) {
       bufferCount = _buffer.length;
     }
 
-    final bytes = typed.Uint8Buffer();
+    final bytes = Uint8Buffer();
 
     // Are there bits left to read in buffer?
     if (_currentBitIndex >= 0) {
@@ -74,7 +77,7 @@ class CoapDatagramReader {
   int readNextByte() => readBytes(1)[0];
 
   /// Reads the complete sequence of bytes left in the stream
-  typed.Uint8Buffer readBytesLeft() => readBytes(-1);
+  Uint8Buffer readBytesLeft() => readBytes(-1);
 
   void _readCurrentByte() {
     final val = bytesAvailable ? _buffer.removeAt(0) : 0;

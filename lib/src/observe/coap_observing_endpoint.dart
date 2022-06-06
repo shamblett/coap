@@ -5,7 +5,12 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'dart:io';
+
+import 'package:collection/collection.dart';
+import 'package:typed_data/typed_data.dart';
+
+import 'coap_observe_relation.dart';
 
 /// Represents an observing endpoint. It holds all observe relations
 /// that the endpoint has to this server. If a confirmable notification timeouts
@@ -32,7 +37,7 @@ class CoapObservingEndpoint {
   }
 
   /// Finds the observe relation by token.
-  CoapObserveRelation? getObserveRelation(typed.Uint8Buffer token) =>
+  CoapObserveRelation? getObserveRelation(Uint8Buffer token) =>
       _relations.firstWhereOrNull((CoapObserveRelation relation) =>
           token.equals(relation.exchange.request!.token!));
 

@@ -5,7 +5,10 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'coap_code.dart';
+import 'coap_constants.dart';
+import 'coap_message.dart';
+import 'coap_message_type.dart';
 
 /// Represents an empty CoAP message. An empty message has either
 /// the MessageType ACK or RST.

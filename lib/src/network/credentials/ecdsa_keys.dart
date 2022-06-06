@@ -5,7 +5,7 @@
  * Copyright :  Jan Romann
  */
 
-part of coap;
+import 'dart:typed_data';
 
 /// Enumeration of the supported elliptic curves.
 enum EcdsaCurve {

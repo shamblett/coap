@@ -5,7 +5,11 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'package:collection/collection.dart';
+import 'package:meta/meta.dart';
+
+import 'coap_request.dart';
+import 'event/coap_event_bus.dart';
 
 /// Represents a CoAP observe relation between a CoAP client and a
 /// resource on a server.

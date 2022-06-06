@@ -5,19 +5,29 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:collection/collection.dart';
+import 'package:typed_data/typed_data.dart';
+
+import 'coap_block_option.dart';
+import 'coap_constants.dart';
+import 'coap_media_type.dart';
+import 'coap_option_type.dart';
+import 'util/coap_byte_array_util.dart';
 
 /// This class describes the options of the CoAP messages.
 class CoapOption {
   /// Construction
-  CoapOption(this._type) : _buffer = typed.Uint8Buffer();
+  CoapOption(this._type) : _buffer = Uint8Buffer();
 
   final OptionType _type;
 
   /// Type
   OptionType get type => _type;
 
-  final typed.Uint8Buffer _buffer;
+  final Uint8Buffer _buffer;
 
   @override
   int get hashCode => Object.hash(_type, _buffer);
@@ -31,17 +41,16 @@ class CoapOption {
   }
 
   /// Value in bytes
-  typed.Uint8Buffer get byteValue => _buffer;
+  Uint8Buffer get byteValue => _buffer;
 
   /// raw byte representation of value bytes
-  set byteValue(typed.Uint8Buffer val) {
+  set byteValue(Uint8Buffer val) {
     _buffer.clear();
     _buffer.addAll(val);
   }
 
   /// String representation of value bytes
-  String get stringValue =>
-      const convertor.Utf8Decoder().convert(_buffer.toList());
+  String get stringValue => const Utf8Decoder().convert(_buffer.toList());
 
   set stringValue(String val) {
     _buffer.clear();
@@ -136,7 +145,7 @@ class CoapOption {
   }
 
   /// Creates an option.
-  static CoapOption createRaw(OptionType type, typed.Uint8Buffer raw) {
+  static CoapOption createRaw(OptionType type, Uint8Buffer raw) {
     return create(type.optionNumber)..byteValue = raw;
   }
 

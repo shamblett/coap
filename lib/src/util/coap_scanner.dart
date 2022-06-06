@@ -5,10 +5,10 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'package:string_scanner/string_scanner.dart';
 
 /// String scanner
-class CoapScanner extends scanner.StringScanner {
+class CoapScanner extends StringScanner {
   /// Construction
   CoapScanner(String source) : super(source);
 
@@ -20,7 +20,7 @@ class CoapScanner extends scanner.StringScanner {
       while (peekChar(0) != stopCharacter.codeUnitAt(0)) {
         buff.write(String.fromCharCode(readChar()));
       }
-    } on scanner.StringScannerException {
+    } on StringScannerException {
       // If we run out of string return what we have
       return buff.toString();
     }

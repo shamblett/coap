@@ -5,7 +5,10 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import '../coap_empty_message.dart';
+import '../coap_request.dart';
+import '../coap_response.dart';
+import 'coap_exchange.dart';
 
 /// Interface for an Outbox
 abstract class CoapIOutbox {

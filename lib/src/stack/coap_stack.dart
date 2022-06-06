@@ -5,7 +5,13 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import '../coap_config.dart';
+import '../tasks/coap_iexecutor.dart';
+import 'coap_blockwise_layer.dart';
+import 'coap_layer_stack.dart';
+import 'coap_observe_layer.dart';
+import 'coap_reliability_layer.dart';
+import 'coap_token_layer.dart';
 
 /// Builds up the stack of CoAP layers
 /// that process the CoAP protocol.

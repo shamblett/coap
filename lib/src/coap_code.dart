@@ -5,8 +5,6 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
-
 /// This class describes the CoAP Code Registry as defined in  RFC 7252,
 /// section 12.1.
 class CoapCode {

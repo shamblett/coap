@@ -5,8 +5,6 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
-
 typedef Action = void Function();
 typedef ActionGeneric<T> = void Function(T);
 

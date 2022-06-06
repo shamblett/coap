@@ -5,7 +5,7 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'coap_ientry.dart';
 
 typedef TEqualsFunc = bool Function<TFilter>(TFilter a, TFilter b);
 typedef TEntryFactoryFunc

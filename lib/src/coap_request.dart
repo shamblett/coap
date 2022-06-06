@@ -5,7 +5,15 @@
  * Copyright :  S.Hamblett
  */
 
-part of coap;
+import 'dart:io';
+
+import 'package:meta/meta.dart';
+
+import 'coap_code.dart';
+import 'coap_constants.dart';
+import 'coap_message.dart';
+import 'coap_message_type.dart';
+import 'net/coap_iendpoint.dart';
 
 /// This class describes the functionality of a CoAP Request as
 /// a subclass of a CoAP Message. It provides:

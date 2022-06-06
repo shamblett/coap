@@ -27,7 +27,7 @@ FutureOr main() async {
   try {
     print('Observing /obs on ${uri.host}');
     final obs = await client.observe(reqObs);
-    obs.stream.listen((CoapRespondEvent e) {
+    obs.stream.listen((e) {
       print('/obs response: ${e.resp.payloadString}');
     });
 
@@ -36,22 +36,25 @@ FutureOr main() async {
 
     print('Observing /obs-non on ${uri.host}');
     final obsNon = await client.observe(reqObsNon);
-    obsNon.stream.listen((CoapRespondEvent e) {
+    obsNon.stream.listen((e) {
       print('/obs-non response: ${e.resp.payloadString}');
     });
 
     final futures = <Future<void>>[];
     print('Sending get /large to ${uri.host}');
-    futures.add(client.get('large').then((CoapResponse? resp) =>
-        print('/large response: ${resp?.payloadString}')));
+    futures.add(client
+        .get('large')
+        .then((resp) => print('/large response: ${resp?.payloadString}')));
 
     print('Sending get /test to ${uri.host}');
-    futures.add(client.get('test').then((CoapResponse? resp) =>
-        print('/test response: ${resp?.payloadString}')));
+    futures.add(client
+        .get('test')
+        .then((resp) => print('/test response: ${resp?.payloadString}')));
 
     print('Sending get /separate to ${uri.host}');
-    futures.add(client.get('separate').then((CoapResponse? resp) =>
-        print('/separate response: ${resp?.payloadString}')));
+    futures.add(client
+        .get('separate')
+        .then((resp) => print('/separate response: ${resp?.payloadString}')));
 
     print('Waiting until get requests are done');
     await Future.wait(futures);
