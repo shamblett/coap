@@ -18,21 +18,27 @@ import 'coap_message_encoder.dart';
 /// Message encoder RFC 7252
 class CoapMessageEncoderRfc7252 extends CoapMessageEncoder {
   @override
-  void serialize(CoapDatagramWriter writer, CoapMessage message, int code) {
+  void serialize(
+    final CoapDatagramWriter writer,
+    final CoapMessage message,
+    final int code,
+  ) {
     // Write fixed-size CoAP headers
-    writer.write(CoapRfc7252.version, CoapRfc7252.versionBits);
-    writer.write(message.type, CoapRfc7252.typeBits);
-    writer.write(message.token?.length ?? 0, CoapRfc7252.tokenLengthBits);
-    writer.write(code, CoapRfc7252.codeBits);
-    writer.write(message.id, CoapRfc7252.idBits);
-
-    // Write token, which may be 0 to 8 bytes, given by token length field
-    writer.writeBytes(message.token);
+    writer
+      ..write(CoapRfc7252.version, CoapRfc7252.versionBits)
+      ..write(message.type, CoapRfc7252.typeBits)
+      ..write(message.token?.length ?? 0, CoapRfc7252.tokenLengthBits)
+      ..write(code, CoapRfc7252.codeBits)
+      ..write(message.id, CoapRfc7252.idBits)
+      // Write token, which may be 0 to 8 bytes, given by token length field
+      ..writeBytes(message.token);
 
     var lastOptionNumber = 0;
     final options = message.getAllOptions();
-    insertionSort<CoapOption>(options,
-        compare: (CoapOption a, CoapOption b) => a.type.compareTo(b.type));
+    insertionSort<CoapOption>(
+      options,
+      compare: (final a, final b) => a.type.compareTo(b.type),
+    );
 
     for (final opt in options) {
       if (opt.type == OptionType.uriHost || opt.type == OptionType.uriPort) {

@@ -24,7 +24,7 @@ import 'coap_multicast_exchange.dart';
 /// Matcher class
 class CoapMatcher implements CoapIMatcher {
   /// Construction
-  CoapMatcher(DefaultCoapConfig config, {required this.namespace}) {
+  CoapMatcher(final DefaultCoapConfig config, {required this.namespace}) {
     _eventBus = CoapEventBus(namespace: namespace);
     _deduplicator = CoapDeduplicatorFactory.createDeduplicator(config);
     subscr = _eventBus.on<CoapCompletedEvent>().listen(onExchangeCompleted);
@@ -32,7 +32,7 @@ class CoapMatcher implements CoapIMatcher {
 
   late final CoapEventBus _eventBus;
   final String namespace;
-  late StreamSubscription subscr;
+  late StreamSubscription<CoapCompletedEvent> subscr;
 
   /// For all
   final Map<int?, CoapExchange> _exchangesById = <int?, CoapExchange>{};
@@ -65,7 +65,7 @@ class CoapMatcher implements CoapIMatcher {
   }
 
   @override
-  void sendRequest(CoapExchange exchange, CoapRequest request) {
+  void sendRequest(final CoapExchange exchange, final CoapRequest request) {
     // The request is a CON or NON and must be prepared for these responses
     // - CON => ACK / RST / ACK+response / CON+response / NON+response
     // - NON => RST / CON+response / NON+response
@@ -77,7 +77,7 @@ class CoapMatcher implements CoapIMatcher {
   }
 
   @override
-  void sendResponse(CoapExchange exchange, CoapResponse response) {
+  void sendResponse(final CoapExchange exchange, final CoapResponse response) {
     // The response is a CON or NON or ACK and must be prepared for these
     // - CON => ACK / RST // we only care to stop retransmission
     // - NON => RST // we only care for observe
@@ -124,7 +124,10 @@ class CoapMatcher implements CoapIMatcher {
   }
 
   @override
-  void sendEmptyMessage(CoapExchange exchange, CoapEmptyMessage message) {
+  void sendEmptyMessage(
+    final CoapExchange exchange,
+    final CoapEmptyMessage message,
+  ) {
     if (message.type == CoapMessageType.rst) {
       // We have rejected the request or response
       exchange.complete = true;
@@ -132,7 +135,7 @@ class CoapMatcher implements CoapIMatcher {
   }
 
   @override
-  CoapExchange receiveRequest(CoapRequest request) {
+  CoapExchange receiveRequest(final CoapRequest request) {
     // This request could be
     //  - Complete origin request => deliver with new exchange
     //  - One origin block        => deliver with ongoing exchange
@@ -199,7 +202,7 @@ class CoapMatcher implements CoapIMatcher {
   }
 
   @override
-  CoapExchange? receiveResponse(CoapResponse response) {
+  CoapExchange? receiveResponse(final CoapResponse response) {
     // This response could be
     // The first CON/NON/ACK+response => deliver
     // Retransmitted CON (because client got no ACK)
@@ -240,7 +243,7 @@ class CoapMatcher implements CoapIMatcher {
   }
 
   @override
-  CoapExchange? receiveEmptyMessage(CoapEmptyMessage message) {
+  CoapExchange? receiveEmptyMessage(final CoapEmptyMessage message) {
     // Local namespace
     final exchange = _exchangesById[message.id];
     if (exchange != null) {
@@ -251,7 +254,7 @@ class CoapMatcher implements CoapIMatcher {
   }
 
   /// Exchange completed event handler
-  void onExchangeCompleted(CoapCompletedEvent event) {
+  void onExchangeCompleted(final CoapCompletedEvent event) {
     final exchange = event.exchange;
 
     if (exchange.origin == CoapOrigin.local) {
@@ -284,7 +287,7 @@ class CoapMatcher implements CoapIMatcher {
     }
   }
 
-  void _removeNotificatoinsOf(CoapObserveRelation relation) {
+  void _removeNotificatoinsOf(final CoapObserveRelation relation) {
     for (final previous in relation.clearNotifications()) {
       // Notifications are local MID namespace
       _exchangesById.remove(previous!.id);

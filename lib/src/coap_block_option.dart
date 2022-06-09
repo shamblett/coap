@@ -10,20 +10,23 @@ import 'dart:math';
 import 'package:typed_data/typed_data.dart';
 
 import 'coap_option.dart';
-import 'coap_option_type.dart';
 
 /// This class describes the block options of the CoAP messages
 class CoapBlockOption extends CoapOption {
   /// Base construction
-  CoapBlockOption(OptionType type) : super(type) {
+  CoapBlockOption(super.type) {
     intValue = 0;
   }
 
   /// num - Block number
   /// szx - Block size
   /// m - More flag
-  CoapBlockOption.fromParts(OptionType type, int num, int szx, {bool m = false})
-      : super(type) {
+  CoapBlockOption.fromParts(
+    super.type,
+    final int num,
+    final int szx, {
+    final bool m = false,
+  }) {
     intValue = _encode(num, szx, m);
   }
 
@@ -31,40 +34,41 @@ class CoapBlockOption extends CoapOption {
   /// num - Block number
   /// szx - Block size
   /// m - More flag
-  void setValue(int num, int szx, {required bool m}) {
+  void setValue(final int num, final int szx, {required final bool m}) {
     intValue = _encode(num, szx, m);
   }
 
-  /// Set the raw value directly
-  set rawValue(int num) => intValue = num;
+  /// The raw value
+  set rawValue(final int num) => intValue = num;
+
+  int get rawValue => num;
 
   /// Block number.
   int get num => intValue >> 4;
 
-  set num(int num) => setValue(num, szx, m: m);
+  set num(final int num) => setValue(num, szx, m: m);
 
   /// Block size.
   int get szx => intValue & 0x7;
 
-  set szx(int szx) => setValue(num, szx, m: m);
+  set szx(final int szx) => setValue(num, szx, m: m);
 
   /// More flag.
   bool get m => (intValue >> 3 & 0x1) != 0;
 
-  /// More flag.
-  set more(bool m) => setValue(num, szx, m: m);
+  set m(final bool m) => setValue(num, szx, m: m);
 
   /// Block bytes
   Uint8Buffer get blockValueBytes => _compressValueBytes();
 
   /// Gets the real block size which is 2 ^ (SZX + 4).
-  static int decodeSZX(int szx) => 1 << (szx + 4);
+  static int decodeSZX(final int szx) => 1 << (szx + 4);
 
   /// Gets the decoded block size in bytes (B).
   int size() => decodeSZX(szx);
 
   /// Converts a block size into the corresponding SZX.
-  static int encodeSZX(int blockSize) {
+  static int encodeSZX(final int blockSize) {
     if (blockSize < 16) {
       return 0;
     }
@@ -75,12 +79,12 @@ class CoapBlockOption extends CoapOption {
   }
 
   /// Checks whether the given SZX is valid or not.
-  static bool validSZX(int szx) => szx >= 0 && szx <= 6;
+  static bool validSZX(final int szx) => szx >= 0 && szx <= 6;
 
   @override
   String toString() => 'Raw value: $intValue, num: $num, szx: $szx, more: $m';
 
-  static int _encode(int num, int szx, bool m) {
+  static int _encode(final int num, final int szx, final bool m) {
     var value = 0;
     value |= szx & 0x7;
     value |= (m ? 1 : 0) << 3;

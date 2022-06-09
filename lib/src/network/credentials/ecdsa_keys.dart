@@ -37,39 +37,49 @@ class _EcdsaValidationError extends ArgumentError {
 
   final int _actualByteLength;
 
-  _EcdsaValidationError(this._ecdsaCurve, this._argumentType,
-      this._expectedByteLength, this._actualByteLength);
+  _EcdsaValidationError(
+    this._ecdsaCurve,
+    this._argumentType,
+    this._expectedByteLength,
+    this._actualByteLength,
+  );
 
   String get _parameterDescription {
     if (_argumentType == _ArgumentType.private) {
-      return "private key";
+      return 'private key';
     }
 
-    return "${_argumentType.name} coordinate of the public key";
+    return '${_argumentType.name} coordinate of the public key';
   }
 
   @override
   String get message {
     final expectedBitLength = _expectedByteLength * 8;
 
-    return "Expected a length of $_expectedByteLength bytes "
-        "($expectedBitLength bits) for the $_parameterDescription of "
-        "the curve ${_ecdsaCurve.name}, but found $_actualByteLength bytes "
-        "instead!";
+    return 'Expected a length of $_expectedByteLength bytes '
+        '($expectedBitLength bits) for the $_parameterDescription of '
+        'the curve ${_ecdsaCurve.name}, but found $_actualByteLength bytes '
+        'instead!';
   }
 }
 
 class _Secp256r1ValidationError extends _EcdsaValidationError {
-  _Secp256r1ValidationError(_ArgumentType argumentType, int actualByteLength)
-      : super(EcdsaCurve.secp256r1, argumentType,
-            EcdsaCurve.secp256r1.keyLength, actualByteLength);
+  _Secp256r1ValidationError(
+    final _ArgumentType argumentType,
+    final int actualByteLength,
+  ) : super(
+          EcdsaCurve.secp256r1,
+          argumentType,
+          EcdsaCurve.secp256r1.keyLength,
+          actualByteLength,
+        );
 }
 
 /// Class representing ECC keys (one private key and the x and y coordinates of
 /// a public one).
 ///
 /// Currently, only the mandatory Cipher Suite
-/// `TLS_ECDHE_ECDSA_WITH_AES_128_CCM_8` is supported via [tinydtls].
+/// `TLS_ECDHE_ECDSA_WITH_AES_128_CCM_8` is supported via tinydtls.
 class EcdsaKeys {
   /// The elliptic curve these keys are associated with.
   final EcdsaCurve ecdsaCurve;

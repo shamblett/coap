@@ -32,7 +32,7 @@ import 'coap_matcher.dart';
 class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   /// Instantiates a new endpoint with the
   /// specified channel and configuration.
-  CoapEndPoint(this._socket, this._config, {required String namespace})
+  CoapEndPoint(this._socket, this._config, {required final String namespace})
       : _eventBus = CoapEventBus(namespace: namespace),
         _matcher = CoapMatcher(_config, namespace: namespace),
         _coapStack = CoapStack(_config),
@@ -64,7 +64,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   CoapInternetAddress? get destination => _socket.address;
 
   final CoapStack _coapStack;
-  late final StreamSubscription subscr;
+  late final StreamSubscription<CoapDataReceivedEvent> subscr;
 
   final CoapIMatcher _matcher;
 
@@ -101,24 +101,29 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   }
 
   @override
-  void sendEpRequest(CoapRequest request) {
+  void sendEpRequest(final CoapRequest request) {
     executor.start(() => _coapStack.sendRequest(request));
   }
 
   @override
-  void sendEpResponse(CoapExchange exchange, CoapResponse response) {
+  void sendEpResponse(
+    final CoapExchange exchange,
+    final CoapResponse response,
+  ) {
     executor.start(() => _coapStack.sendResponse(exchange, response));
   }
 
   @override
-  void sendEpEmptyMessage(CoapExchange exchange, CoapEmptyMessage message) {
+  void sendEpEmptyMessage(
+    final CoapExchange exchange,
+    final CoapEmptyMessage message,
+  ) {
     executor.start(() => _coapStack.sendEmptyMessage(exchange, message));
   }
 
-  void _receiveData(CoapDataReceivedEvent event) {
+  void _receiveData(final CoapDataReceivedEvent event) {
     // clone the data, in case other objects want to do stuff with it, too
-    final data = Uint8Buffer();
-    data.addAll(event.data);
+    final data = Uint8Buffer()..addAll(event.data);
     // Return if we have no data, should not happen but be defensive
     final decoder = config.spec.newMessageDecoder(data);
     if (decoder.isRequest) {
@@ -128,9 +133,9 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
       } on Exception {
         if (!decoder.isReply) {
           // Manually build RST from raw information
-          final rst = CoapEmptyMessage(CoapMessageType.rst);
-          rst.destination = event.address;
-          rst.id = decoder.id;
+          final rst = CoapEmptyMessage(CoapMessageType.rst)
+            ..destination = event.address
+            ..id = decoder.id;
           _eventBus.fire(CoapSendingEmptyMessageEvent(rst));
           _socket.send(_serializeEmpty(rst), rst.destination);
         }
@@ -141,14 +146,11 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
       _eventBus.fire(CoapReceivingRequestEvent(request));
 
       if (!request.isCancelled) {
-        final exchange = _matcher.receiveRequest(request);
-        exchange.endpoint = this;
+        final exchange = _matcher.receiveRequest(request)..endpoint = this;
         _coapStack.receiveRequest(exchange, request);
       }
     } else if (decoder.isResponse) {
-      final response = decoder.decodeResponse()!;
-      response.source = event.address;
-
+      final response = decoder.decodeResponse()!..source = event.address;
       _eventBus.fire(CoapReceivingResponseEvent(response));
 
       if (response.hasUnknownCriticalOption) {
@@ -164,8 +166,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
         }
       }
     } else if (decoder.isEmpty) {
-      final message = decoder.decodeEmptyMessage()!;
-      message.source = event.address;
+      final message = decoder.decodeEmptyMessage()!..source = event.address;
 
       _eventBus.fire(CoapReceivingEmptyMessageEvent(message));
 
@@ -186,7 +187,10 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   }
 
   @override
-  Future<void> sendRequest(CoapExchange exchange, CoapRequest request) async {
+  Future<void> sendRequest(
+    final CoapExchange exchange,
+    final CoapRequest request,
+  ) async {
     _matcher.sendRequest(exchange, request);
     _eventBus.fire(CoapSendingRequestEvent(request));
 
@@ -196,7 +200,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   }
 
   @override
-  void sendResponse(CoapExchange exchange, CoapResponse response) {
+  void sendResponse(final CoapExchange exchange, final CoapResponse response) {
     _matcher.sendResponse(exchange, response);
     _eventBus.fire(CoapSendingResponseEvent(response));
 
@@ -206,7 +210,10 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   }
 
   @override
-  void sendEmptyMessage(CoapExchange exchange, CoapEmptyMessage message) {
+  void sendEmptyMessage(
+    final CoapExchange exchange,
+    final CoapEmptyMessage message,
+  ) {
     _matcher.sendEmptyMessage(exchange, message);
     _eventBus.fire(CoapSendingEmptyMessageEvent(message));
 
@@ -215,7 +222,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
     }
   }
 
-  void _reject(CoapMessage message) {
+  void _reject(final CoapMessage message) {
     final rst = CoapEmptyMessage.newRST(message);
     _eventBus.fire(CoapSendingEmptyMessageEvent(rst));
 
@@ -224,7 +231,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
     }
   }
 
-  Uint8Buffer _serializeEmpty(CoapEmptyMessage message) {
+  Uint8Buffer _serializeEmpty(final CoapEmptyMessage message) {
     var bytes = message.bytes;
     if (bytes == null) {
       bytes = _config.spec.newMessageEncoder().encodeMessage(message);
@@ -233,7 +240,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
     return bytes!;
   }
 
-  Uint8Buffer _serializeRequest(CoapMessage message) {
+  Uint8Buffer _serializeRequest(final CoapMessage message) {
     var bytes = message.bytes;
     if (bytes == null) {
       bytes = _config.spec.newMessageEncoder().encodeMessage(message);
@@ -242,7 +249,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
     return bytes!;
   }
 
-  Uint8Buffer _serializeResponse(CoapMessage message) {
+  Uint8Buffer _serializeResponse(final CoapMessage message) {
     var bytes = message.bytes;
     if (bytes == null) {
       bytes = _config.spec.newMessageEncoder().encodeMessage(message);

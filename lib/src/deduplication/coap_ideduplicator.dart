@@ -21,8 +21,8 @@ abstract class CoapIDeduplicator {
 
   /// Checks if the specified key is already associated with a previous
   /// exchange and otherwise associates the key with the exchange specified.
-  CoapExchange? findPrevious(int? key, CoapExchange exchange);
+  CoapExchange? findPrevious(final int? key, final CoapExchange exchange);
 
   /// Finds the exchange associated with the supplied key
-  CoapExchange? find(int? key);
+  CoapExchange? find(final int? key);
 }

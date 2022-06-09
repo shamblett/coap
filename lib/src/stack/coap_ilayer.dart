@@ -14,22 +14,31 @@ import '../tasks/coap_iexecutor.dart';
 /// Represent a next layer in the stack.
 abstract class CoapINextLayer {
   /// Sends a request to next layer.
-  void sendRequest(CoapExchange? exchange, CoapRequest request);
+  void sendRequest(final CoapExchange? exchange, final CoapRequest request);
 
   /// Sends a response to next layer.
-  void sendResponse(CoapExchange exchange, CoapResponse response);
+  void sendResponse(final CoapExchange exchange, final CoapResponse response);
 
   /// Sends an empty message to next layer.
-  void sendEmptyMessage(CoapExchange exchange, CoapEmptyMessage message);
+  void sendEmptyMessage(
+    final CoapExchange exchange,
+    final CoapEmptyMessage message,
+  );
 
   /// Receives a request to next layer.
-  void receiveRequest(CoapExchange exchange, CoapRequest request);
+  void receiveRequest(final CoapExchange exchange, final CoapRequest request);
 
   /// Receives a response to next layer.
-  void receiveResponse(CoapExchange exchange, CoapResponse response);
+  void receiveResponse(
+    final CoapExchange exchange,
+    final CoapResponse response,
+  );
 
   /// Receives an empty message to next layer.
-  void receiveEmptyMessage(CoapExchange exchange, CoapEmptyMessage message);
+  void receiveEmptyMessage(
+    final CoapExchange exchange,
+    final CoapEmptyMessage message,
+  );
 }
 
 /// Represents a layer in the stack.
@@ -39,25 +48,43 @@ abstract class CoapILayer {
 
   /// Filters a request sending event.
   void sendRequest(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request);
+    final CoapINextLayer nextLayer,
+    final CoapExchange exchange,
+    final CoapRequest request,
+  );
 
   /// Filters a response sending event.
   void sendResponse(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response);
+    final CoapINextLayer nextLayer,
+    final CoapExchange exchange,
+    final CoapResponse response,
+  );
 
   /// Filters an empty message sending event.
-  void sendEmptyMessage(CoapINextLayer nextLayer, CoapExchange exchange,
-      CoapEmptyMessage message);
+  void sendEmptyMessage(
+    final CoapINextLayer nextLayer,
+    final CoapExchange exchange,
+    final CoapEmptyMessage message,
+  );
 
   /// Filters a request receiving event.
   void receiveRequest(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request);
+    final CoapINextLayer nextLayer,
+    final CoapExchange exchange,
+    final CoapRequest request,
+  );
 
   /// Filters a response receiving event.
   void receiveResponse(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response);
+    final CoapINextLayer nextLayer,
+    final CoapExchange exchange,
+    final CoapResponse response,
+  );
 
   /// Filters an empty message receiving event.
-  void receiveEmptyMessage(CoapINextLayer nextLayer, CoapExchange exchange,
-      CoapEmptyMessage message);
+  void receiveEmptyMessage(
+    final CoapINextLayer nextLayer,
+    final CoapExchange exchange,
+    final CoapEmptyMessage message,
+  );
 }

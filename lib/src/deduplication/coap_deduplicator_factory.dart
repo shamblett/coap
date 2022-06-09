@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_classes_with_only_static_members
+
 /*
  * Package : Coap
  * Author : S. Hamblett <steve.hamblett@linux.com>
@@ -23,7 +25,7 @@ class CoapDeduplicatorFactory {
   static const String noopDeduplicator = 'Noop';
 
   /// Create
-  static CoapIDeduplicator createDeduplicator(DefaultCoapConfig config) {
+  static CoapIDeduplicator createDeduplicator(final DefaultCoapConfig config) {
     final type = config.deduplicator;
     if (type == markAndSweepDeduplicator) {
       return CoapSweepDeduplicator(config);

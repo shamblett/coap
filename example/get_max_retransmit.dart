@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 /*
  * Package : Coap
  * Author : S. Hamblett <steve.hamblett@linux.com>
@@ -11,15 +13,14 @@ import 'dart:async';
 import 'package:coap/coap.dart';
 import './config/coap_config.dart';
 
-FutureOr main() async {
+FutureOr<void> main() async {
   final conf = CoapConfig();
   final uri = Uri(scheme: 'coap', host: 'google.com', port: conf.defaultPort);
   final client = CoapClient(uri, conf);
 
   print('maxRetransmit config: ${conf.maxRetransmit}');
 
-  final request = CoapRequest.newGet();
-  request.addUriPath('doesNotExist');
+  final request = CoapRequest.newGet()..addUriPath('doesNotExist');
   print('maxRetransmit request: ${request.maxRetransmit} (0=config default)');
 
   try {
@@ -38,7 +39,7 @@ FutureOr main() async {
     }
 
     print('Response: $resp');
-  } catch (e) {
+  } on Exception catch (e) {
     print('CoAP encountered an exception: $e');
   }
 

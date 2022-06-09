@@ -30,16 +30,16 @@ class CoapResponse extends CoapMessage {
 
   /// The Round-Trip Time of this response.
   Duration? get rtt => _rtt;
-  @protected
-  set rtt(Duration? val) => _rtt = val;
+  @internal
+  set rtt(final Duration? val) => _rtt = val;
 
   bool _last = true;
 
   /// A value indicating whether this response is the last
   /// response of an exchange.
   bool get last => _last;
-  @protected
-  set last(bool val) => _last = val;
+  @internal
+  set last(final bool val) => _last = val;
 
   @override
   String toString() => '\n<<< Response Message >>> ${super.toString()}';
@@ -50,10 +50,11 @@ class CoapResponse extends CoapMessage {
   /// endpoint of the request.
   /// The response has the same token as the request.
   /// Type and ID are usually set automatically by the ReliabilityLayer>.
-  static CoapResponse createResponse(CoapRequest request, int statusCode) {
-    final response = CoapResponse(statusCode);
-    response.destination = request.source;
-    response.token = request.token;
-    return response;
+  CoapResponse.createResponse(
+    final CoapRequest request,
+    this._statusCode,
+  ) {
+    destination = request.source;
+    token = request.token;
   }
 }

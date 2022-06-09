@@ -19,37 +19,55 @@ class CoapAbstractLayer implements CoapILayer {
 
   @override
   void sendRequest(
-      CoapINextLayer nextLayer, CoapExchange? exchange, CoapRequest request) {
-    nextLayer.sendRequest(exchange, request);
+    final CoapINextLayer nextLayer,
+    final CoapExchange? initialExchange,
+    final CoapRequest request,
+  ) {
+    nextLayer.sendRequest(initialExchange, request);
   }
 
   @override
   void sendResponse(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
-    nextLayer.sendResponse(exchange, response);
+    final CoapINextLayer nextLayer,
+    final CoapExchange initialExchange,
+    final CoapResponse response,
+  ) {
+    nextLayer.sendResponse(initialExchange, response);
   }
 
   @override
-  void sendEmptyMessage(CoapINextLayer nextLayer, CoapExchange exchange,
-      CoapEmptyMessage message) {
-    nextLayer.sendEmptyMessage(exchange, message);
+  void sendEmptyMessage(
+    final CoapINextLayer nextLayer,
+    final CoapExchange initialExchange,
+    final CoapEmptyMessage message,
+  ) {
+    nextLayer.sendEmptyMessage(initialExchange, message);
   }
 
   @override
   void receiveRequest(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
-    nextLayer.receiveRequest(exchange, request);
+    final CoapINextLayer nextLayer,
+    final CoapExchange initialExchange,
+    final CoapRequest request,
+  ) {
+    nextLayer.receiveRequest(initialExchange, request);
   }
 
   @override
   void receiveResponse(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
-    nextLayer.receiveResponse(exchange, response);
+    final CoapINextLayer nextLayer,
+    final CoapExchange initialExchange,
+    final CoapResponse response,
+  ) {
+    nextLayer.receiveResponse(initialExchange, response);
   }
 
   @override
-  void receiveEmptyMessage(CoapINextLayer nextLayer, CoapExchange exchange,
-      CoapEmptyMessage message) {
-    nextLayer.receiveEmptyMessage(exchange, message);
+  void receiveEmptyMessage(
+    final CoapINextLayer nextLayer,
+    final CoapExchange initialExchange,
+    final CoapEmptyMessage message,
+  ) {
+    nextLayer.receiveEmptyMessage(initialExchange, message);
   }
 }

@@ -28,10 +28,10 @@ class CoapNetworkOpenSSL implements CoapINetwork {
   CoapNetworkOpenSSL(
     this.address,
     this.port, {
-    String namespace = '',
-    String? ciphers,
-    required bool verify,
-    required bool withTrustedRoots,
+    required final bool verify,
+    required final bool withTrustedRoots,
+    final String namespace = '',
+    final String? ciphers,
   })  : _eventBus = CoapEventBus(namespace: namespace),
         _ciphers = ciphers,
         _verify = verify,
@@ -39,7 +39,7 @@ class CoapNetworkOpenSSL implements CoapINetwork {
 
   final CoapEventBus _eventBus;
 
-  void _processFrame(Uint8List frame) {
+  void _processFrame(final Uint8List frame) {
     final buff = Uint8Buffer();
     if (frame.isNotEmpty) {
       buff.addAll(frame.toList());
@@ -72,13 +72,16 @@ class CoapNetworkOpenSSL implements CoapINetwork {
   bool _bound = false;
 
   @override
-  Future<int> send(Uint8Buffer data, [CoapInternetAddress? address]) async {
+  Future<int> send(
+    final Uint8Buffer data, [
+    final CoapInternetAddress? address,
+  ]) async {
     // FIXME: There is currently no way for reconnecting if the connection has
     //        been lost in the meantime
 
     final bytes = Uint8List.view(data.buffer, data.offsetInBytes, data.length);
 
-    // TODO: The send method does not return the number of bytes written at
+    // FIXME: The send method does not return the number of bytes written at
     //       the moment.
     _dtlsConnection?.send(bytes);
     return -1;
@@ -86,7 +89,7 @@ class CoapNetworkOpenSSL implements CoapINetwork {
 
   @override
   void receive() {
-    _socket?.listen((event) {
+    _socket?.listen((final event) {
       switch (event) {
         case RawSocketEvent.read:
           final datagram = _socket?.receive();
@@ -97,7 +100,9 @@ class CoapNetworkOpenSSL implements CoapINetwork {
 
           _dtlsConnection?.incoming(datagram.data);
           break;
-        default:
+        case RawSocketEvent.closed:
+        case RawSocketEvent.readClosed:
+        case RawSocketEvent.write:
           break;
       }
     });
@@ -114,24 +119,25 @@ class CoapNetworkOpenSSL implements CoapINetwork {
     final bindAddress = address.bind;
     _socket = await RawDatagramSocket.bind(bindAddress, 0);
     _dtlsConnection = DtlsClientConnection(
-        context: DtlsClientContext(
-          verify: _verify,
-          withTrustedRoots: _withTrustedRoots,
-          ciphers: _ciphers,
-        ),
-        hostname: address.address.host);
+      context: DtlsClientContext(
+        verify: _verify,
+        withTrustedRoots: _withTrustedRoots,
+        ciphers: _ciphers,
+      ),
+      hostname: address.address.host,
+    );
     receive();
     _dtlsConnection?.outgoing
-        .listen((d) => _socket?.send(d, address.address, port));
+        .listen((final d) => _socket?.send(d, address.address, port));
     await _dtlsConnection
         ?.connect()
-        .timeout(Duration(seconds: 10), onTimeout: _handleTimeout);
+        .timeout(const Duration(seconds: 10), onTimeout: _handleTimeout);
     _bound = true;
   }
 
   void _handleTimeout() {
     close();
-    throw HandshakeException('Establishing dtls connection timed out');
+    throw const HandshakeException('Establishing dtls connection timed out');
   }
 
   @override

@@ -23,14 +23,16 @@ class CoapDatagramWriter {
   int _currentBitIndex;
 
   /// Writes a sequence of bits to the stream
-  void write(int? data, int numBits) {
+  void write(final int? data, final int numBits) {
     for (var i = numBits - 1; i >= 0; i--) {
       // Test bit
       final bit = (data! >> i & 1) != 0;
       if (bit) {
         // Set bit in current byte
         _currentByte.setUint8(
-            0, _currentByte.getUint8(0) | (1 << _currentBitIndex));
+          0,
+          _currentByte.getUint8(0) | (1 << _currentBitIndex),
+        );
       }
 
       // Decrease current bit index
@@ -44,7 +46,7 @@ class CoapDatagramWriter {
   }
 
   /// Writes a sequence of bytes to the stream
-  void writeBytes(Uint8Buffer? bytes) {
+  void writeBytes(final Uint8Buffer? bytes) {
     // Check if anything to do at all
     if (bytes == null) {
       return;
@@ -63,7 +65,7 @@ class CoapDatagramWriter {
   }
 
   /// Writes one byte to the stream.
-  void writeByte(int b) {
+  void writeByte(final int b) {
     final buff = Uint8Buffer()..add(b);
     writeBytes(buff);
   }

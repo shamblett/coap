@@ -22,8 +22,8 @@ class CoapObserveClientRelation {
   /// Response stream
   Stream<CoapRespondEvent> get stream => _request.eventBus!
       .on<CoapRespondEvent>()
-      .where((CoapRespondEvent e) => e.resp.token!.equals(_request.token!))
-      .takeWhile((_) => !_request.isTimedOut && !_request.isCancelled);
+      .where((final e) => e.resp.token!.equals(_request.token!))
+      .takeWhile((final _) => !_request.isTimedOut && !_request.isCancelled);
 
   final CoapRequest _request;
 
@@ -31,26 +31,22 @@ class CoapObserveClientRelation {
 
   /// Cancelled
   bool get isCancelled => _cancelled;
-  @protected
-  set isCancelled(bool val) {
+  @internal
+  set isCancelled(final bool val) {
     _request.isCancelled = val;
     _cancelled = val;
   }
 
   /// Create a cancellation request
-  @protected
-  CoapRequest newCancel() {
-    final cancel = CoapRequest.newGet();
+  @internal
+  CoapRequest newCancel() => CoapRequest.newGet()
     // Copy options, but set Observe to cancel
-    cancel.setOptions(_request.getAllOptions());
-    cancel.observe = 1;
+    ..setOptions(_request.getAllOptions())
+    ..observe = 1
     // Use same Token
-    cancel.token = _request.token;
-    cancel.destination = _request.destination;
+    ..token = _request.token
+    ..destination = _request.destination
 
     // Dispatch final response to the same message observers
-    cancel.copyEventHandler(_request);
-
-    return cancel;
-  }
+    ..copyEventHandler(_request);
 }

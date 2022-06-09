@@ -25,9 +25,8 @@ class UnsupportedProtocolException implements Exception {
   UnsupportedProtocolException(this.uriScheme);
 
   @override
-  String toString() {
-    return '$runtimeType: Unsupported URI scheme $uriScheme encountered.';
-  }
+  String toString() =>
+      '$runtimeType: Unsupported URI scheme $uriScheme encountered.';
 }
 
 /// This [Exception] is thrown when Credentials for secure CoAP communication
@@ -39,9 +38,7 @@ class CoapCredentialsException implements Exception {
   CoapCredentialsException(this._message);
 
   @override
-  toString() {
-    return "$runtimeType: $_message";
-  }
+  String toString() => '$runtimeType: $_message';
 }
 
 /// This [Exception] is thrown when a DTLS related problem occurs.
@@ -52,9 +49,7 @@ class CoapDtlsException implements Exception {
   CoapDtlsException(this._message);
 
   @override
-  toString() {
-    return "$runtimeType: $_message";
-  }
+  String toString() => '$runtimeType: $_message';
 }
 
 /// Abstract networking class, allows different implementations for
@@ -71,7 +66,10 @@ abstract class CoapINetwork {
 
   /// Send, returns the number of bytes sent or null
   /// if not bound.
-  Future<int> send(Uint8Buffer data, [CoapInternetAddress? address]);
+  Future<int> send(
+    final Uint8Buffer data, [
+    final CoapInternetAddress? address,
+  ]);
 
   /// Starts the receive listener
   void receive();
@@ -84,23 +82,30 @@ abstract class CoapINetwork {
 
   /// Creates a new CoapINetwork from a given URI
   static CoapINetwork fromUri(
-    Uri uri, {
-    required CoapInternetAddress address,
-    required DefaultCoapConfig config,
-    String namespace = '',
-    PskCredentialsCallback? pskCredentialsCallback,
-    EcdsaKeys? ecdsaKeys,
+    final Uri uri, {
+    required final CoapInternetAddress address,
+    required final DefaultCoapConfig config,
+    final String namespace = '',
+    final PskCredentialsCallback? pskCredentialsCallback,
+    final EcdsaKeys? ecdsaKeys,
   }) {
-    int? port = uri.port > 0 ? uri.port : null;
+    final port = uri.port > 0 ? uri.port : null;
     switch (uri.scheme) {
       case CoapConstants.uriScheme:
-        return CoapNetworkUDP(address, port ?? config.defaultPort,
-            namespace: namespace);
+        return CoapNetworkUDP(
+          address,
+          port ?? config.defaultPort,
+          namespace: namespace,
+        );
       case CoapConstants.secureUriScheme:
-        return _determineDtlsNetwork(address, port, config,
-            namespace: namespace,
-            pskCredentialsCallback: pskCredentialsCallback,
-            ecdsaKeys: ecdsaKeys);
+        return _determineDtlsNetwork(
+          address,
+          port,
+          config,
+          namespace: namespace,
+          pskCredentialsCallback: pskCredentialsCallback,
+          ecdsaKeys: ecdsaKeys,
+        );
       default:
         throw UnsupportedProtocolException(uri.scheme);
     }
@@ -109,36 +114,43 @@ abstract class CoapINetwork {
   /// Determines which [CoapINetwork] to use for secure communication using
   /// DTLS.
   static CoapINetwork _determineDtlsNetwork(
-    CoapInternetAddress address,
-    int? port,
-    DefaultCoapConfig config, {
-    String namespace = '',
-    PskCredentialsCallback? pskCredentialsCallback,
-    EcdsaKeys? ecdsaKeys,
+    final CoapInternetAddress address,
+    final int? port,
+    final DefaultCoapConfig config, {
+    final String namespace = '',
+    final PskCredentialsCallback? pskCredentialsCallback,
+    final EcdsaKeys? ecdsaKeys,
   }) {
-    port = port ?? config.defaultSecurePort;
-
     switch (config.dtlsBackend) {
       case DtlsBackend.TinyDtls:
-        if ((pskCredentialsCallback != null || ecdsaKeys != null)) {
-          return CoapNetworkTinyDtls(address, port, config.tinyDtlsInstance,
-              namespace: namespace,
-              pskCredentialsCallback: pskCredentialsCallback,
-              ecdsaKeys: ecdsaKeys);
+        if (pskCredentialsCallback != null || ecdsaKeys != null) {
+          return CoapNetworkTinyDtls(
+            address,
+            port ?? config.defaultSecurePort,
+            config.tinyDtlsInstance,
+            namespace: namespace,
+            pskCredentialsCallback: pskCredentialsCallback,
+            ecdsaKeys: ecdsaKeys,
+          );
         }
 
         throw CoapCredentialsException(
-            "A PSK credentials callback and/or ECDSA keys have been expected "
-            "to use CoAPS, but neither have been found!");
+          'A PSK credentials callback and/or ECDSA keys have been expected '
+          'to use CoAPS, but neither have been found!',
+        );
       case DtlsBackend.OpenSsl:
-        return CoapNetworkOpenSSL(address, port,
-            verify: config.dtlsVerify,
-            withTrustedRoots: config.dtlsWithTrustedRoots,
-            ciphers: config.dtlsCiphers);
-      default:
+        return CoapNetworkOpenSSL(
+          address,
+          port ?? config.defaultSecurePort,
+          verify: config.dtlsVerify,
+          withTrustedRoots: config.dtlsWithTrustedRoots,
+          ciphers: config.dtlsCiphers,
+        );
+      case null:
         throw CoapDtlsException(
-            "Encountered a coaps:// URI scheme but no DTLS backend has been "
-            "enabled in the config.");
+          'Encountered a coaps:// URI scheme but no DTLS backend has been '
+          'enabled in the config.',
+        );
     }
   }
 }

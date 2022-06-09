@@ -14,7 +14,10 @@ class CoapBlockwiseStatus {
 
   /// Instantiates a new blockwise status.
   CoapBlockwiseStatus.withSize(
-      this._contentFormat, this.currentNUM, this.currentSZX);
+    this._contentFormat,
+    this.currentNUM,
+    this.currentSZX,
+  );
 
   /// Not observing
   static const int noObserve = -1;
@@ -50,7 +53,7 @@ class CoapBlockwiseStatus {
   int get blockCount => blocks.length;
 
   /// Adds the specified block to the current list of blocks.
-  void addBlock(Uint8Buffer? block) {
+  void addBlock(final Uint8Buffer? block) {
     if (block != null) {
       blocks.add(block);
     }

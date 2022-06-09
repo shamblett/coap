@@ -21,9 +21,12 @@ class CoapObserveRelation {
   ///
   /// Takes the observing [endpoint], the observed [resource], and the
   /// [exchange] that tries to establish the observe relation as arguments.
-  CoapObserveRelation(this.config, CoapObservingEndpoint endpoint,
-      CoapIResource resource, CoapExchange exchange)
-      : _endpoint = endpoint,
+  CoapObserveRelation(
+    this.config,
+    final CoapObservingEndpoint endpoint,
+    final CoapIResource resource,
+    final CoapExchange exchange,
+  )   : _endpoint = endpoint,
         _resource = resource,
         _exchange = exchange,
         established = true;
@@ -105,7 +108,7 @@ class CoapObserveRelation {
   }
 
   /// Add a notification
-  void addNotification(CoapResponse notification) {
+  void addNotification(final CoapResponse notification) {
     _notifications.add(notification);
   }
 

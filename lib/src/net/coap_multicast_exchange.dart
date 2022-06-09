@@ -7,19 +7,22 @@
 
 import '../coap_request.dart';
 import '../coap_response.dart';
-import '../event/coap_event_bus.dart';
 import 'coap_exchange.dart';
 
 class CoapMulticastExchange extends CoapExchange {
-  CoapMulticastExchange(CoapRequest request, CoapOrigin origin,
-      {required namespace})
-      : super(request, origin, namespace: namespace);
+  CoapMulticastExchange(
+    final CoapRequest super.request,
+    super.origin, {
+    required final super.namespace,
+  });
 
   final List<CoapResponse> responses = [];
 
-  bool alreadyReceived(CoapResponse response) {
-    final filteredResponses = responses.where((element) =>
-        element.source?.address.address == response.source?.address.address);
+  bool alreadyReceived(final CoapResponse response) {
+    final filteredResponses = responses.where(
+      (final element) =>
+          element.source?.address.address == response.source?.address.address,
+    );
 
     return filteredResponses.isNotEmpty;
   }

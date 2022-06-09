@@ -8,22 +8,22 @@
 /// Represents a name-filter pair that an <see cref="IChain&lt;TFilter, TNextFilter&gt;"/> contains.
 abstract class CoapIEntry<TFilter, TNextFilter> {
   /// Gets the name of the filter.
-  String? name;
+  late String name;
 
   /// Gets the filter.
-  TFilter? filter;
+  late TFilter filter;
 
   /// Gets the <typeparamref name="TNextFilter"/> of the filter.
-  TNextFilter? nextFilter;
+  late TNextFilter nextFilter;
 
   /// Adds the specified filter with the specified name just before this entry.
-  void addBefore(String name, TFilter filter);
+  void addBefore(final String name, final TFilter filter);
 
   /// Adds the specified filter with the specified name just after this entry.
-  void addAfter(String name, TFilter filter);
+  void addAfter(final String name, final TFilter filter);
 
   /// Replace the filter of this entry with the specified new filter.
-  void replace(TFilter newFilter);
+  void replace(final TFilter newFilter);
 
   /// Removes this entry from the chain it belongs to.
   void remove();

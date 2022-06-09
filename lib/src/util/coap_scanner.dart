@@ -10,11 +10,11 @@ import 'package:string_scanner/string_scanner.dart';
 /// String scanner
 class CoapScanner extends StringScanner {
   /// Construction
-  CoapScanner(String source) : super(source);
+  CoapScanner(super.source);
 
   /// Take characters from the source string advancing the position up
   /// to but not including the stop character and return as a string
-  String takeUntil(String stopCharacter) {
+  String takeUntil(final String stopCharacter) {
     final buff = StringBuffer();
     try {
       while (peekChar(0) != stopCharacter.codeUnitAt(0)) {

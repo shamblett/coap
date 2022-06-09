@@ -27,19 +27,20 @@ class CoapObservingEndpoint {
   final List<CoapObserveRelation> _relations = <CoapObserveRelation>[];
 
   /// Adds the specified observe relation.
-  void addObserveRelation(CoapObserveRelation relation) {
+  void addObserveRelation(final CoapObserveRelation relation) {
     _relations.add(relation);
   }
 
   /// Removes the specified observe relation.
-  void removeObserveRelation(CoapObserveRelation relation) {
+  void removeObserveRelation(final CoapObserveRelation relation) {
     _relations.remove(relation);
   }
 
   /// Finds the observe relation by token.
-  CoapObserveRelation? getObserveRelation(Uint8Buffer token) =>
-      _relations.firstWhereOrNull((CoapObserveRelation relation) =>
-          token.equals(relation.exchange.request!.token!));
+  CoapObserveRelation? getObserveRelation(final Uint8Buffer token) =>
+      _relations.firstWhereOrNull(
+        (final relation) => token.equals(relation.exchange.request!.token!),
+      );
 
   /// Cancels all observe relations that this endpoint has established with
   /// resources from this server.

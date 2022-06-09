@@ -26,7 +26,9 @@ class CoapCropRotationDeduplicator implements CoapIDeduplicator {
   @override
   void start() {
     _timer = Timer.periodic(
-        Duration(milliseconds: _config.cropRotationPeriod), _rotation);
+      Duration(milliseconds: _config.cropRotationPeriod),
+      _rotation,
+    );
   }
 
   @override
@@ -41,7 +43,7 @@ class CoapCropRotationDeduplicator implements CoapIDeduplicator {
   }
 
   @override
-  CoapExchange? findPrevious(int? key, CoapExchange exchange) {
+  CoapExchange? findPrevious(final int? key, final CoapExchange exchange) {
     CoapExchange? prev;
     if (_maps[_first].containsKey(key)) {
       prev = _maps[_first][key];
@@ -58,7 +60,7 @@ class CoapCropRotationDeduplicator implements CoapIDeduplicator {
   }
 
   @override
-  CoapExchange? find(int? key) {
+  CoapExchange? find(final int? key) {
     if (_maps[_first].containsKey(key) || _first == _second) {
       return _maps[_first][key];
     }
@@ -68,7 +70,7 @@ class CoapCropRotationDeduplicator implements CoapIDeduplicator {
     return null;
   }
 
-  void _rotation(Timer timer) {
+  void _rotation(final Timer timer) {
     final third = _first;
     _first = _second;
     _second = (_second + 1) % 3;

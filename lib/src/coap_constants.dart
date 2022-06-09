@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_classes_with_only_static_members
+
 /*
  * Package : Coap
  * Author : S. Hamblett <steve.hamblett@linux.com>
@@ -69,7 +71,7 @@ class CoapConstants {
   ///
   /// Empty token
   ///
-  static Uint8Buffer emptyToken = Uint8Buffer(0);
+  static Uint8Buffer emptyToken = Uint8Buffer();
 
   ///
   /// The lowest value of a request code.

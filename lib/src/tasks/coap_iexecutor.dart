@@ -1,3 +1,5 @@
+// ignore_for_file: one_member_abstracts
+
 /*
  * Package : Coap
  * Author : S. Hamblett <steve.hamblett@linux.com>
@@ -11,5 +13,5 @@ typedef ActionGeneric<T> = void Function(T);
 /// Provides methods to execute tasks.
 abstract class CoapIExecutor {
   /// Starts a task.
-  void start(Action task);
+  void start(final Action task);
 }

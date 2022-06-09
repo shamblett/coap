@@ -16,11 +16,13 @@ import 'coap_inetwork.dart';
 /// UDP network
 class CoapNetworkUDP implements CoapINetwork {
   /// Initialize with an address and a port
-  CoapNetworkUDP(this.address, this.port, {String namespace = ''})
+  CoapNetworkUDP(this.address, this.port, {final String namespace = ''})
       : _eventBus = CoapEventBus(namespace: namespace);
 
-  CoapNetworkUDP.from(CoapNetworkUDP src, {required String namespace})
-      : address = src.address,
+  CoapNetworkUDP.from(
+    final CoapNetworkUDP src, {
+    required final String namespace,
+  })  : address = src.address,
         port = src.port,
         _eventBus = CoapEventBus(namespace: namespace),
         _socket = src.socket,
@@ -45,17 +47,23 @@ class CoapNetworkUDP implements CoapINetwork {
   bool get bound => _bound;
 
   @override
-  Future<int> send(Uint8Buffer data, [CoapInternetAddress? address]) async {
+  Future<int> send(
+    final Uint8Buffer data, [
+    final CoapInternetAddress? address,
+  ]) async {
     if (_bound) {
       _socket?.send(
-          data.toList(), address?.address ?? this.address.address, port);
+        data.toList(),
+        address?.address ?? this.address.address,
+        port,
+      );
     }
     return -1;
   }
 
   @override
   void receive() {
-    _socket?.listen((RawSocketEvent e) {
+    _socket?.listen((final e) {
       switch (e) {
         case RawSocketEvent.read:
           final d = _socket?.receive();
@@ -73,7 +81,7 @@ class CoapNetworkUDP implements CoapINetwork {
         case RawSocketEvent.readClosed:
           close();
           break;
-        default:
+        case RawSocketEvent.write:
           break;
       }
     });

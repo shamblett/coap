@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 /*
  * Package : Coap
  * Author : S. Hamblett <steve.hamblett@linux.com>
@@ -11,7 +13,7 @@ import 'dart:async';
 import 'package:coap/coap.dart';
 import 'config/coap_config.dart';
 
-FutureOr<void> main(List<String> args) async {
+FutureOr<void> main(final List<String> args) async {
   final conf = CoapConfig();
   final uri = Uri(
     scheme: 'coap',
@@ -28,7 +30,7 @@ FutureOr<void> main(List<String> args) async {
     } else {
       print('Ping failed');
     }
-  } catch (e) {
+  } on Exception catch (e) {
     print('CoAP encountered an exception: $e');
   }
 

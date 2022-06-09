@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 /*
  * Package : Coap
  * Author : S. Hamblett <steve.hamblett@linux.com>
@@ -11,7 +13,7 @@ import 'dart:async';
 import 'package:coap/coap.dart';
 import 'config/coap_config.dart';
 
-FutureOr main() async {
+FutureOr<void> main() async {
   final conf = CoapConfig();
   final uri = Uri(
     scheme: 'coap',
@@ -21,40 +23,45 @@ FutureOr main() async {
   final client = CoapClient(uri, conf);
 
   // Create the request for the get request
-  final reqObs = CoapRequest.newGet();
-  reqObs.addUriPath('obs');
+  final reqObs = CoapRequest.newGet()..addUriPath('obs');
 
   try {
     print('Observing /obs on ${uri.host}');
     final obs = await client.observe(reqObs);
-    obs.stream.listen((e) {
+    obs.stream.listen((final e) {
       print('/obs response: ${e.resp.payloadString}');
     });
 
-    final reqObsNon = CoapRequest(CoapCode.get, confirmable: false);
-    reqObsNon.addUriPath('obs-non');
+    final reqObsNon = CoapRequest(CoapCode.get, confirmable: false)
+      ..addUriPath('obs-non');
 
     print('Observing /obs-non on ${uri.host}');
     final obsNon = await client.observe(reqObsNon);
-    obsNon.stream.listen((e) {
+    obsNon.stream.listen((final e) {
       print('/obs-non response: ${e.resp.payloadString}');
     });
 
     final futures = <Future<void>>[];
     print('Sending get /large to ${uri.host}');
-    futures.add(client
-        .get('large')
-        .then((resp) => print('/large response: ${resp.payloadString}')));
+    futures.add(
+      client.get('large').then(
+            (final resp) => print('/large response: ${resp.payloadString}'),
+          ),
+    );
 
     print('Sending get /test to ${uri.host}');
-    futures.add(client
-        .get('test')
-        .then((resp) => print('/test response: ${resp.payloadString}')));
+    futures.add(
+      client
+          .get('test')
+          .then((final resp) => print('/test response: ${resp.payloadString}')),
+    );
 
     print('Sending get /separate to ${uri.host}');
-    futures.add(client
-        .get('separate')
-        .then((resp) => print('/separate response: ${resp.payloadString}')));
+    futures.add(
+      client.get('separate').then(
+            (final resp) => print('/separate response: ${resp.payloadString}'),
+          ),
+    );
 
     print('Waiting until get requests are done');
     await Future.wait(futures);
@@ -62,10 +69,10 @@ FutureOr main() async {
     await client.cancelObserveProactive(obs);
 
     print('Waiting 20 seconds for /obs-non results');
-    await Future.delayed(Duration(seconds: 20));
+    await Future<void>.delayed(const Duration(seconds: 20));
 
     await client.cancelObserveProactive(obsNon);
-  } catch (e) {
+  } on Exception catch (e) {
     print('CoAP encountered an exception: $e');
   }
 

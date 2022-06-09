@@ -14,7 +14,7 @@ import 'coap_ideduplicator.dart';
 /// Sweep deduplicator
 class CoapSweepDeduplicator implements CoapIDeduplicator {
   /// Construction
-  CoapSweepDeduplicator(DefaultCoapConfig config) {
+  CoapSweepDeduplicator(final DefaultCoapConfig config) {
     _config = config;
   }
 
@@ -25,7 +25,9 @@ class CoapSweepDeduplicator implements CoapIDeduplicator {
   @override
   void start() {
     _timer ??= Timer.periodic(
-        Duration(milliseconds: _config.markAndSweepInterval), _sweep);
+      Duration(milliseconds: _config.markAndSweepInterval),
+      _sweep,
+    );
   }
 
   @override
@@ -41,7 +43,7 @@ class CoapSweepDeduplicator implements CoapIDeduplicator {
   }
 
   @override
-  CoapExchange? findPrevious(int? key, CoapExchange exchange) {
+  CoapExchange? findPrevious(final int? key, final CoapExchange exchange) {
     CoapExchange? prev;
     if (_incomingMessages.containsKey(key)) {
       prev = _incomingMessages[key];
@@ -51,17 +53,18 @@ class CoapSweepDeduplicator implements CoapIDeduplicator {
   }
 
   @override
-  CoapExchange? find(int? key) {
+  CoapExchange? find(final int? key) {
     if (_incomingMessages.containsKey(key)) {
       return _incomingMessages[key];
     }
     return null;
   }
 
-  void _sweep(Timer timer) {
+  void _sweep(final Timer timer) {
     final oldestAllowed = DateTime.now()
       ..add(Duration(milliseconds: _config.exchangeLifetime));
-    _incomingMessages.removeWhere((int? key, CoapExchange value) =>
-        value.timestamp!.isBefore(oldestAllowed));
+    _incomingMessages.removeWhere(
+      (final key, final value) => value.timestamp!.isBefore(oldestAllowed),
+    );
   }
 }
