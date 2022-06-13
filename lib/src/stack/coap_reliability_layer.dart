@@ -30,12 +30,12 @@ class CoapTransmissionContext {
     this._message,
     this._retransmit,
   ) {
-    currentTimeout = _message!.ackTimeout;
+    currentTimeout = _message.ackTimeout;
   }
 
-  late final DefaultCoapConfig? _config;
-  late final CoapExchange _exchange;
-  late final CoapMessage? _message;
+  final DefaultCoapConfig _config;
+  final CoapExchange _exchange;
+  final CoapMessage _message;
 
   /// Current timeout
   int currentTimeout = 0;
@@ -63,22 +63,22 @@ class CoapTransmissionContext {
     // Do not retransmit a message if it has been acknowledged,
     // rejected, canceled or already been retransmitted for the maximum
     // number of times.
-    if (!_message!.isCancelled &&
-        !_message!.isRejected &&
-        !_message!.isTimedOut &&
+    if (!_message.isCancelled &&
+        !_message.isRejected &&
+        !_message.isTimedOut &&
         failedTransmissionCount <=
-            (_message!.maxRetransmit != 0
-                ? _message!.maxRetransmit
-                : _config!.maxRetransmit)) {
-      _message!.fireRetransmitting();
+            (_message.maxRetransmit != 0
+                ? _message.maxRetransmit
+                : _config.maxRetransmit)) {
+      _message.fireRetransmitting();
       _retransmit(this);
     } else {
       _exchange.timedOut = true;
-      _message!.isTimedOut = true;
+      _message.isTimedOut = true;
       _exchange.remove(CoapReliabilityLayer.transmissionContextKey);
       final response = CoapResponse(CoapCode.empty)
-        ..id = _message!.id
-        ..token = _message!.token;
+        ..id = _message.id
+        ..token = _message.token;
       _exchange.fireRespond(response);
       cancel();
     }
@@ -88,21 +88,19 @@ class CoapTransmissionContext {
 /// The reliability layer
 class CoapReliabilityLayer extends CoapAbstractLayer {
   /// Constructs a new reliability layer.
-  CoapReliabilityLayer(final DefaultCoapConfig config) {
-    _config = config;
-  }
+  CoapReliabilityLayer(this._config);
 
   /// Context key
   static String transmissionContextKey = 'TransmissionContext';
 
-  DefaultCoapConfig? _config;
+  final DefaultCoapConfig _config;
   final Random _rand = Random();
 
   /// Schedules a retransmission for confirmable messages.
   @override
   void sendRequest(
     final CoapINextLayer nextLayer,
-    final CoapExchange? exchange,
+    final CoapExchange exchange,
     final CoapRequest request,
   ) {
     if (request.type == CoapMessageType.unknown) {
@@ -266,25 +264,25 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
   }
 
   void _prepareRetransmission(
-    final CoapExchange? exchange,
-    final CoapMessage? msg,
+    final CoapExchange exchange,
+    final CoapMessage msg,
     final ActionGeneric<CoapTransmissionContext> retransmit,
   ) {
-    final ctx = exchange?.getOrAdd<CoapTransmissionContext>(
+    final ctx = exchange.getOrAdd<CoapTransmissionContext>(
       transmissionContextKey,
       CoapTransmissionContext(_config, exchange, msg, retransmit),
     );
     if (ctx != null && ctx.failedTransmissionCount > 0) {
       ctx.currentTimeout =
-          (ctx.currentTimeout * _config!.ackTimeoutScale).toInt();
+          (ctx.currentTimeout * _config.ackTimeoutScale).toInt();
     } else if (ctx?.currentTimeout == 0) {
       ctx?.currentTimeout =
-          _initialTimeout(_config!.ackTimeout, _config!.ackRandomFactor);
+          _initialTimeout(_config.ackTimeout, _config.ackRandomFactor);
     }
     ctx?.failedTransmissionCount++;
 
-    exchange?.set<CoapTransmissionContext>(transmissionContextKey, ctx!);
-    ctx?.start();
+    exchange.set<CoapTransmissionContext>(transmissionContextKey, ctx!);
+    ctx.start();
   }
 
   int _initialTimeout(final int initialTimeout, final double factor) =>

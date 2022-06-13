@@ -8,13 +8,16 @@
 /// Represents a name-filter pair that an <see cref="IChain&lt;TFilter, TNextFilter&gt;"/> contains.
 abstract class CoapIEntry<TFilter, TNextFilter> {
   /// Gets the name of the filter.
-  late String name;
+  String get name;
 
   /// Gets the filter.
-  late TFilter filter;
+  TFilter get filter;
+
+  /// Sets the filter.
+  set filter(final TFilter val);
 
   /// Gets the <typeparamref name="TNextFilter"/> of the filter.
-  late TNextFilter nextFilter;
+  TNextFilter get nextFilter;
 
   /// Adds the specified filter with the specified name just before this entry.
   void addBefore(final String name, final TFilter filter);

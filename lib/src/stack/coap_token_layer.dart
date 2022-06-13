@@ -9,7 +9,9 @@ import 'dart:math';
 
 import 'package:typed_data/typed_data.dart';
 
-import '../../coap.dart';
+import '../coap_config.dart';
+import '../coap_constants.dart';
+import '../coap_request.dart';
 import '../coap_response.dart';
 import '../net/coap_exchange.dart';
 import 'coap_abstract_layer.dart';
@@ -26,7 +28,7 @@ class CoapTokenLayer extends CoapAbstractLayer {
   @override
   void sendRequest(
     final CoapINextLayer nextLayer,
-    final CoapExchange? initialExchange,
+    final CoapExchange initialExchange,
     final CoapRequest request,
   ) {
     request.token ??= _newToken();

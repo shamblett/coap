@@ -100,7 +100,7 @@ class CoapEntry<TFilter, TNextFilter>
     this._chain,
     this.prevEntry,
     this.nextEntry,
-    this.name,
+    this._name,
     this._filter,
     final TNextFilterFactory<dynamic, dynamic> nextFilterFactory,
   ) {
@@ -112,14 +112,16 @@ class CoapEntry<TFilter, TNextFilter>
   /// The chain
   CoapChain<dynamic, dynamic, dynamic> get chain => _chain;
 
-  @override
-  String name;
-
   /// Previous entry
   CoapEntry<dynamic, dynamic>? prevEntry;
 
   /// Next entry
   CoapEntry<dynamic, dynamic>? nextEntry;
+
+  final String _name;
+
+  @override
+  String get name => _name;
 
   TFilter _filter;
 

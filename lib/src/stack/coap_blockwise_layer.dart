@@ -42,7 +42,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
   @override
   void sendRequest(
     final CoapINextLayer nextLayer,
-    final CoapExchange? initialExchange,
+    final CoapExchange initialExchange,
     final CoapRequest request,
   ) {
     final exchange = initialExchange;
@@ -57,18 +57,18 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
         ..currentSZX = request.block2!.szx
         ..currentNUM = request.block2!.num
         ..randomAccess = true;
-      exchange!.responseBlockStatus = status;
+      exchange.responseBlockStatus = status;
       super.sendRequest(nextLayer, exchange, request);
     } else if (_requiresBlockwise(request)) {
       // This must be a large POST or PUT request
-      final status = _findRequestBlockStatus(exchange!, request);
+      final status = _findRequestBlockStatus(exchange, request);
       final block = _getNextRequestBlock(request, status);
       exchange
         ..requestBlockStatus = status
         ..currentRequest = block;
       super.sendRequest(nextLayer, exchange, block);
     } else {
-      exchange?.currentRequest = request;
+      exchange.currentRequest = request;
       super.sendRequest(nextLayer, exchange, request);
     }
   }
