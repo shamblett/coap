@@ -14,13 +14,11 @@ import 'coap_ideduplicator.dart';
 /// Sweep deduplicator
 class CoapSweepDeduplicator implements CoapIDeduplicator {
   /// Construction
-  CoapSweepDeduplicator(final DefaultCoapConfig config) {
-    _config = config;
-  }
+  CoapSweepDeduplicator(this._config);
 
-  final Map<int?, CoapExchange> _incomingMessages = <int?, CoapExchange>{};
   Timer? _timer;
-  late DefaultCoapConfig _config;
+  final Map<int?, CoapExchange> _incomingMessages = <int?, CoapExchange>{};
+  final DefaultCoapConfig _config;
 
   @override
   void start() {

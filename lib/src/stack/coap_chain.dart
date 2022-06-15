@@ -187,15 +187,13 @@ class CoapChain<TChain, TFilter, TNextFilter>
     implements CoapIChain<TFilter, TNextFilter> {
   /// Instantiates.
   CoapChain(
-    final TEntryFactoryFunc entryFactory,
+    this._entryFactory,
     final TFilterFactory<dynamic> headFilterFactory,
     final TFilterFactory<dynamic> tailFilterFactory,
-    final TEqualsFunc equalsFunc,
+    this._equalsFunc,
   ) {
-    _equalsFunc = equalsFunc;
-    _entryFactory = entryFactory;
-    _head = entryFactory(this, null, null, 'head', headFilterFactory());
-    _tail = entryFactory(this, _head, null, 'tail', tailFilterFactory());
+    _head = _entryFactory(this, null, null, 'head', headFilterFactory());
+    _tail = _entryFactory(this, _head, null, 'tail', tailFilterFactory());
     _head!.nextEntry = _tail;
   }
 
@@ -247,8 +245,8 @@ class CoapChain<TChain, TFilter, TNextFilter>
 
   /// Tail
   CoapEntry<dynamic, dynamic>? get tail => _tail;
-  late TEqualsFunc _equalsFunc;
-  late TEntryFactoryFunc? _entryFactory;
+  TEqualsFunc _equalsFunc;
+  TEntryFactoryFunc _entryFactory;
 
   @override
   CoapIEntry<TFilter, TNextFilter>? getEntryByName(final String name) =>
@@ -426,7 +424,7 @@ class CoapChain<TChain, TFilter, TNextFilter>
     final TFilter filter,
   ) {
     final newEntry =
-        _entryFactory!(this, prevEntry, prevEntry.nextEntry, name, filter);
+        _entryFactory(this, prevEntry, prevEntry.nextEntry, name, filter);
 
     onPreAdd(newEntry);
     prevEntry.nextEntry!.prevEntry = newEntry;
