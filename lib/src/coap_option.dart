@@ -141,9 +141,7 @@ class CoapOption {
   String toString() => '$name: ${_toValueString()}';
 
   /// Creates an option.
-  // ignore: prefer_constructors_over_static_methods
-  static CoapOption create(final int optionNumber) {
-    final type = OptionType.fromTypeNumber(optionNumber);
+  factory CoapOption.create(final OptionType type) {
     if (type == OptionType.block1 || type == OptionType.block2) {
       return CoapBlockOption(type);
     }
@@ -151,20 +149,20 @@ class CoapOption {
   }
 
   /// Creates an option.
-  static CoapOption createRaw(final OptionType type, final Uint8Buffer raw) =>
-      create(type.optionNumber)..byteValue = raw;
+  factory CoapOption.createRaw(final OptionType type, final Uint8Buffer raw) =>
+      CoapOption.create(type)..byteValue = raw;
 
   /// Creates an option.
-  static CoapOption createString(final OptionType type, final String str) =>
-      create(type.optionNumber)..stringValue = str;
+  factory CoapOption.createString(final OptionType type, final String str) =>
+      CoapOption.create(type)..stringValue = str;
 
   /// Creates a query option (shorthand because it's so common).
-  static CoapOption createUriQuery(final String str) =>
-      create(OptionType.uriQuery.optionNumber)..stringValue = str;
+  factory CoapOption.createUriQuery(final String str) =>
+      CoapOption.create(OptionType.uriQuery)..stringValue = str;
 
   /// Creates an option.
-  static CoapOption createVal(final OptionType type, final int val) =>
-      create(type.optionNumber)..intValue = val;
+  factory CoapOption.createVal(final OptionType type, final int val) =>
+      CoapOption.create(type)..intValue = val;
 
   /// Splits a string into a set of options, e.g. a uri path.
   /// Remove any leading /
