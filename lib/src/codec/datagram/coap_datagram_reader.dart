@@ -27,7 +27,7 @@ class CoapDatagramReader {
   int _currentBitIndex;
 
   /// Reads a sequence of bits from the stream
-  int read(int numBits) {
+  int read(final int numBits) {
     var bits = 0; // initialize all bits to zero
     for (var i = numBits - 1; i >= 0; i--) {
       // Check whether a new byte needs to be read
@@ -49,7 +49,7 @@ class CoapDatagramReader {
   }
 
   /// Reads a sequence of bytes from the stream
-  Uint8Buffer readBytes(int count) {
+  Uint8Buffer readBytes(final int count) {
     // For negative count values, read all bytes left
     var bufferCount = count;
     if (count < 0) {

@@ -20,7 +20,8 @@ import '../datagram/coap_datagram_reader.dart';
 /// Base class for message encoders.
 abstract class CoapMessageDecoder implements CoapIMessageDecoder {
   /// Instantiates.
-  CoapMessageDecoder(Uint8Buffer data) : reader = CoapDatagramReader(data);
+  CoapMessageDecoder(final Uint8Buffer data)
+      : reader = CoapDatagramReader(data);
 
   /// The bytes reader
   final CoapDatagramReader reader;
@@ -51,9 +52,9 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
   @override
   CoapRequest? decodeRequest() {
     if (isRequest) {
-      final request = CoapRequest(code);
-      request.type = type;
-      request.id = id;
+      final request = CoapRequest(code)
+        ..type = type
+        ..id = id;
       parseMessage(request);
       return request;
     }
@@ -63,9 +64,9 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
   @override
   CoapResponse? decodeResponse() {
     if (isResponse) {
-      final response = CoapResponse(code);
-      response.type = type;
-      response.id = id;
+      final response = CoapResponse(code)
+        ..type = type
+        ..id = id;
       parseMessage(response);
       return response;
     }
@@ -75,9 +76,9 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
   @override
   CoapEmptyMessage? decodeEmptyMessage() {
     if (!isResponse && !isRequest) {
-      final message = CoapEmptyMessage(code);
-      message.type = type;
-      message.id = id;
+      final message = CoapEmptyMessage(code)
+        ..type = type
+        ..id = id;
       parseMessage(message);
       return message;
     }
@@ -101,5 +102,5 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
   void readProtocol();
 
   /// Parses the rest data other than protocol headers into the given message.
-  void parseMessage(CoapMessage message);
+  void parseMessage(final CoapMessage message);
 }

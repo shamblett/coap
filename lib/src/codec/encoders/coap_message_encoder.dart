@@ -18,28 +18,28 @@ import '../datagram/coap_datagram_writer.dart';
 /// Base class for message encoders.
 abstract class CoapMessageEncoder implements CoapIMessageEncoder {
   @override
-  Uint8Buffer encodeRequest(CoapRequest request) {
+  Uint8Buffer encodeRequest(final CoapRequest request) {
     final writer = CoapDatagramWriter();
     serialize(writer, request, request.code);
     return writer.toByteArray();
   }
 
   @override
-  Uint8Buffer encodeResponse(CoapResponse response) {
+  Uint8Buffer encodeResponse(final CoapResponse response) {
     final writer = CoapDatagramWriter();
     serialize(writer, response, response.code);
     return writer.toByteArray();
   }
 
   @override
-  Uint8Buffer encodeEmpty(CoapEmptyMessage message) {
+  Uint8Buffer encodeEmpty(final CoapEmptyMessage message) {
     final writer = CoapDatagramWriter();
     serialize(writer, message, CoapCode.empty);
     return writer.toByteArray();
   }
 
   @override
-  Uint8Buffer? encodeMessage(CoapMessage message) {
+  Uint8Buffer? encodeMessage(final CoapMessage message) {
     if (message.isRequest) {
       return encodeRequest(message as CoapRequest);
     } else if (message.isResponse) {
@@ -57,5 +57,9 @@ abstract class CoapMessageEncoder implements CoapIMessageEncoder {
   }
 
   /// Serializes a message.
-  void serialize(CoapDatagramWriter writer, CoapMessage message, int code);
+  void serialize(
+    final CoapDatagramWriter writer,
+    final CoapMessage message,
+    final int code,
+  );
 }

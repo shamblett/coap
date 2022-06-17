@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_classes_with_only_static_members
+
 /*
  * Package : Coap
  * Author : S. Hamblett <steve.hamblett@linux.com>
@@ -30,7 +32,7 @@ class CoapMediaType {
     applicationCwt: <String>['application/cwt'],
     applicationMultipartCore: <String>['application/multipart-core'],
     applicationCborSeq: <String>['application/cbor-seq'],
-    // TODO: Add application/cose Content Formats
+    // FIXME: Add application/cose Content Formats
     applicationCoseKey: <String>['application/cose-key', 'cbor'],
     applicationCoseKeySet: <String>['application/cose-key-set', 'cbor'],
     applicationSenmlJson: <String>['application/senml+json', 'senml'],
@@ -44,7 +46,7 @@ class CoapMediaType {
     applicationMissingBlocksCborSeq: <String>[
       'application/missing-blocks+cbor-seq'
     ],
-    // TODO: Add application/pkcs7-mime Content Formats
+    // FIXME: Add application/pkcs7-mime Content Formats
     applicationPkcs8: <String>['application/pkcs8'],
     applicationCsrattrs: <String>['application/csrattrs'],
     applicationPkcs10: <String>['application/pkcs10'],
@@ -194,11 +196,11 @@ class CoapMediaType {
 
   /// Checks whether the given media type is a type of image.
   /// True iff the media type is a type of image.
-  static bool isImage(int mediaType) =>
+  static bool isImage(final int mediaType) =>
       mediaType >= imageGif && mediaType <= imagePng;
 
   /// Is the media type printable
-  static bool isPrintable(int? mediaType) {
+  static bool isPrintable(final int? mediaType) {
     switch (mediaType) {
       case textPlain:
       case applicationLinkFormat:
@@ -232,7 +234,7 @@ class CoapMediaType {
   ///
   /// Returns 'application/octet-stream' as the default if the [mediaType] code
   /// is unknown.
-  static String name(int mediaType) {
+  static String name(final int mediaType) {
     if (_registry.containsKey(mediaType)) {
       return _registry[mediaType]![0];
     } else {
@@ -243,7 +245,7 @@ class CoapMediaType {
   /// Gets the file extension of the given media type.
   ///
   /// Returns 'undefined' if the [mediaType] cannot be resolved.
-  static String fileExtension(int mediaType) {
+  static String fileExtension(final int mediaType) {
     if (_registry.containsKey(mediaType) && _registry[mediaType]!.length > 1) {
       return _registry[mediaType]![1];
     }
@@ -253,7 +255,10 @@ class CoapMediaType {
 
   /// Negotiation content
   static int negotiationContent(
-      int defaultContentType, List<int> supported, List<CoapOption>? accepted) {
+    final int defaultContentType,
+    final List<int> supported,
+    final List<CoapOption>? accepted,
+  ) {
     if (accepted == null) {
       return defaultContentType;
     }
@@ -270,19 +275,20 @@ class CoapMediaType {
   }
 
   /// Parse
-  static int? parse(String type) =>
-      _registry.keys.firstWhereOrNull((int key) =>
-          _registry[key]![0].toLowerCase() == type.toLowerCase()) ??
+  static int? parse(final String type) =>
+      _registry.keys.firstWhereOrNull(
+        (final key) => _registry[key]![0].toLowerCase() == type.toLowerCase(),
+      ) ??
       CoapMediaType.undefined;
 
   /// Wildcard parse
-  static List<int>? parseWildcard(String? regex) {
+  static List<int>? parseWildcard(final String? regex) {
     if (regex == null) {
       return null;
     }
-    final r = RegExp(regex.substring(0, regex.indexOf('*')).trim() + '.*');
+    final r = RegExp('${regex.substring(0, regex.indexOf('*')).trim()}.*');
     return _registry.keys
-        .where((int key) => r.hasMatch(_registry[key]![0]))
+        .where((final key) => r.hasMatch(_registry[key]![0]))
         .toList();
   }
 }

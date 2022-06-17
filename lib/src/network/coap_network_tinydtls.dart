@@ -11,46 +11,50 @@ import 'package:typed_data/typed_data.dart';
 import '../event/coap_event_bus.dart';
 import '../net/coap_internet_address.dart';
 import 'coap_inetwork.dart';
-import 'credentials/psk_credentials.dart' as internal;
 import 'credentials/ecdsa_keys.dart' as internal;
+import 'credentials/psk_credentials.dart' as internal;
 
 /// Maps an [internal.PskCredentialsCallback] to one provided by the tinydtls
 /// libary.
 PskCallback? _createTinyDtlsPskCallback(
-    internal.PskCredentialsCallback? coapPskCredentialsCallback) {
+  final internal.PskCredentialsCallback? coapPskCredentialsCallback,
+) {
   if (coapPskCredentialsCallback == null) {
     return null;
   }
 
-  return (String identityHint) {
+  return (final identityHint) {
     final pskCredentials = coapPskCredentialsCallback(identityHint);
 
     return PskCredentials(
-        identity: pskCredentials.identity,
-        preSharedKey: pskCredentials.preSharedKey);
+      identity: pskCredentials.identity,
+      preSharedKey: pskCredentials.preSharedKey,
+    );
   };
 }
 
 /// Maps an [internal.EcdsaCurve] to one provided by the tinydtls
 /// libary.
-EcdsaCurve _mapEcdsaCurve(internal.EcdsaCurve ecdsaCurve) {
+EcdsaCurve _mapEcdsaCurve(final internal.EcdsaCurve ecdsaCurve) {
   switch (ecdsaCurve) {
     case internal.EcdsaCurve.secp256r1:
       return EcdsaCurve.secp256r1;
   }
 }
 
-EcdsaKeys? _createTinyDtlsEcdsaKeys(internal.EcdsaKeys? coapEcdsaKeys) {
+EcdsaKeys? _createTinyDtlsEcdsaKeys(final internal.EcdsaKeys? coapEcdsaKeys) {
   if (coapEcdsaKeys == null) {
     return null;
   }
 
   final ecdsaCurve = _mapEcdsaCurve(coapEcdsaKeys.ecdsaCurve);
 
-  return EcdsaKeys(ecdsaCurve,
-      privateKey: coapEcdsaKeys.privateKey,
-      publicKeyX: coapEcdsaKeys.publicKeyX,
-      publicKeyY: coapEcdsaKeys.publicKeyY);
+  return EcdsaKeys(
+    ecdsaCurve,
+    privateKey: coapEcdsaKeys.privateKey,
+    publicKeyX: coapEcdsaKeys.publicKeyX,
+    publicKeyY: coapEcdsaKeys.publicKeyY,
+  );
 }
 
 /// DTLS network using dart_tinydtls
@@ -65,11 +69,14 @@ class CoapNetworkTinyDtls implements CoapINetwork {
   ///
   /// An optional [_tinyDtlsInstance] object can be passed in case
   /// [TinyDTLS] should not be available at the default locations.
-  CoapNetworkTinyDtls(this.address, this.port, this._tinyDtlsInstance,
-      {String namespace = '',
-      internal.PskCredentialsCallback? pskCredentialsCallback,
-      internal.EcdsaKeys? ecdsaKeys})
-      : _tinydtlsPskCallback =
+  CoapNetworkTinyDtls(
+    this.address,
+    this.port,
+    this._tinyDtlsInstance, {
+    final String namespace = '',
+    final internal.PskCredentialsCallback? pskCredentialsCallback,
+    final internal.EcdsaKeys? ecdsaKeys,
+  })  : _tinydtlsPskCallback =
             _createTinyDtlsPskCallback(pskCredentialsCallback),
         _ecdsaKeys = _createTinyDtlsEcdsaKeys(ecdsaKeys),
         _eventBus = CoapEventBus(namespace: namespace);
@@ -106,7 +113,10 @@ class CoapNetworkTinyDtls implements CoapINetwork {
   }
 
   @override
-  Future<int> send(Uint8Buffer data, [CoapInternetAddress? address]) async {
+  Future<int> send(
+    final Uint8Buffer data, [
+    final CoapInternetAddress? address,
+  ]) async {
     if (_connection?.connected != true) {
       _bound = false;
       await bind();
@@ -119,7 +129,7 @@ class CoapNetworkTinyDtls implements CoapINetwork {
 
   @override
   void receive() {
-    _connection?.listen((datagram) {
+    _connection?.listen((final datagram) {
       final buff = Uint8Buffer();
       if (datagram.data.isNotEmpty) {
         buff.addAll(datagram.data.toList());
@@ -141,8 +151,12 @@ class CoapNetworkTinyDtls implements CoapINetwork {
     final bindAddress = address.bind;
     _dtlsClient ??=
         await DtlsClient.bind(bindAddress, 0, tinyDtls: _tinyDtlsInstance);
-    _connection = await _dtlsClient!.connect(address.address, port,
-        pskCallback: _tinydtlsPskCallback, ecdsaKeys: _ecdsaKeys);
+    _connection = await _dtlsClient!.connect(
+      address.address,
+      port,
+      pskCallback: _tinydtlsPskCallback,
+      ecdsaKeys: _ecdsaKeys,
+    );
     _checkConnectionStatus();
     receive();
     _bound = true;

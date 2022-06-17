@@ -74,21 +74,21 @@ abstract class CoapIResource {
   Iterable<CoapIResource>? get children => _children;
 
   /// Adds the specified resource as child.
-  void add(CoapIResource child);
+  void add(final CoapIResource child);
 
   /// Removes the the specified child.
   /// Returns true if the child was found, otherwise false
-  bool remove(CoapIResource child);
+  bool remove(final CoapIResource child);
 
   /// Gets the child with the specified name.
-  CoapIResource getChild(String name);
+  CoapIResource getChild(final String name);
 
   /// Adds the specified CoAP observe relation.
-  void addObserveRelation(CoapObserveRelation relation);
+  void addObserveRelation(final CoapObserveRelation relation);
 
   /// Removes the specified CoAP observe relation.
-  void removeObserveRelation(CoapObserveRelation relation);
+  void removeObserveRelation(final CoapObserveRelation relation);
 
   /// Handles the request from the specified exchange.
-  void handleRequest(CoapExchange? exchange);
+  void handleRequest(final CoapExchange? exchange);
 }

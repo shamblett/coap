@@ -17,7 +17,7 @@ import 'coap_token_layer.dart';
 /// that process the CoAP protocol.
 class CoapStack extends CoapLayerStack {
   /// Instantiates.
-  CoapStack(DefaultCoapConfig config) {
+  CoapStack(final DefaultCoapConfig config) {
     addLast('Observe', CoapObserveLayer(config));
     addLast('Blockwise', CoapBlockwiseLayer(config));
     addLast('Token', CoapTokenLayer(config));
@@ -29,7 +29,7 @@ class CoapStack extends CoapLayerStack {
   /// The IExecutor for all layers.
   CoapIExecutor? get executor => _executor;
 
-  set executor(CoapIExecutor? value) {
+  set executor(final CoapIExecutor? value) {
     for (final entry in getAll()) {
       entry.filter.executor = value;
     }

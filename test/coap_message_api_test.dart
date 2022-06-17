@@ -1,5 +1,3 @@
-// ignore_for_file: invalid_use_of_protected_member
-
 /*
  * Package : Coap
  * Author : S. Hamblett <steve.hamblett@linux.com>
@@ -8,13 +6,12 @@
  */
 
 import 'package:coap/coap.dart';
-import 'package:coap/config/coap_config_default.dart';
 import 'package:coap/src/coap_message.dart';
 import 'package:coap/src/event/coap_event_bus.dart';
 import 'package:test/test.dart';
 
-// Note that nnot all API methods are tested here, some are tested in other unit test suites,
-// some in dynamic testing.
+// Note that not all API methods are tested here, some are tested in other unit
+// test suites, some in dynamic testing.
 void main() {
   // ignore: unused_local_variable
   final DefaultCoapConfig conf = CoapConfigDefault();
@@ -50,10 +47,14 @@ void main() {
   test('Options', () {
     final message = CoapMessage();
     final opt1 = CoapOption(OptionType.uriHost);
-    expect(() => CoapOption.create(9000),
-        throwsA(TypeMatcher<UnknownElectiveOptionException>()));
-    expect(() => CoapOption.create(9001),
-        throwsA(TypeMatcher<UnknownCriticalOptionException>()));
+    expect(
+      () => CoapOption.create(9000),
+      throwsA(const TypeMatcher<UnknownElectiveOptionException>()),
+    );
+    expect(
+      () => CoapOption.create(9001),
+      throwsA(const TypeMatcher<UnknownCriticalOptionException>()),
+    );
     final options = <CoapOption>[
       opt1,
     ];
@@ -67,7 +68,9 @@ void main() {
     expect(message.optionMap.length, 1);
     expect(message.getOptions(OptionType.uriHost)!.length, 1);
     expect(
-        message.getFirstOption(OptionType.uriHost)!.type, OptionType.uriHost);
+      message.getFirstOption(OptionType.uriHost)!.type,
+      OptionType.uriHost,
+    );
     expect(message.getFirstOption(OptionType.uriPort), isNull);
     expect(message.hasOption(OptionType.uriHost), isTrue);
     expect(message.hasOption(OptionType.uriPort), isFalse);
@@ -105,23 +108,22 @@ void main() {
       acked = true;
     }
 
-    final message = CoapMessage();
-    message.isAcknowledged = true;
+    final message = CoapMessage()..isAcknowledged = true;
     expect(message.isAcknowledged, isTrue);
     expect(acked, isFalse);
     final eventBus = CoapEventBus(namespace: '');
     expect(eventBus.lastEvent is CoapAcknowledgedEvent, isTrue);
     eventBus.lastEvent = null;
-    message.acknowledgedHook = ackHook;
-    message.isAcknowledged = false;
+    message
+      ..acknowledgedHook = ackHook
+      ..isAcknowledged = false;
     expect(message.isAcknowledged, isFalse);
     expect(acked, isTrue);
     expect(eventBus.lastEvent is CoapAcknowledgedEvent, isTrue);
   });
 
   test('Rejected', () {
-    final message = CoapMessage();
-    message.isRejected = true;
+    final message = CoapMessage()..isRejected = true;
     expect(message.isRejected, isTrue);
     final eventBus = CoapEventBus(namespace: '');
     expect(eventBus.lastEvent is CoapRejectedEvent, isTrue);
@@ -133,15 +135,15 @@ void main() {
       timedOut = true;
     }
 
-    final message = CoapMessage();
-    message.isTimedOut = true;
+    final message = CoapMessage()..isTimedOut = true;
     expect(message.isTimedOut, isTrue);
     expect(timedOut, isFalse);
     final eventBus = CoapEventBus(namespace: '');
     expect(eventBus.lastEvent is CoapTimedOutEvent, isTrue);
     eventBus.lastEvent = null;
-    message.timedOutHook = toHook;
-    message.isTimedOut = false;
+    message
+      ..timedOutHook = toHook
+      ..isTimedOut = false;
     expect(message.isTimedOut, isFalse);
     expect(timedOut, isTrue);
     expect(eventBus.lastEvent is CoapTimedOutEvent, isTrue);
@@ -156,14 +158,14 @@ void main() {
 
     message.fireRetransmitting();
     expect(retrans, isFalse);
-    message.retransmittingHook = retransHook;
-    message.fireRetransmitting();
+    message
+      ..retransmittingHook = retransHook
+      ..fireRetransmitting();
     expect(retrans, isTrue);
   });
 
   test('Payload', () {
-    final message = CoapMessage();
-    message.setPayload('This is the payload');
+    final message = CoapMessage()..setPayload('This is the payload');
     expect(message.payload, isNotNull);
     expect(message.payloadString, 'This is the payload');
     expect(message.payloadSize, 19);
@@ -185,8 +187,7 @@ void main() {
     expect(message.ifMatches.length, 0);
     final opt1 = CoapOption(OptionType.uriHost);
     expect(() => message.removeIfMatch(opt1), throwsArgumentError);
-    final opt2 = CoapOption(OptionType.ifMatch);
-    opt2.stringValue = 'ETag-3';
+    final opt2 = CoapOption(OptionType.ifMatch)..stringValue = 'ETag-3';
     message.addOption(opt2);
     expect(message.ifMatches.length, 1);
     message.removeIfMatch(opt2);
@@ -197,10 +198,8 @@ void main() {
     final message = CoapMessage();
     expect(message.etags.length, 0);
     final none = CoapOption(OptionType.ifMatch);
-    final etag1 = CoapOption(OptionType.eTag);
-    etag1.stringValue = 'Etag-1';
-    final etag2 = CoapOption(OptionType.eTag);
-    etag2.stringValue = 'Etag-2';
+    final etag1 = CoapOption(OptionType.eTag)..stringValue = 'Etag-1';
+    final etag2 = CoapOption(OptionType.eTag)..stringValue = 'Etag-2';
     expect(() => message.addEtag(none), throwsArgumentError);
     message.addEtag(etag1);
     expect(message.etags.length, 1);
@@ -223,17 +222,14 @@ void main() {
     final message = CoapMessage();
     expect(message.ifNoneMatches.length, 0);
     final none = CoapOption(OptionType.ifMatch);
-    final inm1 = CoapOption(OptionType.ifNoneMatch);
-    inm1.stringValue = 'Inm1';
-    final inm2 = CoapOption(OptionType.ifNoneMatch);
-    inm2.stringValue = 'Inm2';
+    final inm1 = CoapOption(OptionType.ifNoneMatch)..stringValue = 'Inm1';
+    final inm2 = CoapOption(OptionType.ifNoneMatch)..stringValue = 'Inm2';
     message
       ..addIfNoneMatch(inm1)
       ..addIfNoneMatch(inm2);
     expect(message.ifNoneMatches.length, 2);
     expect(() => message.addIfNoneMatch(none), throwsArgumentError);
-    final inm3 = CoapOption(OptionType.ifNoneMatch);
-    inm3.stringValue = 'Inm3';
+    final inm3 = CoapOption(OptionType.ifNoneMatch)..stringValue = 'Inm3';
     message.addIfNoneMatchOpaque(inm3.byteValue);
     expect(message.ifNoneMatches.length, 3);
     message.removeIfNoneMatchOpaque(inm2.byteValue);
@@ -253,11 +249,8 @@ void main() {
     expect(message.uriPaths.length, 4);
     expect(message.uriPathsString, 'a/uri/path/longer');
     expect(() => message.addUriPath(null), throwsArgumentError);
-    const tolong =
-        'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn'
-        'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
-        'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn';
-    expect(() => message.addUriPath(tolong), throwsArgumentError);
+    final tooLong = 'n' * 1000;
+    expect(() => message.addUriPath(tooLong), throwsArgumentError);
     message.removeUriPath('path');
     expect(message.uriPaths.length, 3);
     expect(message.uriPathsString, 'a/uri/longer');
@@ -276,11 +269,8 @@ void main() {
     expect(message.uriQueries.length, 4);
     expect(message.uriQueriesString, '?a&uri=1&query=2&longer=3');
     expect(() => message.addUriQuery(null), throwsArgumentError);
-    const tolong =
-        'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn'
-        'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
-        'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn';
-    expect(() => message.addUriQuery(tolong), throwsArgumentError);
+    final tooLong = 'n' * 1000;
+    expect(() => message.addUriQuery(tooLong), throwsArgumentError);
     message.removeUriQuery('query=2');
     expect(message.uriQueries.length, 3);
     expect(message.uriQueriesString, '?a&uri=1&longer=3');
@@ -291,20 +281,16 @@ void main() {
   test('Location path', () {
     final message = CoapMessage();
     expect(message.locationPaths.length, 0);
-    message.locationPath = 'a/location/path/';
+    message.locationPathsString = 'a/location/path/';
     expect(message.locationPaths.length, 3);
     expect(message.locationPathsString, 'a/location/path');
-    expect(() => message.locationPath = '..', throwsArgumentError);
-    expect(() => message.locationPath = '.', throwsArgumentError);
+    expect(() => message.locationPathsString = '..', throwsArgumentError);
+    expect(() => message.locationPathsString = '.', throwsArgumentError);
     message.addLocationPath('longer');
     expect(message.locationPaths.length, 4);
     expect(message.locationPathsString, 'a/location/path/longer');
-    expect(() => message.addLocationPath(null), throwsArgumentError);
-    const tolong =
-        'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn'
-        'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
-        'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn';
-    expect(() => message.addLocationPath(tolong), throwsArgumentError);
+    final tooLong = 'n' * 1000;
+    expect(() => message.addLocationPath(tooLong), throwsArgumentError);
     message.removelocationPath('path');
     expect(message.locationPaths.length, 3);
     expect(message.locationPathsString, 'a/location/longer');
@@ -322,12 +308,8 @@ void main() {
     message.addLocationQuery('longer=3');
     expect(message.locationQueries.length, 4);
     expect(message.locationQueriesString, '?a&uri=1&query=2&longer=3');
-    expect(() => message.addLocationQuery(null), throwsArgumentError);
-    const tolong =
-        'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn'
-        'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
-        'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn';
-    expect(() => message.addLocationQuery(tolong), throwsArgumentError);
+    final tooLong = 'n' * 1000;
+    expect(() => message.addLocationQuery(tooLong), throwsArgumentError);
     message.removeLocationQuery('query=2');
     expect(message.locationQueries.length, 3);
     expect(message.locationQueriesString, '?a&uri=1&longer=3');

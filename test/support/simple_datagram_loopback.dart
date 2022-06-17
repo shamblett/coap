@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -8,9 +10,10 @@ Future<void> sleep() =>
 Future<void> main() async {
   /// Create and bind to the first(and only!) IPV6 loopback interface
   final interfaces = await NetworkInterface.list(
-      includeLoopback: true,
-      includeLinkLocal: true,
-      type: InternetAddressType.IPv4);
+    includeLoopback: true,
+    includeLinkLocal: true,
+    type: InternetAddressType.IPv4,
+  );
   print(interfaces);
   InternetAddress? loopbackAddress;
   for (final interface in interfaces) {
@@ -27,7 +30,7 @@ Future<void> main() async {
   final theSocket = await RawDatagramSocket.bind(loopbackAddress, 5683);
   print('Datagram socket ready to receive');
   print('${theSocket.address.address}:${theSocket.port}');
-  theSocket.listen((RawSocketEvent e) {
+  theSocket.listen((final e) {
     final d = theSocket.receive();
     if (d == null) {
       return;
@@ -41,7 +44,10 @@ Future<void> main() async {
   const message = 'Hello from client';
   for (var count = 0; count <= 9; count++) {
     final sent = theSocket.send(
-        const Utf8Codec().encode(message), loopbackAddress!, 5683);
+      const Utf8Codec().encode(message),
+      loopbackAddress!,
+      5683,
+    );
     if (sent != message.length) {
       print('Boo, we didnt send 4 ints, we sent $sent');
     } else {

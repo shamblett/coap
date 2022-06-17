@@ -83,7 +83,7 @@ class CoapExchange {
   /// Timed out
   bool get timedOut => _timedOut;
 
-  set timedOut(bool value) {
+  set timedOut(final bool value) {
     _timedOut = value;
     if (value) {
       complete = true;
@@ -95,7 +95,7 @@ class CoapExchange {
   /// Complete
   bool get complete => _complete;
 
-  set complete(bool value) {
+  set complete(final bool value) {
     _complete = value;
     if (value) {
       _eventBus.fire(CoapCompletedEvent(this));
@@ -107,7 +107,7 @@ class CoapExchange {
   /// Outbox
   CoapIOutbox? get outbox => _outbox ?? endpoint?.outbox;
 
-  set outbox(CoapIOutbox? value) => _outbox = value;
+  set outbox(final CoapIOutbox? value) => _outbox = value;
 
   /// Reject this exchange and therefore the request.
   /// Sends an RST back to the client.
@@ -132,34 +132,34 @@ class CoapExchange {
 
   /// Sends the specified response over the same endpoint
   /// as the request has arrived.
-  void sendResponse(CoapResponse resp) {
+  void sendResponse(final CoapResponse resp) {
     resp.destination = request!.source;
     response = resp;
     endpoint!.sendEpResponse(this, resp);
   }
 
   /// Fire the reregistering event
-  void fireReregistering(CoapRequest req) {
+  void fireReregistering(final CoapRequest req) {
     _eventBus.fire(CoapReregisteringEvent(req));
   }
 
   /// Fire the responding event
-  void fireResponding(CoapResponse resp) {
+  void fireResponding(final CoapResponse resp) {
     _eventBus.fire(CoapRespondingEvent(resp));
   }
 
   // Fire the respond event
-  void fireRespond(CoapResponse resp) {
+  void fireRespond(final CoapResponse resp) {
     // block1 requests only have token set on their blocks
     request!.token ??= currentRequest!.token;
     _eventBus.fire(CoapRespondEvent(resp));
   }
 
   /// Attributes
-  T? get<T>(Object key) => _attributes[key] as T?;
+  T? get<T>(final Object key) => _attributes[key] as T?;
 
   /// Get or add an attribute
-  T? getOrAdd<T>(Object key, Object value) {
+  T? getOrAdd<T>(final Object key, final Object value) {
     if (!_attributes.containsKey(key)) {
       _attributes[key] = value;
     }
@@ -167,7 +167,7 @@ class CoapExchange {
   }
 
   /// Set an attribute
-  T? set<T>(Object key, Object value) {
+  T? set<T>(final Object key, final Object value) {
     Object? oldValue;
     if (_attributes.containsKey(key)) {
       oldValue = _attributes[key];
@@ -177,5 +177,5 @@ class CoapExchange {
   }
 
   /// Remove
-  Object? remove(Object key) => _attributes.remove(key);
+  Object? remove(final Object key) => _attributes.remove(key);
 }

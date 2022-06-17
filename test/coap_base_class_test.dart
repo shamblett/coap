@@ -5,8 +5,6 @@
  * Copyright :  S.Hamblett
  */
 import 'package:coap/coap.dart';
-import 'package:coap/config/coap_config_all.dart';
-import 'package:coap/config/coap_config_default.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -31,21 +29,30 @@ void main() {
       final accepted = <CoapOption>[];
       final opt1 = CoapOption.createVal(OptionType.maxAge, 10);
       final opt2 = CoapOption.createVal(OptionType.contentFormat, 5);
-      accepted.add(opt1);
-      accepted.add(opt2);
+      accepted
+        ..add(opt1)
+        ..add(opt2);
       expect(
-          CoapMediaType.negotiationContent(
-              defaultContentType, supported, accepted),
-          5);
+        CoapMediaType.negotiationContent(
+          defaultContentType,
+          supported,
+          accepted,
+        ),
+        5,
+      );
       opt2.intValue = 67;
       expect(
-          CoapMediaType.negotiationContent(
-              defaultContentType, supported, accepted),
-          CoapMediaType.undefined);
+        CoapMediaType.negotiationContent(
+          defaultContentType,
+          supported,
+          accepted,
+        ),
+        CoapMediaType.undefined,
+      );
     });
 
     test('Parse', () {
-      var res = CoapMediaType.parse('application/xml');
+      final res = CoapMediaType.parse('application/xml');
       expect(res, CoapMediaType.applicationXml);
     });
 

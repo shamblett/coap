@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_classes_with_only_static_members
+
 /*
  * Package : Coap
  * Author : S. Hamblett <steve.hamblett@linux.com>
@@ -109,30 +111,30 @@ class CoapCode {
   static const int proxyingNotSupported = 165;
 
   /// Gets the response class
-  static int getResponseClass(int code) => code >> 5 & 0x7;
+  static int getResponseClass(final int code) => code >> 5 & 0x7;
 
   /// Checks whether a code indicates a request
   /// Returns true iff the code indicates a request
-  static bool isRequest(int code) => (code >= 1) && (code <= 31);
+  static bool isRequest(final int code) => (code >= 1) && (code <= 31);
 
   /// Checks whether a code indicates a response
   /// Returns true iff the code indicates a response
-  static bool isResponse(int code) => (code >= 64) && (code <= 191);
+  static bool isResponse(final int code) => (code >= 64) && (code <= 191);
 
   /// Checks whether a code indicates an empty message
   /// Returns true iff the code indicates an empty message
-  static bool isEmpty(int code) => code == 0;
+  static bool isEmpty(final int code) => code == 0;
 
   /// Checks whether a code represents a success code.
-  static bool isSuccess(int code) => code >= 64 && code < 96;
+  static bool isSuccess(final int code) => code >= 64 && code < 96;
 
   /// Checks whether a code is valid
   /// Returns true iff the code is valid
-  static bool isValid(int code) =>
+  static bool isValid(final int code) =>
       (code >= 0) && (code <= 255); // allow unknown custom codes;
 
   /// Returns a string representation of the code
-  static String codeToString(int code) {
+  static String codeToString(final int code) {
     switch (code) {
       case notSet:
         return 'Not Set';

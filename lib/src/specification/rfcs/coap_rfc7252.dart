@@ -57,20 +57,23 @@ class CoapRfc7252 implements CoapISpec {
   CoapIMessageEncoder newMessageEncoder() => CoapMessageEncoderRfc7252();
 
   @override
-  CoapIMessageDecoder newMessageDecoder(Uint8Buffer data) =>
+  CoapIMessageDecoder newMessageDecoder(final Uint8Buffer data) =>
       CoapMessageDecoder18(data);
 
   @override
-  Uint8Buffer? encode(CoapMessage msg) =>
+  Uint8Buffer? encode(final CoapMessage msg) =>
       newMessageEncoder().encodeMessage(msg);
 
   @override
-  CoapMessage? decode(Uint8Buffer bytes) =>
+  CoapMessage? decode(final Uint8Buffer bytes) =>
       newMessageDecoder(bytes).decodeMessage();
 
   /// Calculates the value used in the extended option fields as specified
   /// in RFC 7252, section 3.1.
-  static int getValueFromOptionNibble(int nibble, CoapDatagramReader datagram) {
+  static int getValueFromOptionNibble(
+    final int nibble,
+    final CoapDatagramReader datagram,
+  ) {
     if (nibble < 13) {
       return nibble;
     } else if (nibble == 13) {
@@ -83,7 +86,7 @@ class CoapRfc7252 implements CoapISpec {
   }
 
   /// Returns the 4-bit option header value.
-  static int getOptionNibble(int optionValue) {
+  static int getOptionNibble(final int optionValue) {
     if (optionValue <= 12) {
       return optionValue;
     } else if (optionValue <= 255 + 13) {

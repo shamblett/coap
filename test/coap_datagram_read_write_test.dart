@@ -6,7 +6,6 @@
  */
 
 import 'package:coap/coap.dart';
-import 'package:coap/config/coap_config_default.dart';
 import 'package:coap/src/codec/datagram/coap_datagram_reader.dart';
 import 'package:coap/src/codec/datagram/coap_datagram_writer.dart';
 import 'package:collection/collection.dart';
@@ -21,8 +20,7 @@ void main() {
   test('Test32BitInt', () {
     const intIn = 0x87654321;
 
-    final writer = CoapDatagramWriter();
-    writer.write(intIn, 32);
+    final writer = CoapDatagramWriter()..write(intIn, 32);
 
     final reader = CoapDatagramReader(writer.toByteArray());
     final intOut = reader.read(32);
@@ -32,8 +30,7 @@ void main() {
   test('Test32BitIntZero', () {
     const intIn = 0;
 
-    final writer = CoapDatagramWriter();
-    writer.write(intIn, 32);
+    final writer = CoapDatagramWriter()..write(intIn, 32);
 
     final reader = CoapDatagramReader(writer.toByteArray());
     final intOut = reader.read(32);
@@ -43,8 +40,7 @@ void main() {
   test('Test32BitInt1', () {
     const intIn = 0xFFFFFFFF;
 
-    final writer = CoapDatagramWriter();
-    writer.write(intIn, 32);
+    final writer = CoapDatagramWriter()..write(intIn, 32);
 
     final reader = CoapDatagramReader(writer.toByteArray());
     final intOut = reader.read(32);
@@ -54,8 +50,7 @@ void main() {
   test('Test16BitInt', () {
     const intIn = 0x00004321;
 
-    final writer = CoapDatagramWriter();
-    writer.write(intIn, 16);
+    final writer = CoapDatagramWriter()..write(intIn, 16);
 
     final reader = CoapDatagramReader(writer.toByteArray());
     final intOut = reader.read(16);
@@ -65,8 +60,7 @@ void main() {
   test('Test8BitInt', () {
     const intIn = 0x00000021;
 
-    final writer = CoapDatagramWriter();
-    writer.write(intIn, 8);
+    final writer = CoapDatagramWriter()..write(intIn, 8);
 
     final reader = CoapDatagramReader(writer.toByteArray());
     final intOut = reader.read(8);
@@ -77,8 +71,7 @@ void main() {
   test('Test4BitInt', () {
     const intIn = 0x00000005;
 
-    final writer = CoapDatagramWriter();
-    writer.write(intIn, 4);
+    final writer = CoapDatagramWriter()..write(intIn, 4);
 
     final reader = CoapDatagramReader(writer.toByteArray());
     final intOut = reader.read(4);
@@ -88,8 +81,7 @@ void main() {
   test('Test2BitInt', () {
     const intIn = 0x00000002;
 
-    final writer = CoapDatagramWriter();
-    writer.write(intIn, 2);
+    final writer = CoapDatagramWriter()..write(intIn, 2);
 
     final reader = CoapDatagramReader(writer.toByteArray());
     final intOut = reader.read(2);
@@ -99,8 +91,7 @@ void main() {
   test('Test1BitInt', () {
     const intIn = 0x00000001;
 
-    final writer = CoapDatagramWriter();
-    writer.write(intIn, 1);
+    final writer = CoapDatagramWriter()..write(intIn, 1);
 
     final reader = CoapDatagramReader(writer.toByteArray());
     final intOut = reader.read(1);
@@ -110,8 +101,7 @@ void main() {
   test('TestAlignedBytes', () {
     final bytesIn = typed.Uint8Buffer()..addAll('Some aligned bytes'.codeUnits);
 
-    final writer = CoapDatagramWriter();
-    writer.writeBytes(bytesIn);
+    final writer = CoapDatagramWriter()..writeBytes(bytesIn);
 
     final reader = CoapDatagramReader(writer.toByteArray());
     final bytesOut = reader.readBytesLeft();
@@ -123,9 +113,9 @@ void main() {
     const bitsIn = 0x1;
     final bytesIn = typed.Uint8Buffer()..addAll('Some aligned bytes'.codeUnits);
 
-    final writer = CoapDatagramWriter();
-    writer.write(bitsIn, bitCount);
-    writer.writeBytes(bytesIn);
+    final writer = CoapDatagramWriter()
+      ..write(bitsIn, bitCount)
+      ..writeBytes(bytesIn);
 
     final reader = CoapDatagramReader(writer.toByteArray());
     final bitsOut = reader.read(bitCount);
@@ -139,9 +129,9 @@ void main() {
     const bitsIn = 0x5;
     final bytesIn = typed.Uint8Buffer()..addAll('Some aligned bytes'.codeUnits);
 
-    final writer = CoapDatagramWriter();
-    writer.write(bitsIn, bitCount);
-    writer.writeBytes(bytesIn);
+    final writer = CoapDatagramWriter()
+      ..write(bitsIn, bitCount)
+      ..writeBytes(bytesIn);
 
     final reader = CoapDatagramReader(writer.toByteArray());
     final bitsOut = reader.read(bitCount);
@@ -155,9 +145,9 @@ void main() {
     const bitsIn = 0x69;
     final bytesIn = typed.Uint8Buffer()..addAll('Some aligned bytes'.codeUnits);
 
-    final writer = CoapDatagramWriter();
-    writer.write(bitsIn, bitCount);
-    writer.writeBytes(bytesIn);
+    final writer = CoapDatagramWriter()
+      ..write(bitsIn, bitCount)
+      ..writeBytes(bytesIn);
 
     final reader = CoapDatagramReader(writer.toByteArray());
     final bitsOut = reader.read(bitCount);
@@ -171,9 +161,9 @@ void main() {
     const bitsIn = 0xaa;
     final bytesIn = typed.Uint8Buffer()..addAll('Some aligned bytes'.codeUnits);
 
-    final writer = CoapDatagramWriter();
-    writer.write(bitsIn, bitCount);
-    writer.writeBytes(bytesIn);
+    final writer = CoapDatagramWriter()
+      ..write(bitsIn, bitCount)
+      ..writeBytes(bytesIn);
 
     final reader = CoapDatagramReader(writer.toByteArray());
     final bitsOut = reader.read(bitCount);
@@ -187,9 +177,9 @@ void main() {
     const bitsIn = 0x55;
     final bytesIn = typed.Uint8Buffer()..addAll('Some aligned bytes'.codeUnits);
 
-    final writer = CoapDatagramWriter();
-    writer.write(bitsIn, bitCount);
-    writer.writeBytes(bytesIn);
+    final writer = CoapDatagramWriter()
+      ..write(bitsIn, bitCount)
+      ..writeBytes(bytesIn);
 
     final reader = CoapDatagramReader(writer.toByteArray());
     final bitsOut = reader.read(bitCount);
@@ -210,12 +200,12 @@ void main() {
     const msgIdIn = 0x1234;
     const msgIdSz = 16;
 
-    final writer = CoapDatagramWriter();
-    writer.write(versionIn, versionSz);
-    writer.write(typeIn, typeSz);
-    writer.write(optionCntIn, optionCntSz);
-    writer.write(codeIn, codeSz);
-    writer.write(msgIdIn, msgIdSz);
+    final writer = CoapDatagramWriter()
+      ..write(versionIn, versionSz)
+      ..write(typeIn, typeSz)
+      ..write(optionCntIn, optionCntSz)
+      ..write(codeIn, codeSz)
+      ..write(msgIdIn, msgIdSz);
 
     final data = writer.toByteArray();
     final dataRef = typed.Uint8Buffer()..addAll(<int>[0x41, 0x01, 0x12, 0x34]);

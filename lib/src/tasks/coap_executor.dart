@@ -15,9 +15,7 @@ class CoapExecutor implements CoapIExecutor {
   Executor executor = Executor(concurrency: 10);
 
   @override
-  void start(Action task) {
-    executor.scheduleTask(() {
-      task();
-    });
+  void start(final Action task) {
+    executor.scheduleTask(task);
   }
 }

@@ -23,10 +23,11 @@ import 'net/coap_iendpoint.dart';
 class CoapRequest extends CoapMessage {
   /// Initializes a request message.
   /// Defaults to confirmable
-  CoapRequest(int code, {bool confirmable = true})
+  CoapRequest(final int code, {final bool confirmable = true})
       : super(
-            code: code,
-            type: confirmable ? CoapMessageType.con : CoapMessageType.non);
+          code: code,
+          type: confirmable ? CoapMessageType.con : CoapMessageType.non,
+        );
 
   /// The request method(code)
   int get method => super.code;
@@ -47,14 +48,15 @@ class CoapRequest extends CoapMessage {
 
   /// The URI of this CoAP message.
   Uri get uri => _uri ??= Uri(
-      scheme: CoapConstants.uriScheme,
-      host: uriHost ?? 'localhost',
-      port: uriPort,
-      path: uriPath,
-      query: uriQuery);
+        scheme: CoapConstants.uriScheme,
+        host: uriHost ?? 'localhost',
+        port: uriPort,
+        path: uriPath,
+        query: uriQuery,
+      );
 
-  @protected
-  set uri(Uri value) {
+  @internal
+  set uri(final Uri value) {
     final host = value.host;
     var port = value.port;
     if (host.isNotEmpty &&
@@ -85,10 +87,10 @@ class CoapRequest extends CoapMessage {
   CoapIEndPoint? _endpoint;
 
   /// The endpoint for this request
-  @protected
+  @internal
   CoapIEndPoint? get endpoint => _endpoint;
-  @protected
-  set endpoint(CoapIEndPoint? endpoint) {
+  @internal
+  set endpoint(final CoapIEndPoint? endpoint) {
     super.id = endpoint!.nextMessageId;
     super.destination = endpoint.destination;
     _endpoint = endpoint;
@@ -98,14 +100,22 @@ class CoapRequest extends CoapMessage {
   String toString() => '\n<<< Request Message >>>${super.toString()}';
 
   /// Construct a GET request.
-  static CoapRequest newGet() => CoapRequest(CoapCode.methodGET);
+  CoapRequest.newGet() {
+    code = CoapCode.methodGET;
+  }
 
   /// Construct a POST request.
-  static CoapRequest newPost() => CoapRequest(CoapCode.methodPOST);
+  CoapRequest.newPost() {
+    code = CoapCode.methodPOST;
+  }
 
   /// Construct a PUT request.
-  static CoapRequest newPut() => CoapRequest(CoapCode.methodPUT);
+  CoapRequest.newPut() {
+    code = CoapCode.methodPUT;
+  }
 
   /// Construct a DELETE request.
-  static CoapRequest newDelete() => CoapRequest(CoapCode.methodDELETE);
+  CoapRequest.newDelete() {
+    code = CoapCode.methodDELETE;
+  }
 }

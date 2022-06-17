@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 /*
  * Package : Coap
  * Author : S. Hamblett <steve.hamblett@linux.com>,
@@ -18,21 +20,20 @@ import 'package:coap/coap.dart';
 final pskCredentials =
     PskCredentials(identity: 'Client_identity', preSharedKey: 'secretPSK');
 
-PskCredentials pskCredentialsCallback(String indentity) {
-  return pskCredentials;
-}
+PskCredentials pskCredentialsCallback(final String indentity) => pskCredentials;
 
 class DtlsConfig extends DefaultCoapConfig {
   @override
   final dtlsBackend = DtlsBackend.TinyDtls;
 }
 
-FutureOr<void> main(List<String> args) async {
+FutureOr<void> main(final List<String> args) async {
   final conf = DtlsConfig();
   final uri = Uri(
-      scheme: 'coaps',
-      host: 'californium.eclipseprojects.io',
-      port: conf.defaultSecurePort);
+    scheme: 'coaps',
+    host: 'californium.eclipseprojects.io',
+    port: conf.defaultSecurePort,
+  );
   final client =
       CoapClient(uri, conf, pskCredentialsCallback: pskCredentialsCallback);
 
@@ -49,7 +50,7 @@ FutureOr<void> main(List<String> args) async {
     response =
         await client.get('multi-format', accept: CoapMediaType.applicationXml);
     print('/multi-format (xml) response: ${response.payloadString}');
-  } catch (e) {
+  } on Exception catch (e) {
     print('CoAP encountered an exception: $e');
   }
 

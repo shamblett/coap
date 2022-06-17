@@ -14,13 +14,16 @@ import 'coap_exchange.dart';
 abstract class CoapIOutbox {
   /// Sends the specified request over the connector that the
   /// stack is connected to.
-  void sendRequest(CoapExchange exchange, CoapRequest request);
+  void sendRequest(final CoapExchange exchange, final CoapRequest request);
 
   /// Sends the specified response over the connector that the
   /// stack is connected to.
-  void sendResponse(CoapExchange exchange, CoapResponse response);
+  void sendResponse(final CoapExchange exchange, final CoapResponse response);
 
   /// Sends the specified empty message over the connector that the
   /// stack is connected to.
-  void sendEmptyMessage(CoapExchange exchange, CoapEmptyMessage message);
+  void sendEmptyMessage(
+    final CoapExchange exchange,
+    final CoapEmptyMessage message,
+  );
 }

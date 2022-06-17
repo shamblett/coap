@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 /*
  * Package : Coap
  * Author : S. Hamblett <steve.hamblett@linux.com>
@@ -11,7 +13,7 @@ import 'dart:async';
 import 'package:coap/coap.dart';
 import 'config/coap_config.dart';
 
-FutureOr main() async {
+FutureOr<void> main() async {
   final conf = CoapConfig();
   final uri = Uri(
     scheme: 'coap',
@@ -24,16 +26,18 @@ FutureOr main() async {
     // Warm up (create socket etc.)
     await client.get('test');
 
-    Stopwatch stopwatch = Stopwatch()..start();
+    final stopwatch = Stopwatch()..start();
 
     print('Sending 10 async requests...');
     final futures = <Future<void>>[];
     for (var i = 0; i < 10; i++) {
-      futures.add(client.get('test').then((resp) {
-        if (resp.code != CoapCode.content) {
-          print('Request failed!');
-        }
-      }));
+      futures.add(
+        client.get('test').then((final resp) {
+          if (resp.code != CoapCode.content) {
+            print('Request failed!');
+          }
+        }),
+      );
     }
 
     // Wait until all requests are done
@@ -52,7 +56,7 @@ FutureOr main() async {
     }
 
     print('10 sync requests took ${stopwatch.elapsedMilliseconds} ms');
-  } catch (e) {
+  } on Exception catch (e) {
     print('CoAP encountered an exception: $e');
   }
 

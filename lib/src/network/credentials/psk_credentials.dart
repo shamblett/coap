@@ -17,7 +17,7 @@ typedef PskCredentialsCallback = PskCredentials Function(String identityHint);
 /// and a [preSharedKey].
 ///
 /// Currently, only the mandatory Cipher Suite `TLS_PSK_WITH_AES_128_CCM_8` is
-/// supported via [tinydtls].
+/// supported via tinydtls.
 class PskCredentials {
   String identity;
 

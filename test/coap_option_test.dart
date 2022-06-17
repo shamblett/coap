@@ -14,8 +14,7 @@ void main() {
     const encoder = Utf8Encoder();
 
     test('Raw', () {
-      final raw = typed.Uint8Buffer(3);
-      raw.addAll(encoder.convert('raw'));
+      final raw = typed.Uint8Buffer(3)..addAll(encoder.convert('raw'));
       final opt = CoapOption.createRaw(OptionType.contentFormat, raw);
       expect(opt.byteValue, raw);
       expect(opt.type, OptionType.contentFormat);
@@ -24,8 +23,8 @@ void main() {
     test('IntValue', () {
       const oneByteValue = 255;
       const twoByteValue = oneByteValue + 1;
-      final fourByteValue = (1 << 32) - 1;
-      final fiveByteValue = fourByteValue + 1;
+      const fourByteValue = (1 << 32) - 1;
+      const fiveByteValue = fourByteValue + 1;
       final opt1 = CoapOption.createVal(OptionType.contentFormat, oneByteValue);
       final opt2 = CoapOption.createVal(OptionType.contentFormat, twoByteValue);
       final opt3 =
@@ -97,9 +96,7 @@ void main() {
     });
 
     test('Set string value', () {
-      final option = CoapOption.create(11);
-
-      option.stringValue = '';
+      final option = CoapOption.create(11)..stringValue = '';
       expect(option.length, 0);
 
       option.stringValue = 'CoAP.NET';
@@ -107,9 +104,7 @@ void main() {
     });
 
     test('Set int value', () {
-      final option = CoapOption.create(12);
-
-      option.intValue = 0;
+      final option = CoapOption.create(12)..intValue = 0;
       expect(option.byteValue[0], 0);
 
       option.intValue = 11;
@@ -143,6 +138,7 @@ void main() {
       expect(option.byteValue[2], 0xFF);
       expect(option.byteValue[3], 0xFF);
 
+      // ignore: avoid_js_rounded_ints
       option.intValue = 0x9823749837239845;
       expect(option.byteValue[0], 69);
       expect(option.byteValue[1], 152);
@@ -211,15 +207,20 @@ void main() {
 
   group('Block Option', () {
     test('Get value', () {
-      /// Helper function that creates a BlockOption with the specified parameters
-      /// and serializes them to a byte array.
-      typed.Uint8Buffer? toBytes(int szx, int num, {required bool m}) {
+      /// Helper function that creates a BlockOption with the specified
+      /// parameters and serializes them to a byte array.
+      typed.Uint8Buffer? toBytes(
+        final int szx,
+        final int num, {
+        required final bool m,
+      }) {
         final opt =
             CoapBlockOption.fromParts(OptionType.block1, num, szx, m: m);
         return opt.blockValueBytes;
       }
 
-      // Original test assumes network byte ordering is needed, hence the reverse
+      // Original test assumes network byte ordering is needed,
+      // hence the reverse
       expect(toBytes(0, 0, m: false), <int>[0x0]);
       expect(toBytes(0, 1, m: false), <int>[0x10]);
       expect(toBytes(0, 15, m: false), <int>[0xf0]);
@@ -233,13 +234,13 @@ void main() {
     });
 
     test('Combined', () {
-      /// Converts a BlockOption with the specified parameters to a byte array and
-      /// back and checks that the result is the same as the original.
-      void testCombined(int szx, int num, {required bool m}) {
+      /// Converts a BlockOption with the specified parameters to a byte array
+      /// and back and checks that the result is the same as the original.
+      void testCombined(final int szx, final int num, {required final bool m}) {
         final block =
             CoapBlockOption.fromParts(OptionType.block1, num, szx, m: m);
-        final copy = CoapBlockOption(OptionType.block1);
-        copy.byteValue = block.byteValue;
+        final copy = CoapBlockOption(OptionType.block1)
+          ..byteValue = block.byteValue;
         expect(block.szx, copy.szx);
         expect(block.m, copy.m);
         expect(block.num, copy.num);

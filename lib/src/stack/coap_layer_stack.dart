@@ -24,37 +24,46 @@ class CoapNextLayer implements CoapINextLayer {
   final CoapEntry<dynamic, dynamic> _entry;
 
   @override
-  void sendRequest(CoapExchange? exchange, CoapRequest request) {
+  void sendRequest(final CoapExchange? exchange, final CoapRequest request) {
     _entry.nextEntry!.filter
         .sendRequest(_entry.nextEntry!.nextFilter, exchange, request);
   }
 
   @override
-  void sendResponse(CoapExchange exchange, CoapResponse? response) {
+  void sendResponse(final CoapExchange exchange, final CoapResponse? response) {
     _entry.nextEntry!.filter
         .sendResponse(_entry.nextEntry!.nextFilter, exchange, response);
   }
 
   @override
-  void sendEmptyMessage(CoapExchange exchange, CoapEmptyMessage message) {
+  void sendEmptyMessage(
+    final CoapExchange exchange,
+    final CoapEmptyMessage message,
+  ) {
     _entry.nextEntry!.filter
         .sendEmptyMessage(_entry.nextEntry!.nextFilter, exchange, message);
   }
 
   @override
-  void receiveRequest(CoapExchange exchange, CoapRequest request) {
+  void receiveRequest(final CoapExchange exchange, final CoapRequest request) {
     _entry.prevEntry!.filter
         .receiveRequest(_entry.prevEntry!.nextFilter, exchange, request);
   }
 
   @override
-  void receiveResponse(CoapExchange exchange, CoapResponse response) {
+  void receiveResponse(
+    final CoapExchange exchange,
+    final CoapResponse response,
+  ) {
     _entry.prevEntry!.filter
         .receiveResponse(_entry.prevEntry!.nextFilter, exchange, response);
   }
 
   @override
-  void receiveEmptyMessage(CoapExchange exchange, CoapEmptyMessage message) {
+  void receiveEmptyMessage(
+    final CoapExchange exchange,
+    final CoapEmptyMessage message,
+  ) {
     _entry.prevEntry!.filter
         .receiveEmptyMessage(_entry.prevEntry!.nextFilter, exchange, message);
   }
@@ -64,49 +73,71 @@ class CoapNextLayer implements CoapINextLayer {
 class CoapStackTopLayer extends CoapAbstractLayer {
   @override
   void sendRequest(
-      CoapINextLayer nextLayer, CoapExchange? exchange, CoapRequest request) {
-    var nexchange = exchange;
+    final CoapINextLayer nextLayer,
+    final CoapExchange? initialExchange,
+    final CoapRequest request,
+  ) {
+    var exchange = initialExchange;
+
     if (exchange == null) {
       if (request.isMulticast) {
-        nexchange = CoapMulticastExchange(request, CoapOrigin.local,
-            namespace: request.eventBus!.namespace);
+        exchange = CoapMulticastExchange(
+          request,
+          CoapOrigin.local,
+          namespace: request.eventBus!.namespace,
+        );
       } else {
-        nexchange = CoapExchange(request, CoapOrigin.local,
-            namespace: request.eventBus!.namespace);
+        exchange = CoapExchange(
+          request,
+          CoapOrigin.local,
+          namespace: request.eventBus!.namespace,
+        );
       }
-      nexchange.endpoint = request.endpoint;
+      exchange.endpoint = request.endpoint;
     }
-    nexchange?.request = request;
-    super.sendRequest(nextLayer, nexchange, request);
+    exchange.request = request;
+    super.sendRequest(nextLayer, exchange, request);
   }
 
   @override
   void sendResponse(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
-    exchange.response = response;
-    super.sendResponse(nextLayer, exchange, response);
+    final CoapINextLayer nextLayer,
+    final CoapExchange initialExchange,
+    final CoapResponse response,
+  ) {
+    initialExchange.response = response;
+    super.sendResponse(nextLayer, initialExchange, response);
   }
 
   @override
   void receiveRequest(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
+    final CoapINextLayer nextLayer,
+    final CoapExchange initialExchange,
+    final CoapRequest request,
+  ) {
     // If there is no BlockwiseLayer we still have to set it
-    exchange.request ??= request;
+    initialExchange.request ??= request;
   }
 
   @override
   void receiveResponse(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
+    final CoapINextLayer nextLayer,
+    final CoapExchange initialExchange,
+    final CoapResponse response,
+  ) {
     if (!response.hasOption(OptionType.observe) &&
-        exchange is! CoapMulticastExchange) {
-      exchange.complete = true;
+        initialExchange is! CoapMulticastExchange) {
+      initialExchange.complete = true;
     }
-    exchange.fireRespond(response);
+    initialExchange.fireRespond(response);
   }
 
   @override
-  void receiveEmptyMessage(CoapINextLayer nextLayer, CoapExchange exchange,
-      CoapEmptyMessage message) {
+  void receiveEmptyMessage(
+    final CoapINextLayer nextLayer,
+    final CoapExchange initialExchange,
+    final CoapEmptyMessage message,
+  ) {
     // When empty messages reach the top of the CoAP stack we can ignore them.
   }
 }
@@ -114,21 +145,30 @@ class CoapStackTopLayer extends CoapAbstractLayer {
 /// Bottom layer
 class CoapStackBottomLayer extends CoapAbstractLayer {
   @override
-  Future<void> sendRequest(CoapINextLayer nextLayer, CoapExchange? exchange,
-      CoapRequest request) async {
-    exchange?.outbox!.sendRequest(exchange, request);
+  Future<void> sendRequest(
+    final CoapINextLayer nextLayer,
+    final CoapExchange? initialExchange,
+    final CoapRequest request,
+  ) async {
+    initialExchange?.outbox!.sendRequest(initialExchange, request);
   }
 
   @override
   void sendResponse(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
-    exchange.outbox!.sendResponse(exchange, response);
+    final CoapINextLayer nextLayer,
+    final CoapExchange initialExchange,
+    final CoapResponse response,
+  ) {
+    initialExchange.outbox!.sendResponse(initialExchange, response);
   }
 
   @override
-  void sendEmptyMessage(CoapINextLayer nextLayer, CoapExchange exchange,
-      CoapEmptyMessage message) {
-    exchange.outbox!.sendEmptyMessage(exchange, message);
+  void sendEmptyMessage(
+    final CoapINextLayer nextLayer,
+    final CoapExchange initialExchange,
+    final CoapEmptyMessage message,
+  ) {
+    initialExchange.outbox!.sendEmptyMessage(initialExchange, message);
   }
 }
 
@@ -137,36 +177,48 @@ class CoapLayerStack
     extends CoapChain<CoapLayerStack, CoapILayer, CoapINextLayer> {
   /// Instantiates.
   CoapLayerStack()
-      : super.filterFactory((dynamic e) => CoapNextLayer(e),
-            () => CoapStackTopLayer(), () => CoapStackBottomLayer());
+      : super.filterFactory(
+          (final e) => CoapNextLayer(e as CoapEntry<dynamic, dynamic>),
+          CoapStackTopLayer.new,
+          CoapStackBottomLayer.new,
+        );
 
   /// Sends a request into the layer stack.
-  void sendRequest(CoapRequest request) {
+  void sendRequest(final CoapRequest request) {
     head!.filter.sendRequest(head!.nextFilter, null, request);
   }
 
   /// Sends a response into the layer stack.
-  void sendResponse(CoapExchange exchange, CoapResponse? response) {
+  void sendResponse(final CoapExchange exchange, final CoapResponse? response) {
     head!.filter.sendResponse(head!.nextFilter, exchange, response);
   }
 
   /// Sends an empty message into the layer stack.
-  void sendEmptyMessage(CoapExchange exchange, CoapEmptyMessage message) {
+  void sendEmptyMessage(
+    final CoapExchange exchange,
+    final CoapEmptyMessage message,
+  ) {
     head!.filter.sendEmptyMessage(head!.nextFilter, exchange, message);
   }
 
   /// Receives a request into the layer stack.
-  void receiveRequest(CoapExchange exchange, CoapRequest? request) {
+  void receiveRequest(final CoapExchange exchange, final CoapRequest? request) {
     tail!.filter.receiveRequest(tail!.nextFilter, exchange, request);
   }
 
   /// Receives a response into the layer stack.
-  void receiveResponse(CoapExchange exchange, CoapResponse response) {
+  void receiveResponse(
+    final CoapExchange exchange,
+    final CoapResponse response,
+  ) {
     tail!.filter.receiveResponse(tail!.nextFilter, exchange, response);
   }
 
   /// Receives an empty message into the layer stack.
-  void receiveEmptyMessage(CoapExchange exchange, CoapEmptyMessage message) {
+  void receiveEmptyMessage(
+    final CoapExchange exchange,
+    final CoapEmptyMessage message,
+  ) {
     tail!.filter.receiveEmptyMessage(tail!.nextFilter, exchange, message);
   }
 }

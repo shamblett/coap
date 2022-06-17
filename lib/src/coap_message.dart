@@ -32,8 +32,10 @@ typedef HookFunction = void Function();
 /// a token (0-8 bytes), a collection of Options and a payload.
 class CoapMessage {
   /// Constructor
-  CoapMessage(
-      {this.type = CoapMessageType.unknown, this.code = CoapCode.notSet});
+  CoapMessage({
+    this.type = CoapMessageType.unknown,
+    this.code = CoapCode.notSet,
+  });
 
   /// Indicates that no ID has been set.
   static const int none = -1;
@@ -53,8 +55,8 @@ class CoapMessage {
 
   /// The ID of this CoAP message.
   int? get id => _id;
-  @protected
-  set id(int? val) => _id = val;
+  @internal
+  set id(final int? val) => _id = val;
 
   final Map<OptionType, List<CoapOption>> _optionMap = {};
   CoapEventBus? _eventBus = CoapEventBus(namespace: '');
@@ -68,8 +70,8 @@ class CoapMessage {
   /// Bind address if not using the default
   InternetAddress? bindAddress;
 
-  @protected
-  void setEventBus(CoapEventBus eventBus) {
+  @internal
+  set eventBus(final CoapEventBus? eventBus) {
     _eventBus = eventBus;
   }
 
@@ -78,14 +80,14 @@ class CoapMessage {
   String? get namespace => _eventBus?.namespace;
 
   /// Adds an option to the list of options of this CoAP message.
-  void addOption(CoapOption option) {
-    final optionTypeList = _optionMap[option.type] ?? [];
-    optionTypeList.add(option);
+  void addOption(final CoapOption option) {
+    final optionTypeList = _optionMap[option.type] ?? []
+      ..add(option);
     _optionMap[option.type] = optionTypeList;
   }
 
   /// Remove a specific option, returns true if the option has been removed.
-  bool removeOption(CoapOption option) {
+  bool removeOption(final CoapOption option) {
     var ret = false;
     final options = getOptions(option.type);
     if (options == null) {
@@ -99,18 +101,19 @@ class CoapMessage {
   }
 
   /// Adds options to the list of options of this CoAP message.
-  void addOptions(Iterable<CoapOption> options) {
+  void addOptions(final Iterable<CoapOption> options) {
     options.forEach(addOption);
   }
 
   /// Removes all options of the given type from this CoAP message.
-  bool removeOptions(OptionType optionType) {
+  bool removeOptions(final OptionType optionType) {
     _optionMap.remove(optionType);
     return true;
   }
 
   /// Gets all options of the given type.
-  List<CoapOption>? getOptions(OptionType optionType) => _optionMap[optionType];
+  List<CoapOption>? getOptions(final OptionType optionType) =>
+      _optionMap[optionType];
 
   /// Gets a list of all options.
   List<CoapOption> getAllOptions() {
@@ -124,14 +127,14 @@ class CoapMessage {
   }
 
   /// Sets an option, removing all others of the option type
-  void setOption(CoapOption opt) {
+  void setOption(final CoapOption opt) {
     removeOptions(opt.type);
     addOption(opt);
   }
 
   /// Sets all options with the specified option type, removing
   /// all others of the same type.
-  void setOptions(Iterable<CoapOption> options) {
+  void setOptions(final Iterable<CoapOption> options) {
     for (final opt in options) {
       removeOptions(opt.type);
     }
@@ -139,17 +142,16 @@ class CoapMessage {
   }
 
   /// Returns the first option of the specified type, or null
-  CoapOption? getFirstOption(OptionType optionType) {
-    return getOptions(optionType)
-        ?.firstWhereOrNull((element) => element.type == optionType);
-  }
+  CoapOption? getFirstOption(final OptionType optionType) =>
+      getOptions(optionType)
+          ?.firstWhereOrNull((final element) => element.type == optionType);
 
   /// Clear all options
   void clearOptions() => _optionMap.clear();
 
   /// Checks if this CoAP message has options of the specified option type.
   /// Returns true if options of the specified type exists.
-  bool hasOption(OptionType type) => getFirstOption(type) != null;
+  bool hasOption(final OptionType type) => getFirstOption(type) != null;
 
   Uint8Buffer? _token;
 
@@ -162,10 +164,13 @@ class CoapMessage {
     return token != null ? CoapByteArrayUtil.toHexString(token) : '';
   }
 
-  set token(Uint8Buffer? value) {
+  set token(final Uint8Buffer? value) {
     if (value != null && value.length > 8) {
-      throw ArgumentError.value(value, 'Message::token',
-          'Token length must be between 0 and 8 inclusive.');
+      throw ArgumentError.value(
+        value,
+        'Message::token',
+        'Token length must be between 0 and 8 inclusive.',
+      );
     }
     _token = value;
   }
@@ -187,11 +192,11 @@ class CoapMessage {
   bool get isValid => CoapCode.isValid(code);
 
   /// The destination endpoint.
-  @protected
+  @internal
   CoapInternetAddress? destination;
 
   /// The source endpoint.
-  @protected
+  @internal
   CoapInternetAddress? source;
 
   /// Acknowledged hook for attaching a callback if needed
@@ -201,8 +206,8 @@ class CoapMessage {
 
   /// Indicates whether this message has been acknowledged.
   bool get isAcknowledged => _acknowledged;
-  @protected
-  set isAcknowledged(bool value) {
+  @internal
+  set isAcknowledged(final bool value) {
     _acknowledged = value;
     _eventBus?.fire(CoapAcknowledgedEvent(this));
     acknowledgedHook?.call();
@@ -212,8 +217,8 @@ class CoapMessage {
 
   /// Indicates whether this message has been rejected.
   bool get isRejected => _rejected;
-  @protected
-  set isRejected(bool value) {
+  @internal
+  set isRejected(final bool value) {
     _rejected = value;
     _eventBus?.fire(CoapRejectedEvent(this));
   }
@@ -225,8 +230,8 @@ class CoapMessage {
 
   /// Indicates whether this message has been timed out.
   bool get isTimedOut => _timedOut;
-  @protected
-  set isTimedOut(bool value) {
+  @internal
+  set isTimedOut(final bool value) {
     _timedOut = value;
     _eventBus?.fire(CoapTimedOutEvent(this));
     timedOutHook?.call();
@@ -251,8 +256,8 @@ class CoapMessage {
 
   /// Indicates whether this message has been cancelled.
   bool get isCancelled => _cancelled;
-  @protected
-  set isCancelled(bool value) {
+  @internal
+  set isCancelled(final bool value) {
     _cancelled = value;
     _eventBus?.fire(CoapCancelledEvent(this));
   }
@@ -261,23 +266,23 @@ class CoapMessage {
 
   /// Indicates whether this message is a duplicate.
   bool get duplicate => _duplicate;
-  @protected
-  set duplicate(bool val) => _duplicate = val;
+  @internal
+  set duplicate(final bool val) => _duplicate = val;
 
   Uint8Buffer? _bytes;
 
   /// The serialized message as byte array, or null if not serialized yet.
   Uint8Buffer? get bytes => _bytes;
-  @protected
-  set bytes(Uint8Buffer? val) => _bytes = val;
+  @internal
+  set bytes(final Uint8Buffer? val) => _bytes = val;
 
   DateTime? _timestamp;
 
   /// The timestamp when this message has been received or sent,
   /// or null if neither has happened yet.
   DateTime? get timestamp => _timestamp;
-  @protected
-  set timestamp(DateTime? val) => _timestamp = val;
+  @internal
+  set timestamp(final DateTime? val) => _timestamp = val;
 
   /// The max times this message should be retransmitted if no ACK received.
   /// A value of 0 means that the CoapConstants.maxRetransmit time
@@ -318,17 +323,17 @@ class CoapMessage {
   }
 
   /// Sets the payload from a string with a default media type
-  set payloadString(String? value) =>
+  set payloadString(final String? value) =>
       setPayloadMedia(value, CoapMediaType.textPlain);
 
   /// Sets the payload.
-  void setPayload(String payload) {
+  void setPayload(final String payload) {
     this.payload ??= Uint8Buffer();
     this.payload!.addAll(_utfEncoder.convert(payload));
   }
 
   /// Sets the payload and media type of this CoAP message.
-  void setPayloadMedia(String? payload, int mediaType) {
+  void setPayloadMedia(final String? payload, final int mediaType) {
     if (payload == null) {
       return;
     }
@@ -338,46 +343,51 @@ class CoapMessage {
   }
 
   /// Sets the payload of this CoAP message.
-  void setPayloadMediaRaw(Uint8Buffer payload, int mediaType) {
+  void setPayloadMediaRaw(final Uint8Buffer payload, final int mediaType) {
     this.payload = payload;
     contentType = mediaType;
   }
 
   /// Select options helper
-  List<CoapOption> _selectOptions(OptionType optionType) {
-    return getOptions(optionType) ?? [];
-  }
+  List<CoapOption> _selectOptions(final OptionType optionType) =>
+      getOptions(optionType) ?? [];
 
   /// If-Matches.
   List<CoapOption> get ifMatches => _selectOptions(OptionType.ifMatch);
 
   /// Add an if match option, if a null string is passed the if match is not set
-  void addIfMatch(String etag) =>
+  void addIfMatch(final String etag) =>
       addOption(CoapOption.createString(OptionType.ifMatch, etag));
 
   /// Add an opaque if match
-  void addIfMatchOpaque(Uint8Buffer opaque) {
+  void addIfMatchOpaque(final Uint8Buffer opaque) {
     if (opaque.length > 8) {
-      throw ArgumentError.value(opaque.length, 'Message::addIfMatch',
-          'Content of If-Match option is too large');
+      throw ArgumentError.value(
+        opaque.length,
+        'Message::addIfMatch',
+        'Content of If-Match option is too large',
+      );
     }
     addOption(CoapOption.createRaw(OptionType.ifMatch, opaque));
   }
 
   /// Remove an opaque if match
-  void removeIfMatchOpaque(Uint8Buffer opaque) {
-    final opts = _optionMap[OptionType.ifMatch];
-    opts?.removeWhere((CoapOption o) => o.byteValue.equals(opaque));
+  void removeIfMatchOpaque(final Uint8Buffer opaque) {
+    final opts = _optionMap[OptionType.ifMatch]
+      ?..removeWhere((final o) => o.byteValue.equals(opaque));
     if (opts != null && opts.isEmpty) {
       _optionMap.remove(OptionType.ifMatch);
     }
   }
 
   /// Remove an if match option
-  void removeIfMatch(CoapOption option) {
+  void removeIfMatch(final CoapOption option) {
     if (option.type != OptionType.ifMatch) {
       throw ArgumentError.value(
-          option.type, 'Message::removeIfMatch', 'Not an if match option');
+        option.type,
+        'Message::removeIfMatch',
+        'Not an if match option',
+      );
     }
     removeOption(option);
   }
@@ -391,18 +401,18 @@ class CoapMessage {
   List<CoapOption> get etags => _selectOptions(OptionType.eTag);
 
   /// Contains an opaque E-tag
-  bool containsETagOpaque(Uint8Buffer opaque) =>
+  bool containsETagOpaque(final Uint8Buffer opaque) =>
       getOptions(OptionType.eTag)
-          ?.firstWhereOrNull((CoapOption o) => o.byteValue.equals(opaque)) !=
+          ?.firstWhereOrNull((final o) => o.byteValue.equals(opaque)) !=
       null;
 
   /// Add an opaque ETag
-  void addETagOpaque(Uint8Buffer opaque) {
+  void addETagOpaque(final Uint8Buffer opaque) {
     addOption(CoapOption.createRaw(OptionType.eTag, opaque));
   }
 
   /// Adds an ETag option
-  void addEtag(CoapOption option) {
+  void addEtag(final CoapOption option) {
     if (option.type != OptionType.eTag) {
       throw ArgumentError.notNull('Message::addETag, option is not an etag');
     }
@@ -410,7 +420,7 @@ class CoapMessage {
   }
 
   /// Remove an ETag, true indicates success
-  bool removeEtag(CoapOption option) {
+  bool removeEtag(final CoapOption option) {
     if (option.type != OptionType.eTag) {
       throw ArgumentError.notNull('Message::removeETag, option is not an etag');
     }
@@ -418,9 +428,9 @@ class CoapMessage {
   }
 
   /// Remove an opaque ETag
-  void removeETagOpaque(Uint8Buffer opaque) {
+  void removeETagOpaque(final Uint8Buffer opaque) {
     final opts = _optionMap[OptionType.eTag];
-    opts?.removeWhere((CoapOption o) => o.byteValue.equals(opaque));
+    opts?.removeWhere((final o) => o.byteValue.equals(opaque));
     if (opts != null && opts.isEmpty) {
       _optionMap.remove(OptionType.eTag);
     }
@@ -435,40 +445,48 @@ class CoapMessage {
   List<CoapOption> get ifNoneMatches => _selectOptions(OptionType.ifNoneMatch);
 
   /// Add an if none match option
-  void addIfNoneMatch(CoapOption option) {
+  void addIfNoneMatch(final CoapOption option) {
     if (option.type != OptionType.ifNoneMatch) {
       throw ArgumentError.value(
-          'Message::addIfNoneMatch', 'Option is not an if none match');
+        'Message::addIfNoneMatch',
+        'Option is not an if none match',
+      );
     }
     addOption(option);
   }
 
   /// Add an opaque if none match
-  void addIfNoneMatchOpaque(Uint8Buffer? opaque) {
+  void addIfNoneMatchOpaque(final Uint8Buffer? opaque) {
     if (opaque == null) {
       throw ArgumentError.notNull('Message::addIfNoneMatch');
     }
     if (opaque.length > 8) {
-      throw ArgumentError.value(opaque.length, 'Message::addIfNoneMatch',
-          'Content of If-None Match option is too large');
+      throw ArgumentError.value(
+        opaque.length,
+        'Message::addIfNoneMatch',
+        'Content of If-None Match option is too large',
+      );
     }
     addOption(CoapOption.createRaw(OptionType.ifNoneMatch, opaque));
   }
 
   /// Remove an opaque if none match
-  void removeIfNoneMatchOpaque(Uint8Buffer opaque) {
+  void removeIfNoneMatchOpaque(final Uint8Buffer opaque) {
     final opts = _optionMap[OptionType.ifNoneMatch];
-    opts?.removeWhere((CoapOption o) => o.byteValue.equals(opaque));
+    opts?.removeWhere((final o) => o.byteValue.equals(opaque));
     if (opts != null && opts.isEmpty) {
       _optionMap.remove(OptionType.ifNoneMatch);
     }
   }
 
   /// Remove an if none match option
-  void removeIfNoneMatch(CoapOption option) {
+  void removeIfNoneMatch(final CoapOption option) {
     if (option.type != OptionType.ifNoneMatch) {
-      throw ArgumentError.value(option.type, 'Message::removeIfNoneMatch',
-          'Not an if none match option');
+      throw ArgumentError.value(
+        option.type,
+        'Message::removeIfNoneMatch',
+        'Not an if none match option',
+      );
     }
     removeOption(option);
   }
@@ -484,14 +502,17 @@ class CoapMessage {
     return host?.toString();
   }
 
-  @protected
-  set uriHost(String? value) {
+  @internal
+  set uriHost(final String? value) {
     if (value == null) {
       throw ArgumentError.notNull('Message::uriHost');
     }
     if (value.isEmpty || value.length > 255) {
-      throw ArgumentError.value(value.length, 'Message::uriHost',
-          'URI-Host option\'s length must be between 1 and 255 inclusive');
+      throw ArgumentError.value(
+        value.length,
+        'Message::uriHost',
+        "URI-Host option's length must be between 1 and 255 inclusive",
+      );
     }
     setOption(CoapOption.createString(OptionType.uriHost, value));
   }
@@ -503,7 +524,7 @@ class CoapMessage {
   }
 
   /// Sets a number of Uri path options from a string, ignores any trailing / character
-  set uriPath(String value) {
+  set uriPath(final String value) {
     var out = value;
     if (out.endsWith('/')) {
       out = out.substring(0, out.length - 1);
@@ -527,21 +548,24 @@ class CoapMessage {
   }
 
   /// Add a URI path
-  void addUriPath(String? path) {
+  void addUriPath(final String? path) {
     if (path == null) {
       throw ArgumentError.notNull('Message::addUriPath');
     }
     if (path.length > 255) {
-      throw ArgumentError.value(path.length, 'Message::addUriPath',
-          'Uri Path option\'s length must be between 0 and 255 inclusive');
+      throw ArgumentError.value(
+        path.length,
+        'Message::addUriPath',
+        "Uri Path option's length must be between 0 and 255 inclusive",
+      );
     }
     addOption(CoapOption.createString(OptionType.uriPath, path));
   }
 
   /// Remove a URI path
-  void removeUriPath(String path) {
+  void removeUriPath(final String path) {
     final opts = _optionMap[OptionType.uriPath];
-    opts?.removeWhere((CoapOption o) => o.stringValue == path);
+    opts?.removeWhere((final o) => o.stringValue == path);
     if (opts != null && opts.isEmpty) {
       _optionMap.remove(OptionType.uriPath);
     }
@@ -554,10 +578,10 @@ class CoapMessage {
 
   /// URI query
   String get uriQuery =>
-      CoapOption.join(getOptions(OptionType.uriQuery), '&') ?? "";
+      CoapOption.join(getOptions(OptionType.uriQuery), '&') ?? '';
 
   /// Set a URI query
-  set uriQuery(String value) {
+  set uriQuery(final String value) {
     var tmp = value;
     if (value.isNotEmpty && value.startsWith('?')) {
       tmp = value.substring(1);
@@ -581,21 +605,24 @@ class CoapMessage {
   }
 
   /// Add a URI query
-  void addUriQuery(String? query) {
+  void addUriQuery(final String? query) {
     if (query == null) {
       throw ArgumentError.notNull('Message::addUriQuery');
     }
     if (query.length > 255) {
-      throw ArgumentError.value(query.length, 'Message::addUriQuery',
-          'Uri Query option\'s length must be between 0 and 255 inclusive');
+      throw ArgumentError.value(
+        query.length,
+        'Message::addUriQuery',
+        "Uri Query option's length must be between 0 and 255 inclusive",
+      );
     }
     addOption(CoapOption.createUriQuery(query));
   }
 
   /// Remove a URI query
-  void removeUriQuery(String query) {
+  void removeUriQuery(final String query) {
     final opts = _optionMap[OptionType.uriQuery];
-    opts?.removeWhere((CoapOption o) => o.stringValue == query);
+    opts?.removeWhere((final o) => o.stringValue == query);
     if (opts != null && opts.isEmpty) {
       _optionMap.remove(OptionType.uriQuery);
     }
@@ -609,10 +636,10 @@ class CoapMessage {
   /// Uri port
   int get uriPort {
     final opt = getFirstOption(OptionType.uriPort);
-    return opt?.value ?? 0;
+    return opt?.value as int? ?? 0;
   }
 
-  set uriPort(int value) {
+  set uriPort(final int value) {
     if (value == 0) {
       removeOptions(OptionType.uriPort);
     } else {
@@ -633,7 +660,7 @@ class CoapMessage {
   }
 
   /// Set the location path from a string
-  set locationPath(String value) {
+  set locationPathsString(final String value) {
     // Check for '..' or '.' are invalid values
     if (value.contains('..') || value.contains('.')) {
       throw ArgumentError.value('Message::locationPath');
@@ -659,21 +686,21 @@ class CoapMessage {
   }
 
   /// Add a location path
-  void addLocationPath(String? path) {
-    if (path == null) {
-      throw ArgumentError.notNull('Message::addLocationPath');
-    }
+  void addLocationPath(final String path) {
     if (path.length > 255) {
-      throw ArgumentError.value(path.length, 'Message::addLocationPath',
-          'Location Path option\'s length must be between 0 and 255 inclusive');
+      throw ArgumentError.value(
+        path.length,
+        'Message::addLocationPath',
+        "Location Path option's length must be between 0 and 255 inclusive",
+      );
     }
     addOption(CoapOption.createString(OptionType.locationPath, path));
   }
 
   /// Remove a location path
-  void removelocationPath(String path) {
+  void removelocationPath(final String path) {
     final opts = _optionMap[OptionType.locationPath];
-    opts?.removeWhere((CoapOption o) => o.stringValue == path);
+    opts?.removeWhere((final o) => o.stringValue == path);
     if (opts != null && opts.isEmpty) {
       _optionMap.remove(OptionType.locationPath);
     }
@@ -686,10 +713,10 @@ class CoapMessage {
 
   /// Location query
   String get locationQuery =>
-      CoapOption.join(getOptions(OptionType.locationQuery), '&') ?? "";
+      CoapOption.join(getOptions(OptionType.locationQuery), '&') ?? '';
 
   /// Set a location query
-  set locationQuery(String value) {
+  set locationQuery(final String value) {
     var tmp = value;
     if (value.isNotEmpty && value.startsWith('?')) {
       tmp = value.substring(1);
@@ -714,24 +741,22 @@ class CoapMessage {
   }
 
   /// Add a location query
-  void addLocationQuery(String? query) {
-    if (query == null) {
-      throw ArgumentError.notNull('Message::addLocationQuery');
-    }
+  void addLocationQuery(final String query) {
     if (query.length > 255) {
       throw ArgumentError.value(
-          query.length,
-          'Message::addLocationQuery',
-          'Location Query option\'s length must be between '
-              '0 and 255 inclusive');
+        query.length,
+        'Message::addLocationQuery',
+        "Location Query option's length must be between "
+            '0 and 255 inclusive',
+      );
     }
     addOption(CoapOption.createString(OptionType.locationQuery, query));
   }
 
   /// Remove a location query
-  void removeLocationQuery(String query) {
+  void removeLocationQuery(final String query) {
     final opts = _optionMap[OptionType.locationQuery];
-    opts?.removeWhere((CoapOption o) => o.stringValue == query);
+    opts?.removeWhere((final o) => o.stringValue == query);
     if (opts != null && opts.isEmpty) {
       _optionMap.remove(OptionType.locationQuery);
     }
@@ -745,10 +770,10 @@ class CoapMessage {
   /// Content type
   int get contentType {
     final opt = getFirstOption(OptionType.contentFormat);
-    return opt?.value ?? CoapMediaType.undefined;
+    return opt?.value as int? ?? CoapMediaType.undefined;
   }
 
-  set contentType(int value) {
+  set contentType(final int value) {
     if (value == CoapMediaType.undefined) {
       removeOptions(OptionType.contentFormat);
     } else {
@@ -760,21 +785,22 @@ class CoapMessage {
   /// Same as ContentType, only another name.
   int get contentFormat => contentType;
 
-  set contentFormat(int value) => contentType = value;
+  set contentFormat(final int value) => contentType = value;
 
   /// The max-age of this CoAP message.
   int get maxAge {
     final opt = getFirstOption(OptionType.maxAge);
-    return opt?.value ?? CoapConstants.defaultMaxAge;
+    return opt?.value as int? ?? CoapConstants.defaultMaxAge;
   }
 
-  set maxAge(int value) {
+  set maxAge(final int value) {
     if (value < 0 || value > 4294967295) {
       throw ArgumentError.value(
-          value,
-          'Message::maxAge',
-          'Max-Age option must be between 0 and 4294967295 '
-              '(4 bytes) inclusive');
+        value,
+        'Message::maxAge',
+        'Max-Age option must be between 0 and 4294967295 '
+            '(4 bytes) inclusive',
+      );
     }
     setOption(CoapOption.createVal(OptionType.maxAge, value));
   }
@@ -782,10 +808,10 @@ class CoapMessage {
   /// Accept
   int get accept {
     final opt = getFirstOption(OptionType.accept);
-    return opt?.value ?? CoapMediaType.undefined;
+    return opt?.value as int? ?? CoapMediaType.undefined;
   }
 
-  set accept(int value) {
+  set accept(final int value) {
     if (value == CoapMediaType.undefined) {
       removeOptions(OptionType.accept);
     } else {
@@ -809,7 +835,7 @@ class CoapMessage {
     return Uri.dataFromString(proxyUriString);
   }
 
-  set proxyUri(Uri? value) {
+  set proxyUri(final Uri? value) {
     if (value == null) {
       removeOptions(OptionType.proxyUri);
     } else {
@@ -823,7 +849,7 @@ class CoapMessage {
     return opt?.toString();
   }
 
-  set proxyScheme(String? value) {
+  set proxyScheme(final String? value) {
     if (value == null) {
       removeOptions(OptionType.proxyScheme);
     } else {
@@ -834,19 +860,20 @@ class CoapMessage {
   /// Observe
   int? get observe {
     final opt = getFirstOption(OptionType.observe);
-    return opt?.value;
+    return opt?.value as int?;
   }
 
-  @protected
-  set observe(int? value) {
+  @internal
+  set observe(final int? value) {
     if (value == null) {
       removeOptions(OptionType.observe);
     } else if (value < 0 || ((1 << 24) - 1) < value) {
       throw ArgumentError.value(
-          value,
-          'Message::observe',
-          'Observe option must be between 0 and '
-              '${(1 << 24) - 1} (3 bytes) inclusive');
+        value,
+        'Message::observe',
+        'Observe option must be between 0 and '
+            '${(1 << 24) - 1} (3 bytes) inclusive',
+      );
     } else {
       setOption(CoapOption.createVal(OptionType.observe, value));
     }
@@ -855,10 +882,10 @@ class CoapMessage {
   /// Size 1
   int get size1 {
     final opt = getFirstOption(OptionType.size1);
-    return opt?.value ?? 0;
+    return opt?.value as int? ?? 0;
   }
 
-  set size1(int? value) {
+  set size1(final int? value) {
     if (value == null) {
       removeOptions(OptionType.size1);
     } else {
@@ -869,10 +896,10 @@ class CoapMessage {
   /// Size 2
   int? get size2 {
     final opt = getFirstOption(OptionType.size2);
-    return opt?.value ?? 0;
+    return opt?.value as int? ?? 0;
   }
 
-  set size2(int? value) {
+  set size2(final int? value) {
     if (value == null) {
       removeOptions(OptionType.size2);
     } else {
@@ -885,7 +912,7 @@ class CoapMessage {
       getFirstOption(OptionType.block1) as CoapBlockOption?;
 
   /// Block 1
-  set block1(CoapBlockOption? value) {
+  set block1(final CoapBlockOption? value) {
     if (value == null) {
       removeOptions(OptionType.block1);
     } else {
@@ -894,7 +921,7 @@ class CoapMessage {
   }
 
   /// Block 1
-  void setBlock1(int szx, int num, {required bool m}) {
+  void setBlock1(final int szx, final int num, {required final bool m}) {
     setOption(CoapBlockOption.fromParts(OptionType.block1, num, szx, m: m));
   }
 
@@ -902,7 +929,7 @@ class CoapMessage {
   CoapBlockOption? get block2 =>
       getFirstOption(OptionType.block2) as CoapBlockOption?;
 
-  set block2(CoapBlockOption? value) {
+  set block2(final CoapBlockOption? value) {
     if (value == null) {
       removeOptions(OptionType.block2);
     } else {
@@ -911,12 +938,12 @@ class CoapMessage {
   }
 
   /// Block 2
-  void setBlock2(int szx, int num, {required bool m}) {
+  void setBlock2(final int szx, final int num, {required final bool m}) {
     setOption(CoapBlockOption.fromParts(OptionType.block2, num, szx, m: m));
   }
 
   /// Copy an event handler
-  void copyEventHandler(CoapMessage msg) {
+  void copyEventHandler(final CoapMessage msg) {
     acknowledgedHook = msg.acknowledgedHook;
     retransmittingHook = msg.retransmittingHook;
     timedOutHook = msg.timedOutHook;
@@ -925,39 +952,40 @@ class CoapMessage {
   @override
   String toString() => '\nType: ${type.toString()}, Code: $codeString, '
       'Id: ${id.toString()}, '
-      'Token: \'$tokenString\',\n'
+      "Token: '$tokenString',\n"
       'Options: ${_optionsToString()},\n'
       'Payload: $payloadString';
 
   String _optionsToString() {
-    final sb = StringBuffer();
-    sb.writeln('[');
-    sb.write(_optionString('If-Match', ifMatches));
-    sb.write(_optionString('Uri Host', uriHost));
-    sb.write(_optionString('E-tags', etags));
-    sb.write(_optionString('If-None Match', ifNoneMatches));
-    sb.write(_optionString('Uri Port', uriPort > 0 ? uriPort : null));
-    sb.write(_optionString('Location Paths', locationPaths));
-    sb.write(_optionString('Uri Paths', uriPathsString));
-    sb.write(_optionString('Content-Type', CoapMediaType.name(contentType)));
-    sb.write(_optionString('Max Age', maxAge));
-    sb.write(_optionString('Uri Queries', uriQueries));
+    final sb = StringBuffer()
+      ..writeln('[')
+      ..write(_optionString('If-Match', ifMatches))
+      ..write(_optionString('Uri Host', uriHost))
+      ..write(_optionString('E-tags', etags))
+      ..write(_optionString('If-None Match', ifNoneMatches))
+      ..write(_optionString('Uri Port', uriPort > 0 ? uriPort : null))
+      ..write(_optionString('Location Paths', locationPaths))
+      ..write(_optionString('Uri Paths', uriPathsString))
+      ..write(_optionString('Content-Type', CoapMediaType.name(contentType)))
+      ..write(_optionString('Max Age', maxAge))
+      ..write(_optionString('Uri Queries', uriQueries));
     if (accept != CoapMediaType.undefined) {
       sb.write(_optionString('Accept', CoapMediaType.name(accept)));
     }
-    sb.write(_optionString('Location Queries', locationQueries));
-    sb.write(_optionString('Proxy Uri', proxyUri));
-    sb.write(_optionString('Proxy Scheme', proxyScheme));
-    sb.write(_optionString('Block 1', block1));
-    sb.write(_optionString('Block 2', block2));
-    sb.write(_optionString('Observe', observe));
-    sb.write(_optionString('Size 1', size1));
-    sb.write(_optionString('Size 2', size2));
-    sb.write(']');
+    sb
+      ..write(_optionString('Location Queries', locationQueries))
+      ..write(_optionString('Proxy Uri', proxyUri))
+      ..write(_optionString('Proxy Scheme', proxyScheme))
+      ..write(_optionString('Block 1', block1))
+      ..write(_optionString('Block 2', block2))
+      ..write(_optionString('Observe', observe))
+      ..write(_optionString('Size 1', size1))
+      ..write(_optionString('Size 2', size2))
+      ..write(']');
     return sb.toString();
   }
 
-  String _optionString(String name, Object? value) {
+  String _optionString(final String name, final Object? value) {
     if (value == null) {
       return '';
     }

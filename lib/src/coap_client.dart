@@ -8,7 +8,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:coap/src/exceptions/coap_request_exception.dart';
 import 'package:collection/collection.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:typed_data/typed_data.dart';
@@ -28,6 +27,7 @@ import 'coap_request.dart';
 import 'coap_response.dart';
 import 'coap_web_link.dart';
 import 'event/coap_event_bus.dart';
+import 'exceptions/coap_request_exception.dart';
 import 'net/coap_endpoint.dart';
 import 'net/coap_iendpoint.dart';
 import 'net/coap_internet_address.dart';
@@ -51,8 +51,12 @@ class CoapMulticastResponseHandler {
   final void Function()? onDone;
   final bool? cancelOnError;
 
-  CoapMulticastResponseHandler(this.onData,
-      {this.onError, this.onDone, this.cancelOnError});
+  CoapMulticastResponseHandler(
+    this.onData, {
+    this.onError,
+    this.onDone,
+    this.cancelOnError,
+  });
 }
 
 /// Provides convenient methods for accessing CoAP resources.
@@ -79,8 +83,8 @@ class CoapClient {
     this._config, {
     this.addressType = InternetAddressType.IPv4,
     this.bindAddress,
-    EcdsaKeys? ecdsaKeys,
-    PskCredentialsCallback? pskCredentialsCallback,
+    final EcdsaKeys? ecdsaKeys,
+    final PskCredentialsCallback? pskCredentialsCallback,
   })  : _ecdsaKeys = ecdsaKeys,
         _pskCredentialsCallback = pskCredentialsCallback {
     _eventBus = CoapEventBus(namespace: hashCode.toString());
@@ -114,8 +118,8 @@ class CoapClient {
 
   /// Performs a CoAP ping.
   Future<bool> ping() async {
-    final request = CoapRequest(CoapCode.empty, confirmable: true);
-    request.token = CoapConstants.emptyToken;
+    final request = CoapRequest(CoapCode.empty)
+      ..token = CoapConstants.emptyToken;
     await _prepare(request);
     _endpoint!.sendEpRequest(request);
     await _waitForReject(request);
@@ -124,137 +128,183 @@ class CoapClient {
 
   /// Sends a GET request.
   Future<CoapResponse> get(
-    String path, {
-    int accept = CoapMediaType.textPlain,
-    int type = CoapMessageType.con,
-    List<CoapOption>? options,
-    bool earlyBlock2Negotiation = false,
-    int maxRetransmit = 0,
-    CoapMulticastResponseHandler? onMulticastResponse,
+    final String path, {
+    final int accept = CoapMediaType.textPlain,
+    final int type = CoapMessageType.con,
+    final List<CoapOption>? options,
+    final bool earlyBlock2Negotiation = false,
+    final int maxRetransmit = 0,
+    final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
     final request = CoapRequest.newGet();
-    _build(request, path, accept, type, options, earlyBlock2Negotiation,
-        maxRetransmit);
+    _build(
+      request,
+      path,
+      accept,
+      type,
+      options,
+      earlyBlock2Negotiation,
+      maxRetransmit,
+    );
     return send(request, onMulticastResponse: onMulticastResponse);
   }
 
   /// Sends a POST request.
   Future<CoapResponse> post(
-    String path, {
-    required String payload,
-    int format = CoapMediaType.textPlain,
-    int accept = CoapMediaType.textPlain,
-    int type = CoapMessageType.con,
-    List<CoapOption>? options,
-    bool earlyBlock2Negotiation = false,
-    int maxRetransmit = 0,
-    CoapMulticastResponseHandler? onMulticastResponse,
+    final String path, {
+    required final String payload,
+    final int format = CoapMediaType.textPlain,
+    final int accept = CoapMediaType.textPlain,
+    final int type = CoapMessageType.con,
+    final List<CoapOption>? options,
+    final bool earlyBlock2Negotiation = false,
+    final int maxRetransmit = 0,
+    final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
     final request = CoapRequest.newPost()..setPayloadMedia(payload, format);
-    _build(request, path, accept, type, options, earlyBlock2Negotiation,
-        maxRetransmit);
+    _build(
+      request,
+      path,
+      accept,
+      type,
+      options,
+      earlyBlock2Negotiation,
+      maxRetransmit,
+    );
     return send(request, onMulticastResponse: onMulticastResponse);
   }
 
   /// Sends a POST request with the specified byte payload.
   Future<CoapResponse> postBytes(
-    String path, {
-    required Uint8Buffer payload,
-    int format = CoapMediaType.textPlain,
-    int accept = CoapMediaType.textPlain,
-    int type = CoapMessageType.con,
-    List<CoapOption>? options,
-    bool earlyBlock2Negotiation = false,
-    int maxRetransmit = 0,
-    CoapMulticastResponseHandler? onMulticastResponse,
+    final String path, {
+    required final Uint8Buffer payload,
+    final int format = CoapMediaType.textPlain,
+    final int accept = CoapMediaType.textPlain,
+    final int type = CoapMessageType.con,
+    final List<CoapOption>? options,
+    final bool earlyBlock2Negotiation = false,
+    final int maxRetransmit = 0,
+    final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
     final request = CoapRequest.newPost()..setPayloadMediaRaw(payload, format);
-    _build(request, path, accept, type, options, earlyBlock2Negotiation,
-        maxRetransmit);
+    _build(
+      request,
+      path,
+      accept,
+      type,
+      options,
+      earlyBlock2Negotiation,
+      maxRetransmit,
+    );
     return send(request, onMulticastResponse: onMulticastResponse);
   }
 
   /// Sends a PUT request.
   Future<CoapResponse> put(
-    String path, {
-    required String payload,
-    int format = CoapMediaType.textPlain,
-    int accept = CoapMediaType.textPlain,
-    int type = CoapMessageType.con,
-    List<Uint8Buffer>? etags,
-    MatchEtags matchEtags = MatchEtags.onMatch,
-    List<CoapOption>? options,
-    bool earlyBlock2Negotiation = false,
-    int maxRetransmit = 0,
-    CoapMulticastResponseHandler? onMulticastResponse,
+    final String path, {
+    required final String payload,
+    final int format = CoapMediaType.textPlain,
+    final int accept = CoapMediaType.textPlain,
+    final int type = CoapMessageType.con,
+    final List<Uint8Buffer>? etags,
+    final MatchEtags matchEtags = MatchEtags.onMatch,
+    final List<CoapOption>? options,
+    final bool earlyBlock2Negotiation = false,
+    final int maxRetransmit = 0,
+    final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
     final request = CoapRequest.newPut()..setPayloadMedia(payload, format);
-    _build(request, path, accept, type, options, earlyBlock2Negotiation,
-        maxRetransmit,
-        etags: etags, matchEtags: matchEtags);
+    _build(
+      request,
+      path,
+      accept,
+      type,
+      options,
+      earlyBlock2Negotiation,
+      maxRetransmit,
+      etags: etags,
+      matchEtags: matchEtags,
+    );
     return send(request, onMulticastResponse: onMulticastResponse);
   }
 
   /// Sends a PUT request with the specified byte payload.
   Future<CoapResponse> putBytes(
-    String path, {
-    required Uint8Buffer payload,
-    int format = CoapMediaType.textPlain,
-    MatchEtags matchEtags = MatchEtags.onMatch,
-    List<Uint8Buffer>? etags,
-    int accept = CoapMediaType.textPlain,
-    int type = CoapMessageType.con,
-    List<CoapOption>? options,
-    bool earlyBlock2Negotiation = false,
-    int maxRetransmit = 0,
-    CoapMulticastResponseHandler? onMulticastResponse,
+    final String path, {
+    required final Uint8Buffer payload,
+    final int format = CoapMediaType.textPlain,
+    final MatchEtags matchEtags = MatchEtags.onMatch,
+    final List<Uint8Buffer>? etags,
+    final int accept = CoapMediaType.textPlain,
+    final int type = CoapMessageType.con,
+    final List<CoapOption>? options,
+    final bool earlyBlock2Negotiation = false,
+    final int maxRetransmit = 0,
+    final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
     final request = CoapRequest.newPut()..setPayloadMediaRaw(payload, format);
-    _build(request, path, accept, type, options, earlyBlock2Negotiation,
-        maxRetransmit,
-        etags: etags, matchEtags: matchEtags);
+    _build(
+      request,
+      path,
+      accept,
+      type,
+      options,
+      earlyBlock2Negotiation,
+      maxRetransmit,
+      etags: etags,
+      matchEtags: matchEtags,
+    );
     return send(request, onMulticastResponse: onMulticastResponse);
   }
 
   /// Sends a DELETE request
   Future<CoapResponse> delete(
-    String path, {
-    int accept = CoapMediaType.textPlain,
-    int type = CoapMessageType.con,
-    List<CoapOption>? options,
-    bool earlyBlock2Negotiation = false,
-    int maxRetransmit = 0,
-    CoapMulticastResponseHandler? onMulticastResponse,
+    final String path, {
+    final int accept = CoapMediaType.textPlain,
+    final int type = CoapMessageType.con,
+    final List<CoapOption>? options,
+    final bool earlyBlock2Negotiation = false,
+    final int maxRetransmit = 0,
+    final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
     final request = CoapRequest.newDelete();
-    _build(request, path, accept, type, options, earlyBlock2Negotiation,
-        maxRetransmit);
+    _build(
+      request,
+      path,
+      accept,
+      type,
+      options,
+      earlyBlock2Negotiation,
+      maxRetransmit,
+    );
     return send(request, onMulticastResponse: onMulticastResponse);
   }
 
   /// Observe
   Future<CoapObserveClientRelation> observe(
-    CoapRequest request, {
-    int maxRetransmit = 0,
+    final CoapRequest request, {
+    final int maxRetransmit = 0,
   }) async {
     request
       ..observe = 0
       ..maxRetransmit = maxRetransmit;
     await _prepare(request);
     final relation = CoapObserveClientRelation(request);
-    unawaited(() async {
-      _endpoint!.sendEpRequest(request);
-      final resp = await _waitForResponse(request);
-      if (!resp.hasOption(OptionType.observe)) {
-        relation.isCancelled = true;
-      }
-    }());
+    unawaited(
+      () async {
+        _endpoint!.sendEpRequest(request);
+        final resp = await _waitForResponse(request);
+        if (!resp.hasOption(OptionType.observe)) {
+          relation.isCancelled = true;
+        }
+      }(),
+    );
     return relation;
   }
 
   /// Discovers remote resources.
   Future<Iterable<CoapWebLink>?> discover({
-    String query = '',
+    final String query = '',
   }) async {
     final discover = CoapRequest.newGet()
       ..uriPath = CoapConstants.defaultWellKnownURI;
@@ -271,8 +321,8 @@ class CoapClient {
 
   /// Send
   Future<CoapResponse> send(
-    CoapRequest request, {
-    CoapMulticastResponseHandler? onMulticastResponse,
+    final CoapRequest request, {
+    final CoapMulticastResponseHandler? onMulticastResponse,
   }) async {
     await _prepare(request);
     if (request.isMulticast) {
@@ -281,8 +331,8 @@ class CoapClient {
       }
       _eventBus
           .on<CoapRespondEvent>()
-          .where((CoapRespondEvent e) => e.resp.token!.equals(request.token!))
-          .takeWhile((_) => !request.isTimedOut && !request.isCancelled)
+          .where((final e) => e.resp.token!.equals(request.token!))
+          .takeWhile((final _) => !request.isTimedOut && !request.isCancelled)
           .listen(
             onMulticastResponse.onData,
             onError: onMulticastResponse.onError,
@@ -296,19 +346,20 @@ class CoapClient {
 
   /// Cancel ongoing observable request
   Future<void> cancelObserveProactive(
-      CoapObserveClientRelation relation) async {
+    final CoapObserveClientRelation relation,
+  ) async {
     final cancel = relation.newCancel();
     await send(cancel);
     relation.isCancelled = true;
   }
 
   /// Cancel after the fact
-  void cancelObserveReactive(CoapObserveClientRelation relation) {
+  void cancelObserveReactive(final CoapObserveClientRelation relation) {
     relation.isCancelled = true;
   }
 
   /// Cancels a request
-  void cancel(CoapRequest request) {
+  void cancel(final CoapRequest request) {
     request.isCancelled = true;
     final response = CoapResponse(CoapCode.empty)
       ..id = request.id
@@ -322,15 +373,15 @@ class CoapClient {
   }
 
   void _build(
-    CoapRequest request,
-    String path,
-    int accept,
-    int type,
-    List<CoapOption>? options,
-    bool earlyBlock2Negotiation,
-    int maxRetransmit, {
-    MatchEtags matchEtags = MatchEtags.onMatch,
-    List<Uint8Buffer>? etags,
+    final CoapRequest request,
+    final String path,
+    final int accept,
+    final int type,
+    final List<CoapOption>? options,
+    final bool earlyBlock2Negotiation,
+    final int maxRetransmit, {
+    final MatchEtags matchEtags = MatchEtags.onMatch,
+    final List<Uint8Buffer>? etags,
   }) {
     request
       ..addUriPath(path)
@@ -351,15 +402,18 @@ class CoapClient {
     }
     if (earlyBlock2Negotiation) {
       request.setBlock2(
-          CoapBlockOption.encodeSZX(_config.preferredBlockSize), 0,
-          m: false);
+        CoapBlockOption.encodeSZX(_config.preferredBlockSize),
+        0,
+        m: false,
+      );
     }
   }
 
-  Future<void> _prepare(CoapRequest request) async {
-    request.uri = uri;
-    request.timestamp = DateTime.now();
-    request.setEventBus(_eventBus);
+  Future<void> _prepare(final CoapRequest request) async {
+    request
+      ..uri = uri
+      ..timestamp = DateTime.now()
+      ..eventBus = _eventBus;
 
     // Set a default accept
     if (request.accept == CoapMediaType.undefined) {
@@ -371,12 +425,14 @@ class CoapClient {
       if (_endpoint == null) {
         final destination =
             await _lookupHost(uri.host, addressType, bindAddress);
-        final socket = CoapINetwork.fromUri(uri,
-            address: destination,
-            config: _config,
-            namespace: _eventBus.namespace,
-            pskCredentialsCallback: _pskCredentialsCallback,
-            ecdsaKeys: _ecdsaKeys);
+        final socket = CoapINetwork.fromUri(
+          uri,
+          address: destination,
+          config: _config,
+          namespace: _eventBus.namespace,
+          pskCredentialsCallback: _pskCredentialsCallback,
+          ecdsaKeys: _ecdsaKeys,
+        );
         await socket.bind();
         _endpoint =
             CoapEndPoint(socket, _config, namespace: _eventBus.namespace);
@@ -387,12 +443,18 @@ class CoapClient {
     request.endpoint = _endpoint;
   }
 
-  Future<CoapInternetAddress> _lookupHost(String host,
-      InternetAddressType addressType, InternetAddress? bindAddress) async {
+  Future<CoapInternetAddress> _lookupHost(
+    final String host,
+    final InternetAddressType addressType,
+    final InternetAddress? bindAddress,
+  ) async {
     final parsedAddress = InternetAddress.tryParse(host);
     if (parsedAddress != null) {
       return CoapInternetAddress(
-          parsedAddress.type, parsedAddress, bindAddress);
+        parsedAddress.type,
+        parsedAddress,
+        bindAddress,
+      );
     }
 
     final addresses = await InternetAddress.lookup(host, type: addressType);
@@ -405,13 +467,13 @@ class CoapClient {
 
   /// Wait for a response.
   /// Returns the response, or null if timeout occured.
-  Future<CoapResponse> _waitForResponse(CoapRequest req) {
+  Future<CoapResponse> _waitForResponse(final CoapRequest req) {
     final completer = Completer<CoapResponse>();
     _eventBus
         .on<CoapRespondEvent>()
-        .where((CoapRespondEvent e) => e.resp.token!.equals(req.token!))
+        .where((final e) => e.resp.token!.equals(req.token!))
         .take(1)
-        .listen((CoapRespondEvent e) {
+        .listen((final e) {
       if (req.isTimedOut) {
         completer.completeError(CoapRequestTimeoutException(req.retransmits));
       } else if (req.isCancelled) {
@@ -426,13 +488,13 @@ class CoapClient {
 
   /// Wait for a reject.
   /// Returns the rejected message, or null if timeout occured.
-  Future<CoapMessage?> _waitForReject(CoapRequest req) {
+  Future<CoapMessage?> _waitForReject(final CoapRequest req) {
     final completer = Completer<CoapMessage?>();
     _eventBus
         .on<CoapRejectedEvent>()
-        .where((CoapRejectedEvent e) => e.msg.id == req.id)
+        .where((final e) => e.msg.id == req.id)
         .take(1)
-        .listen((CoapRejectedEvent e) {
+        .listen((final e) {
       if (req.isTimedOut || req.isCancelled) {
         completer.complete(null);
       } else {

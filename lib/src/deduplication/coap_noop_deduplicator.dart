@@ -26,8 +26,9 @@ class CoapNoopDeduplicator implements CoapIDeduplicator {
   }
 
   @override
-  CoapExchange? findPrevious(int? key, CoapExchange exchange) => null;
+  CoapExchange? findPrevious(final int? key, final CoapExchange exchange) =>
+      null;
 
   @override
-  CoapExchange? find(int? key) => null;
+  CoapExchange? find(final int? key) => null;
 }

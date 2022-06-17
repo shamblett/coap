@@ -42,11 +42,14 @@ abstract class CoapIEndPoint {
   void clear();
 
   /// Sends the specified request.
-  void sendEpRequest(CoapRequest request);
+  void sendEpRequest(final CoapRequest request);
 
   /// Sends the specified response.
-  void sendEpResponse(CoapExchange exchange, CoapResponse response);
+  void sendEpResponse(final CoapExchange exchange, final CoapResponse response);
 
   /// Sends the specified empty message.
-  void sendEpEmptyMessage(CoapExchange exchange, CoapEmptyMessage message);
+  void sendEpEmptyMessage(
+    final CoapExchange exchange,
+    final CoapEmptyMessage message,
+  );
 }

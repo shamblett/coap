@@ -26,8 +26,8 @@ const _proxyUri = 35;
 const _proxyScheme = 39;
 const _size1 = 60;
 
-/// Base class for [Exception]s that are thrown when an unknown [CoapOption]
-/// number is encountered during the parsing of a [CoapMessage].
+/// Base class for [Exception]s that are thrown when an unknown CoapOption
+/// number is encountered during the parsing of a CoapMessage.
 abstract class UnknownOptionException implements Exception {
   /// The unknown option number that was encountered.
   int optionNumber;
@@ -36,20 +36,19 @@ abstract class UnknownOptionException implements Exception {
   UnknownOptionException(this.optionNumber);
 
   @override
-  String toString() {
-    return '$runtimeType:  Encountered unknown option number $optionNumber';
-  }
+  String toString() =>
+      '$runtimeType:  Encountered unknown option number $optionNumber';
 }
 
-/// [Exception] that is thrown when an unknown elective [CoapOption] number is
-/// encountered during the parsing of a [CoapMessage].
+/// [Exception] that is thrown when an unknown elective CoapOption number is
+/// encountered during the parsing of a CoapMessage.
 class UnknownElectiveOptionException extends UnknownOptionException {
   /// Constructor.
   UnknownElectiveOptionException(super.optionNumber);
 }
 
-/// [Exception] that is thrown when an unknown critical [CoapOption] number is
-/// encountered during the parsing of a [CoapMessage].
+/// [Exception] that is thrown when an unknown critical CoapOption number is
+/// encountered during the parsing of a CoapMessage.
 class UnknownCriticalOptionException extends UnknownOptionException {
   /// Constructor.
   UnknownCriticalOptionException(super.optionNumber);
@@ -116,7 +115,7 @@ enum OptionType implements Comparable<OptionType> {
   const OptionType(this.optionNumber, this.name, this.optionFormat);
 
   /// Creates a new [OptionType] object from a numeric [type].
-  static OptionType fromTypeNumber(int type) {
+  static OptionType fromTypeNumber(final int type) {
     switch (type) {
       case _ifMatch:
         return OptionType.ifMatch;
@@ -166,7 +165,7 @@ enum OptionType implements Comparable<OptionType> {
   }
 
   @override
-  int compareTo(OptionType other) {
+  int compareTo(final OptionType other) {
     if (optionNumber == other.optionNumber) {
       return 0;
     }

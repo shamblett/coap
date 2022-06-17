@@ -59,7 +59,7 @@ class CoapMessageDecoder18 extends CoapMessageDecoder {
   int get code => _code;
 
   @override
-  void parseMessage(CoapMessage message) {
+  void parseMessage(final CoapMessage message) {
     // Read token
     if (_tokenLength > 0) {
       message.token = super.reader.readBytes(_tokenLength);
@@ -82,12 +82,16 @@ class CoapMessageDecoder18 extends CoapMessageDecoder {
         // The first 4 bits of the byte represent the option delta
         final optionDeltaNibble = (0xF0 & nextByte) >> 4;
         currentOption += CoapRfc7252.getValueFromOptionNibble(
-            optionDeltaNibble, super.reader);
+          optionDeltaNibble,
+          super.reader,
+        );
 
         // The second 4 bits represent the option length
         final optionLengthNibble = 0x0F & nextByte;
         final optionLength = CoapRfc7252.getValueFromOptionNibble(
-            optionLengthNibble, super.reader);
+          optionLengthNibble,
+          super.reader,
+        );
 
         // Read option
         final CoapOption opt;

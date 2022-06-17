@@ -5,9 +5,9 @@
  * Copyright :  S.Hamblett
  */
 
-import '../coap_link_format.dart';
-
 import 'package:collection/collection.dart';
+
+import '../coap_link_format.dart';
 
 /// Wraps different attributes that the CoAP protocol defines
 /// such as title, resource type or interface description. These attributes will
@@ -32,19 +32,19 @@ class CoapResourceAttributes {
   /// The resource title.
   String? get title => getValues(CoapLinkFormat.title)?.firstOrNull;
 
-  set title(String? value) => set(CoapLinkFormat.title, value);
+  set title(final String? value) => set(CoapLinkFormat.title, value);
 
   /// Gets or sets a value indicating if the resource is observable.
   bool? get observable =>
       getValues(CoapLinkFormat.observable)?.firstOrNull?.isNotEmpty;
 
-  set observable(bool? value) => set(CoapLinkFormat.observable, '');
+  set observable(final bool? value) => set(CoapLinkFormat.observable, '');
 
   /// Gets or sets the maximum size estimate string value.
   String? get maximumSizeEstimateString =>
       getValues(CoapLinkFormat.maxSizeEstimate)!.first;
 
-  set maximumSizeEstimateString(String? value) =>
+  set maximumSizeEstimateString(final String? value) =>
       set(CoapLinkFormat.maxSizeEstimate, value);
 
   /// Gets or sets the maximum size estimate.
@@ -52,11 +52,11 @@ class CoapResourceAttributes {
       ? 0
       : int.parse(maximumSizeEstimateString!);
 
-  set maximumSizeEstimate(int value) =>
+  set maximumSizeEstimate(final int value) =>
       maximumSizeEstimateString = value.toString();
 
   /// Adds a resource type.
-  void addResourceType(String type) {
+  void addResourceType(final String type) {
     _attributes[CoapLinkFormat.resourceType]!.add(type);
   }
 
@@ -70,7 +70,7 @@ class CoapResourceAttributes {
   }
 
   /// Adds an interface description.
-  void addInterfaceDescription(String description) {
+  void addInterfaceDescription(final String description) {
     _attributes[CoapLinkFormat.interfaceDescription]!.add(description);
   }
 
@@ -84,7 +84,7 @@ class CoapResourceAttributes {
   }
 
   /// Adds a content type specified by an integer.
-  void addContentType(int type) {
+  void addContentType(final int type) {
     _attributes[CoapLinkFormat.contentType]!.add(type.toString());
   }
 
@@ -98,10 +98,10 @@ class CoapResourceAttributes {
   }
 
   /// Returns true if this object contains the specified attribute.
-  bool contains(String name) => _attributes.containsKey(name);
+  bool contains(final String name) => _attributes.containsKey(name);
 
   /// Adds the specified value to the other values of the specified attribute.
-  void add(String name, String value) {
+  void add(final String name, final String value) {
     if (_attributes[name] == null) {
       _attributes[name] = <String>[];
     }
@@ -109,16 +109,16 @@ class CoapResourceAttributes {
   }
 
   /// Adds an arbitrary attribute with no value.
-  void addNoValue(String name) {
+  void addNoValue(final String name) {
     add(name, '');
   }
 
   /// Gets all values for the specified attribute.
-  Iterable<String?>? getValues(String name) => _attributes[name];
+  Iterable<String?>? getValues(final String name) => _attributes[name];
 
   /// Replaces the value for the specified attribute with the specified value.
   /// If another value has been set for the attribute name, it will be removed.
-  void set(String name, String? value) {
+  void set(final String name, final String? value) {
     if (_attributes[name] == null) {
       _attributes[name] = List<String>.filled(1, '');
     }
@@ -126,7 +126,7 @@ class CoapResourceAttributes {
   }
 
   /// Removes all values for the specified attribute.
-  void clear(String name) {
+  void clear(final String name) {
     _attributes[name] = <String>[];
   }
 }

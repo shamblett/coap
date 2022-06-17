@@ -9,6 +9,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
+import 'package:meta/meta.dart';
 import 'package:typed_data/typed_data.dart';
 
 import 'coap_block_option.dart';
@@ -18,6 +19,7 @@ import 'coap_option_type.dart';
 import 'util/coap_byte_array_util.dart';
 
 /// This class describes the options of the CoAP messages.
+@immutable
 class CoapOption {
   /// Construction
   CoapOption(this._type) : _buffer = Uint8Buffer();
@@ -33,7 +35,7 @@ class CoapOption {
   int get hashCode => Object.hash(_type, _buffer);
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(final Object other) {
     if (other is! CoapOption) {
       return false;
     }
@@ -44,17 +46,19 @@ class CoapOption {
   Uint8Buffer get byteValue => _buffer;
 
   /// raw byte representation of value bytes
-  set byteValue(Uint8Buffer val) {
-    _buffer.clear();
-    _buffer.addAll(val);
+  set byteValue(final Uint8Buffer val) {
+    _buffer
+      ..clear()
+      ..addAll(val);
   }
 
   /// String representation of value bytes
   String get stringValue => const Utf8Decoder().convert(_buffer.toList());
 
-  set stringValue(String val) {
-    _buffer.clear();
-    _buffer.addAll(val.codeUnits);
+  set stringValue(final String val) {
+    _buffer
+      ..clear()
+      ..addAll(val.codeUnits);
   }
 
   /// Int representation of value bytes
@@ -74,7 +78,7 @@ class CoapOption {
     }
   }
 
-  set intValue(int val) {
+  set intValue(final int val) {
     _buffer.clear();
     if (val < 0 || val >= (1 << 32)) {
       final buff = Uint64List(1)..first = val;
@@ -103,7 +107,9 @@ class CoapOption {
         return intValue;
       case OptionFormat.string:
         return stringValue;
-      default:
+      case OptionFormat.opaque:
+      case OptionFormat.unknown:
+      case OptionFormat.empty:
         return null;
     }
   }
@@ -124,7 +130,9 @@ class CoapOption {
             : intValue.toString();
       case OptionFormat.string:
         return stringValue;
-      default:
+      case OptionFormat.empty:
+      case OptionFormat.opaque:
+      case OptionFormat.unknown:
         return CoapByteArrayUtil.toHexString(_buffer);
     }
   }
@@ -133,40 +141,38 @@ class CoapOption {
   String toString() => '$name: ${_toValueString()}';
 
   /// Creates an option.
-  static CoapOption create(int optionNumber) {
+  // ignore: prefer_constructors_over_static_methods
+  static CoapOption create(final int optionNumber) {
     final type = OptionType.fromTypeNumber(optionNumber);
-    switch (type) {
-      case OptionType.block1:
-      case OptionType.block2:
-        return CoapBlockOption(type);
-      default:
-        return CoapOption(type);
+    if (type == OptionType.block1 || type == OptionType.block2) {
+      return CoapBlockOption(type);
     }
+    return CoapOption(type);
   }
 
   /// Creates an option.
-  static CoapOption createRaw(OptionType type, Uint8Buffer raw) {
-    return create(type.optionNumber)..byteValue = raw;
-  }
+  static CoapOption createRaw(final OptionType type, final Uint8Buffer raw) =>
+      create(type.optionNumber)..byteValue = raw;
 
   /// Creates an option.
-  static CoapOption createString(OptionType type, String str) {
-    return create(type.optionNumber)..stringValue = str;
-  }
+  static CoapOption createString(final OptionType type, final String str) =>
+      create(type.optionNumber)..stringValue = str;
 
   /// Creates a query option (shorthand because it's so common).
-  static CoapOption createUriQuery(String str) {
-    return create(OptionType.uriQuery.optionNumber)..stringValue = str;
-  }
+  static CoapOption createUriQuery(final String str) =>
+      create(OptionType.uriQuery.optionNumber)..stringValue = str;
 
   /// Creates an option.
-  static CoapOption createVal(OptionType type, int val) {
-    return create(type.optionNumber)..intValue = val;
-  }
+  static CoapOption createVal(final OptionType type, final int val) =>
+      create(type.optionNumber)..intValue = val;
 
   /// Splits a string into a set of options, e.g. a uri path.
   /// Remove any leading /
-  static List<CoapOption> split(OptionType type, String s, String delimiter) {
+  static List<CoapOption> split(
+    final OptionType type,
+    final String s,
+    final String delimiter,
+  ) {
     final opts = <CoapOption>[];
     final exp = RegExp(r'^\/*\/');
     final Match? pos = exp.firstMatch(s);
@@ -185,7 +191,7 @@ class CoapOption {
   }
 
   /// Joins the string values of a set of options.
-  static String? join(List<CoapOption>? options, String delimiter) {
+  static String? join(final List<CoapOption>? options, final String delimiter) {
     if (options == null) {
       return null;
     }

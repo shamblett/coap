@@ -12,9 +12,7 @@ abstract class CoapRequestException implements Exception {
   CoapRequestException();
 
   @override
-  String toString() {
-    return "$runtimeType: $failReason";
-  }
+  String toString() => '$runtimeType: $failReason';
 }
 
 /// This [Exception] is thrown when a CoAP request has timed out.
@@ -25,11 +23,11 @@ class CoapRequestTimeoutException extends CoapRequestException {
   CoapRequestTimeoutException(this.retransmits);
 
   @override
-  String get failReason => "Request timed out after $retransmits retransmits.";
+  String get failReason => 'Request timed out after $retransmits retransmits.';
 }
 
 /// This [Exception] is thrown when a CoAP request has timed out.
 class CoapRequestCancellationException extends CoapRequestException {
   @override
-  final failReason = "Request has been cancelled.";
+  final failReason = 'Request has been cancelled.';
 }

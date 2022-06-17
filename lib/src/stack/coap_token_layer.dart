@@ -23,48 +23,68 @@ class CoapTokenLayer extends CoapAbstractLayer {
   final Random _random = Random();
 
   /// Constructs a new token layer.
-  CoapTokenLayer(DefaultCoapConfig config);
+  CoapTokenLayer(final DefaultCoapConfig _);
 
   @override
   void sendRequest(
-      CoapINextLayer nextLayer, CoapExchange? exchange, CoapRequest request) {
+    final CoapINextLayer nextLayer,
+    final CoapExchange initialExchange,
+    final CoapRequest request,
+  ) {
     request.token ??= _newToken();
-    super.sendRequest(nextLayer, exchange, request);
+    super.sendRequest(nextLayer, initialExchange, request);
   }
 
   @override
   void sendResponse(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
+    final CoapINextLayer nextLayer,
+    final CoapExchange initialExchange,
+    final CoapResponse response,
+  ) {
     // A response must have the same token as the request it belongs to. If
     // the token is empty, we must use a byte array of length 0.
-    response.token ??= exchange.currentRequest!.token;
-    super.sendResponse(nextLayer, exchange, response);
+    response.token ??= initialExchange.currentRequest!.token;
+    super.sendResponse(nextLayer, initialExchange, response);
   }
 
   @override
   void receiveRequest(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapRequest request) {
-    if (exchange.currentRequest!.token == null) {
-      throw StateError('Received requests\'s token cannot be null, use '
-          'byte[0] for empty tokens');
+    final CoapINextLayer nextLayer,
+    final CoapExchange initialExchange,
+    final CoapRequest request,
+  ) {
+    if (initialExchange.currentRequest!.token == null) {
+      throw StateError(
+        "Received requests's token cannot be null, use "
+        'byte[0] for empty tokens',
+      );
     }
-    super.receiveRequest(nextLayer, exchange, request);
+    super.receiveRequest(nextLayer, initialExchange, request);
   }
 
   @override
   void receiveResponse(
-      CoapINextLayer nextLayer, CoapExchange exchange, CoapResponse response) {
+    final CoapINextLayer nextLayer,
+    final CoapExchange initialExchange,
+    final CoapResponse response,
+  ) {
     if (response.token == null) {
-      throw StateError('Received response\'s token cannot be null, use '
-          'byte[0] for empty tokens');
+      throw StateError(
+        "Received response's token cannot be null, use "
+        'byte[0] for empty tokens',
+      );
     }
-    super.receiveResponse(nextLayer, exchange, response);
+    super.receiveResponse(nextLayer, initialExchange, response);
   }
 
   Uint8Buffer _newToken() {
     final buff = Uint8Buffer()
-      ..addAll(List<int>.generate(
-          CoapConstants.tokenLength, (i) => _random.nextInt(256)));
+      ..addAll(
+        List<int>.generate(
+          CoapConstants.tokenLength,
+          (final i) => _random.nextInt(256),
+        ),
+      );
     return buff;
   }
 }

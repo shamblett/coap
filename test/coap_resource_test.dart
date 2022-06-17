@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 /*
  * Package : Coap
  * Author : S. Hamblett <steve.hamblett@linux.com>
@@ -5,7 +7,6 @@
  * Copyright :  S.Hamblett
  */
 import 'package:coap/coap.dart';
-import 'package:coap/config/coap_config_all.dart';
 import 'package:coap/src/endpoint/resources/coap_remote_resource.dart';
 import 'package:test/test.dart';
 
@@ -57,8 +58,7 @@ void main() {
       const input = '</my/Päth>;rt="MyName";if="/someRef/path";ct=42;obs;sz=20';
       final root = CoapRemoteResource.newRoot(input);
 
-      final my = CoapRemoteResource('my');
-      my.resourceType = 'replacement';
+      final my = CoapRemoteResource('my')..resourceType = 'replacement';
       root.addSubResource(my);
 
       var res = root.getResourcePath('/my/Päth') as CoapRemoteResource?;
@@ -111,9 +111,7 @@ void main() {
       const format = '$link1,$link2,$link3';
       final res = CoapRemoteResource.newRoot(format);
 
-      final query = <CoapOption>[];
-      query.add(CoapOption.createUriQuery('rt=MyName'));
-
+      final query = <CoapOption>[CoapOption.createUriQuery('rt=MyName')];
       final queried =
           CoapLinkFormat.serializeOptions(res, query, recursive: true);
       expect(queried, '$link2,$link1');

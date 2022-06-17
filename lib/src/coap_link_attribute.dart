@@ -5,10 +5,13 @@
  * Copyright :  S.Hamblett
  */
 
+import 'package:meta/meta.dart';
+
 /// Class for linkformat attributes.
+@immutable
 class CoapLinkAttribute {
   /// Initializes an attribute.
-  CoapLinkAttribute(this._name, this._value);
+  const CoapLinkAttribute(this._name, this._value);
 
   final String _name;
 
@@ -27,7 +30,7 @@ class CoapLinkAttribute {
   String? get valueAsString => _value is String ? _value as String? : null;
 
   /// Serializes this attribute into its string representation.
-  void serialize(StringBuffer builder) {
+  void serialize(final StringBuffer builder) {
     // check if there's something to write
     if (_value != null) {
       if (_value is bool) {
@@ -41,8 +44,10 @@ class CoapLinkAttribute {
         } else if (_value is int) {
           builder.write(_value);
         } else {
-          throw FormatException('Serializing attribute of unexpected type: '
-              '$_name ${_value.runtimeType}');
+          throw FormatException(
+            'Serializing attribute of unexpected type: '
+            '$_name ${_value.runtimeType}',
+          );
         }
       }
     }
@@ -52,7 +57,7 @@ class CoapLinkAttribute {
   String toString() => 'name: $_name  value: $_value';
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(final Object other) {
     if (other is! CoapLinkAttribute) {
       return false;
     }

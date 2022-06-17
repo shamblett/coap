@@ -15,16 +15,16 @@ import '../coap_response.dart';
 /// Provides methods to serialize outgoing messages to byte arrays.
 abstract class CoapIMessageEncoder {
   /// Encodes a request into a bytes array.
-  Uint8Buffer encodeRequest(CoapRequest request);
+  Uint8Buffer encodeRequest(final CoapRequest request);
 
   /// Encodes a response into a bytes array.
-  Uint8Buffer encodeResponse(CoapResponse response);
+  Uint8Buffer encodeResponse(final CoapResponse response);
 
   /// Encodes an empty message into a bytes array.
-  Uint8Buffer encodeEmpty(CoapEmptyMessage message);
+  Uint8Buffer encodeEmpty(final CoapEmptyMessage message);
 
   /// Encodes a CoAP message into a bytes array.
   /// Returns the encoded bytes, or null if the message can not be encoded,
   /// i.e. the message is not a Request, a Response or an EmptyMessage.
-  Uint8Buffer? encodeMessage(CoapMessage message);
+  Uint8Buffer? encodeMessage(final CoapMessage message);
 }
