@@ -24,6 +24,7 @@ export 'src/coap_constants.dart';
 export 'src/coap_link_format.dart';
 export 'src/coap_media_type.dart';
 export 'src/coap_message_type.dart';
+export 'src/coap_observe_client_relation.dart';
 export 'src/coap_option.dart';
 export 'src/coap_option_type.dart';
 export 'src/coap_request.dart';
