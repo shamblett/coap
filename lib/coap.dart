@@ -27,6 +27,7 @@ export 'src/coap_message_type.dart';
 export 'src/coap_option.dart';
 export 'src/coap_option_type.dart';
 export 'src/coap_request.dart';
+export 'src/coap_response.dart';
 export 'src/deduplication/coap_crop_rotation_deduplicator.dart';
 export 'src/deduplication/coap_ideduplicator.dart';
 export 'src/deduplication/coap_noop_deduplicator.dart';
