@@ -237,7 +237,11 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
       bytes = _config.spec.newMessageEncoder().encodeMessage(message);
       message.bytes = bytes;
     }
-    return bytes!;
+    if (bytes != null) {
+      return bytes;
+    } else {
+      return Uint8Buffer();
+    }
   }
 
   Uint8Buffer _serializeRequest(final CoapMessage message) {
