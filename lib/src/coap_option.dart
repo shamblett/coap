@@ -95,7 +95,7 @@ class CoapOption {
   }
 
   /// Gets the name of the option that corresponds to its type.
-  String get name => _type.name;
+  String get name => _type.optionName;
 
   /// Gets the value's length in bytes of the option.
   int get length => _buffer.lengthInBytes;

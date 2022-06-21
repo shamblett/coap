@@ -163,7 +163,7 @@ class CoapEntry<TFilter, TNextFilter>
     if (prevEntry != null) {
       sb
         ..write('${prevEntry!.name}:')
-        ..write(prevEntry!.filter.getType().name);
+        ..write(prevEntry!.filter.getType().optionName);
     } else {
       sb.write('null');
     }
@@ -172,7 +172,7 @@ class CoapEntry<TFilter, TNextFilter>
     if (nextEntry != null) {
       sb
         ..write('${nextEntry!.name}:')
-        ..write(nextEntry!.filter.getType().name);
+        ..write(nextEntry!.filter.getType().optionName);
     } else {
       sb.write('null');
     }
