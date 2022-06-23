@@ -139,21 +139,16 @@ class CoapExchange {
   }
 
   /// Fire the reregistering event
-  void fireReregistering(final CoapRequest req) {
-    _eventBus.fire(CoapReregisteringEvent(req));
-  }
+  void fireReregistering(final CoapRequest req) =>
+      _eventBus.fire(CoapReregisteringEvent(req));
 
   /// Fire the responding event
-  void fireResponding(final CoapResponse resp) {
-    _eventBus.fire(CoapRespondingEvent(resp));
-  }
+  void fireResponding(final CoapResponse resp) =>
+      _eventBus.fire(CoapRespondingEvent(resp));
 
   // Fire the respond event
-  void fireRespond(final CoapResponse resp) {
-    // block1 requests only have token set on their blocks
-    request!.token ??= currentRequest!.token;
-    _eventBus.fire(CoapRespondEvent(resp));
-  }
+  void fireRespond(final CoapResponse resp) =>
+      _eventBus.fire(CoapRespondEvent(resp));
 
   /// Attributes
   T? get<T>(final Object key) => _attributes[key] as T?;
