@@ -71,20 +71,15 @@ class CoapMessage {
   InternetAddress? bindAddress;
 
   @internal
-  set eventBus(final CoapEventBus? eventBus) {
-    _eventBus = eventBus;
-  }
+  set eventBus(final CoapEventBus? eventBus) => _eventBus = eventBus;
 
   CoapEventBus? get eventBus => _eventBus;
 
   String? get namespace => _eventBus?.namespace;
 
   /// Adds an option to the list of options of this CoAP message.
-  void addOption(final CoapOption option) {
-    final optionTypeList = _optionMap[option.type] ?? []
-      ..add(option);
-    _optionMap[option.type] = optionTypeList;
-  }
+  void addOption(final CoapOption option) =>
+      _optionMap[option.type] = (_optionMap[option.type] ?? [])..add(option);
 
   /// Remove a specific option, returns true if the option has been removed.
   bool removeOption(final CoapOption option) {
@@ -101,15 +96,12 @@ class CoapMessage {
   }
 
   /// Adds options to the list of options of this CoAP message.
-  void addOptions(final Iterable<CoapOption> options) {
-    options.forEach(addOption);
-  }
+  void addOptions(final Iterable<CoapOption> options) =>
+      options.forEach(addOption);
 
   /// Removes all options of the given type from this CoAP message.
-  bool removeOptions(final OptionType optionType) {
-    _optionMap.remove(optionType);
-    return true;
-  }
+  void removeOptions(final OptionType optionType) =>
+      _optionMap.remove(optionType);
 
   /// Gets all options of the given type.
   List<CoapOption>? getOptions(final OptionType optionType) =>
@@ -127,10 +119,7 @@ class CoapMessage {
   }
 
   /// Sets an option, removing all others of the option type
-  void setOption(final CoapOption opt) {
-    removeOptions(opt.type);
-    addOption(opt);
-  }
+  void setOption(final CoapOption opt) => _optionMap[opt.type] = [opt];
 
   /// Sets all options with the specified option type, removing
   /// all others of the same type.
@@ -440,9 +429,7 @@ class CoapMessage {
   }
 
   /// Clear the E tags
-  void clearETags() {
-    removeOptions(OptionType.eTag);
-  }
+  void clearETags() => removeOptions(OptionType.eTag);
 
   /// If-None Matches.
   List<CoapOption> get ifNoneMatches => _selectOptions(OptionType.ifNoneMatch);
@@ -459,10 +446,7 @@ class CoapMessage {
   }
 
   /// Add an opaque if none match
-  void addIfNoneMatchOpaque(final Uint8Buffer? opaque) {
-    if (opaque == null) {
-      throw ArgumentError.notNull('Message::addIfNoneMatch');
-    }
+  void addIfNoneMatchOpaque(final Uint8Buffer opaque) {
     if (opaque.length > 8) {
       throw ArgumentError.value(
         opaque.length,
@@ -495,9 +479,7 @@ class CoapMessage {
   }
 
   /// Clear the if none matches
-  void clearIfNoneMatches() {
-    removeOptions(OptionType.ifNoneMatch);
-  }
+  void clearIfNoneMatches() => removeOptions(OptionType.ifNoneMatch);
 
   /// Uri's
   String? get uriHost {
@@ -521,48 +503,37 @@ class CoapMessage {
   }
 
   /// URI path
-  String get uriPath {
-    final join = CoapOption.join(getOptions(OptionType.uriPath), '/');
-    return '${join ?? ""}/';
-  }
+  String get uriPath =>
+      CoapOption.join(getOptions(OptionType.uriPath), '/') ?? '';
 
-  /// Sets a number of Uri path options from a string, ignores any trailing / character
-  set uriPath(final String value) {
-    var out = value;
-    if (out.endsWith('/')) {
-      out = out.substring(0, out.length - 1);
-    }
-    setOptions(CoapOption.split(OptionType.uriPath, out, '/'));
+  /// Sets a number of Uri path options from a string, trims /
+  set uriPath(final String fullPath) {
+    final trimmedPath = _trimChar(fullPath, '/');
+    clearUriPath();
+    trimmedPath.split('/').forEach(addUriPath);
   }
 
   /// URI paths
   List<CoapOption> get uriPaths => _selectOptions(OptionType.uriPath);
 
-  /// URI paths as a string with no trailing '/'
-  String get uriPathsString {
-    final sb = StringBuffer();
-    for (final option in uriPaths) {
-      sb.write(option.stringValue);
-      if (option != uriPaths.last) {
-        sb.write('/');
-      }
-    }
-    return sb.toString();
-  }
-
   /// Add a URI path
-  void addUriPath(final String? path) {
-    if (path == null) {
-      throw ArgumentError.notNull('Message::addUriPath');
-    }
-    if (path.length > 255) {
+  void addUriPath(final String path) {
+    final trimmedPath = _trimChar(path, '/');
+    if (trimmedPath.contains('/')) {
       throw ArgumentError.value(
-        path.length,
+        path,
+        'Message::addUriPath',
+        'A single Uri Path can only contain leading or trailing slashes',
+      );
+    }
+    if (trimmedPath.length > 255) {
+      throw ArgumentError.value(
+        trimmedPath.length,
         'Message::addUriPath',
         "Uri Path option's length must be between 0 and 255 inclusive",
       );
     }
-    addOption(CoapOption.createString(OptionType.uriPath, path));
+    addOption(CoapOption.createString(OptionType.uriPath, trimmedPath));
   }
 
   /// Remove a URI path
@@ -575,46 +546,38 @@ class CoapMessage {
   }
 
   /// Clear URI paths
-  void clearUriPath() {
-    _optionMap.remove(OptionType.uriPath);
-  }
+  void clearUriPath() => removeOptions(OptionType.uriPath);
 
   /// URI query
   String get uriQuery =>
       CoapOption.join(getOptions(OptionType.uriQuery), '&') ?? '';
 
   /// Set a URI query
-  set uriQuery(final String value) {
-    var tmp = value;
-    if (value.isNotEmpty && value.startsWith('?')) {
-      tmp = value.substring(1);
+  set uriQuery(final String fullQuery) {
+    var trimmedQuery = _trimChar(fullQuery, '&');
+    if (trimmedQuery.startsWith('?')) {
+      trimmedQuery = trimmedQuery.substring(1);
     }
-    setOptions(CoapOption.split(OptionType.uriQuery, tmp, '&'));
+    clearUriQuery();
+    trimmedQuery.split('&').forEach(addUriQuery);
   }
 
   /// URI queries
   List<CoapOption> get uriQueries => _selectOptions(OptionType.uriQuery);
 
-  /// URI queries as a string with no trailing '/'
-  String get uriQueriesString {
-    final sb = StringBuffer();
-    for (final option in uriQueries) {
-      sb.write(option.stringValue);
-      if (option != uriQueries.last) {
-        sb.write('&');
-      }
-    }
-    return '?${sb.toString()}';
-  }
-
   /// Add a URI query
-  void addUriQuery(final String? query) {
-    if (query == null) {
-      throw ArgumentError.notNull('Message::addUriQuery');
-    }
-    if (query.length > 255) {
+  void addUriQuery(final String query) {
+    final trimmedQuery = _trimChar(query, '&');
+    if (trimmedQuery.contains('&')) {
       throw ArgumentError.value(
-        query.length,
+        query,
+        'Message::addUriQuery',
+        'A single Uri Query can only contain leading or trailing &',
+      );
+    }
+    if (trimmedQuery.length > 255) {
+      throw ArgumentError.value(
+        trimmedQuery.length,
         'Message::addUriQuery',
         "Uri Query option's length must be between 0 and 255 inclusive",
       );
@@ -632,15 +595,10 @@ class CoapMessage {
   }
 
   /// Clear URI queries
-  void clearUriQuery() {
-    removeOptions(OptionType.uriQuery);
-  }
+  void clearUriQuery() => removeOptions(OptionType.uriQuery);
 
   /// Uri port
-  int get uriPort {
-    final opt = getFirstOption(OptionType.uriPort);
-    return opt?.value as int? ?? 0;
-  }
+  int get uriPort => getFirstOption(OptionType.uriPort)?.value as int? ?? 0;
 
   set uriPort(final int value) {
     if (value == 0) {
@@ -651,7 +609,7 @@ class CoapMessage {
   }
 
   /// Location path as a string
-  String get locationPathsString {
+  String get locationPath {
     final sb = StringBuffer();
     for (final option in locationPaths) {
       sb.write(option.stringValue);
@@ -663,16 +621,10 @@ class CoapMessage {
   }
 
   /// Set the location path from a string
-  set locationPathsString(final String value) {
-    // Check for '..' or '.' are invalid values
-    if (value.contains('..') || value.contains('.')) {
-      throw ArgumentError.value('Message::locationPath');
-    }
-    var out = value;
-    if (out.endsWith('/')) {
-      out = out.substring(0, out.length - 1);
-    }
-    setOptions(CoapOption.split(OptionType.locationPath, out, '/'));
+  set locationPath(final String fullPath) {
+    final trimmedPath = _trimChar(fullPath, '/');
+    clearLocationPath();
+    trimmedPath.split('/').forEach(addLocationPath);
   }
 
   /// Location paths
@@ -680,7 +632,7 @@ class CoapMessage {
 
   /// Location
   String get location {
-    var path = '/$locationPathsString';
+    var path = '/$locationPath';
     final query = locationQuery;
     if (query.isNotEmpty) {
       path += '?$query';
@@ -690,14 +642,29 @@ class CoapMessage {
 
   /// Add a location path
   void addLocationPath(final String path) {
-    if (path.length > 255) {
+    final trimmedPath = _trimChar(path, '/');
+    if (trimmedPath == '..' || trimmedPath == '.') {
       throw ArgumentError.value(
-        path.length,
+        path,
+        'Message::addLocationPath'
+        "A Location Path must not be only '.' or '..'",
+      );
+    }
+    if (trimmedPath.contains('/')) {
+      throw ArgumentError.value(
+        path,
+        'Message::addLocationPath',
+        'A single Location Path can only contain leading or trailing slashes',
+      );
+    }
+    if (trimmedPath.length > 255) {
+      throw ArgumentError.value(
+        trimmedPath.length,
         'Message::addLocationPath',
         "Location Path option's length must be between 0 and 255 inclusive",
       );
     }
-    addOption(CoapOption.createString(OptionType.locationPath, path));
+    addOption(CoapOption.createString(OptionType.locationPath, trimmedPath));
   }
 
   /// Remove a location path
@@ -710,47 +677,42 @@ class CoapMessage {
   }
 
   /// Clear location path
-  void clearLocationPath() {
-    _optionMap.remove(OptionType.locationPath);
-  }
+  void clearLocationPath() => _optionMap.remove(OptionType.locationPath);
 
   /// Location query
   String get locationQuery =>
       CoapOption.join(getOptions(OptionType.locationQuery), '&') ?? '';
 
   /// Set a location query
-  set locationQuery(final String value) {
-    var tmp = value;
-    if (value.isNotEmpty && value.startsWith('?')) {
-      tmp = value.substring(1);
+  set locationQuery(final String fullQuery) {
+    var trimmedQuery = _trimChar(fullQuery, '&');
+    if (trimmedQuery.startsWith('?')) {
+      trimmedQuery = trimmedQuery.substring(1);
     }
-    setOptions(CoapOption.split(OptionType.locationQuery, tmp, '&'));
+    clearLocationQuery();
+    trimmedQuery.split('&').forEach(addLocationQuery);
   }
 
   /// Location queries
   List<CoapOption> get locationQueries =>
       _selectOptions(OptionType.locationQuery);
 
-  /// Location queries as a string with no trailing '/'
-  String get locationQueriesString {
-    final sb = StringBuffer();
-    for (final option in locationQueries) {
-      sb.write(option.stringValue);
-      if (option != locationQueries.last) {
-        sb.write('&');
-      }
-    }
-    return '?${sb.toString()}';
-  }
-
   /// Add a location query
   void addLocationQuery(final String query) {
-    if (query.length > 255) {
+    final trimmedQuery = _trimChar(query, '&');
+    if (trimmedQuery.length > 255) {
       throw ArgumentError.value(
-        query.length,
+        trimmedQuery.length,
         'Message::addLocationQuery',
         "Location Query option's length must be between "
             '0 and 255 inclusive',
+      );
+    }
+    if (trimmedQuery.contains('&')) {
+      throw ArgumentError.value(
+        query,
+        'Message::addLocationQuery',
+        'A single Location Query can only contain leading or trailing &',
       );
     }
     addOption(CoapOption.createString(OptionType.locationQuery, query));
@@ -766,9 +728,7 @@ class CoapMessage {
   }
 
   /// Clear location  queries
-  void clearLocationQuery() {
-    removeOptions(OptionType.locationQuery);
-  }
+  void clearLocationQuery() => removeOptions(OptionType.locationQuery);
 
   /// Content type
   CoapMediaType? get contentType {
@@ -978,7 +938,7 @@ class CoapMessage {
       ..write(_optionString('If-None Match', ifNoneMatches))
       ..write(_optionString('Uri Port', uriPort > 0 ? uriPort : null))
       ..write(_optionString('Location Paths', locationPaths))
-      ..write(_optionString('Uri Paths', uriPathsString))
+      ..write(_optionString('Uri Paths', uriPath))
       ..write(_optionString('Content-Type', contentType.toString()))
       ..write(_optionString('Max Age', maxAge))
       ..write(_optionString('Uri Queries', uriQueries));
@@ -1009,5 +969,18 @@ class CoapMessage {
       str = value.toString();
     }
     return str != '' ? '  $name: $str,\n' : '';
+  }
+
+  String _trimChar(final String str, final String char) {
+    var trimmed = str;
+    if (trimmed.startsWith(char)) {
+      trimmed = trimmed.substring(1);
+    }
+
+    if (trimmed.endsWith('/')) {
+      trimmed = trimmed.substring(0, trimmed.length - 1);
+    }
+
+    return trimmed;
   }
 }

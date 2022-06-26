@@ -78,8 +78,6 @@ class CoapRequest extends CoapMessage {
         uriPort = CoapConstants.defaultPort;
       }
     }
-    uriPath = value.path;
-    uriQuery = value.query;
     resolveHost = host;
     _uri = value;
   }

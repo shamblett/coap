@@ -162,24 +162,6 @@ void main() {
       expect(option.byteValue[7], 0xFF);
     });
 
-    test('Split', () {
-      final opts = CoapOption.split(OptionType.uriPath, 'hello/from/me', '/');
-      expect(opts.length, 3);
-      expect(opts[0].stringValue, 'hello');
-      expect(opts[0].type, OptionType.uriPath);
-      expect(opts[1].stringValue, 'from');
-      expect(opts[2].stringValue, 'me');
-
-      final opts1 =
-          CoapOption.split(OptionType.uriPath, '///hello/from/me/again', '/');
-      expect(opts1.length, 4);
-      expect(opts1[0].stringValue, 'hello');
-      expect(opts1[0].type, OptionType.uriPath);
-      expect(opts1[1].stringValue, 'from');
-      expect(opts1[2].stringValue, 'me');
-      expect(opts1[3].stringValue, 'again');
-    });
-
     test('Join', () {
       final opt1 = CoapOption.createString(OptionType.uriPath, 'Hello');
       final opt2 = CoapOption.createString(OptionType.uriPath, 'from');
