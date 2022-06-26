@@ -7,6 +7,8 @@
 
 import 'package:typed_data/typed_data.dart';
 
+import '../../coap.dart';
+
 /// Represents the status of a blockwise transfer of a request or a response.
 class CoapBlockwiseStatus {
   /// Instantiates a new blockwise status.
@@ -35,10 +37,10 @@ class CoapBlockwiseStatus {
   bool get isRandomAccess => randomAccess;
 
   /// The Content-Format must stay the same for the whole transfer.
-  final int _contentFormat;
+  final CoapMediaType? _contentFormat;
 
   /// Content format
-  int get contentFormat => _contentFormat;
+  CoapMediaType? get contentFormat => _contentFormat;
 
   /// Complete
   bool complete = false;

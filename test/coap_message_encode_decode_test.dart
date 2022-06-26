@@ -196,7 +196,7 @@ void main() {
         ..addOption(
           CoapOption.createVal(
             OptionType.contentFormat,
-            CoapMediaType.textPlain,
+            CoapMediaType.textPlain.numericValue,
           ),
         )
         ..addOption(CoapOption.createVal(OptionType.maxAge, 30));
@@ -219,7 +219,7 @@ void main() {
       );
       expect(
         convMsg.getFirstOption(OptionType.contentFormat)!.intValue,
-        CoapMediaType.textPlain,
+        CoapMediaType.textPlain.numericValue,
       );
       expect(convMsg.getFirstOption(OptionType.maxAge)!.value, 30);
       expect(
@@ -265,8 +265,8 @@ void main() {
         ..addIfMatchOpaque(
           typed.Uint8Buffer()..addAll(<int>[88, 12, 254, 157, 5]),
         )
-        ..contentType = 40
-        ..accept = 40;
+        ..contentType = CoapMediaType.fromIntValue(40)
+        ..accept = CoapMediaType.fromIntValue(40);
 
       final bytes = spec.encode(request)!;
       checkData(spec.name, bytes, testNo);

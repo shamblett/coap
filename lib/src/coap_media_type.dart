@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_classes_with_only_static_members
-
 /*
  * Package : Coap
  * Author : S. Hamblett <steve.hamblett@linux.com>
@@ -7,288 +5,309 @@
  * Copyright :  S.Hamblett
  */
 
+import 'dart:io';
 import 'package:collection/collection.dart';
 
-import 'coap_option.dart';
-
-/// This class describes the CoAP Media Type Registry as defined in
+/// This enum describes the CoAP Media Type Registry as defined in
 /// RFC 7252, Section 12.3.
-class CoapMediaType {
-  /// Media registry
-  static final Map<int, List<String>> _registry = <int, List<String>>{
-    textPlain: <String>['text/plain', 'txt'],
-    imageGif: <String>['image/gif', 'gif'],
-    imageJpeg: <String>['image/jpeg', 'jpg'],
-    imagePng: <String>['image/png', 'png'],
-    applicationLinkFormat: <String>['application/link-format', 'wlnk'],
-    applicationXml: <String>['application/xml', 'xml'],
-    applicationOctetStream: <String>['application/octet-stream', 'bin'],
-    applicationExi: <String>['application/exi', 'exi'],
-    applicationJson: <String>['application/json', 'json'],
-    // FIXME: How to deal with undefined file extensions?
-    applicationJsonPatchJson: <String>['application/json-patch+json'],
-    applicationMergePatchJson: <String>['application/merge-patch+json'],
-    applicationCbor: <String>['application/cbor', 'cbor'],
-    applicationCwt: <String>['application/cwt'],
-    applicationMultipartCore: <String>['application/multipart-core'],
-    applicationCborSeq: <String>['application/cbor-seq'],
-    // FIXME: Add application/cose Content Formats
-    applicationCoseKey: <String>['application/cose-key', 'cbor'],
-    applicationCoseKeySet: <String>['application/cose-key-set', 'cbor'],
-    applicationSenmlJson: <String>['application/senml+json', 'senml'],
-    applicationSensmlJson: <String>['application/sensml+json', 'sensml'],
-    applicationSenmlCbor: <String>['application/senml+cbor', 'senmlc'],
-    applicationSensmlCbor: <String>['application/sensml+cbor', 'sensmlc'],
-    applicationSenmlExi: <String>['application/senml-exi', 'senmle'],
-    applicationSensmlExi: <String>['application/sensml-exi', 'sensmle'],
-    applicationCoapGroupJson: <String>['application/coap-group+json', 'json'],
-    applicationDotsCbor: <String>['application/dots+cbor'],
-    applicationMissingBlocksCborSeq: <String>[
-      'application/missing-blocks+cbor-seq'
-    ],
-    // FIXME: Add application/pkcs7-mime Content Formats
-    applicationPkcs8: <String>['application/pkcs8'],
-    applicationCsrattrs: <String>['application/csrattrs'],
-    applicationPkcs10: <String>['application/pkcs10'],
-    applicationPkixCert: <String>['application/pkix-cert'],
-    applicationSenmlXml: <String>['application/senml+xml', 'senmlx'],
-    applicationSensmlXml: <String>['application/sensml+xml', 'sensmlx'],
-    applicationSenmlEtchJson: <String>[
-      'application/senml-etch+json',
-      'senml-etchj'
-    ],
-    applicationSenmlEtchCbor: <String>[
-      'application/senml-etch+cbor',
-      'senml-etchc'
-    ],
-    applicationTdJson: <String>['application/td+json', 'jsontd'],
-    applicationVndOcfCbor: <String>['application/vnd.ocf+cbor'],
-    applicationOscore: <String>['application/oscore'],
-    applicationJavascript: <String>['application/javascript', 'js'],
-    textCss: <String>['text/css', 'css'],
-  };
-
-  /// undefined
-  static const int undefined = -1;
-
+enum CoapMediaType {
   /// text/plain; charset=utf-8
-  static const int textPlain = 0;
+  textPlain(0, 'text', 'plain', charset: 'utf-8'),
+
+  /// application/cose; cose-type="cose-encrypt0"
+  applicationCoseCoseTypeCoseEncrypt0(
+    16,
+    'application',
+    'cose',
+    parameters: {'cose-type': 'cose-encrypt0'},
+  ),
+
+  /// application/cose; cose-type="cose-mac0"
+  applicationCoseCoseTypeCoseMac0(
+    17,
+    'application',
+    'cose',
+    parameters: {'cose-type': 'cose-mac0'},
+  ),
+
+  /// application/cose; cose-type="cose-sign1"
+  applicationCoseCoseTypeCoseSign1(
+    18,
+    'application',
+    'cose',
+    parameters: {'cose-type': 'cose-sign1'},
+  ),
 
   /// image/gif
-  static const int imageGif = 21;
+  imageGif(21, 'image', 'gif'),
 
   /// image/jpeg
-  static const int imageJpeg = 22;
+  imageJpeg(22, 'image', 'jpeg'),
 
   /// image/png
-  static const int imagePng = 23;
+  imagePng(23, 'image', 'png'),
 
   /// application/link-format
-  static const int applicationLinkFormat = 40;
+  applicationLinkFormat(
+    40,
+    'application',
+    'link-format',
+  ),
 
   /// application/xml
-  static const int applicationXml = 41;
+  applicationXml(41, 'application', 'xml'),
 
   /// application/octet-stream
-  static const int applicationOctetStream = 42;
+  applicationOctetStream(
+    42,
+    'application',
+    'octet-stream',
+  ),
 
   /// application/exi
-  static const int applicationExi = 47;
+  applicationExi(47, 'application', 'exi'),
 
   /// application/json
-  static const int applicationJson = 50;
+  applicationJson(50, 'application', 'json'),
 
   /// application/json-patch+json
-  static const int applicationJsonPatchJson = 51;
+  applicationJsonPatchJson(51, 'application', 'json-patch+json'),
 
   /// application/merge-patch+json
-  static const int applicationMergePatchJson = 52;
+  applicationMergePatchJson(52, 'application', 'merge-patch+json'),
 
   /// application/cbor
-  static const int applicationCbor = 60;
+  applicationCbor(60, 'application', 'cbor'),
 
   /// application/cwt
-  static const int applicationCwt = 61;
+  applicationCwt(61, 'application', 'cwt'),
 
   /// application/multipart-core
-  static const int applicationMultipartCore = 62;
+  applicationMultipartCore(62, 'application', 'multipart-core'),
 
   /// application/cbor-seq
-  static const int applicationCborSeq = 63;
+  applicationCborSeq(63, 'application', 'cbor-seq'),
+
+  /// application/cose; cose-type="cose-encrypt"
+  applicationCoseCoseTypeCoseEncrypt(
+    96,
+    'application',
+    'cose',
+    parameters: {'cose-type': 'cose-encrypt'},
+  ),
+
+  /// application/cose; cose-type="cose-mac"
+  applicationCoseCoseTypeCoseMac(
+    97,
+    'application',
+    'cose',
+    parameters: {'cose-type': 'cose-mac'},
+  ),
+
+  /// application/cose; cose-type="cose-sign"
+  applicationCoseCoseTypeCoseSign(
+    98,
+    'application',
+    'cose',
+    parameters: {'cose-type': 'cose-sign'},
+  ),
 
   /// application/cose-key
-  static const int applicationCoseKey = 101;
+  applicationCoseKey(101, 'application', 'cose-key'),
 
   /// application/cose-key-set
-  static const int applicationCoseKeySet = 102;
+  applicationCoseKeySet(102, 'application', 'cose-key-set'),
 
   /// application/senml+json
-  static const int applicationSenmlJson = 110;
+  applicationSenmlJson(110, 'application', 'senml+json'),
 
   /// application/sensml+json
-  static const int applicationSensmlJson = 111;
-
-  /// application/senml+cbor
-  static const int applicationSenmlCbor = 112;
+  applicationSensmlJson(111, 'application', 'sensml+json'),
 
   /// application/sensml+cbor
-  static const int applicationSensmlCbor = 113;
+  applicationSensmlCbor(113, 'application', 'sensml+cbor'),
 
   /// application/senml-exi
-  static const int applicationSenmlExi = 114;
+  applicationSenmlExi(114, 'application', 'senml-exi'),
 
   /// application/sensml-exi
-  static const int applicationSensmlExi = 115;
+  applicationSensmlExi(115, 'application', 'sensml-exi'),
+
+  /// application/yang-data+cbor; id=sid
+  applicationYangDataCborSid(
+    140,
+    'application',
+    'sensml-exi',
+    parameters: {'id': 'sid'},
+  ),
 
   /// application/coap-group+json
-  static const int applicationCoapGroupJson = 256;
+  applicationCoapGroupJson(256, 'application', 'coap-group+json'),
 
   /// application/dots+cbor
-  static const int applicationDotsCbor = 271;
+  applicationDotsCbor(271, 'application', 'dots+cbor'),
 
   /// application/missing-blocks+cbor-seq
-  static const int applicationMissingBlocksCborSeq = 272;
+  applicationMissingBlocksCborSeq(
+    272,
+    'application',
+    'missing-blocks+cbor-seq',
+  ),
+
+  /// application/pkcs7-mime; smime-type=server-generated-key
+  applicationPkcs7MimeServerGeneratedKey(
+    281,
+    'application',
+    'pkcs7-mime',
+    parameters: {'mime-type': 'server-generated-key'},
+  ),
+
+  /// application/pkcs7-mime; smime-type=certs-only
+  applicationPkcs7MimeCertsOnly(
+    281,
+    'application',
+    'pkcs7-mime',
+    parameters: {'mime-type': 'certs-only'},
+  ),
 
   /// application/pkcs8
-  static const int applicationPkcs8 = 284;
+  applicationPkcs8(284, 'application', 'pkcs8'),
 
   /// application/csrattrs
-  static const int applicationCsrattrs = 285;
+  applicationCsrattrs(285, 'application', 'csrattrs'),
 
   /// application/pkcs10
-  static const int applicationPkcs10 = 286;
+  applicationPkcs10(286, 'application', 'pkcs10'),
 
   /// application/pkix-cert
-  static const int applicationPkixCert = 287;
+  applicationPkixCert(287, 'application', 'pkix-cert'),
+
+  /// application/aif+cbor
+  applicationAifCbor(290, 'application', 'aif+cbor'),
+
+  /// application/aif+json
+  applicationAifJson(291, 'application', 'aif+json'),
 
   /// application/senml+xml
-  static const int applicationSenmlXml = 310;
+  applicationSenmlXml(310, 'application', 'senml+xml'),
 
   /// application/sensml+xml
-  static const int applicationSensmlXml = 311;
+  applicationSensmlXml(311, 'application', 'sensml+xml'),
 
   /// application/senml-etch+json
-  static const int applicationSenmlEtchJson = 320;
+  applicationSenmlEtchJson(320, 'application', 'senml-etch+json'),
 
   /// application/senml-etch+cbor
-  static const int applicationSenmlEtchCbor = 322;
+  applicationSenmlEtchCbor(322, 'application', 'senml-etch+cbor'),
+
+  /// application/yang-data+cbor
+  applicationYangCbor(340, 'application', 'yang-data+cbor'),
+
+  /// application/yang-data+cbor
+  applicationSenmlEtchCborIdName(
+    341,
+    'application',
+    'senml-etch+cbor',
+    parameters: {'id': 'name'},
+  ),
 
   /// application/td+json
-  static const int applicationTdJson = 432;
+  applicationTdJson(432, 'application', 'application/td+json'),
 
   /// application/vnd.ocf+cbor
-  static const int applicationVndOcfCbor = 10000;
+  applicationVndOcfCbor(10000, 'application', 'vnd.ocf+cbor'),
 
   /// application/oscore
-  static const int applicationOscore = 10001;
+  applicationOscore(10001, 'application', 'oscore'),
 
   /// application/javascript
-  static const int applicationJavascript = 10002;
+  applicationJavascript(10002, 'application', 'javascript'),
 
-  /// text/css
-  static const int textCss = 20000;
+  /// application/json@deflate
+  applictionJsonDeflate(11050, 'application', 'json', encoding: 'deflate'),
 
-  /// image/svg+xml
-  static const int imageSvgXml = 30000;
+  /// application/cbor@deflate
+  applictionCborDeflate(11060, 'application', 'cbor', encoding: 'deflate'),
 
-  /// any
-  static const int any = 0xFF;
+  /// application/textCss
+  textCss(20000, 'text', 'css'),
+
+  /// application/svg+xml
+  imageSvgXml(30000, 'image', 'svg+xml'),
+  ;
+
+  const CoapMediaType(
+    this.numericValue,
+    this.primaryType,
+    this.subType, {
+    this.charset,
+    this.parameters = const {},
+    this.encoding,
+  });
+
+  final int numericValue;
+
+  String get mimeType => '$primaryType/$subType';
+
+  final String primaryType;
+
+  final String subType;
+
+  final String? charset;
+
+  final Map<String, String?> parameters;
+
+  final String? encoding;
+
+  ContentType get contentType => ContentType(
+        primaryType,
+        subType,
+        charset: charset,
+        parameters: parameters,
+      );
+
+  // TODO(JKRhb): Rework to switch statement?
+  static CoapMediaType? fromIntValue(final int value) => CoapMediaType.values
+      .firstWhereOrNull((final element) => element.numericValue == value);
+
+  /// Parses a string-based contentType [value] and [encoding] and returns
+  /// a [CoapMediaType], if a match has been found.
+  ///
+  /// Otherwise, it returns `null`.
+  static CoapMediaType? parse(final String value, [final String? encoding]) {
+    final contentType = ContentType.parse(value);
+
+    return CoapMediaType.values.firstWhereOrNull(
+      (final element) =>
+          element.contentType.toString() == contentType.toString() &&
+          element.encoding == encoding,
+    );
+  }
+
+  /// Indicates if this [CoapMediaType] is printable.
+  // TODO(JKRhb): Are there any uncovered cases?
+  bool get isPrintable =>
+      primaryType == 'text' ||
+      subType.endsWith('xml') ||
+      subType.endsWith('json') ||
+      this == applicationLinkFormat ||
+      this == applicationJavascript;
 
   /// Checks whether the given media type is a type of image.
   /// True iff the media type is a type of image.
-  static bool isImage(final int mediaType) =>
-      mediaType >= imageGif && mediaType <= imagePng;
+  bool get isImage => primaryType == 'image';
 
-  /// Is the media type printable
-  static bool isPrintable(final int? mediaType) {
-    switch (mediaType) {
-      case textPlain:
-      case applicationLinkFormat:
-      case applicationJavascript:
-      case textCss:
-
-      // XML based mediaTypes
-      case applicationXml:
-      case applicationSenmlXml:
-      case applicationSensmlXml:
-      case imageSvgXml:
-
-      // JSON based mediaTypes
-      case applicationJson:
-      case applicationJsonPatchJson:
-      case applicationMergePatchJson:
-      case applicationSenmlJson:
-      case applicationSensmlJson:
-      case applicationCoapGroupJson:
-      case applicationSenmlEtchJson:
-      case applicationTdJson:
-
-      case undefined:
-        return true;
-      default:
-        return false;
-    }
-  }
-
-  /// Returns a string representation of the media type.
+  /// Formats the Content Encoding as described in [RFC 9193, section 3].
   ///
-  /// Returns 'application/octet-stream' as the default if the [mediaType] code
-  /// is unknown.
-  static String name(final int mediaType) {
-    if (_registry.containsKey(mediaType)) {
-      return _registry[mediaType]![0];
-    } else {
-      return 'application/octet-stream';
+  /// [RFC 9193, section 3]:  https://datatracker.ietf.org/doc/html/rfc9193#section-3
+  String get _formattedEncoding {
+    if (encoding == null) {
+      return '';
     }
+
+    return '@$encoding';
   }
 
-  /// Gets the file extension of the given media type.
-  ///
-  /// Returns 'undefined' if the [mediaType] cannot be resolved.
-  static String fileExtension(final int mediaType) {
-    if (_registry.containsKey(mediaType) && _registry[mediaType]!.length > 1) {
-      return _registry[mediaType]![1];
-    }
-
-    return 'undefined';
-  }
-
-  /// Negotiation content
-  static int negotiationContent(
-    final int defaultContentType,
-    final List<int> supported,
-    final List<CoapOption>? accepted,
-  ) {
-    if (accepted == null) {
-      return defaultContentType;
-    }
-    var hasAccept = false;
-    for (final opt in accepted) {
-      for (final ct in supported) {
-        if (ct == opt.intValue) {
-          return ct;
-        }
-      }
-      hasAccept = true;
-    }
-    return hasAccept ? CoapMediaType.undefined : defaultContentType;
-  }
-
-  /// Parse
-  static int? parse(final String type) =>
-      _registry.keys.firstWhereOrNull(
-        (final key) => _registry[key]![0].toLowerCase() == type.toLowerCase(),
-      ) ??
-      CoapMediaType.undefined;
-
-  /// Wildcard parse
-  static List<int>? parseWildcard(final String? regex) {
-    if (regex == null) {
-      return null;
-    }
-    final r = RegExp('${regex.substring(0, regex.indexOf('*')).trim()}.*');
-    return _registry.keys
-        .where((final key) => r.hasMatch(_registry[key]![0]))
-        .toList();
-  }
+  @override
+  String toString() => contentType.toString() + _formattedEncoding;
 }

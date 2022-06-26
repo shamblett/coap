@@ -333,7 +333,7 @@ class CoapMessage {
   }
 
   /// Sets the payload and media type of this CoAP message.
-  void setPayloadMedia(final String? payload, final int mediaType) {
+  void setPayloadMedia(final String? payload, final CoapMediaType mediaType) {
     if (payload == null) {
       return;
     }
@@ -343,7 +343,10 @@ class CoapMessage {
   }
 
   /// Sets the payload of this CoAP message.
-  void setPayloadMediaRaw(final Uint8Buffer payload, final int mediaType) {
+  void setPayloadMediaRaw(
+    final Uint8Buffer payload,
+    final CoapMediaType mediaType,
+  ) {
     this.payload = payload;
     contentType = mediaType;
   }
@@ -768,24 +771,30 @@ class CoapMessage {
   }
 
   /// Content type
-  int get contentType {
+  CoapMediaType? get contentType {
     final opt = getFirstOption(OptionType.contentFormat);
-    return opt?.value as int? ?? CoapMediaType.undefined;
+    if (opt == null) {
+      return null;
+    }
+
+    return CoapMediaType.fromIntValue(opt.intValue);
   }
 
-  set contentType(final int value) {
-    if (value == CoapMediaType.undefined) {
+  set contentType(final CoapMediaType? value) {
+    if (value == null) {
       removeOptions(OptionType.contentFormat);
     } else {
-      setOption(CoapOption.createVal(OptionType.contentFormat, value));
+      setOption(
+        CoapOption.createVal(OptionType.contentFormat, value.numericValue),
+      );
     }
   }
 
   /// The content-format of this CoAP message,
   /// Same as ContentType, only another name.
-  int get contentFormat => contentType;
+  CoapMediaType? get contentFormat => contentType;
 
-  set contentFormat(final int value) => contentType = value;
+  set contentFormat(final CoapMediaType? value) => contentType = value;
 
   /// The max-age of this CoAP message.
   int get maxAge {
@@ -806,16 +815,20 @@ class CoapMessage {
   }
 
   /// Accept
-  int get accept {
+  CoapMediaType? get accept {
     final opt = getFirstOption(OptionType.accept);
-    return opt?.value as int? ?? CoapMediaType.undefined;
+    if (opt == null) {
+      return null;
+    }
+
+    return CoapMediaType.fromIntValue(opt.intValue);
   }
 
-  set accept(final int value) {
-    if (value == CoapMediaType.undefined) {
+  set accept(final CoapMediaType? value) {
+    if (value == null) {
       removeOptions(OptionType.accept);
     } else {
-      setOption(CoapOption.createVal(OptionType.accept, value));
+      setOption(CoapOption.createVal(OptionType.accept, value.numericValue));
     }
   }
 
@@ -966,11 +979,11 @@ class CoapMessage {
       ..write(_optionString('Uri Port', uriPort > 0 ? uriPort : null))
       ..write(_optionString('Location Paths', locationPaths))
       ..write(_optionString('Uri Paths', uriPathsString))
-      ..write(_optionString('Content-Type', CoapMediaType.name(contentType)))
+      ..write(_optionString('Content-Type', contentType.toString()))
       ..write(_optionString('Max Age', maxAge))
       ..write(_optionString('Uri Queries', uriQueries));
-    if (accept != CoapMediaType.undefined) {
-      sb.write(_optionString('Accept', CoapMediaType.name(accept)));
+    if (accept != null) {
+      sb.write(_optionString('Accept', accept.toString()));
     }
     sb
       ..write(_optionString('Location Queries', locationQueries))
