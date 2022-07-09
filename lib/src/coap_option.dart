@@ -126,7 +126,7 @@ class CoapOption {
     switch (_type.optionFormat) {
       case OptionFormat.integer:
         return (_type == OptionType.accept || _type == OptionType.contentFormat)
-            ? CoapMediaType.name(intValue)
+            ? CoapMediaType.fromIntValue(intValue).toString()
             : intValue.toString();
       case OptionFormat.string:
         return stringValue;

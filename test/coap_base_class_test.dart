@@ -11,61 +11,17 @@ void main() {
   group('Media types', () {
     test('Properties', () {
       const type = CoapMediaType.applicationJson;
-      expect(CoapMediaType.name(type), 'application/json');
-      expect(CoapMediaType.fileExtension(type), 'json');
-      expect(CoapMediaType.isPrintable(type), true);
-      expect(CoapMediaType.isImage(type), false);
+      expect(type.mimeType, 'application/json');
+      expect(type.isPrintable, true);
+      expect(type.isImage, false);
 
       const unknownType = 200;
-      expect(CoapMediaType.name(unknownType), 'application/octet-stream');
-      expect(CoapMediaType.fileExtension(unknownType), 'undefined');
-      expect(CoapMediaType.isPrintable(unknownType), false);
-      expect(CoapMediaType.isImage(unknownType), false);
-    });
-
-    test('Negotiation Content', () {
-      const defaultContentType = 10;
-      final supported = <int>[11, 5];
-      final accepted = <CoapOption>[];
-      final opt1 = CoapOption.createVal(OptionType.maxAge, 10);
-      final opt2 = CoapOption.createVal(OptionType.contentFormat, 5);
-      accepted
-        ..add(opt1)
-        ..add(opt2);
-      expect(
-        CoapMediaType.negotiationContent(
-          defaultContentType,
-          supported,
-          accepted,
-        ),
-        5,
-      );
-      opt2.intValue = 67;
-      expect(
-        CoapMediaType.negotiationContent(
-          defaultContentType,
-          supported,
-          accepted,
-        ),
-        CoapMediaType.undefined,
-      );
+      expect(CoapMediaType.fromIntValue(unknownType), null);
     });
 
     test('Parse', () {
       final res = CoapMediaType.parse('application/xml');
       expect(res, CoapMediaType.applicationXml);
-    });
-
-    test('Parse wild card', () {
-      var res = CoapMediaType.parseWildcard(null);
-      expect(res, isNull);
-
-      res = CoapMediaType.parseWildcard('xml*');
-      expect(res, <int>[
-        CoapMediaType.applicationXml,
-        CoapMediaType.applicationSenmlXml,
-        CoapMediaType.applicationSensmlXml,
-      ]);
     });
   });
 
