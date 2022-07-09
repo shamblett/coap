@@ -23,7 +23,7 @@ FutureOr<void> main() async {
   final client = CoapClient(uri, conf);
 
   // Create the request for the get request
-  final reqObs = CoapRequest.newGet()..addUriPath('obs');
+  final reqObs = CoapRequest.newGet()..uriPath = 'obs';
 
   try {
     print('Observing /obs on ${uri.host}');
@@ -33,7 +33,7 @@ FutureOr<void> main() async {
     });
 
     final reqObsNon = CoapRequest(CoapCode.get, confirmable: false)
-      ..addUriPath('obs-non');
+      ..uriPath = 'obs-non';
 
     print('Observing /obs-non on ${uri.host}');
     final obsNon = await client.observe(reqObsNon);

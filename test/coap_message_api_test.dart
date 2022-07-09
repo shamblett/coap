@@ -242,21 +242,38 @@ void main() {
   test('Uri path', () {
     final message = CoapMessage();
     expect(message.uriPaths.length, 0);
-    message.uriPath = 'a/uri/path/';
-    expect(message.uriPaths.length, 3);
-    expect(message.uriPathsString, 'a/uri/path');
+    for (final path in ['/a/uri/path', 'a/uri/path/', '/a/uri/path/']) {
+      message.uriPath = path;
+      expect(message.uriPaths.length, 3);
+      expect(message.uriPath, 'a/uri/path');
+    }
     message.addUriPath('longer');
     expect(message.uriPaths.length, 4);
-    expect(message.uriPathsString, 'a/uri/path/longer');
-    expect(() => message.addUriPath(null), throwsArgumentError);
+    expect(message.uriPath, 'a/uri/path/longer');
+    expect(
+      () => message.addUriPath('multiple/not/allowed'),
+      throwsArgumentError,
+    );
+    expect(
+      () => message.addLocationPath('no-double-slash//'),
+      throwsArgumentError,
+    );
     final tooLong = 'n' * 1000;
     expect(() => message.addUriPath(tooLong), throwsArgumentError);
     message.removeUriPath('path');
     expect(message.uriPaths.length, 3);
-    expect(message.uriPathsString, 'a/uri/longer');
+    expect(message.uriPath, 'a/uri/longer');
     message.clearUriPath();
     expect(message.uriPaths.length, 0);
-    expect(message.uriPathsString.isEmpty, isTrue);
+    expect(message.uriPath.isEmpty, isTrue);
+    message.uriPath = 'a//uri/path';
+    expect(message.uriPaths.length, 4);
+    expect(message.uriPath, 'a//uri/path');
+    message
+      ..clearUriPath()
+      ..addUriPath('');
+    expect(message.uriPaths.length, 1);
+    expect(message.uriPath, '');
   });
 
   test('Uri query', () {
@@ -264,16 +281,23 @@ void main() {
     expect(message.uriQueries.length, 0);
     message.uriQuery = 'a&uri=1&query=2';
     expect(message.uriQueries.length, 3);
-    expect(message.uriQueriesString, '?a&uri=1&query=2');
+    expect(message.uriQuery, 'a&uri=1&query=2');
     message.addUriQuery('longer=3');
     expect(message.uriQueries.length, 4);
-    expect(message.uriQueriesString, '?a&uri=1&query=2&longer=3');
-    expect(() => message.addUriQuery(null), throwsArgumentError);
+    expect(message.uriQuery, 'a&uri=1&query=2&longer=3');
     final tooLong = 'n' * 1000;
     expect(() => message.addUriQuery(tooLong), throwsArgumentError);
+    expect(
+      () => message.addUriQuery('no=1&multiple=2&queries=3'),
+      throwsArgumentError,
+    );
+    expect(
+      () => message.addLocationQuery('no_double_and=1&&'),
+      throwsArgumentError,
+    );
     message.removeUriQuery('query=2');
     expect(message.uriQueries.length, 3);
-    expect(message.uriQueriesString, '?a&uri=1&longer=3');
+    expect(message.uriQuery, 'a&uri=1&longer=3');
     message.clearUriQuery();
     expect(message.uriQueries.length, 0);
   });
@@ -281,22 +305,38 @@ void main() {
   test('Location path', () {
     final message = CoapMessage();
     expect(message.locationPaths.length, 0);
-    message.locationPathsString = 'a/location/path/';
+    message.locationPath = 'a/location/path/';
     expect(message.locationPaths.length, 3);
-    expect(message.locationPathsString, 'a/location/path');
-    expect(() => message.locationPathsString = '..', throwsArgumentError);
-    expect(() => message.locationPathsString = '.', throwsArgumentError);
+    expect(message.locationPath, 'a/location/path');
     message.addLocationPath('longer');
     expect(message.locationPaths.length, 4);
-    expect(message.locationPathsString, 'a/location/path/longer');
-    final tooLong = 'n' * 1000;
-    expect(() => message.addLocationPath(tooLong), throwsArgumentError);
+    expect(message.locationPath, 'a/location/path/longer');
     message.removelocationPath('path');
     expect(message.locationPaths.length, 3);
-    expect(message.locationPathsString, 'a/location/longer');
+    expect(message.locationPath, 'a/location/longer');
     message.clearLocationPath();
     expect(message.locationPaths.length, 0);
-    expect(message.locationPathsString.isEmpty, isTrue);
+    expect(message.locationPath.isEmpty, isTrue);
+    message.locationPath = 'a//uri/path';
+    expect(message.locationPaths.length, 4);
+    expect(message.locationPath, 'a//uri/path');
+    message
+      ..clearLocationPath()
+      ..addLocationPath('');
+    expect(message.locationPaths.length, 1);
+    expect(message.locationPath, '');
+    expect(() => message.locationPath = '..', throwsArgumentError);
+    expect(() => message.locationPath = '.', throwsArgumentError);
+    expect(
+      () => message.addLocationPath('multiple/not/allowed'),
+      throwsArgumentError,
+    );
+    expect(
+      () => message.addLocationPath('no-double-slash//'),
+      throwsArgumentError,
+    );
+    final tooLong = 'n' * 1000;
+    expect(() => message.addLocationPath(tooLong), throwsArgumentError);
   });
 
   test('Location query', () {
@@ -304,15 +344,23 @@ void main() {
     expect(message.locationQueries.length, 0);
     message.locationQuery = 'a&uri=1&query=2';
     expect(message.locationQueries.length, 3);
-    expect(message.locationQueriesString, '?a&uri=1&query=2');
+    expect(message.locationQuery, 'a&uri=1&query=2');
     message.addLocationQuery('longer=3');
     expect(message.locationQueries.length, 4);
-    expect(message.locationQueriesString, '?a&uri=1&query=2&longer=3');
+    expect(message.locationQuery, 'a&uri=1&query=2&longer=3');
     final tooLong = 'n' * 1000;
     expect(() => message.addLocationQuery(tooLong), throwsArgumentError);
+    expect(
+      () => message.addLocationQuery('no=1&multiple=2&queries=3'),
+      throwsArgumentError,
+    );
+    expect(
+      () => message.addLocationQuery('no_double_and=1&&'),
+      throwsArgumentError,
+    );
     message.removeLocationQuery('query=2');
     expect(message.locationQueries.length, 3);
-    expect(message.locationQueriesString, '?a&uri=1&longer=3');
+    expect(message.locationQuery, 'a&uri=1&longer=3');
     message.clearLocationQuery();
     expect(message.locationQueries.length, 0);
   });

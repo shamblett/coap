@@ -35,12 +35,10 @@ class CoapOption {
   int get hashCode => Object.hash(_type, _buffer);
 
   @override
-  bool operator ==(final Object other) {
-    if (other is! CoapOption) {
-      return false;
-    }
-    return _type == other._type && _buffer.equals(other._buffer);
-  }
+  bool operator ==(final Object other) =>
+      other is CoapOption &&
+      _type == other._type &&
+      _buffer.equals(other._buffer);
 
   /// Value in bytes
   Uint8Buffer get byteValue => _buffer;
@@ -163,30 +161,6 @@ class CoapOption {
   /// Creates an option.
   factory CoapOption.createVal(final OptionType type, final int val) =>
       CoapOption.create(type)..intValue = val;
-
-  /// Splits a string into a set of options, e.g. a uri path.
-  /// Remove any leading /
-  static List<CoapOption> split(
-    final OptionType type,
-    final String s,
-    final String delimiter,
-  ) {
-    final opts = <CoapOption>[];
-    final exp = RegExp(r'^\/*\/');
-    final Match? pos = exp.firstMatch(s);
-    var tmp = s;
-    if (pos != null) {
-      tmp = s.substring(pos.end, s.length);
-    }
-    if (tmp.isNotEmpty) {
-      for (final str in tmp.split(delimiter)) {
-        if (delimiter == '/' || str.isNotEmpty) {
-          opts.add(CoapOption.createString(type, str));
-        }
-      }
-    }
-    return opts;
-  }
 
   /// Joins the string values of a set of options.
   static String? join(final List<CoapOption>? options, final String delimiter) {

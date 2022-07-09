@@ -388,7 +388,7 @@ class CoapClient {
     final List<Uint8Buffer>? etags,
   }) {
     request
-      ..addUriPath(path)
+      ..uriPath = path
       ..accept = accept
       ..type = type
       ..maxRetransmit = maxRetransmit;
