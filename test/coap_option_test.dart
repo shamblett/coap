@@ -54,7 +54,7 @@ void main() {
     });
 
     test('Name', () {
-      final opt = CoapOption.create(15);
+      final opt = CoapOption.create(OptionType.fromTypeNumber(15));
       expect(opt.name, 'Uri-Query');
     });
 
@@ -96,7 +96,8 @@ void main() {
     });
 
     test('Set string value', () {
-      final option = CoapOption.create(11)..stringValue = '';
+      final option = CoapOption.create(OptionType.fromTypeNumber(11))
+        ..stringValue = '';
       expect(option.length, 0);
 
       option.stringValue = 'CoAP.NET';
@@ -104,7 +105,8 @@ void main() {
     });
 
     test('Set int value', () {
-      final option = CoapOption.create(12)..intValue = 0;
+      final option = CoapOption.create(OptionType.fromTypeNumber(12))
+        ..intValue = 0;
       expect(option.byteValue[0], 0);
 
       option.intValue = 11;

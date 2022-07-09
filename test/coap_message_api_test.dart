@@ -48,11 +48,11 @@ void main() {
     final message = CoapMessage();
     final opt1 = CoapOption(OptionType.uriHost);
     expect(
-      () => CoapOption.create(9000),
+      () => CoapOption.create(OptionType.fromTypeNumber(9000)),
       throwsA(const TypeMatcher<UnknownElectiveOptionException>()),
     );
     expect(
-      () => CoapOption.create(9001),
+      () => CoapOption.create(OptionType.fromTypeNumber(9001)),
       throwsA(const TypeMatcher<UnknownCriticalOptionException>()),
     );
     final options = <CoapOption>[
