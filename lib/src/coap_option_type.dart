@@ -108,11 +108,11 @@ enum OptionType implements Comparable<OptionType> {
   final int optionNumber;
 
   /// The name of this option.
-  final String name;
+  final String optionName;
 
   /// The [OptionFormat] of this option (integer, string, opaque, or unknown).
   final OptionFormat optionFormat;
-  const OptionType(this.optionNumber, this.name, this.optionFormat);
+  const OptionType(this.optionNumber, this.optionName, this.optionFormat);
 
   /// Creates a new [OptionType] object from a numeric [type].
   static OptionType fromTypeNumber(final int type) {
