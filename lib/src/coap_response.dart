@@ -6,6 +6,7 @@
  */
 
 import 'package:meta/meta.dart';
+import 'package:typed_data/typed_buffers.dart';
 
 import 'coap_code.dart';
 import 'coap_message.dart';
@@ -25,6 +26,13 @@ class CoapResponse extends CoapMessage {
 
   /// Status code as a string
   String get statusCodeString => CoapCode.codeToString(_statusCode);
+
+  Uint8Buffer? _multicastToken;
+
+  /// The initial multicast token, used for matching responses
+  Uint8Buffer? get multicastToken => _multicastToken;
+  @internal
+  set multicastToken(final Uint8Buffer? val) => _multicastToken = val;
 
   Duration? _rtt;
 

@@ -129,6 +129,15 @@ class CoapStackTopLayer extends CoapAbstractLayer {
         initialExchange is! CoapMulticastExchange) {
       initialExchange.complete = true;
     }
+
+    if (initialExchange.originalMulticastRequest != null) {
+      // Track block2 responses across exchanges
+      response.multicastToken = initialExchange.originalMulticastRequest!.token;
+    }
+
+    // block2 requests only have token set on their blocks
+    initialExchange.request!.token ??= response.token;
+
     initialExchange.fireRespond(response);
   }
 

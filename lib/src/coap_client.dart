@@ -331,7 +331,11 @@ class CoapClient {
       }
       _eventBus
           .on<CoapRespondEvent>()
-          .where((final e) => e.resp.token!.equals(request.token!))
+          .where(
+            (final e) =>
+                e.resp.token!.equals(request.token!) ||
+                e.resp.multicastToken!.equals(request.token!),
+          )
           .takeWhile((final _) => !request.isTimedOut && !request.isCancelled)
           .listen(
             onMulticastResponse.onData,
