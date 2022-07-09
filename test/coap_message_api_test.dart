@@ -266,6 +266,14 @@ void main() {
     message.clearUriPath();
     expect(message.uriPaths.length, 0);
     expect(message.uriPath.isEmpty, isTrue);
+    message.uriPath = 'a//uri/path';
+    expect(message.uriPaths.length, 4);
+    expect(message.uriPath, 'a//uri/path');
+    message
+      ..clearUriPath()
+      ..addUriPath('');
+    expect(message.uriPaths.length, 1);
+    expect(message.uriPath, '');
   });
 
   test('Uri query', () {
@@ -309,6 +317,14 @@ void main() {
     message.clearLocationPath();
     expect(message.locationPaths.length, 0);
     expect(message.locationPath.isEmpty, isTrue);
+    message.locationPath = 'a//uri/path';
+    expect(message.locationPaths.length, 4);
+    expect(message.locationPath, 'a//uri/path');
+    message
+      ..clearLocationPath()
+      ..addLocationPath('');
+    expect(message.locationPaths.length, 1);
+    expect(message.locationPath, '');
     expect(() => message.locationPath = '..', throwsArgumentError);
     expect(() => message.locationPath = '.', throwsArgumentError);
     expect(
