@@ -162,7 +162,7 @@ enum CoapMediaType {
 
   /// application/pkcs7-mime; smime-type=server-generated-key
   applicationPkcs7MimeServerGeneratedKey(
-    281,
+    280,
     'application',
     'pkcs7-mime',
     parameters: {'mime-type': 'server-generated-key'},
