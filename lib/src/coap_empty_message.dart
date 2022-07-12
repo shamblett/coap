@@ -18,27 +18,24 @@ class CoapEmptyMessage extends CoapMessage {
 
   /// Create a new acknowledgment for the specified message.
   /// Returns the acknowledgment.
-  CoapEmptyMessage.newACK(final CoapMessage message) {
-    type = CoapMessageType.ack;
-    id = message.id;
-    token = CoapConstants.emptyToken;
-    destination = message.source;
-  }
+  factory CoapEmptyMessage.newACK(final CoapMessage message) =>
+      CoapEmptyMessage(CoapMessageType.ack)
+        ..id = message.id
+        ..token = CoapConstants.emptyToken
+        ..destination = message.source;
 
   /// Create a new reset message for the specified message.
   /// Return the reset.
-  CoapEmptyMessage.newRST(final CoapMessage message) {
-    type = CoapMessageType.rst;
-    id = message.id;
-    token = CoapConstants.emptyToken;
-    destination = message.source;
-  }
+  factory CoapEmptyMessage.newRST(final CoapMessage message) =>
+      CoapEmptyMessage(CoapMessageType.rst)
+        ..id = message.id
+        ..token = CoapConstants.emptyToken
+        ..destination = message.source;
 
   /// Create a new empty message confirmable for the specified message.
   /// Return the empty
-  CoapEmptyMessage.newCon(final CoapMessage message) {
-    type = CoapMessageType.con;
-    token = CoapConstants.emptyToken;
-    destination = message.source;
-  }
+  factory CoapEmptyMessage.newCon(final CoapMessage message) =>
+      CoapEmptyMessage(CoapMessageType.con)
+        ..token = CoapConstants.emptyToken
+        ..destination = message.source;
 }
