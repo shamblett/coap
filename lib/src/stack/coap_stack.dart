@@ -6,7 +6,6 @@
  */
 
 import '../coap_config.dart';
-import '../tasks/coap_iexecutor.dart';
 import 'coap_blockwise_layer.dart';
 import 'coap_layer_stack.dart';
 import 'coap_observe_layer.dart';
@@ -22,16 +21,5 @@ class CoapStack extends CoapLayerStack {
     addLast('Blockwise', CoapBlockwiseLayer(config));
     addLast('Token', CoapTokenLayer(config));
     addLast('Reliability', CoapReliabilityLayer(config));
-  }
-
-  CoapIExecutor? _executor;
-
-  /// The IExecutor for all layers.
-  CoapIExecutor? get executor => _executor;
-
-  set executor(final CoapIExecutor? value) {
-    for (final entry in getAll()) {
-      entry.filter.executor = value;
-    }
   }
 }

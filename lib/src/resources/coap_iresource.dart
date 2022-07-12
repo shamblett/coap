@@ -8,7 +8,6 @@
 import '../net/coap_exchange.dart';
 import '../net/coap_iendpoint.dart';
 import '../observe/coap_observe_relation.dart';
-import '../tasks/coap_iexecutor.dart';
 import 'coap_resource_attributes.dart';
 
 /// Interface for a resource
@@ -54,11 +53,6 @@ abstract class CoapIResource {
 
   /// Gets the attributes of this resource.
   CoapResourceAttributes? get attributes => _attributes;
-
-  CoapIExecutor? _executor;
-
-  /// Gets the executor of this resource.
-  CoapIExecutor? get executor => _executor;
 
   Iterable<CoapIEndPoint>? _endpoints;
 

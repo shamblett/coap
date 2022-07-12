@@ -17,7 +17,6 @@ import '../coap_request.dart';
 import '../coap_response.dart';
 import '../event/coap_event_bus.dart';
 import '../net/coap_exchange.dart';
-import '../tasks/coap_iexecutor.dart';
 import 'coap_abstract_layer.dart';
 import 'coap_ilayer.dart';
 
@@ -43,7 +42,7 @@ class CoapTransmissionContext {
   /// Failed transmission count
   int failedTransmissionCount = 0;
   Timer? _timer;
-  final ActionGeneric<CoapTransmissionContext> _retransmit;
+  final void Function(CoapTransmissionContext) _retransmit;
 
   /// Start
   void start() {
@@ -266,7 +265,7 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
   void _prepareRetransmission(
     final CoapExchange exchange,
     final CoapMessage msg,
-    final ActionGeneric<CoapTransmissionContext> retransmit,
+    final void Function(CoapTransmissionContext) retransmit,
   ) {
     final ctx = exchange.getOrAdd<CoapTransmissionContext>(
       transmissionContextKey,
