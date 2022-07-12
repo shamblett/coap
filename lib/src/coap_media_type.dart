@@ -39,6 +39,9 @@ enum CoapMediaType {
   ),
 
   /// image/gif
+  applicationAceCbor(19, 'application', 'ace+cbor'),
+
+  /// image/gif
   imageGif(21, 'image', 'gif'),
 
   /// image/jpeg
@@ -124,6 +127,9 @@ enum CoapMediaType {
   /// application/sensml+json
   applicationSensmlJson(111, 'application', 'sensml+json'),
 
+  /// application/senml+cbor
+  applicationSenmlCbor(112, 'application', 'senml+cbor'),
+
   /// application/sensml+cbor
   applicationSensmlCbor(113, 'application', 'sensml+cbor'),
 
@@ -156,7 +162,7 @@ enum CoapMediaType {
 
   /// application/pkcs7-mime; smime-type=server-generated-key
   applicationPkcs7MimeServerGeneratedKey(
-    281,
+    280,
     'application',
     'pkcs7-mime',
     parameters: {'mime-type': 'server-generated-key'},
@@ -213,6 +219,9 @@ enum CoapMediaType {
 
   /// application/td+json
   applicationTdJson(432, 'application', 'application/td+json'),
+
+  /// application/voucher-cose+cbor
+  applicationVoucerCoseCbor(836, 'application', 'voucher-cose+cbor'),
 
   /// application/vnd.ocf+cbor
   applicationVndOcfCbor(10000, 'application', 'vnd.ocf+cbor'),
