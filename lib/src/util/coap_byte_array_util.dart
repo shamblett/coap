@@ -7,16 +7,16 @@
  * Copyright :  S.Hamblett
  */
 
-import 'package:hex/hex.dart';
+import 'package:convert/convert.dart';
 import 'package:typed_data/typed_data.dart';
 
 /// Utility methods for bytes array.
 class CoapByteArrayUtil {
   /// Returns a hex string representation of the given bytes array.
   static String toHexString(final Uint8Buffer data) =>
-      HEX.encode(data.toList());
+      hex.encode(data.toList());
 
   /// Parses a bytes array from its hex string representation.
   static Uint8Buffer fromHexString(final String data) =>
-      Uint8Buffer()..addAll(HEX.decode(data));
+      Uint8Buffer()..addAll(hex.decode(data));
 }
