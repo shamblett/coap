@@ -499,10 +499,20 @@ abstract class CoapMessage {
   String get uriPath =>
       CoapOption.join(getOptions(OptionType.uriPath), '/') ?? '';
 
-  /// Sets a number of Uri path options from a string, trims /
+  /// Sets a number of Uri path options from a string
   set uriPath(final String fullPath) {
-    final trimmedPath = _trimChar(fullPath, '/');
     clearUriPath();
+
+    var trimmedPath = fullPath;
+
+    if (fullPath.startsWith('/')) {
+      trimmedPath = fullPath.substring(1);
+    }
+
+    if (trimmedPath.isEmpty) {
+      return;
+    }
+
     trimmedPath.split('/').forEach(addUriPath);
   }
 

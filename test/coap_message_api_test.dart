@@ -235,14 +235,18 @@ void main() {
   test('Uri path', () {
     final message = CoapEmptyMessage(CoapMessageType.rst)..isTimedOut = true;
     expect(message.uriPaths.length, 0);
-    for (final path in ['/a/uri/path', 'a/uri/path/', '/a/uri/path/']) {
+    for (final path in ['', '/']) {
       message.uriPath = path;
-      expect(message.uriPaths.length, 3);
-      expect(message.uriPath, 'a/uri/path');
+      expect(message.uriPaths.length, 0);
+    }
+    for (final path in ['a/uri/path/', '/a/uri/path/']) {
+      message.uriPath = path;
+      expect(message.uriPaths.length, 4);
+      expect(message.uriPath, 'a/uri/path/');
     }
     message.addUriPath('longer');
-    expect(message.uriPaths.length, 4);
-    expect(message.uriPath, 'a/uri/path/longer');
+    expect(message.uriPaths.length, 5);
+    expect(message.uriPath, 'a/uri/path//longer');
     expect(
       () => message.addUriPath('multiple/not/allowed'),
       throwsArgumentError,
@@ -254,8 +258,8 @@ void main() {
     final tooLong = 'n' * 1000;
     expect(() => message.addUriPath(tooLong), throwsArgumentError);
     message.removeUriPath('path');
-    expect(message.uriPaths.length, 3);
-    expect(message.uriPath, 'a/uri/longer');
+    expect(message.uriPaths.length, 4);
+    expect(message.uriPath, 'a/uri//longer');
     message.clearUriPath();
     expect(message.uriPaths.length, 0);
     expect(message.uriPath.isEmpty, isTrue);
