@@ -5,11 +5,12 @@
  * Copyright :  S.Hamblett
  */
 
+import 'dart:io';
+
 import 'package:typed_data/typed_data.dart';
 
 import '../coap_config.dart';
 import '../coap_constants.dart';
-import '../net/coap_internet_address.dart';
 import 'coap_network_openssl.dart';
 import 'coap_network_tinydtls.dart';
 import 'coap_network_udp.dart';
@@ -53,29 +54,34 @@ class CoapDtlsException implements Exception {
 }
 
 /// Abstract networking class, allows different implementations for
-/// UDP, test etc.
+/// UDP, TCP, test etc.
 abstract class CoapINetwork {
-  /// The internet address
-  CoapInternetAddress get address;
+  /// The initialization timeout
+  static const Duration initTimeout = Duration(seconds: 10);
 
-  /// The namespace
-  String get namespace;
+  /// The reinit period for open connections
+  static Duration reinitPeriod = initTimeout + const Duration(seconds: 2);
 
-  /// The port
+  /// The local address
+  InternetAddress get bindAddress;
+
+  /// The remote address
+  InternetAddress get address;
+
+  /// The remote port
   int get port;
 
-  /// Send, returns the number of bytes sent or null
-  /// if not bound.
-  Future<int> send(
+  /// If the underlying socket is closed
+  bool get isClosed;
+
+  /// Bind (UDP) or connect (TCP) to the network and listen
+  Future<void> init();
+
+  /// Sends [data] over the socket, [address] is used for multicast over UDP.
+  void send(
     final Uint8Buffer data, [
-    final CoapInternetAddress? address,
+    final InternetAddress? address,
   ]);
-
-  /// Starts the receive listener
-  void receive();
-
-  /// Bind the network
-  Future<void> bind();
 
   /// Close the socket
   void close();
@@ -83,74 +89,60 @@ abstract class CoapINetwork {
   /// Creates a new CoapINetwork from a given URI
   static CoapINetwork fromUri(
     final Uri uri, {
-    required final CoapInternetAddress address,
+    required final InternetAddress address,
     required final DefaultCoapConfig config,
     final String namespace = '',
+    final InternetAddress? bindAddress,
     final PskCredentialsCallback? pskCredentialsCallback,
     final EcdsaKeys? ecdsaKeys,
   }) {
+    final defaultBindAddress = address.type == InternetAddressType.IPv4
+        ? InternetAddress.anyIPv4
+        : InternetAddress.anyIPv6;
     final port = uri.port > 0 ? uri.port : null;
     switch (uri.scheme) {
       case CoapConstants.uriScheme:
         return CoapNetworkUDP(
           address,
           port ?? config.defaultPort,
+          bindAddress ?? defaultBindAddress,
           namespace: namespace,
         );
       case CoapConstants.secureUriScheme:
-        return _determineDtlsNetwork(
-          address,
-          port,
-          config,
-          namespace: namespace,
-          pskCredentialsCallback: pskCredentialsCallback,
-          ecdsaKeys: ecdsaKeys,
-        );
+        switch (config.dtlsBackend) {
+          case DtlsBackend.TinyDtls:
+            if (pskCredentialsCallback == null && ecdsaKeys == null) {
+              throw CoapCredentialsException(
+                'A PSK credentials callback and/or ECDSA keys have been expected '
+                'to use CoAPS, but neither have been found!',
+              );
+            }
+            return CoapNetworkUDPTinyDtls(
+              address,
+              port ?? config.defaultSecurePort,
+              bindAddress ?? defaultBindAddress,
+              config.tinyDtlsInstance,
+              namespace: namespace,
+              pskCredentialsCallback: pskCredentialsCallback,
+              ecdsaKeys: ecdsaKeys,
+            );
+          case DtlsBackend.OpenSsl:
+            return CoapNetworkUDPOpenSSL(
+              address,
+              port ?? config.defaultSecurePort,
+              bindAddress ?? defaultBindAddress,
+              verify: config.dtlsVerify,
+              withTrustedRoots: config.dtlsWithTrustedRoots,
+              ciphers: config.dtlsCiphers,
+            );
+          case null:
+            throw CoapDtlsException(
+              'Encountered a coaps:// URI scheme but no DTLS backend has been '
+              'enabled in the config.',
+            );
+        }
       default:
         throw UnsupportedProtocolException(uri.scheme);
-    }
-  }
-
-  /// Determines which [CoapINetwork] to use for secure communication using
-  /// DTLS.
-  static CoapINetwork _determineDtlsNetwork(
-    final CoapInternetAddress address,
-    final int? port,
-    final DefaultCoapConfig config, {
-    final String namespace = '',
-    final PskCredentialsCallback? pskCredentialsCallback,
-    final EcdsaKeys? ecdsaKeys,
-  }) {
-    switch (config.dtlsBackend) {
-      case DtlsBackend.TinyDtls:
-        if (pskCredentialsCallback != null || ecdsaKeys != null) {
-          return CoapNetworkTinyDtls(
-            address,
-            port ?? config.defaultSecurePort,
-            config.tinyDtlsInstance,
-            namespace: namespace,
-            pskCredentialsCallback: pskCredentialsCallback,
-            ecdsaKeys: ecdsaKeys,
-          );
-        }
-
-        throw CoapCredentialsException(
-          'A PSK credentials callback and/or ECDSA keys have been expected '
-          'to use CoAPS, but neither have been found!',
-        );
-      case DtlsBackend.OpenSsl:
-        return CoapNetworkOpenSSL(
-          address,
-          port ?? config.defaultSecurePort,
-          verify: config.dtlsVerify,
-          withTrustedRoots: config.dtlsWithTrustedRoots,
-          ciphers: config.dtlsCiphers,
-        );
-      case null:
-        throw CoapDtlsException(
-          'Encountered a coaps:// URI scheme but no DTLS backend has been '
-          'enabled in the config.',
-        );
     }
   }
 }

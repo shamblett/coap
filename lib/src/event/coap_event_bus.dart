@@ -5,15 +5,16 @@
  * Copyright :  S.Hamblett
  */
 
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:event_bus/event_bus.dart';
-import 'package:typed_data/typed_data.dart';
 
 import '../coap_empty_message.dart';
 import '../coap_message.dart';
 import '../coap_request.dart';
 import '../coap_response.dart';
 import '../net/coap_exchange.dart';
-import '../net/coap_internet_address.dart';
 
 abstract class CoapMessageEvent {
   CoapMessageEvent(this.msg);
@@ -147,13 +148,35 @@ class CoapDataReceivedEvent {
   CoapDataReceivedEvent(this.data, this.address);
 
   /// The data
-  Uint8Buffer data;
+  Uint8List data;
 
   /// The address
-  CoapInternetAddress address;
+  InternetAddress address;
 
   @override
   String toString() => '$runtimeType:\n$data from ${address.address}';
+}
+
+class CoapSocketInitEvent {
+  /// Construction
+  CoapSocketInitEvent();
+
+  @override
+  String toString() => '$runtimeType:\nSocket attempting to initialize';
+}
+
+class CoapSocketErrorEvent {
+  /// Construction
+  CoapSocketErrorEvent(this.error, this.stackTrace);
+
+  /// The socket error
+  Object error;
+
+  /// The stack trace of the socket error
+  StackTrace stackTrace;
+
+  @override
+  String toString() => '$runtimeType:\n$error\n$stackTrace';
 }
 
 /// Event bus class

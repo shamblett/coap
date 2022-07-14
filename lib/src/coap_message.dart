@@ -21,7 +21,6 @@ import 'coap_message_type.dart';
 import 'coap_option.dart';
 import 'coap_option_type.dart';
 import 'event/coap_event_bus.dart';
-import 'net/coap_internet_address.dart';
 import 'util/coap_byte_array_util.dart';
 
 typedef HookFunction = void Function();
@@ -182,11 +181,11 @@ class CoapMessage {
 
   /// The destination endpoint.
   @internal
-  CoapInternetAddress? destination;
+  InternetAddress? destination;
 
   /// The source endpoint.
   @internal
-  CoapInternetAddress? source;
+  InternetAddress? source;
 
   /// Acknowledged hook for attaching a callback if needed
   HookFunction? acknowledgedHook;
@@ -302,7 +301,7 @@ class CoapMessage {
       try {
         final ret = _utfDecoder.convert(payload);
         return ret;
-      } on FormatException {
+      } on FormatException catch (_) {
         // The payload may be incomplete, if so and the conversion
         // fails indicate this.
         return '<<<< Payload incomplete >>>>>';

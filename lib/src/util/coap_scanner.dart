@@ -20,7 +20,7 @@ class CoapScanner extends StringScanner {
       while (peekChar(0) != stopCharacter.codeUnitAt(0)) {
         buff.write(String.fromCharCode(readChar()));
       }
-    } on StringScannerException {
+    } on StringScannerException catch (_) {
       // If we run out of string return what we have
       return buff.toString();
     }

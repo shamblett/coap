@@ -10,97 +10,108 @@ import 'dart:io';
 import 'package:typed_data/typed_data.dart';
 
 import '../event/coap_event_bus.dart';
-import '../net/coap_internet_address.dart';
 import 'coap_inetwork.dart';
 
 /// UDP network
 class CoapNetworkUDP implements CoapINetwork {
   /// Initialize with an address and a port
-  CoapNetworkUDP(this.address, this.port, {final String namespace = ''})
-      : _eventBus = CoapEventBus(namespace: namespace);
-
-  CoapNetworkUDP.from(
-    final CoapNetworkUDP src, {
-    required final String namespace,
-  })  : address = src.address,
-        port = src.port,
-        _eventBus = CoapEventBus(namespace: namespace),
-        _socket = src.socket,
-        _bound = src.bound;
-
-  final CoapEventBus _eventBus;
+  CoapNetworkUDP(
+    this.address,
+    this.port,
+    this.bindAddress, {
+    final String namespace = '',
+  }) : eventBus = CoapEventBus(namespace: namespace);
 
   @override
-  final CoapInternetAddress address;
+  final InternetAddress address;
 
   @override
   final int port;
 
   @override
-  String get namespace => _eventBus.namespace;
+  final InternetAddress bindAddress;
 
-  /// UDP socket
+  bool _shouldReinitialize = true;
+  bool get shouldReinitialize => _shouldReinitialize;
+
+  final CoapEventBus eventBus;
+
   RawDatagramSocket? _socket;
   RawDatagramSocket? get socket => _socket;
 
-  bool _bound = false;
-  bool get bound => _bound;
+  @override
+  bool isClosed = true;
 
   @override
-  Future<int> send(
+  void send(
     final Uint8Buffer data, [
-    final CoapInternetAddress? address,
-  ]) async {
-    if (_bound) {
-      _socket?.send(
-        data.toList(),
-        address?.address ?? this.address.address,
-        port,
-      );
-    }
-    return -1;
-  }
-
-  @override
-  void receive() {
-    _socket?.listen((final e) {
-      switch (e) {
-        case RawSocketEvent.read:
-          final d = _socket?.receive();
-          if (d != null) {
-            final buff = Uint8Buffer();
-            if (d.data.isNotEmpty) {
-              buff.addAll(d.data.toList());
-              final coapAddress =
-                  CoapInternetAddress(d.address.type, d.address);
-              _eventBus.fire(CoapDataReceivedEvent(buff, coapAddress));
-            }
-          }
-          break;
-        case RawSocketEvent.closed:
-        case RawSocketEvent.readClosed:
-          close();
-          break;
-        case RawSocketEvent.write:
-          break;
-      }
-    });
-  }
-
-  @override
-  Future<void> bind() async {
-    if (_bound) {
+    final InternetAddress? address,
+  ]) {
+    if (isClosed) {
       return;
     }
-    // Use a port of 0 here as we are a client, this will generate
-    // a random source port.
-    _socket = await RawDatagramSocket.bind(address.bind, 0);
-    _bound = true;
-    receive();
+
+    _socket!.send(
+      data,
+      address ?? this.address,
+      port,
+    );
+  }
+
+  @override
+  Future<void> init() async {
+    if (!isClosed || !shouldReinitialize) {
+      return;
+    }
+
+    await bind();
+    _receive();
+
+    isClosed = false;
   }
 
   @override
   void close() {
+    _shouldReinitialize = false;
     _socket?.close();
+    isClosed = true;
+  }
+
+  Future<void> bind() async {
+    eventBus.fire(CoapSocketInitEvent());
+
+    // Use port 0 to generate a random source port
+    _socket = await RawDatagramSocket.bind(bindAddress, 0);
+  }
+
+  void _receive() {
+    _socket?.listen(
+      (final e) {
+        switch (e) {
+          case RawSocketEvent.read:
+            final d = _socket?.receive();
+            if (d == null) {
+              return;
+            }
+            // d.address can differ from address with multicast
+            eventBus.fire(CoapDataReceivedEvent(d.data, d.address));
+            break;
+          // When we manually closed the socket (no need to do anything)
+          case RawSocketEvent.closed:
+          // Never occurs for UDP (socket cannot be closed by a remote peer)
+          case RawSocketEvent.readClosed:
+          case RawSocketEvent.write:
+            break;
+        }
+      },
+      // ignore: avoid_types_on_closure_parameters
+      onError: (final Object e, final StackTrace s) =>
+          eventBus.fire(CoapSocketErrorEvent(e, s)),
+      // Socket stream is done and can no longer be listened to
+      onDone: () {
+        isClosed = true;
+        init();
+      },
+    );
   }
 }

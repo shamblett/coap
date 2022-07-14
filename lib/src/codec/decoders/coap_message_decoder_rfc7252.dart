@@ -98,10 +98,10 @@ class CoapMessageDecoder18 extends CoapMessageDecoder {
         try {
           final optionType = OptionType.fromTypeNumber(currentOption);
           opt = CoapOption.create(optionType);
-        } on UnknownElectiveOptionException {
+        } on UnknownElectiveOptionException catch (_) {
           // Unknown elective options must be silently ignored
           continue;
-        } on UnknownCriticalOptionException {
+        } on UnknownCriticalOptionException catch (_) {
           // Messages with unknown critical options must be rejected
           message.hasUnknownCriticalOption = true;
           return;

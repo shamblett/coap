@@ -6,6 +6,7 @@
  */
 
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:typed_data/typed_data.dart';
@@ -22,7 +23,6 @@ import '../stack/coap_stack.dart';
 import 'coap_exchange.dart';
 import 'coap_iendpoint.dart';
 import 'coap_imatcher.dart';
-import 'coap_internet_address.dart';
 import 'coap_ioutbox.dart';
 import 'coap_matcher.dart';
 
@@ -59,7 +59,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   }
 
   @override
-  CoapInternetAddress? get destination => _socket.address;
+  InternetAddress? get destination => _socket.address;
 
   final CoapStack _coapStack;
   late final StreamSubscription<CoapDataReceivedEvent> subscr;
@@ -72,11 +72,11 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   CoapIOutbox get outbox => this;
 
   @override
-  Future<void> start() async {
+  void start() {
     try {
       subscr.resume();
       _matcher.start();
-    } on Exception {
+    } on Exception catch (_) {
       stop();
       rethrow;
     }
@@ -85,9 +85,10 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   @override
   void stop() {
     _matcher.stop();
-    _eventBus.destroy();
     _socket.close();
     subscr.cancel();
+    // Close event bus last to catch as many events as possible
+    _eventBus.destroy();
   }
 
   @override
@@ -125,7 +126,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
       CoapRequest? request;
       try {
         request = decoder.decodeRequest();
-      } on Exception {
+      } on Exception catch (_) {
         if (!decoder.isReply) {
           // Manually build RST from raw information
           final rst = CoapEmptyMessage(CoapMessageType.rst)
@@ -182,15 +183,15 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
   }
 
   @override
-  Future<void> sendRequest(
+  void sendRequest(
     final CoapExchange exchange,
     final CoapRequest request,
-  ) async {
+  ) {
     _matcher.sendRequest(exchange, request);
     _eventBus.fire(CoapSendingRequestEvent(request));
 
     if (!request.isCancelled) {
-      await _socket.send(_serializeRequest(request), request.destination);
+      _socket.send(_serializeRequest(request), request.destination);
     }
   }
 

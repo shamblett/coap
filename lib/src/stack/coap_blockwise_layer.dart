@@ -356,7 +356,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
             ..setOptions(request.getAllOptions())
             ..setOption(nextBlock)
             ..destination = response.source
-            ..uriHost = response.source?.address.host;
+            ..uriHost = response.source?.host;
           if (exchange is CoapMulticastExchange) {
             status = _copyBlockStatus(
               exchange.responseBlockStatus,
