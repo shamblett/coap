@@ -109,6 +109,11 @@ enum CoapCode {
     'Request Entity Incomplete',
   ),
 
+  /// 4.09 Conflict
+  ///
+  /// Defined in [RFC 8132](https://datatracker.ietf.org/doc/html/rfc8132).
+  conflict(4, 09, 'Conflict'),
+
   /// 4.12 Precondition Failed
   ///
   /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
@@ -128,6 +133,16 @@ enum CoapCode {
   ///
   /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
   unsupportedMediaType(4, 15, 'Unsupported Content-Format'),
+
+  /// 4.22 Unprocessable Entity
+  ///
+  /// Defined in [RFC 8132](https://datatracker.ietf.org/doc/html/rfc8132).
+  unprocessableEntity(4, 22, 'Unprocessable Entity'),
+
+  /// 4.29 Too Many Requests
+  ///
+  /// Defined in [RFC 8516](https://datatracker.ietf.org/doc/html/rfc8516).
+  tooManyRequests(4, 29, 'Too Many Requests'),
 
   /// 5.00 Internal Server Error
   ///
@@ -158,6 +173,11 @@ enum CoapCode {
   ///
   /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
   proxyingNotSupported(5, 05, 'Proxying Not Supported'),
+
+  /// 5.08 Hop Limit Reached
+  ///
+  /// Defined in [RFC 8768](https://datatracker.ietf.org/doc/html/rfc8768).
+  hopLimitReached(5, 08, 'Hop Limit Reached');
 
   const CoapCode(
     this.codeClass,
