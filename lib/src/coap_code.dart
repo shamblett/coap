@@ -35,6 +35,21 @@ enum CoapCode {
   /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
   delete(0, 04, 'DELETE'),
 
+  /// The FETCH method
+  ///
+  /// Defined in [RFC 8132](https://datatracker.ietf.org/doc/html/rfc8132).
+  fetch(0, 05, 'FETCH'),
+
+  /// The PATCH method
+  ///
+  /// Defined in [RFC 8132](https://datatracker.ietf.org/doc/html/rfc8132).
+  patch(0, 06, 'PATCH'),
+
+  /// The iPATCH method
+  ///
+  /// Defined in [RFC 8132](https://datatracker.ietf.org/doc/html/rfc8132).
+  ipatch(0, 07, 'iPATCH'),
+
   /// 2.01 Created
   ///
   /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
