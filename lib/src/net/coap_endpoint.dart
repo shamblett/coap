@@ -19,8 +19,6 @@ import '../coap_response.dart';
 import '../event/coap_event_bus.dart';
 import '../network/coap_inetwork.dart';
 import '../stack/coap_stack.dart';
-import '../tasks/coap_executor.dart';
-import '../tasks/coap_iexecutor.dart';
 import 'coap_exchange.dart';
 import 'coap_iendpoint.dart';
 import 'coap_imatcher.dart';
@@ -70,9 +68,6 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
 
   final CoapINetwork _socket;
 
-  /// Executor
-  CoapIExecutor executor = CoapExecutor();
-
   @override
   CoapIOutbox get outbox => this;
 
@@ -102,7 +97,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
 
   @override
   void sendEpRequest(final CoapRequest request) {
-    executor.start(() => _coapStack.sendRequest(request));
+    _coapStack.sendRequest(request);
   }
 
   @override
@@ -110,7 +105,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
     final CoapExchange exchange,
     final CoapResponse response,
   ) {
-    executor.start(() => _coapStack.sendResponse(exchange, response));
+    _coapStack.sendResponse(exchange, response);
   }
 
   @override
@@ -118,7 +113,7 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
     final CoapExchange exchange,
     final CoapEmptyMessage message,
   ) {
-    executor.start(() => _coapStack.sendEmptyMessage(exchange, message));
+    _coapStack.sendEmptyMessage(exchange, message);
   }
 
   void _receiveData(final CoapDataReceivedEvent event) {

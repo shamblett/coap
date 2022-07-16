@@ -13,7 +13,6 @@ dependencies:
   dart_tinydtls: ^2.0.0
   dtls: ^0.1.0
   event_bus: ^2.0.0
-  executor: ^2.2.2
   meta: ^1.8.0
   path: ^1.8.2
   string_scanner: ^1.1.1

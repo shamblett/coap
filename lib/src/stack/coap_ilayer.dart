@@ -9,7 +9,6 @@ import '../coap_empty_message.dart';
 import '../coap_request.dart';
 import '../coap_response.dart';
 import '../net/coap_exchange.dart';
-import '../tasks/coap_iexecutor.dart';
 
 /// Represent a next layer in the stack.
 abstract class CoapINextLayer {
@@ -43,9 +42,6 @@ abstract class CoapINextLayer {
 
 /// Represents a layer in the stack.
 abstract class CoapILayer {
-  /// Gets or set the executor to schedule tasks.
-  CoapIExecutor? executor;
-
   /// Filters a request sending event.
   void sendRequest(
     final CoapINextLayer nextLayer,

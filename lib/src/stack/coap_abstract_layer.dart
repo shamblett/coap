@@ -9,14 +9,10 @@ import '../coap_empty_message.dart';
 import '../coap_request.dart';
 import '../coap_response.dart';
 import '../net/coap_exchange.dart';
-import '../tasks/coap_iexecutor.dart';
 import 'coap_ilayer.dart';
 
 /// A partial implementation of a layer.
 class CoapAbstractLayer implements CoapILayer {
-  @override
-  CoapIExecutor? executor;
-
   @override
   void sendRequest(
     final CoapINextLayer nextLayer,

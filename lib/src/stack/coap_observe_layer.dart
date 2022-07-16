@@ -17,7 +17,6 @@ import '../coap_request.dart';
 import '../coap_response.dart';
 import '../event/coap_event_bus.dart';
 import '../net/coap_exchange.dart';
-import '../tasks/coap_iexecutor.dart';
 import 'coap_abstract_layer.dart';
 import 'coap_ilayer.dart';
 
@@ -27,7 +26,7 @@ class CoapReregistrationContext {
   CoapReregistrationContext(this._exchange, this._timeout, this._reregister);
 
   final CoapExchange _exchange;
-  final ActionGeneric<CoapRequest> _reregister;
+  final void Function(CoapRequest) _reregister;
   Timer? _timer;
   final int _timeout;
 
@@ -217,9 +216,7 @@ class CoapObserveLayer extends CoapAbstractLayer {
         if (next != null) {
           // this is not a self replacement, hence a new ID
           next.id = CoapMessage.none;
-          // Create a new task for sending next response so that we can
-          // leave the sync-block.
-          executor!.start(() => sendResponse(nextLayer, exchange, next));
+          sendResponse(nextLayer, exchange, next);
         }
       }
       ..retransmittingHook = () {
@@ -239,9 +236,7 @@ class CoapObserveLayer extends CoapAbstractLayer {
           relation
             ..currentControlNotification = next
             ..nextControlNotification = null;
-          // Create a new task for sending next response so that
-          // we can leave the sync-block.
-          executor!.start(() => sendResponse(nextLayer, exchange, next));
+          sendResponse(nextLayer, exchange, next);
         }
       }
       ..timedOutHook = () {
@@ -252,7 +247,7 @@ class CoapObserveLayer extends CoapAbstractLayer {
   void _prepareReregistration(
     final CoapExchange exchange,
     final CoapResponse response,
-    final ActionGeneric<CoapRequest> reregister,
+    final void Function(CoapRequest) reregister,
   ) {
     final timeout = response.maxAge * 1000 + _backoff;
     exchange
