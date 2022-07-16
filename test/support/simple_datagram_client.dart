@@ -2,7 +2,7 @@
 
 import 'dart:async';
 import 'dart:io';
-import 'package:hex/hex.dart';
+import 'package:convert/convert.dart';
 
 Future<void> main() async {
   /// Create and bind to the first(and only!) IPV4 loopback interface
@@ -33,7 +33,7 @@ Future<void> main() async {
           if (d == null) {
             break;
           }
-          print('Received: ${HEX.encode(d.data)}');
+          print('Received: ${hex.encode(d.data)}');
           break;
         case RawSocketEvent.read:
           print('Read recieved - $e');
@@ -41,7 +41,7 @@ Future<void> main() async {
           if (d == null) {
             break;
           }
-          print('Received: ${HEX.encode(d.data)}');
+          print('Received: ${hex.encode(d.data)}');
           break;
         case RawSocketEvent.closed:
           print('Closed received - $e');
