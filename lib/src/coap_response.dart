@@ -58,11 +58,11 @@ class CoapResponse extends CoapMessage {
   /// endpoint of the request.
   /// The response has the same token as the request.
   /// Type and ID are usually set automatically by the ReliabilityLayer>.
-  CoapResponse.createResponse(
+  factory CoapResponse.createResponse(
     final CoapRequest request,
-    this._statusCode,
-  ) {
-    destination = request.source;
-    token = request.token;
-  }
+    final int statusCode,
+  ) =>
+      CoapResponse(statusCode)
+        ..destination = request.source
+        ..token = request.token;
 }

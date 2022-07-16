@@ -98,22 +98,14 @@ class CoapRequest extends CoapMessage {
   String toString() => '\n<<< Request Message >>>${super.toString()}';
 
   /// Construct a GET request.
-  CoapRequest.newGet() {
-    code = CoapCode.methodGET;
-  }
+  factory CoapRequest.newGet() => CoapRequest(CoapCode.methodGET);
 
   /// Construct a POST request.
-  CoapRequest.newPost() {
-    code = CoapCode.methodPOST;
-  }
+  factory CoapRequest.newPost() => CoapRequest(CoapCode.methodPOST);
 
   /// Construct a PUT request.
-  CoapRequest.newPut() {
-    code = CoapCode.methodPUT;
-  }
+  factory CoapRequest.newPut() => CoapRequest(CoapCode.methodPUT);
 
   /// Construct a DELETE request.
-  CoapRequest.newDelete() {
-    code = CoapCode.methodDELETE;
-  }
+  factory CoapRequest.newDelete() => CoapRequest(CoapCode.methodDELETE);
 }
