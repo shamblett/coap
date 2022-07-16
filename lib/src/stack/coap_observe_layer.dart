@@ -7,10 +7,8 @@
 
 import 'dart:async';
 
-import '../coap_code.dart';
 import '../coap_config.dart';
 import '../coap_empty_message.dart';
-import '../coap_message.dart';
 import '../coap_message_type.dart';
 import '../coap_option_type.dart';
 import '../coap_request.dart';
@@ -89,18 +87,13 @@ class CoapObserveLayer extends CoapAbstractLayer {
       if (exchange.request!.isAcknowledged ||
           exchange.request!.type == CoapMessageType.non) {
         // Transmit errors as CON
-        if (!CoapCode.isSuccess(response.code)) {
+        if (!response.isSuccess) {
           response.type = CoapMessageType.con;
           relation.cancel();
         } else {
           // Make sure that every now and than a CON is mixed within
           if (relation.check()) {
             response.type = CoapMessageType.con;
-          } else {
-            // By default use NON, but do not override resource decision
-            if (response.type == CoapMessageType.unknown) {
-              response.type = CoapMessageType.non;
-            }
           }
         }
       }
@@ -215,7 +208,7 @@ class CoapObserveLayer extends CoapAbstractLayer {
           ..nextControlNotification = null;
         if (next != null) {
           // this is not a self replacement, hence a new ID
-          next.id = CoapMessage.none;
+          next.id = null;
           sendResponse(nextLayer, exchange, next);
         }
       }

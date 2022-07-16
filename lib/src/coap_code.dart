@@ -7,290 +7,199 @@
  * Copyright :  S.Hamblett
  */
 
-/// This class describes the CoAP Code Registry as defined in  RFC 7252,
-/// section 12.1.
-class CoapCode {
-  /// Not set
-  static const int notSet = -1;
+import 'dart:collection';
 
-  /// Empty
-  static const int empty = 0;
-
-  /// Success
-  static const int successCode = 2;
-
-  /// Client error
-  static const int clientErrorCode = 4;
-
-  /// Server error
-  static const int serverErrorCode = 5;
-
-  /// Method Codes
+enum CoapCode {
+  /// Indicates an empty message
+  ///
+  /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
+  empty(0, 00, 'Empty'),
 
   /// The GET method
-  static const int get = 1;
+  ///
+  /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
+  get(0, 01, 'GET'),
 
   /// The POST method
-  static const int post = 2;
+  ///
+  /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
+  post(0, 02, 'POST'),
 
   /// The PUT method
-  static const int put = 3;
+  ///
+  /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
+  put(0, 03, 'PUT'),
 
   /// The DELETE method
-  static const int delete = 4;
-
-  /// Response Codes
+  ///
+  /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
+  delete(0, 04, 'DELETE'),
 
   /// 2.01 Created
-  static const int created = 65;
+  ///
+  /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
+  created(2, 01, 'Created'),
 
   /// 2.02 Deleted
-  static const int deleted = 66;
+  ///
+  /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
+  deleted(2, 02, 'Deleted'),
 
   /// 2.03 Valid
-  static const int valid = 67;
+  ///
+  /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
+  valid(2, 03, 'Valid'),
 
   /// 2.04 Changed
-  static const int changed = 68;
+  ///
+  /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
+  changed(2, 04, 'Changed'),
 
   /// 2.05 Content
-  static const int content = 69;
+  ///
+  /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
+  content(2, 05, 'Content'),
 
-  /// 2.?? Continue
-  static const int continues = 95;
+  /// 2.31 Continue
+  ///
+  /// Defined in [RFC 7959](https://datatracker.ietf.org/doc/html/rfc7959).
+  continues(2, 31, 'Continue'),
 
   /// 4.00 Bad Request
-  static const int badRequest = 128;
+  ///
+  /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
+  badRequest(4, 00, 'Bad Request'),
 
   /// 4.01 Unauthorized
-  static const int unauthorized = 129;
+  ///
+  /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
+  unauthorized(4, 01, 'Unauthorized'),
 
   /// 4.02 Bad Option
-  static const int badOption = 130;
+  ///
+  /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
+  badOption(4, 02, 'Bad Option'),
 
   /// 4.03 Forbidden
-  static const int forbidden = 131;
+  ///
+  /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
+  forbidden(4, 03, 'Forbidden'),
 
   /// 4.04 Not Found
-  static const int notFound = 132;
+  ///
+  /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
+  notFound(4, 04, 'Not Found'),
 
   /// 4.05 Method Not Allowed
-  static const int methodNotAllowed = 133;
+  ///
+  /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
+  methodNotAllowed(4, 05, 'Method Not Allowed'),
 
   /// 4.06 Not Acceptable
-  static const int notAcceptable = 134;
+  ///
+  /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
+  notAcceptable(4, 06, 'Not Acceptable'),
 
-  /// 4.08 Request Entity Incomplete (RFC 7959)
-  static const int requestEntityIncomplete = 136;
+  /// 4.08 Request Entity Incomplete
+  ///
+  /// Defined in [RFC 7959](https://datatracker.ietf.org/doc/html/rfc7959).
+  requestEntityIncomplete(
+    4,
+    08,
+    'Request Entity Incomplete',
+  ),
 
-  /// 4.12 Client not supported by server/headers don't satisfy protocol
-  static const int preconditionFailed = 140;
+  /// 4.12 Precondition Failed
+  ///
+  /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
+  preconditionFailed(4, 12, 'Precondition Failed'),
 
   /// 4.13 Request Entity Too Large
-  static const int requestEntityTooLarge = 141;
+  ///
+  /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252) and
+  /// [RFC 7959](https://datatracker.ietf.org/doc/html/rfc7959).
+  requestEntityTooLarge(
+    4,
+    13,
+    'Request Entity Too Large',
+  ),
 
-  /// 4.15 Unsupported Media Type
-  static const int unsupportedMediaType = 143;
+  /// 4.15 Unsupported Content-Format
+  ///
+  /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
+  unsupportedMediaType(4, 15, 'Unsupported Content-Format'),
 
   /// 5.00 Internal Server Error
-  static const int internalServerError = 160;
+  ///
+  /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
+  internalServerError(5, 00, 'Internal Server Error'),
 
   /// 5.01 Not Implemented
-  static const int notImplemented = 161;
+  ///
+  /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
+  notImplemented(5, 01, 'Not Implemented'),
 
   /// 5.02 Bad Gateway
-  static const int badGateway = 162;
+  ///
+  /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
+  badGateway(5, 02, 'Bad Gateway'),
 
   /// 5.03 Service Unavailable
-  static const int serviceUnavailable = 163;
+  ///
+  /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
+  serviceUnavailable(5, 03, 'Service Unavailable'),
 
   /// 5.04 Gateway Timeout
-  static const int gatewayTimeout = 164;
+  ///
+  /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
+  gatewayTimeout(5, 04, 'Gateway Timeout'),
 
   /// 5.05 Proxying Not Supported
-  static const int proxyingNotSupported = 165;
+  ///
+  /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
+  proxyingNotSupported(5, 05, 'Proxying Not Supported'),
 
-  /// Gets the response class
-  static int getResponseClass(final int code) => code >> 5 & 0x7;
+  const CoapCode(
+    this.codeClass,
+    this.codeDetail,
+    this.description,
+  ) : code = (codeClass << 5) + codeDetail;
 
-  /// Checks whether a code indicates a request
-  /// Returns true iff the code indicates a request
-  static bool isRequest(final int code) => (code >= 1) && (code <= 31);
+  static CoapCode? decode(final int code) => _codeRegistry[code];
 
-  /// Checks whether a code indicates a response
-  /// Returns true iff the code indicates a response
-  static bool isResponse(final int code) => (code >= 64) && (code <= 191);
+  static final _codeRegistry = HashMap.fromEntries(
+    values.map((final value) => MapEntry(value.code, value)),
+  );
 
-  /// Checks whether a code indicates an empty message
-  /// Returns true iff the code indicates an empty message
-  static bool isEmpty(final int code) => code == 0;
+  final int code;
 
-  /// Checks whether a code represents a success code.
-  static bool isSuccess(final int code) => code >= 64 && code < 96;
+  final int codeClass;
 
-  /// Checks whether a code is valid
-  /// Returns true iff the code is valid
-  static bool isValid(final int code) =>
-      (code >= 0) && (code <= 255); // allow unknown custom codes;
+  final int codeDetail;
 
-  /// Returns a string representation of the code
-  static String codeToString(final int code) {
-    switch (code) {
-      case notSet:
-        return 'Not Set';
-      case empty:
-        return 'Empty Message';
-      case get:
-        return 'GET';
-      case post:
-        return 'POST';
-      case put:
-        return 'PUT';
-      case delete:
-        return 'DELETE';
-      case created:
-        return '2.01 Created';
-      case deleted:
-        return '2.02 Deleted';
-      case valid:
-        return '2.03 Valid';
-      case changed:
-        return '2.04 Changed';
-      case content:
-        return '2.05 Content';
-      case badRequest:
-        return '4.00 Bad Request';
-      case unauthorized:
-        return '4.01 Unauthorized';
-      case badOption:
-        return '4.02 Bad Option';
-      case forbidden:
-        return '4.03 Forbidden';
-      case notFound:
-        return '4.04 Not Found';
-      case methodNotAllowed:
-        return '4.05 Method Not Allowed';
-      case notAcceptable:
-        return '4.06 Not Acceptable';
-      case requestEntityIncomplete:
-        return '4.08 Request Entity Incomplete';
-      case preconditionFailed:
-        return '4.12 Precondition Failed';
-      case requestEntityTooLarge:
-        return '4.13 Request Entity Too Large';
-      case unsupportedMediaType:
-        return '4.15 Unsupported Media Type';
-      case internalServerError:
-        return '5.00 Internal Server Error';
-      case notImplemented:
-        return '5.01 Not Implemented';
-      case badGateway:
-        return '5.02 Bad Gateway';
-      case serviceUnavailable:
-        return '5.03 Service Unavailable';
-      case gatewayTimeout:
-        return '5.04 Gateway Timeout';
-      case proxyingNotSupported:
-        return '5.05 Proxying Not Supported';
-      default:
-        break;
-    }
+  final String description;
 
-    if (isValid(code)) {
-      if (isRequest(code)) {
-        return 'Unknown Request [code {0}]';
-      } else if (isResponse(code)) {
-        return 'Unknown Response [code {0}]';
-      } else {
-        return 'Reserved [code {0}]';
-      }
-    } else {
-      return 'Invalid Message [code {0}]';
-    }
+  @override
+  String toString() {
+    final formattedDetail = codeDetail.toString().padLeft(2, '0');
+    return '$codeClass.$formattedDetail $description';
   }
 
-  /// Methods of request
+  /// Checks whether this [CoapCode] indicates an empty message.
+  bool get isEmpty => this == empty;
 
-  /// GET
-  static int methodGET = 1;
+  /// Checks whether this [CoapCode] indicates a request message.
+  bool get isRequest => codeClass == 0 && !isEmpty;
 
-  /// POST
-  static int methodPOST = 2;
+  /// Checks whether this [CoapCode] indicates a response message.
+  bool get isResponse => codeClass >= 2 && codeClass <= 5;
 
-  /// PUT
-  static int methodPUT = 3;
+  /// Checks whether this [CoapCode] represents a success response code.
+  bool get isSuccess => codeClass == 2;
 
-  /// DELETE
-  static int methodDELETE = 4;
+  /// Checks whether this [CoapCode] represents a client error response code.
+  bool get isErrorResponse => codeClass == 4;
 
-  /// Response status codes.
-
-  /// 2.01 Created
-  static const int statusCodeCreated = 65;
-
-  /// 2.02 Deleted
-  static const int statusCodeDeleted = 66;
-
-  /// 2.03 Valid
-  static const int statusCodeValid = 67;
-
-  /// 2.04 Changed
-  static const int statusCodeChanged = 68;
-
-  /// 2.05 Content
-  static const int statusCodeContent = 69;
-
-  /// 2.?? Continue
-  static const int statusCodeContinue = 95;
-
-  /// 4.00 Bad Request
-  static const int statusCodeBadRequest = 128;
-
-  /// 4.01 Unauthorized
-  static const int statusCodeUnauthorized = 129;
-
-  /// 4.02 Bad Option
-  static const int statusCodeBadOption = 130;
-
-  /// 4.03 Forbidden
-  static const int statusCodeForbidden = 131;
-
-  /// 4.04 Not Found
-  static const int statusCodeNotFound = 132;
-
-  /// 4.05 Method Not Allowed
-  static const int statusCodeMethodNotAllowed = 133;
-
-  /// 4.06 Not Acceptable
-  static const int statusCodeNotAcceptable = 134;
-
-  /// 4.08 Request Entity Incomplete (RFC 7959)
-  static const int statusCodeRequestEntityIncomplete = 136;
-
-  /// 4.12 Precondition failed
-  static const int statusCodePreconditionFailed = 140;
-
-  /// 4.13 Request Entity Too Large
-  static const int statusCodeRequestEntityTooLarge = 141;
-
-  /// 4.15 Unsupported Media Type
-  static const int statusCodeUnsupportedMediaType = 143;
-
-  /// 5.00 Internal Server Error
-  static const int statusCodeInternalServerError = 160;
-
-  /// 5.01 Not Implemented
-  static const int statusCodeNotImplemented = 161;
-
-  /// 5.02 Bad Gateway
-  static const int statusCodeBadGateway = 162;
-
-  /// 5.03 Service Unavailable
-  static const int statusCodeServiceUnavailable = 163;
-
-  /// 5.04 Gateway Timeout
-  static const int statusCodeGatewayTimeout = 164;
-
-  /// 5.05 Proxying Not Supported
-  static const int statusCodeProxyingNotSupported = 165;
+  /// Checks whether this [CoapCode] represents a server error response code.
+  bool get isServerError => codeClass == 5;
 }

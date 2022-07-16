@@ -20,21 +20,21 @@ abstract class CoapMessageEncoder implements CoapIMessageEncoder {
   @override
   Uint8Buffer encodeRequest(final CoapRequest request) {
     final writer = CoapDatagramWriter();
-    serialize(writer, request, request.code);
+    serialize(writer, request, request.code.code);
     return writer.toByteArray();
   }
 
   @override
   Uint8Buffer encodeResponse(final CoapResponse response) {
     final writer = CoapDatagramWriter();
-    serialize(writer, response, response.code);
+    serialize(writer, response, response.code.code);
     return writer.toByteArray();
   }
 
   @override
   Uint8Buffer encodeEmpty(final CoapEmptyMessage message) {
     final writer = CoapDatagramWriter();
-    serialize(writer, message, CoapCode.empty);
+    serialize(writer, message, CoapCode.empty.code);
     return writer.toByteArray();
   }
 

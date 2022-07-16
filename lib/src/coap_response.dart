@@ -10,6 +10,7 @@ import 'package:typed_data/typed_buffers.dart';
 
 import 'coap_code.dart';
 import 'coap_message.dart';
+import 'coap_message_type.dart';
 import 'coap_request.dart';
 
 /// Represents a CoAP response to a CoAP request.
@@ -17,15 +18,14 @@ import 'coap_request.dart';
 /// or a separate response with type CON or NON.
 class CoapResponse extends CoapMessage {
   /// Initializes a response message.
-  CoapResponse(this._statusCode) : super(code: _statusCode);
-
-  final int _statusCode;
-
-  /// The response status code.
-  int get statusCode => _statusCode;
+  CoapResponse(super.code, super.type) {
+    if (!code.isResponse) {
+      throw ArgumentError('Expected CoAP response code, got $code');
+    }
+  }
 
   /// Status code as a string
-  String get statusCodeString => CoapCode.codeToString(_statusCode);
+  String get statusCodeString => code.toString();
 
   Uint8Buffer? _multicastToken;
 
@@ -35,6 +35,8 @@ class CoapResponse extends CoapMessage {
   set multicastToken(final Uint8Buffer? val) => _multicastToken = val;
 
   Duration? _rtt;
+
+  bool get isSuccess => code.isSuccess;
 
   /// The Round-Trip Time of this response.
   Duration? get rtt => _rtt;
@@ -60,9 +62,10 @@ class CoapResponse extends CoapMessage {
   /// Type and ID are usually set automatically by the ReliabilityLayer>.
   factory CoapResponse.createResponse(
     final CoapRequest request,
-    final int statusCode,
+    final CoapCode statusCode,
+    final CoapMessageType type,
   ) =>
-      CoapResponse(statusCode)
+      CoapResponse(statusCode, type)
         ..destination = request.source
         ..token = request.token;
 }

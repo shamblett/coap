@@ -8,7 +8,6 @@
 import 'package:typed_data/typed_data.dart';
 
 import '../../coap_code.dart';
-import '../../coap_constants.dart';
 import '../../coap_empty_message.dart';
 import '../../coap_message.dart';
 import '../../coap_message_type.dart';
@@ -27,34 +26,49 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
   final CoapDatagramReader reader;
 
   /// The type of the decoding message
-  int get type;
+  int? get type;
+
+  CoapMessageType? get _decodedType {
+    final type_ = type;
+    if (type_ == null) {
+      return null;
+    }
+    return CoapMessageType.decode(type_);
+  }
 
   /// The code of the decoding message
-  int get code;
+  int? get code;
+
+  CoapCode? get _decodedCode {
+    final code_ = code;
+    if (code_ == null) {
+      return null;
+    }
+    return CoapCode.decode(code_);
+  }
 
   @override
   bool get isReply =>
-      type == CoapMessageType.ack || type == CoapMessageType.rst;
+      type == CoapMessageType.ack.code || type == CoapMessageType.rst.code;
 
   @override
-  bool get isRequest =>
-      code >= CoapConstants.requestCodeLowerBound &&
-      code <= CoapConstants.requestCodeUpperBound;
+  bool get isRequest => _decodedCode?.isRequest ?? false;
 
   @override
-  bool get isResponse =>
-      code >= CoapConstants.responseCodeLowerBound &&
-      code <= CoapConstants.responseCodeUpperBound;
+  bool get isResponse => _decodedCode?.isResponse ?? false;
 
   @override
-  bool get isEmpty => code == CoapCode.empty;
+  bool get isEmpty => _decodedCode?.isEmpty ?? false;
 
   @override
   CoapRequest? decodeRequest() {
-    if (isRequest) {
-      final request = CoapRequest(code)
-        ..type = type
-        ..id = id;
+    final decodedCode = _decodedCode;
+
+    if (decodedCode != null && isRequest) {
+      final request = CoapRequest(
+        decodedCode,
+        confirmable: type == CoapMessageType.con.code,
+      )..id = id;
       parseMessage(request);
       return request;
     }
@@ -63,26 +77,28 @@ abstract class CoapMessageDecoder implements CoapIMessageDecoder {
 
   @override
   CoapResponse? decodeResponse() {
-    if (isResponse) {
-      final response = CoapResponse(code)
-        ..type = type
-        ..id = id;
-      parseMessage(response);
-      return response;
+    final decodedCode = _decodedCode;
+    final coapMessageType = _decodedType;
+
+    if (!isResponse || decodedCode == null || coapMessageType == null) {
+      return null;
     }
-    return null;
+
+    final response = CoapResponse(decodedCode, coapMessageType)..id = id;
+    parseMessage(response);
+    return response;
   }
 
   @override
   CoapEmptyMessage? decodeEmptyMessage() {
-    if (!isResponse && !isRequest) {
-      final message = CoapEmptyMessage(code)
-        ..type = type
-        ..id = id;
-      parseMessage(message);
-      return message;
+    final coapMessageType = _decodedType;
+    if (coapMessageType == null || !isEmpty) {
+      return null;
     }
-    return null;
+
+    final message = CoapEmptyMessage(coapMessageType)..id = id;
+    parseMessage(message);
+    return message;
   }
 
   @override

@@ -5,21 +5,38 @@
  * Copyright :  S.Hamblett
  */
 
-/// Types of CoAP messages.
-class CoapMessageType {
-  /// Unknown type.
-  static const int unknown = -1;
+import 'dart:collection';
 
+/// Types of CoAP messages.
+enum CoapMessageType {
   /// Confirmable messages require an acknowledgement.
-  static const int con = 0;
+  con(0, 'Confirmable'),
 
   /// Non-Confirmable messages do not require an acknowledgement.
-  static const int non = 1;
+  non(1, 'Non-Confirmable'),
 
   /// Acknowledgement messages acknowledge a specific confirmable message.
-  static const int ack = 2;
+  ack(2, 'Acknowledgement'),
 
   /// Reset messages indicate that a specific confirmable message was received,
   /// but some context is missing to properly process it.
-  static const int rst = 3;
+  rst(3, 'Reset');
+
+  const CoapMessageType(this.code, this.description);
+
+  final int code;
+
+  final String description;
+
+  static final _registry = HashMap.fromEntries(
+    values.map((final value) => MapEntry(value.code, value)),
+  );
+
+  static CoapMessageType? decode(final int code) => _registry[code];
+
+  static CoapMessageType requestType({required final bool confirmable}) =>
+      confirmable ? con : non;
+
+  @override
+  String toString() => 'Message type $code: $description';
 }

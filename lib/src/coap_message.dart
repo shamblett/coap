@@ -30,26 +30,24 @@ typedef HookFunction = void Function();
 /// CoAP messages are of type Request, Response or EmptyMessage,
 /// each of which has a MessageType, a message identifier,
 /// a token (0-8 bytes), a collection of Options and a payload.
-class CoapMessage {
-  /// Constructor
-  CoapMessage({
-    this.type = CoapMessageType.unknown,
-    this.code = CoapCode.notSet,
-  });
-
-  /// Indicates that no ID has been set.
-  static const int none = -1;
+abstract class CoapMessage {
+  CoapMessage(this.code, this._type);
 
   bool hasUnknownCriticalOption = false;
 
+  CoapMessageType? _type;
+
+  @internal
+  set type(final CoapMessageType? type) => _type = type;
+
   /// The type of this CoAP message.
-  int type = CoapMessageType.unknown;
+  CoapMessageType? get type => _type;
 
   /// The code of this CoAP message.
-  int code = CoapCode.notSet;
+  final CoapCode code;
 
   /// The codestring
-  String get codeString => CoapCode.codeToString(code);
+  String get codeString => code.toString();
 
   int? _id;
 
@@ -166,19 +164,15 @@ class CoapMessage {
 
   /// Gets a value that indicates whether this CoAP message is a
   /// request message.
-  bool get isRequest => CoapCode.isRequest(code);
+  bool get isRequest => code.isRequest;
 
   /// Gets a value that indicates whether this CoAP message is a
   /// response message.
-  bool get isResponse => CoapCode.isResponse(code);
+  bool get isResponse => code.isResponse;
 
   /// Gets a value that indicates whether this CoAP message is
   /// an empty message.
-  bool get isEmpty => CoapCode.isEmpty(code);
-
-  /// Gets a value that indicates whether this CoAP message is a
-  /// valid message.
-  bool get isValid => CoapCode.isValid(code);
+  bool get isEmpty => code.isEmpty;
 
   /// The destination endpoint.
   @internal

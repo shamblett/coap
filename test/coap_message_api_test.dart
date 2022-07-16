@@ -6,7 +6,7 @@
  */
 
 import 'package:coap/coap.dart';
-import 'package:coap/src/coap_message.dart';
+import 'package:coap/src/coap_empty_message.dart';
 import 'package:coap/src/event/coap_event_bus.dart';
 import 'package:test/test.dart';
 
@@ -17,9 +17,8 @@ void main() {
   final DefaultCoapConfig conf = CoapConfigDefault();
 
   test('Construction', () {
-    final message = CoapMessage();
-    expect(message.type, CoapMessageType.unknown);
-    expect(message.code, CoapCode.notSet);
+    final message = CoapEmptyMessage(CoapMessageType.con);
+    expect(message.type, CoapMessageType.con);
     expect(message.id, null);
     expect(message.resolveHost, 'localhost');
     expect(message.optionMap.isEmpty, isTrue);
@@ -45,7 +44,7 @@ void main() {
   });
 
   test('Options', () {
-    final message = CoapMessage();
+    final message = CoapRequest(CoapCode.get);
     final opt1 = CoapOption(OptionType.uriHost);
     expect(
       () => CoapOption.create(OptionType.fromTypeNumber(9000)),
@@ -93,22 +92,14 @@ void main() {
     expect(message.optionMap.length, 0);
   });
 
-  test('Message codes', () {
-    final message = CoapMessage();
-    expect(message.isRequest, isFalse);
-    expect(message.isResponse, isFalse);
-    expect(message.isEmpty, isFalse);
-    expect(message.isValid, isFalse);
-    expect(message.codeString, 'Not Set');
-  });
-
   test('Acknowledged', () {
     var acked = false;
     void ackHook() {
       acked = true;
     }
 
-    final message = CoapMessage()..isAcknowledged = true;
+    final message = CoapEmptyMessage(CoapMessageType.rst)
+      ..isAcknowledged = true;
     expect(message.isAcknowledged, isTrue);
     expect(acked, isFalse);
     final eventBus = CoapEventBus(namespace: '');
@@ -123,7 +114,7 @@ void main() {
   });
 
   test('Rejected', () {
-    final message = CoapMessage()..isRejected = true;
+    final message = CoapEmptyMessage(CoapMessageType.rst)..isRejected = true;
     expect(message.isRejected, isTrue);
     final eventBus = CoapEventBus(namespace: '');
     expect(eventBus.lastEvent is CoapRejectedEvent, isTrue);
@@ -135,7 +126,7 @@ void main() {
       timedOut = true;
     }
 
-    final message = CoapMessage()..isTimedOut = true;
+    final message = CoapEmptyMessage(CoapMessageType.rst)..isTimedOut = true;
     expect(message.isTimedOut, isTrue);
     expect(timedOut, isFalse);
     final eventBus = CoapEventBus(namespace: '');
@@ -150,7 +141,7 @@ void main() {
   });
 
   test('Retransmitting', () {
-    final message = CoapMessage();
+    final message = CoapEmptyMessage(CoapMessageType.rst)..isTimedOut = true;
     var retrans = false;
     void retransHook() {
       retrans = true;
@@ -165,14 +156,16 @@ void main() {
   });
 
   test('Payload', () {
-    final message = CoapMessage()..setPayload('This is the payload');
+    final message = CoapEmptyMessage(CoapMessageType.rst)
+      ..isTimedOut = true
+      ..setPayload('This is the payload');
     expect(message.payload, isNotNull);
     expect(message.payloadString, 'This is the payload');
     expect(message.payloadSize, 19);
   });
 
   test('If match', () {
-    final message = CoapMessage();
+    final message = CoapEmptyMessage(CoapMessageType.rst)..isTimedOut = true;
     expect(message.ifMatches.length, 0);
     message
       ..addIfMatch('ETag-1')
@@ -195,7 +188,7 @@ void main() {
   });
 
   test('ETags', () {
-    final message = CoapMessage();
+    final message = CoapEmptyMessage(CoapMessageType.rst)..isTimedOut = true;
     expect(message.etags.length, 0);
     final none = CoapOption(OptionType.ifMatch);
     final etag1 = CoapOption(OptionType.eTag)..stringValue = 'Etag-1';
@@ -219,7 +212,7 @@ void main() {
   });
 
   test('If None match', () {
-    final message = CoapMessage();
+    final message = CoapEmptyMessage(CoapMessageType.rst)..isTimedOut = true;
     expect(message.ifNoneMatches.length, 0);
     final none = CoapOption(OptionType.ifMatch);
     final inm1 = CoapOption(OptionType.ifNoneMatch)..stringValue = 'Inm1';
@@ -240,7 +233,7 @@ void main() {
   });
 
   test('Uri path', () {
-    final message = CoapMessage();
+    final message = CoapEmptyMessage(CoapMessageType.rst)..isTimedOut = true;
     expect(message.uriPaths.length, 0);
     for (final path in ['/a/uri/path', 'a/uri/path/', '/a/uri/path/']) {
       message.uriPath = path;
@@ -277,7 +270,7 @@ void main() {
   });
 
   test('Uri query', () {
-    final message = CoapMessage();
+    final message = CoapEmptyMessage(CoapMessageType.rst);
     expect(message.uriQueries.length, 0);
     message.uriQuery = 'a&uri=1&query=2';
     expect(message.uriQueries.length, 3);
@@ -303,7 +296,7 @@ void main() {
   });
 
   test('Location path', () {
-    final message = CoapMessage();
+    final message = CoapEmptyMessage(CoapMessageType.rst);
     expect(message.locationPaths.length, 0);
     message.locationPath = 'a/location/path/';
     expect(message.locationPaths.length, 3);
@@ -340,7 +333,7 @@ void main() {
   });
 
   test('Location query', () {
-    final message = CoapMessage();
+    final message = CoapEmptyMessage(CoapMessageType.rst);
     expect(message.locationQueries.length, 0);
     message.locationQuery = 'a&uri=1&query=2';
     expect(message.locationQueries.length, 3);

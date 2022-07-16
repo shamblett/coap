@@ -99,6 +99,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           final error = CoapResponse.createResponse(
             request,
             CoapCode.requestEntityIncomplete,
+            CoapMessageType.con,
           )
             ..addOption(
               CoapBlockOption.fromParts(
@@ -117,17 +118,20 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
 
         status.currentNUM++;
         if (block1.m) {
-          final piggybacked =
-              CoapResponse.createResponse(request, CoapCode.continues)
-                ..addOption(
-                  CoapBlockOption.fromParts(
-                    OptionType.block1,
-                    block1.num,
-                    block1.szx,
-                    m: true,
-                  ),
-                )
-                ..last = false;
+          final piggybacked = CoapResponse.createResponse(
+            request,
+            CoapCode.continues,
+            CoapMessageType.ack,
+          )
+            ..addOption(
+              CoapBlockOption.fromParts(
+                OptionType.block1,
+                block1.num,
+                block1.szx,
+                m: true,
+              ),
+            )
+            ..last = false;
 
           exchange.currentResponse = piggybacked;
           super.sendResponse(nextLayer, exchange, piggybacked);
@@ -152,6 +156,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
         final error = CoapResponse.createResponse(
           request,
           CoapCode.requestEntityIncomplete,
+          CoapMessageType.con,
         )
           ..addOption(
             CoapBlockOption.fromParts(
@@ -260,7 +265,6 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
         CoapExchange(block, exchange.origin, namespace: exchange.namespace)
           ..originalMulticastRequest = originalRequest
           ..endpoint = endpoint;
-    block.type = CoapMessageType.con;
     return newExchange;
   }
 
@@ -352,7 +356,6 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
           final block = CoapRequest(request.method)
             ..endpoint = request.endpoint
             // NON could make sense over SMS or similar transports
-            ..type = request.type
             ..setOptions(request.getAllOptions())
             ..setOption(nextBlock)
             ..destination = response.source
@@ -377,13 +380,11 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
             ..responseBlockStatus = status;
           super.sendRequest(nextLayer, exchange, block);
         } else {
-          final assembled = CoapResponse(response.statusCode);
+          final assembled = CoapResponse(response.code, response.type);
           _assembleMessage(status, assembled, response);
 
-          assembled
-            ..type = response.type
-            // Set overall transfer RTT
-            ..rtt = DateTime.now().difference(exchange.timestamp!);
+          // Set overall transfer RTT
+          assembled.rtt = DateTime.now().difference(exchange.timestamp!);
 
           // Check if this response is a notification
           final observe = status.observe;
@@ -412,8 +413,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
   }
 
   bool _requiresBlockwise(final CoapRequest request) {
-    if (request.method == CoapCode.methodPUT ||
-        request.method == CoapCode.methodPOST) {
+    if (request.method == CoapCode.put || request.method == CoapCode.post) {
       return request.payloadSize > _maxMessageSize;
     }
     return false;
@@ -444,8 +444,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       ..endpoint = request.endpoint
       ..setOptions(request.getAllOptions())
       ..destination = request.destination
-      ..token = request.token
-      ..type = CoapMessageType.con;
+      ..token = request.token;
 
     final currentSize = 1 << (4 + szx);
     final from = num * currentSize;
@@ -490,7 +489,6 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       ..id = last.id
       ..source = last.source
       ..token = last.token
-      ..type = last.type
       ..setOptions(last.getAllOptions());
 
     final payload = Uint8Buffer();
@@ -529,7 +527,7 @@ class CoapBlockwiseLayer extends CoapAbstractLayer {
       // A blockwise notification transmits the first block only
       block = response;
     } else {
-      block = CoapResponse(response.statusCode)
+      block = CoapResponse(response.code, response.type)
         ..destination = response.destination
         ..token = response.token
         ..setOptions(response.getAllOptions())

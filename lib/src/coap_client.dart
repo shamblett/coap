@@ -16,6 +16,7 @@ import 'coap_block_option.dart';
 import 'coap_code.dart';
 import 'coap_config.dart';
 import 'coap_constants.dart';
+import 'coap_empty_message.dart';
 import 'coap_link_format.dart';
 import 'coap_media_type.dart';
 import 'coap_message.dart';
@@ -130,18 +131,17 @@ class CoapClient {
   Future<CoapResponse> get(
     final String path, {
     final CoapMediaType accept = CoapMediaType.textPlain,
-    final int type = CoapMessageType.con,
+    final bool confirmable = true,
     final List<CoapOption>? options,
     final bool earlyBlock2Negotiation = false,
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newGet();
+    final request = CoapRequest.newGet(confirmable: confirmable);
     _build(
       request,
       path,
       accept,
-      type,
       options,
       earlyBlock2Negotiation,
       maxRetransmit,
@@ -155,18 +155,18 @@ class CoapClient {
     required final String payload,
     final CoapMediaType format = CoapMediaType.textPlain,
     final CoapMediaType accept = CoapMediaType.textPlain,
-    final int type = CoapMessageType.con,
+    final bool confirmable = true,
     final List<CoapOption>? options,
     final bool earlyBlock2Negotiation = false,
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPost()..setPayloadMedia(payload, format);
+    final request = CoapRequest.newPost(confirmable: confirmable)
+      ..setPayloadMedia(payload, format);
     _build(
       request,
       path,
       accept,
-      type,
       options,
       earlyBlock2Negotiation,
       maxRetransmit,
@@ -180,18 +180,18 @@ class CoapClient {
     required final Uint8Buffer payload,
     final CoapMediaType format = CoapMediaType.textPlain,
     final CoapMediaType accept = CoapMediaType.textPlain,
-    final int type = CoapMessageType.con,
+    final bool confirmable = true,
     final List<CoapOption>? options,
     final bool earlyBlock2Negotiation = false,
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPost()..setPayloadMediaRaw(payload, format);
+    final request = CoapRequest.newPost(confirmable: confirmable)
+      ..setPayloadMediaRaw(payload, format);
     _build(
       request,
       path,
       accept,
-      type,
       options,
       earlyBlock2Negotiation,
       maxRetransmit,
@@ -205,7 +205,7 @@ class CoapClient {
     required final String payload,
     final CoapMediaType format = CoapMediaType.textPlain,
     final CoapMediaType accept = CoapMediaType.textPlain,
-    final int type = CoapMessageType.con,
+    final bool confirmable = true,
     final List<Uint8Buffer>? etags,
     final MatchEtags matchEtags = MatchEtags.onMatch,
     final List<CoapOption>? options,
@@ -213,12 +213,12 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPut()..setPayloadMedia(payload, format);
+    final request = CoapRequest.newPut(confirmable: confirmable)
+      ..setPayloadMedia(payload, format);
     _build(
       request,
       path,
       accept,
-      type,
       options,
       earlyBlock2Negotiation,
       maxRetransmit,
@@ -236,18 +236,18 @@ class CoapClient {
     final MatchEtags matchEtags = MatchEtags.onMatch,
     final List<Uint8Buffer>? etags,
     final CoapMediaType accept = CoapMediaType.textPlain,
-    final int type = CoapMessageType.con,
+    final bool confirmable = true,
     final List<CoapOption>? options,
     final bool earlyBlock2Negotiation = false,
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPut()..setPayloadMediaRaw(payload, format);
+    final request = CoapRequest.newPut(confirmable: confirmable)
+      ..setPayloadMediaRaw(payload, format);
     _build(
       request,
       path,
       accept,
-      type,
       options,
       earlyBlock2Negotiation,
       maxRetransmit,
@@ -261,18 +261,17 @@ class CoapClient {
   Future<CoapResponse> delete(
     final String path, {
     final CoapMediaType accept = CoapMediaType.textPlain,
-    final int type = CoapMessageType.con,
+    final bool confirmable = true,
     final List<CoapOption>? options,
     final bool earlyBlock2Negotiation = false,
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newDelete();
+    final request = CoapRequest.newDelete(confirmable: confirmable);
     _build(
       request,
       path,
       accept,
-      type,
       options,
       earlyBlock2Negotiation,
       maxRetransmit,
@@ -365,10 +364,10 @@ class CoapClient {
   /// Cancels a request
   void cancel(final CoapRequest request) {
     request.isCancelled = true;
-    final response = CoapResponse(CoapCode.empty)
+    final response = CoapEmptyMessage(CoapMessageType.rst)
       ..id = request.id
       ..token = request.token;
-    _eventBus.fire(CoapRespondEvent(response));
+    _eventBus.fire(CoapCancelledEvent(response));
   }
 
   /// Cancel all ongoing requests
@@ -380,7 +379,6 @@ class CoapClient {
     final CoapRequest request,
     final String path,
     final CoapMediaType accept,
-    final int type,
     final List<CoapOption>? options,
     final bool earlyBlock2Negotiation,
     final int maxRetransmit, {
@@ -390,7 +388,6 @@ class CoapClient {
     request
       ..uriPath = path
       ..accept = accept
-      ..type = type
       ..maxRetransmit = maxRetransmit;
     if (options != null) {
       request.addOptions(options);

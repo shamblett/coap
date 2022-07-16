@@ -8,7 +8,6 @@
 import 'dart:async';
 import 'dart:math';
 
-import '../coap_code.dart';
 import '../coap_config.dart';
 import '../coap_empty_message.dart';
 import '../coap_message.dart';
@@ -75,10 +74,10 @@ class CoapTransmissionContext {
       _exchange.timedOut = true;
       _message.isTimedOut = true;
       _exchange.remove(CoapReliabilityLayer.transmissionContextKey);
-      final response = CoapResponse(CoapCode.empty)
+      final message = CoapEmptyMessage(CoapMessageType.rst)
         ..id = _message.id
         ..token = _message.token;
-      _exchange.fireRespond(response);
+      _exchange.fireCancel(message);
       cancel();
     }
   }
@@ -102,10 +101,6 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
     final CoapExchange exchange,
     final CoapRequest request,
   ) {
-    if (request.type == CoapMessageType.unknown) {
-      request.type = CoapMessageType.con;
-    }
-
     if (request.type == CoapMessageType.con) {
       _prepareRetransmission(
         exchange,
@@ -128,24 +123,7 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
     final CoapResponse? response,
   ) {
     final mt = response!.type;
-    if (mt == CoapMessageType.unknown) {
-      final reqType = exchange.currentRequest!.type;
-      if (reqType == CoapMessageType.con) {
-        if (exchange.currentRequest!.isAcknowledged) {
-          // Send separate response
-          response.type = CoapMessageType.con;
-        } else {
-          exchange.currentRequest!.isAcknowledged = true;
-          // send piggy-backed response
-          response
-            ..type = CoapMessageType.ack
-            ..id = exchange.currentRequest!.id;
-        }
-      } else {
-        // send NON response
-        response.type = CoapMessageType.non;
-      }
-    } else if (mt == CoapMessageType.ack || mt == CoapMessageType.rst) {
+    if (mt == CoapMessageType.ack || mt == CoapMessageType.rst) {
       response.id = exchange.currentRequest!.id;
     }
 
@@ -249,6 +227,7 @@ class CoapReliabilityLayer extends CoapAbstractLayer {
           exchange.currentResponse!.isRejected = true;
         }
         break;
+      // ignore: no_default_cases
       default:
         break;
     }
