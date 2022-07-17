@@ -315,7 +315,7 @@ abstract class CoapMessage {
   }
 
   /// Sets the payload and media type of this CoAP message.
-  void setPayloadMedia(final String? payload, final CoapMediaType mediaType) {
+  void setPayloadMedia(final String? payload, final CoapMediaType? mediaType) {
     if (payload == null) {
       return;
     }
@@ -327,7 +327,7 @@ abstract class CoapMessage {
   /// Sets the payload of this CoAP message.
   void setPayloadMediaRaw(
     final Uint8Buffer payload,
-    final CoapMediaType mediaType,
+    final CoapMediaType? mediaType,
   ) {
     this.payload = payload;
     contentType = mediaType;
