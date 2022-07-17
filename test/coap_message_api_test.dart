@@ -302,15 +302,21 @@ void main() {
   test('Location path', () {
     final message = CoapEmptyMessage(CoapMessageType.rst);
     expect(message.locationPaths.length, 0);
+    message.locationPath = '';
+    expect(message.locationPaths.length, 1);
+    expect(message.locationPath, '');
+    message.locationPath = '/';
+    expect(message.locationPaths.length, 1);
+    expect(message.locationPath, '');
     message.locationPath = 'a/location/path/';
-    expect(message.locationPaths.length, 3);
-    expect(message.locationPath, 'a/location/path');
-    message.addLocationPath('longer');
     expect(message.locationPaths.length, 4);
-    expect(message.locationPath, 'a/location/path/longer');
+    expect(message.locationPath, 'a/location/path/');
+    message.addLocationPath('longer');
+    expect(message.locationPaths.length, 5);
+    expect(message.locationPath, 'a/location/path//longer');
     message.removelocationPath('path');
-    expect(message.locationPaths.length, 3);
-    expect(message.locationPath, 'a/location/longer');
+    expect(message.locationPaths.length, 4);
+    expect(message.locationPath, 'a/location//longer');
     message.clearLocationPath();
     expect(message.locationPaths.length, 0);
     expect(message.locationPath.isEmpty, isTrue);

@@ -625,8 +625,14 @@ abstract class CoapMessage {
 
   /// Set the location path from a string
   set locationPath(final String fullPath) {
-    final trimmedPath = _trimChar(fullPath, '/');
     clearLocationPath();
+
+    var trimmedPath = fullPath;
+
+    if (fullPath.startsWith('/')) {
+      trimmedPath = fullPath.substring(1);
+    }
+
     trimmedPath.split('/').forEach(addLocationPath);
   }
 
