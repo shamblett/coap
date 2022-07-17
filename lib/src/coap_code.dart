@@ -192,7 +192,32 @@ enum CoapCode {
   /// 5.08 Hop Limit Reached
   ///
   /// Defined in [RFC 8768](https://datatracker.ietf.org/doc/html/rfc8768).
-  hopLimitReached(5, 08, 'Hop Limit Reached');
+  hopLimitReached(5, 08, 'Hop Limit Reached'),
+
+  /// 7.01 CSM
+  ///
+  /// Defined in [RFC 8323](https://datatracker.ietf.org/doc/html/rfc8323).
+  csm(7, 01, 'CSM'),
+
+  /// 7.02 Ping
+  ///
+  /// Defined in [RFC 8323](https://datatracker.ietf.org/doc/html/rfc8323).
+  ping(7, 02, 'Ping'),
+
+  /// 7.03 Pong
+  ///
+  /// Defined in [RFC 8323](https://datatracker.ietf.org/doc/html/rfc8323).
+  pong(7, 03, 'Pong'),
+
+  /// 7.04 Release
+  ///
+  /// Defined in [RFC 8323](https://datatracker.ietf.org/doc/html/rfc8323).
+  release(7, 04, 'Release'),
+
+  /// 7.05 Abort
+  ///
+  /// Defined in [RFC 8323](https://datatracker.ietf.org/doc/html/rfc8323).
+  abort(7, 05, 'Abort');
 
   const CoapCode(
     this.codeClass,
@@ -237,4 +262,7 @@ enum CoapCode {
 
   /// Checks whether this [CoapCode] represents a server error response code.
   bool get isServerError => codeClass == 5;
+
+  /// Checks whether this [CoapCode] indicates a signaling message.
+  bool get isSignaling => codeClass == 7;
 }
