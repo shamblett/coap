@@ -58,6 +58,12 @@ enum OptionType implements Comparable<OptionType> {
   /// E, String, 1-270 B, -
   locationPath(8, 'Location-Path', OptionFormat.string),
 
+  /// C, String, 0-255 B, -
+  ///
+  /// Defined in [RFC 8613](https://datatracker.ietf.org/doc/html/rfc8613).
+  // TODO(JKRhb): Option format should be revisited.
+  oscore(9, 'OSCORE', OptionFormat.opaque),
+
   /// C, String, 1-270 B, ""
   uriPath(11, 'Uri-Path', OptionFormat.string),
 
@@ -70,8 +76,29 @@ enum OptionType implements Comparable<OptionType> {
   /// C, String, 1-270 B, ""
   uriQuery(15, 'Uri-Query', OptionFormat.string),
 
+  /// E, uint, 1 B, 16
+  ///
+  /// Defined in [RFC 8768](https://datatracker.ietf.org/doc/html/rfc8768).
+  hopLimit(16, 'Hop-Limit', OptionFormat.integer),
+
   /// C, Sequence of Bytes, 1-n B, -
   accept(17, 'Accept', OptionFormat.integer),
+
+  /// C, uint, 0-3 B, -
+  ///
+  /// Defined in [RFC 9177](https://datatracker.ietf.org/doc/html/rfc9177).
+  qBlock1(19, 'Q-Block1', OptionFormat.integer),
+
+  /// C, empty, 0 B, -
+  ///
+  /// Defined in [draft-ietf-core-oscore-edhoc-02].
+  ///
+  /// Note: The registration of this option is only temporary at the moment
+  /// and might be removed by IANA if draft-ietf-core-oscore-edhoc does not
+  /// become an RFC.
+  ///
+  /// [draft-ietf-core-oscore-edhoc-04]: https://datatracker.ietf.org/doc/html/draft-ietf-core-oscore-edhoc-04#section-3.1
+  edhoc(21, 'EDHOC', OptionFormat.empty),
 
   /// E, String, 1-270 B, -
   locationQuery(20, 'Location-Query', OptionFormat.string),
@@ -79,11 +106,54 @@ enum OptionType implements Comparable<OptionType> {
   block1(27, 'Block1', OptionFormat.integer),
   size2(28, 'Size2', OptionFormat.integer),
 
+  /// C, uint, 0-3 B, -
+  ///
+  /// Defined in [RFC 9177](https://datatracker.ietf.org/doc/html/rfc9177).
+  qBlock2(31, 'Q-Block2', OptionFormat.integer),
+
   /// C, String, 1-270 B, "coap"
   proxyUri(35, 'Proxy-Uri', OptionFormat.string),
 
   proxyScheme(39, 'Proxy-Scheme', OptionFormat.string),
-  size1(60, 'Size1', OptionFormat.integer);
+  size1(60, 'Size1', OptionFormat.integer),
+
+  /// E, opaque, 1-40 B, -
+  ///
+  /// Defined in [RFC 9175](https://datatracker.ietf.org/doc/html/rfc9175).
+  echo(252, 'Echo', OptionFormat.opaque),
+
+  /// E, uint, 0-1 B, 0
+  ///
+  /// Defined in [RFC 7967](https://datatracker.ietf.org/doc/html/rfc7967),
+  /// updated by [RFC 8613](https://datatracker.ietf.org/doc/html/rfc8613).
+  noResponse(258, 'No-Response', OptionFormat.integer),
+
+  /// E, opaque, 0-8 B, -
+  ///
+  /// Defined in [RFC 9175](https://datatracker.ietf.org/doc/html/rfc9175).
+  requestTag(292, 'Request-Tag', OptionFormat.opaque),
+
+  /// C, uint, 2 B, -
+  ///
+  /// Defined in the [OCF Core Specification v1.3.0 Part 1], page 128.
+  ///
+  /// [OCF Core Specification v1.3.0]: https://openconnectivity.org/specs/OCF_Core_Specification_v1.3.0.pdf
+  ocfAcceptContentFormatVersion(
+    2049,
+    'OCF-Accept-Content-Format-Version',
+    OptionFormat.integer,
+  ),
+
+  /// C, uint, 2 B, -
+  ///
+  /// Defined in the [OCF Core Specification v1.3.0 Part 1], page 128.
+  ///
+  /// [OCF Core Specification v1.3.0]: https://openconnectivity.org/specs/OCF_Core_Specification_v1.3.0.pdf
+  ocfContentFormatVersion(
+    2053,
+    'OCF-Content-Format-Version',
+    OptionFormat.integer,
+  );
 
   /// The number of this option.
   final int optionNumber;
