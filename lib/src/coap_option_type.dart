@@ -7,26 +7,6 @@
 
 import 'dart:collection';
 
-const _ifMatch = 1;
-const _uriHost = 3;
-const _eTag = 4;
-const _ifNoneMatch = 5;
-const _observe = 6;
-const _uriPort = 7;
-const _locationPath = 8;
-const _uriPath = 11;
-const _contentFormat = 12;
-const _maxAge = 14;
-const _uriQuery = 15;
-const _accept = 17;
-const _locationQuery = 20;
-const _block2 = 23;
-const _block1 = 27;
-const _size2 = 28;
-const _proxyUri = 35;
-const _proxyScheme = 39;
-const _size1 = 60;
-
 /// Base class for [Exception]s that are thrown when an unknown CoapOption
 /// number is encountered during the parsing of a CoapMessage.
 abstract class UnknownOptionException implements Exception {
@@ -59,51 +39,51 @@ class UnknownCriticalOptionException extends UnknownOptionException {
 /// RFC 7252, Section 12.2 and other CoAP extensions.
 enum OptionType implements Comparable<OptionType> {
   /// C, opaque, 0-8 B, -
-  ifMatch(_ifMatch, 'If-Match', OptionFormat.opaque),
+  ifMatch(1, 'If-Match', OptionFormat.opaque),
 
   /// C, String, 1-270 B, ""
-  uriHost(_uriHost, 'Uri-Host', OptionFormat.string),
+  uriHost(3, 'Uri-Host', OptionFormat.string),
 
   /// E, sequence of bytes, 1-4 B, -
-  eTag(_eTag, 'ETag', OptionFormat.opaque),
+  eTag(4, 'ETag', OptionFormat.opaque),
 
-  ifNoneMatch(_ifNoneMatch, 'If-None-Match', OptionFormat.empty),
+  ifNoneMatch(5, 'If-None-Match', OptionFormat.empty),
 
   /// E, Duration, 1 B, 0
-  observe(_observe, 'Observe', OptionFormat.integer),
+  observe(6, 'Observe', OptionFormat.integer),
 
   /// C, uint, 0-2 B
-  uriPort(_uriPort, 'Uri-Port', OptionFormat.integer),
+  uriPort(7, 'Uri-Port', OptionFormat.integer),
 
   /// E, String, 1-270 B, -
-  locationPath(_locationPath, 'Location-Path', OptionFormat.string),
+  locationPath(8, 'Location-Path', OptionFormat.string),
 
   /// C, String, 1-270 B, ""
-  uriPath(_uriPath, 'Uri-Path', OptionFormat.string),
+  uriPath(11, 'Uri-Path', OptionFormat.string),
 
   /// C, 8-bit uint, 1 B, 0 (text/plain)
-  contentFormat(_contentFormat, 'Content-Format', OptionFormat.integer),
+  contentFormat(12, 'Content-Format', OptionFormat.integer),
 
   /// E, variable length, 1--4 B, 60 Seconds
-  maxAge(_maxAge, 'Max-Age', OptionFormat.integer),
+  maxAge(14, 'Max-Age', OptionFormat.integer),
 
   /// C, String, 1-270 B, ""
-  uriQuery(_uriQuery, 'Uri-Query', OptionFormat.string),
+  uriQuery(15, 'Uri-Query', OptionFormat.string),
 
   /// C, Sequence of Bytes, 1-n B, -
-  accept(_accept, 'Accept', OptionFormat.integer),
+  accept(17, 'Accept', OptionFormat.integer),
 
   /// E, String, 1-270 B, -
-  locationQuery(_locationQuery, 'Location-Query', OptionFormat.string),
-  block2(_block2, 'Block2', OptionFormat.integer),
-  block1(_block1, 'Block1', OptionFormat.integer),
-  size2(_size2, 'Size2', OptionFormat.integer),
+  locationQuery(20, 'Location-Query', OptionFormat.string),
+  block2(23, 'Block2', OptionFormat.integer),
+  block1(27, 'Block1', OptionFormat.integer),
+  size2(28, 'Size2', OptionFormat.integer),
 
   /// C, String, 1-270 B, "coap"
-  proxyUri(_proxyUri, 'Proxy-Uri', OptionFormat.string),
+  proxyUri(35, 'Proxy-Uri', OptionFormat.string),
 
-  proxyScheme(_proxyScheme, 'Proxy-Scheme', OptionFormat.string),
-  size1(_size1, 'Size1', OptionFormat.integer);
+  proxyScheme(39, 'Proxy-Scheme', OptionFormat.string),
+  size1(60, 'Size1', OptionFormat.integer);
 
   /// The number of this option.
   final int optionNumber;
