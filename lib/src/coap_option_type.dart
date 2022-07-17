@@ -5,7 +5,8 @@
  * Copyright :  S.Hamblett
  */
 
-// Option numbers
+import 'dart:collection';
+
 const _ifMatch = 1;
 const _uriHost = 3;
 const _eTag = 4;
@@ -114,53 +115,22 @@ enum OptionType implements Comparable<OptionType> {
   final OptionFormat optionFormat;
   const OptionType(this.optionNumber, this.optionName, this.optionFormat);
 
+  static final _registry = HashMap.fromEntries(
+    values.map((final value) => MapEntry(value.optionNumber, value)),
+  );
+
   /// Creates a new [OptionType] object from a numeric [type].
   static OptionType fromTypeNumber(final int type) {
-    switch (type) {
-      case _ifMatch:
-        return OptionType.ifMatch;
-      case _uriHost:
-        return OptionType.uriHost;
-      case _eTag:
-        return OptionType.eTag;
-      case _ifNoneMatch:
-        return OptionType.ifNoneMatch;
-      case _observe:
-        return OptionType.observe;
-      case _uriPort:
-        return OptionType.uriPort;
-      case _locationPath:
-        return OptionType.locationPath;
-      case _uriPath:
-        return OptionType.uriPath;
-      case _contentFormat:
-        return OptionType.contentFormat;
-      case _maxAge:
-        return OptionType.maxAge;
-      case _uriQuery:
-        return OptionType.uriQuery;
-      case _accept:
-        return OptionType.accept;
-      case _locationQuery:
-        return OptionType.locationQuery;
-      case _block2:
-        return OptionType.block2;
-      case _block1:
-        return OptionType.block1;
-      case _size2:
-        return OptionType.size2;
-      case _proxyUri:
-        return OptionType.proxyUri;
-      case _proxyScheme:
-        return OptionType.proxyScheme;
-      case _size1:
-        return OptionType.size1;
-      default:
-        if (type.isOdd) {
-          throw UnknownCriticalOptionException(type);
-        } else {
-          throw UnknownElectiveOptionException(type);
-        }
+    final optionType = _registry[type];
+
+    if (optionType != null) {
+      return optionType;
+    }
+
+    if (type.isOdd) {
+      throw UnknownCriticalOptionException(type);
+    } else {
+      throw UnknownElectiveOptionException(type);
     }
   }
 
