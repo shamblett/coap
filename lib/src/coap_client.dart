@@ -313,7 +313,7 @@ class CoapClient {
     if (links.contentFormat != CoapMediaType.applicationLinkFormat) {
       return <CoapWebLink>[CoapWebLink('')];
     } else {
-      return CoapLinkFormat.parse(links.payloadString!);
+      return CoapLinkFormat.parse(links.payloadString);
     }
   }
 
