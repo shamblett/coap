@@ -13,7 +13,7 @@ import 'dart:async';
 import 'package:coap/coap.dart';
 import 'config/coap_config.dart';
 
-FutureOr<void> main(final List<String> args) async {
+FutureOr<void> main() async {
   final conf = CoapConfig();
   final uri = Uri(
     scheme: 'coap',
