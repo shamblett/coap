@@ -247,19 +247,15 @@ void main() {
     message.addUriPath('longer');
     expect(message.uriPaths.length, 5);
     expect(message.uriPath, 'a/uri/path//longer');
-    expect(
-      () => message.addUriPath('multiple/not/allowed'),
-      throwsArgumentError,
-    );
-    expect(
-      () => message.addLocationPath('no-double-slash//'),
-      throwsArgumentError,
-    );
+    message.addUriPath('multiple/are/allowed');
+    expect(message.uriPath, 'a/uri/path//longer/multiple%2Fare%2Fallowed');
+    message.addLocationPath('no-double-slash//');
+    expect(message.uriPath, 'a/uri/path//longer/multiple%2Fare%2Fallowed');
     final tooLong = 'n' * 1000;
     expect(() => message.addUriPath(tooLong), throwsArgumentError);
     message.removeUriPath('path');
-    expect(message.uriPaths.length, 4);
-    expect(message.uriPath, 'a/uri//longer');
+    expect(message.uriPaths.length, 5);
+    expect(message.uriPath, 'a/uri//longer/multiple%2Fare%2Fallowed');
     message.clearUriPath();
     expect(message.uriPaths.length, 0);
     expect(message.uriPath.isEmpty, isTrue);
@@ -284,17 +280,22 @@ void main() {
     expect(message.uriQuery, 'a&uri=1&query=2&longer=3');
     final tooLong = 'n' * 1000;
     expect(() => message.addUriQuery(tooLong), throwsArgumentError);
+    message.addUriQuery('allow=1&multiple=2&queries=3');
     expect(
-      () => message.addUriQuery('no=1&multiple=2&queries=3'),
-      throwsArgumentError,
+      message.uriQuery,
+      'a&uri=1&query=2&longer=3&allow=1%26multiple=2%26queries=3',
     );
+    message.addLocationQuery('no_double_and=1&&');
     expect(
-      () => message.addLocationQuery('no_double_and=1&&'),
-      throwsArgumentError,
+      message.uriQuery,
+      'a&uri=1&query=2&longer=3&allow=1%26multiple=2%26queries=3',
     );
     message.removeUriQuery('query=2');
-    expect(message.uriQueries.length, 3);
-    expect(message.uriQuery, 'a&uri=1&longer=3');
+    expect(message.uriQueries.length, 4);
+    expect(
+      message.uriQuery,
+      'a&uri=1&longer=3&allow=1%26multiple=2%26queries=3',
+    );
     message.clearUriQuery();
     expect(message.uriQueries.length, 0);
   });
@@ -330,14 +331,10 @@ void main() {
     expect(message.locationPath, '');
     expect(() => message.locationPath = '..', throwsArgumentError);
     expect(() => message.locationPath = '.', throwsArgumentError);
-    expect(
-      () => message.addLocationPath('multiple/not/allowed'),
-      throwsArgumentError,
-    );
-    expect(
-      () => message.addLocationPath('no-double-slash//'),
-      throwsArgumentError,
-    );
+    message.addLocationPath('multiple/are/allowed');
+    expect(message.locationPaths.length, 1);
+    message.addLocationPath('double-slash//');
+    expect(message.locationPaths.length, 2);
     final tooLong = 'n' * 1000;
     expect(() => message.addLocationPath(tooLong), throwsArgumentError);
   });
@@ -353,17 +350,23 @@ void main() {
     expect(message.locationQuery, 'a&uri=1&query=2&longer=3');
     final tooLong = 'n' * 1000;
     expect(() => message.addLocationQuery(tooLong), throwsArgumentError);
+    message.addLocationQuery('allow=1&multiple=2&queries=3');
     expect(
-      () => message.addLocationQuery('no=1&multiple=2&queries=3'),
-      throwsArgumentError,
+      message.locationQuery,
+      'a&uri=1&query=2&longer=3&allow=1%26multiple=2%26queries=3',
     );
+    message.addLocationQuery('double_and=1&&');
     expect(
-      () => message.addLocationQuery('no_double_and=1&&'),
-      throwsArgumentError,
+      message.locationQuery,
+      'a&uri=1&query=2&longer=3&allow=1%26multiple=2%26queries=3'
+      '&double_and=1%26%26',
     );
     message.removeLocationQuery('query=2');
-    expect(message.locationQueries.length, 3);
-    expect(message.locationQuery, 'a&uri=1&longer=3');
+    expect(message.locationQueries.length, 5);
+    expect(
+      message.locationQuery,
+      'a&uri=1&longer=3&allow=1%26multiple=2%26queries=3&double_and=1%26%26',
+    );
     message.clearLocationQuery();
     expect(message.locationQueries.length, 0);
   });
