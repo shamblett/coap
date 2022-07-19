@@ -694,7 +694,7 @@ abstract class CoapMessage {
 
   /// Set a location query
   set locationQuery(final String fullQuery) {
-    var trimmedQuery = _trimChar(fullQuery, '&');
+    var trimmedQuery = fullQuery;
     if (trimmedQuery.startsWith('?')) {
       trimmedQuery = trimmedQuery.substring(1);
     }
