@@ -99,6 +99,68 @@ class CoapResourceAttributes {
     _attributes[LinkFormatParameter.contentType.short] = <String>[];
   }
 
+  /// Adds an [endpointName] specified by an [String].
+  void addEndpointName(final String endpointName) {
+    _attributes[LinkFormatParameter.endpointName.short]!.add(endpointName);
+  }
+
+  /// Gets all endpoint names.
+  Iterable<String?>? get endpointNames =>
+      _attributes[LinkFormatParameter.endpointName.short];
+
+  /// Clears all endpoint names.
+  void clearEndpointNames() {
+    _attributes[LinkFormatParameter.endpointName.short] = <String>[];
+  }
+
+  /// Gets or sets the lifetime string value.
+  String? get liftimeString =>
+      getValues(LinkFormatParameter.lifetime.short)?.first;
+
+  set liftimeString(final String? value) =>
+      set(LinkFormatParameter.lifetime.short, value);
+
+  /// Gets or sets the lifetime.
+  int get liftime => int.tryParse(liftimeString ?? '') ?? 0;
+
+  set liftime(final int value) => liftimeString = value.toString();
+
+  /// Gets or sets the page string value.
+  String? get pageString => getValues(LinkFormatParameter.page.short)?.first;
+
+  set pageString(final String? value) =>
+      set(LinkFormatParameter.page.short, value);
+
+  /// Gets or sets the page.
+  int get page => int.tryParse(pageString ?? '') ?? 0;
+
+  set page(final int value) => pageString = value.toString();
+
+  /// Gets or sets the count string value.
+  String? get countString => getValues(LinkFormatParameter.count.short)?.first;
+
+  set countString(final String? value) =>
+      set(LinkFormatParameter.count.short, value);
+
+  /// Gets or sets the count.
+  int get count => int.tryParse(countString ?? '') ?? 0;
+
+  set count(final int value) => countString = value.toString();
+
+  /// Adds an [endpointType] specified by an [String].
+  void addEndpointType(final String endpointType) {
+    _attributes[LinkFormatParameter.endpointType.short]!.add(endpointType);
+  }
+
+  /// Gets all endpoint types.
+  Iterable<String?>? get endpointTypes =>
+      _attributes[LinkFormatParameter.endpointType.short];
+
+  /// Clears all resource types.
+  void clearEndpointTypes() {
+    _attributes[LinkFormatParameter.endpointType.short] = <String>[];
+  }
+
   /// Returns true if this object contains the specified attribute.
   bool contains(final String name) => _attributes.containsKey(name);
 

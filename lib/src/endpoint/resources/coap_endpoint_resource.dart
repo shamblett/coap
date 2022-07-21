@@ -58,7 +58,25 @@ abstract class CoapEndpointResource {
         CoapLinkAttribute(LinkFormatParameter.resourceType.short, value),
       );
 
+  /// Endpoint Name
+  String? get endpointName =>
+      getAttributes(LinkFormatParameter.endpointName.short)
+          .firstOrNull
+          ?.valueAsString;
 
+  set endpointName(final String? value) => setAttribute(
+        CoapLinkAttribute(LinkFormatParameter.endpointName.short, value),
+      );
+
+  /// Endpoint Type
+  String? get endpointType =>
+      getAttributes(LinkFormatParameter.endpointType.short)
+          .firstOrNull
+          ?.valueAsString;
+
+  set endpointType(final String? value) => setAttribute(
+        CoapLinkAttribute(LinkFormatParameter.endpointType.short, value),
+      );
 
   /// Title
   String? get title =>
