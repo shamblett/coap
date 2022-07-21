@@ -357,10 +357,7 @@ class CoapLinkFormat {
       Object? value;
       value = true;
       // check for name-value-pair
-      if (!scanner.scan(equalRegex)) {
-        // Flag attribute
-        value = true;
-      } else {
+      if (scanner.scan(equalRegex)) {
         if (scanner.matches(quotedStringRegex)) {
           scanner.scan(quotedStringRegex);
           final matched = scanner.lastMatch!;
@@ -372,6 +369,8 @@ class CoapLinkFormat {
           final num = matched.group(0)!;
           value = int.tryParse(num);
           value ??= 0;
+        } else {
+          value = scanner.takeUntil(';');
         }
       }
       return CoapLinkAttribute(name!, value);
