@@ -18,7 +18,7 @@ class CoapResourceAttributes {
   final Map<String, List<String?>> _attributes = <String, List<String>>{};
 
   /// Gets the number of attributes.
-  int get count => _attributes.length;
+  int get length => _attributes.length;
 
   /// Is empty
   bool get isEmpty => _attributes.isEmpty;
