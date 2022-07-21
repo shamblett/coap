@@ -29,33 +29,16 @@ class CoapWebLink extends Comparable<CoapWebLink> {
   String toString() {
     final sb = StringBuffer('<$_uri> ');
     if (_attributes.isNotEmpty) {
-      if (_attributes.contains(CoapLinkFormat.title)) {
-        sb
-          ..write('\n\t${CoapLinkFormat.title}:\t')
-          ..write(_attributes.title);
-      }
-      if (_attributes.contains(CoapLinkFormat.resourceType)) {
-        sb
-          ..write('\n\t${CoapLinkFormat.resourceType}:\t')
-          ..write(_attributes.getResourceTypes());
-      }
-      if (_attributes.contains(CoapLinkFormat.interfaceDescription)) {
-        sb
-          ..write('\n\t${CoapLinkFormat.interfaceDescription}:\t')
-          ..write(_attributes.getInterfaceDescriptions());
-      }
-      if (_attributes.contains(CoapLinkFormat.contentType)) {
-        sb
-          ..write('\n\t${CoapLinkFormat.contentType}:\t')
-          ..write(_attributes.getContentTypes());
-      }
-      if (_attributes.contains(CoapLinkFormat.maxSizeEstimate)) {
-        sb
-          ..write('\n\t${CoapLinkFormat.maxSizeEstimate}:\t')
-          ..write(_attributes.maximumSizeEstimate);
+      for (final linkFormatParameter in LinkFormatParameter.values) {
+        final key = linkFormatParameter.short;
+        if (_attributes.contains(key)) {
+          sb
+            ..write('\n\t$key:\t')
+            ..write(_attributes.getValues(key));
+        }
       }
       if (_attributes.observable != null) {
-        sb.write('\n\t${CoapLinkFormat.observable}');
+        sb.write('\n\t${LinkFormatParameter.observable}');
       }
     }
     return sb.toString();

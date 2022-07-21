@@ -18,26 +18,112 @@ import 'resources/coap_iresource.dart';
 import 'resources/coap_resource_attributes.dart';
 import 'util/coap_scanner.dart';
 
+enum LinkFormatParameterType {
+  // TODO(JKRhb): Revisit typing
+  bool,
+  string,
+  uint;
+}
+
+enum LinkFormatParameter {
+  /// Name of the attribute `Resource Type`.
+  resourceType('rt'),
+
+  /// Name of the attribute `Interface Description`.
+  interfaceDescription('if'),
+
+  /// Name of the attribute `Content Type`.
+  contentType('ct', parameterType: LinkFormatParameterType.uint),
+
+  /// Name of the attribute `Max Size Estimate`.
+  maxSizeEstimate('sz', parameterType: LinkFormatParameterType.uint),
+
+  /// Name of the attribute `Title`.
+  title('title'),
+
+  /// Name of the attribute `Observable`.
+  ///
+  /// Specified in [RFC 7641, section 6].
+  ///
+  /// [RFC 7641, section 6]: https://datatracker.ietf.org/doc/html/rfc7641#section-6
+  observable('obs', parameterType: LinkFormatParameterType.bool),
+
+  /// Name of the attribute `Endpoint name`.
+  ///
+  /// Specified in [RFC 9176, section 9.3].
+  ///
+  /// [RFC 9176, section 9.3]: https://datatracker.ietf.org/doc/html/rfc9176#section-9.3
+  endpointName('ep'),
+
+  /// Name of the attribute `Lifetime`.
+  ///
+  /// Specified in [RFC 9176, section 9.3].
+  ///
+  /// [RFC 9176, section 9.3]: https://datatracker.ietf.org/doc/html/rfc9176#section-9.3
+  // TODO(JKRhb): This needs to be a value between 1 and 4294967295.
+  lifetime('lt', parameterType: LinkFormatParameterType.uint),
+
+  /// Name of the attribute `Sector`.
+  ///
+  /// Specified in [RFC 9176, section 9.3].
+  ///
+  /// [RFC 9176, section 9.3]: https://datatracker.ietf.org/doc/html/rfc9176#section-9.3
+  sector('d'),
+
+  /// Name of the attribute `Registration Base URI`.
+  ///
+  /// Specified in [RFC 9176, section 9.3].
+  ///
+  /// [RFC 9176, section 9.3]: https://datatracker.ietf.org/doc/html/rfc9176#section-9.3
+  base('base'),
+
+  /// Name of the attribute `Page`.
+  ///
+  /// Specified in [RFC 9176, section 9.3].
+  ///
+  /// [RFC 9176, section 9.3]: https://datatracker.ietf.org/doc/html/rfc9176#section-9.3
+  page('page', parameterType: LinkFormatParameterType.uint),
+
+  /// Name of the attribute `Count`.
+  ///
+  /// Specified in [RFC 9176, section 9.3].
+  ///
+  /// [RFC 9176, section 9.3]: https://datatracker.ietf.org/doc/html/rfc9176#section-9.3
+  count('count', parameterType: LinkFormatParameterType.uint),
+
+  /// Name of the attribute `Endpoint Type`.
+  ///
+  /// Specified in [RFC 9176, section 9.3].
+  ///
+  /// [RFC 9176, section 9.3]: https://datatracker.ietf.org/doc/html/rfc9176#section-9.3
+  endpointType('et');
+
+  const LinkFormatParameter(
+    this.short, {
+    final LinkFormatParameterType parameterType =
+        LinkFormatParameterType.string,
+  }) : _parameterType = parameterType;
+
+  static final _registry = HashMap.fromEntries(
+    values.map((final value) => MapEntry(value.short, value)),
+  );
+
+  static LinkFormatParameter? fromShort(final String short) => _registry[short];
+
+  final String short;
+
+  bool get isSingle => parameterType == LinkFormatParameterType.bool;
+
+  final LinkFormatParameterType _parameterType;
+
+  LinkFormatParameterType get parameterType => _parameterType;
+
+  @override
+  String toString() => short;
+}
+
 /// This class provides link format definitions as specified in RFC 6690.
 class CoapLinkFormat {
-  /// Name of the attribute Resource Type
-  static const String resourceType = 'rt';
-
-  /// Name of the attribute Interface Description
-  static const String interfaceDescription = 'if';
-
-  /// Name of the attribute Content Type
-  static const String contentType = 'ct';
-
-  /// Name of the attribute Max Size Estimate
-  static const String maxSizeEstimate = 'sz';
-
-  /// Name of the attribute Title
-  static const String title = 'title';
-
-  /// Name of the attribute Observable
-  static const String observable = 'obs';
-
   /// Name of the attribute link
   static const String link = 'href';
 
@@ -414,25 +500,25 @@ class CoapLinkFormat {
     final HashSet<CoapLinkAttribute> attributes,
     final CoapLinkAttribute attrToAdd,
   ) {
-    if (isSingle(attrToAdd.name)) {
-      for (final attr in attributes) {
-        if (attr.name == attrToAdd.name) {
-          return false;
-        }
-      }
-    }
-    // Special rules
-    if (attrToAdd.name == contentType && attrToAdd.valueAsInt! < 0) {
+    final parameter = LinkFormatParameter.fromShort(attrToAdd.name);
+
+    if (parameter == null) {
+      // Attribute is unknown
       return false;
     }
-    if (attrToAdd.name == maxSizeEstimate && attrToAdd.valueAsInt! < 0) {
+
+    if (parameter.isSingle &&
+        attributes
+            .map((final attribute) => attribute.name)
+            .contains(attrToAdd.name)) {
+      return false;
+    }
+    // Special rules
+    if (parameter.parameterType == LinkFormatParameterType.uint &&
+        attrToAdd.valueAsInt! < 0) {
       return false;
     }
     attributes.add(attrToAdd);
     return true;
   }
-
-  /// Single
-  static bool isSingle(final String? name) =>
-      name == title || name == maxSizeEstimate || name == observable;
 }

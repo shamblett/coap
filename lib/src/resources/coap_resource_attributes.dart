@@ -30,22 +30,23 @@ class CoapResourceAttributes {
   Iterable<String> get keys => _attributes.keys;
 
   /// The resource title.
-  String? get title => getValues(CoapLinkFormat.title)?.firstOrNull;
+  String? get title => getValues(LinkFormatParameter.title.short)?.firstOrNull;
 
-  set title(final String? value) => set(CoapLinkFormat.title, value);
+  set title(final String? value) => set(LinkFormatParameter.title.short, value);
 
   /// Gets or sets a value indicating if the resource is observable.
   bool? get observable =>
-      getValues(CoapLinkFormat.observable)?.firstOrNull?.isNotEmpty;
+      getValues(LinkFormatParameter.observable.short)?.firstOrNull?.isNotEmpty;
 
-  set observable(final bool? value) => set(CoapLinkFormat.observable, '');
+  set observable(final bool? value) =>
+      set(LinkFormatParameter.observable.short, '');
 
   /// Gets or sets the maximum size estimate string value.
   String? get maximumSizeEstimateString =>
-      getValues(CoapLinkFormat.maxSizeEstimate)!.first;
+      getValues(LinkFormatParameter.maxSizeEstimate.short)!.first;
 
   set maximumSizeEstimateString(final String? value) =>
-      set(CoapLinkFormat.maxSizeEstimate, value);
+      set(LinkFormatParameter.maxSizeEstimate.short, value);
 
   /// Gets or sets the maximum size estimate.
   int get maximumSizeEstimate => maximumSizeEstimateString!.isEmpty
@@ -57,44 +58,45 @@ class CoapResourceAttributes {
 
   /// Adds a resource type.
   void addResourceType(final String type) {
-    _attributes[CoapLinkFormat.resourceType]!.add(type);
+    _attributes[LinkFormatParameter.resourceType.short]!.add(type);
   }
 
   /// Gets all resource types.
   Iterable<String?>? getResourceTypes() =>
-      _attributes[CoapLinkFormat.resourceType];
+      _attributes[LinkFormatParameter.resourceType.short];
 
   /// Clears all resource types.
   void clearResourceTypes() {
-    _attributes[CoapLinkFormat.resourceType] = <String>[];
+    _attributes[LinkFormatParameter.resourceType.short] = <String>[];
   }
 
   /// Adds an interface description.
   void addInterfaceDescription(final String description) {
-    _attributes[CoapLinkFormat.interfaceDescription]!.add(description);
+    _attributes[LinkFormatParameter.interfaceDescription.short]!
+        .add(description);
   }
 
   /// Gets all interface descriptions.
   Iterable<String?>? getInterfaceDescriptions() =>
-      _attributes[CoapLinkFormat.interfaceDescription];
+      _attributes[LinkFormatParameter.interfaceDescription.short];
 
   /// Clears all interface descriptions.
   void clearInterfaceDescriptions() {
-    _attributes[CoapLinkFormat.interfaceDescription] = <String>[];
+    _attributes[LinkFormatParameter.interfaceDescription.short] = <String>[];
   }
 
   /// Adds a content type specified by an integer.
   void addContentType(final int type) {
-    _attributes[CoapLinkFormat.contentType]!.add(type.toString());
+    _attributes[LinkFormatParameter.contentType.short]!.add(type.toString());
   }
 
   /// Gets all content types.
   Iterable<String?>? getContentTypes() =>
-      _attributes[CoapLinkFormat.contentType];
+      _attributes[LinkFormatParameter.contentType.short];
 
   /// Clears all content types.
   void clearContentTypes() {
-    _attributes[CoapLinkFormat.contentType] = <String>[];
+    _attributes[LinkFormatParameter.contentType.short] = <String>[];
   }
 
   /// Returns true if this object contains the specified attribute.
