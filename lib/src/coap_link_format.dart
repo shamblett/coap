@@ -335,9 +335,8 @@ class CoapLinkFormat {
         root.addSubResource(resource);
         break;
       }
-      CoapLinkAttribute? attr;
       while (scanner.readChar() == separator.codeUnitAt(0)) {
-        attr = parseAttribute(scanner);
+        final attr = parseAttribute(scanner);
         addAttribute(resource.attributes as HashSet<CoapLinkAttribute>, attr!);
         // ignore: invariant_booleans
         if (scanner.position == linkFormat.length) {
