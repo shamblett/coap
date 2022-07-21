@@ -43,15 +43,14 @@ class CoapResourceAttributes {
 
   /// Gets or sets the maximum size estimate string value.
   String? get maximumSizeEstimateString =>
-      getValues(LinkFormatParameter.maxSizeEstimate.short)!.first;
+      getValues(LinkFormatParameter.maxSizeEstimate.short)?.first;
 
   set maximumSizeEstimateString(final String? value) =>
       set(LinkFormatParameter.maxSizeEstimate.short, value);
 
   /// Gets or sets the maximum size estimate.
-  int get maximumSizeEstimate => maximumSizeEstimateString!.isEmpty
-      ? 0
-      : int.parse(maximumSizeEstimateString!);
+  int get maximumSizeEstimate =>
+      int.tryParse(maximumSizeEstimateString ?? '') ?? 0;
 
   set maximumSizeEstimate(final int value) =>
       maximumSizeEstimateString = value.toString();
