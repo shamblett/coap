@@ -12,6 +12,13 @@ class CoapDefinedAddress {
   static const String allSystemsIPV4 = '224.0.0.1';
   static const String allCOAPNodesIPV4 = '224.0.1.187';
 
+  /// "All CoRE Resource Directories" IPv4 multicast address.
+  ///
+  /// Specified in [RFC 9176, section 9.5].
+  ///
+  /// [RFC 9176, section 9.5]: https://datatracker.ietf.org/doc/html/rfc9176#section-9.5
+  static const String allCoreRDsIPv4 = '224.0.1.190';
+
   /// Multicast IPV6
   static const String allRoutersIPV6 = '[FF01::2]';
   static const String allNodesIPV6 = '[FF01::1]';
@@ -21,4 +28,25 @@ class CoapDefinedAddress {
   static const String allCOAPNodesIPV6 = '[FF01::FD]';
   static const String allCOAPNodesLinkLocalIPV6 = '[FF02::FD]';
   static const String allCOAPNodesSiteLocalIPV6 = '[FF05::FD]';
+
+  /// "All CoRE Resource Directories" IPv6 multicast address.
+  ///
+  /// Specified in [RFC 9176, section 9.5].
+  ///
+  /// [RFC 9176, section 9.5]: https://datatracker.ietf.org/doc/html/rfc9176#section-9.5
+  static const String allCoreRDsIPv6 = '[FF01::FE]';
+
+  /// "All CoRE Resource Directories" IPv6 link-local multicast address.
+  ///
+  /// Specified in [RFC 9176, section 9.5].
+  ///
+  /// [RFC 9176, section 9.5]: https://datatracker.ietf.org/doc/html/rfc9176#section-9.5
+  static const String allCoreRDsLinkLocalIPv6 = '[FF02::FE]';
+
+  /// "All CoRE Resource Directories" IPv6 site-local multicast address.
+  ///
+  /// Specified in [RFC 9176, section 9.5].
+  ///
+  /// [RFC 9176, section 9.5]: https://datatracker.ietf.org/doc/html/rfc9176#section-9.5
+  static const String allCoreRDsSiteLocalIPv6 = '[FF05::FE]';
 }
