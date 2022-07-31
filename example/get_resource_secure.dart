@@ -15,12 +15,18 @@
  */
 
 import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:coap/coap.dart';
 
-final pskCredentials =
-    PskCredentials(identity: 'Client_identity', preSharedKey: 'secretPSK');
+final identity = Uint8List.fromList(utf8.encode('Client_identity'));
+final preSharedKey = Uint8List.fromList(utf8.encode('secretPSK'));
 
-PskCredentials pskCredentialsCallback(final String indentity) => pskCredentials;
+final pskCredentials =
+    PskCredentials(identity: identity, preSharedKey: preSharedKey);
+
+PskCredentials pskCredentialsCallback(final Uint8List indentity) =>
+    pskCredentials;
 
 class DtlsConfig extends DefaultCoapConfig {
   @override
