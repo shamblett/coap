@@ -9,14 +9,14 @@
 
 import 'dart:collection';
 
+import '../coap_option.dart';
+import '../util/coap_scanner.dart';
 import 'coap_link_attribute.dart';
-import 'coap_option.dart';
 import 'coap_web_link.dart';
-import 'endpoint/resources/coap_endpoint_resource.dart';
-import 'endpoint/resources/coap_remote_resource.dart';
+import 'resources/coap_endpoint_resource.dart';
 import 'resources/coap_iresource.dart';
+import 'resources/coap_remote_resource.dart';
 import 'resources/coap_resource_attributes.dart';
-import 'util/coap_scanner.dart';
 
 enum LinkFormatParameterType {
   // TODO(JKRhb): Revisit typing

@@ -9,9 +9,9 @@ import 'dart:collection';
 
 import 'package:collection/collection.dart';
 
-import '../../coap_link_attribute.dart';
-import '../../coap_link_format.dart';
 import '../../coap_request.dart';
+import '../coap_link_attribute.dart';
+import '../coap_link_format.dart';
 
 /// This class describes the functionality of a CoAP endpoint resource.
 abstract class CoapEndpointResource {

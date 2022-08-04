@@ -7,7 +7,7 @@
  * Copyright :  S.Hamblett
  */
 import 'package:coap/coap.dart';
-import 'package:coap/src/endpoint/resources/coap_remote_resource.dart';
+import 'package:coap/src/link-format/resources/coap_remote_resource.dart';
 import 'package:test/test.dart';
 
 void main() {
