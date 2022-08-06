@@ -14,7 +14,8 @@ import 'dart:typed_data';
 /// can probably be ignored in most cases, when both the identity and the key
 /// are known in advance.
 typedef PskCredentialsCallback = PskCredentials Function(
-    Uint8List identityHint,);
+  Uint8List identityHint,
+);
 
 /// Credentials used for PSK Cipher Suites consisting of an [identity]
 /// and a [preSharedKey].
