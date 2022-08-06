@@ -26,7 +26,7 @@ class CoapMessageEncoderRfc7252 extends CoapMessageEncoder {
     // Write fixed-size CoAP headers
     writer
       ..write(CoapRfc7252.version, CoapRfc7252.versionBits)
-      ..write(message.type, CoapRfc7252.typeBits)
+      ..write(message.type?.code, CoapRfc7252.typeBits)
       ..write(message.token?.length ?? 0, CoapRfc7252.tokenLengthBits)
       ..write(code, CoapRfc7252.codeBits)
       ..write(message.id, CoapRfc7252.idBits)

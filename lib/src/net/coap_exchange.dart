@@ -150,6 +150,10 @@ class CoapExchange {
   void fireRespond(final CoapResponse resp) =>
       _eventBus.fire(CoapRespondEvent(resp));
 
+  /// Fire a [CoapCancelledEvent].
+  void fireCancel(final CoapEmptyMessage cancellationMessage) =>
+      _eventBus.fire(CoapCancelledEvent(cancellationMessage));
+
   /// Attributes
   T? get<T>(final Object key) => _attributes[key] as T?;
 

@@ -14,7 +14,7 @@ import 'coap_message_type.dart';
 /// the MessageType ACK or RST.
 class CoapEmptyMessage extends CoapMessage {
   /// Instantiates a new empty message.
-  CoapEmptyMessage(final int type) : super(type: type, code: CoapCode.empty);
+  CoapEmptyMessage(final CoapMessageType type) : super(CoapCode.empty, type);
 
   /// Create a new acknowledgment for the specified message.
   /// Returns the acknowledgment.

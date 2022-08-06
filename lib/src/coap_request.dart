@@ -23,17 +23,21 @@ import 'net/coap_iendpoint.dart';
 class CoapRequest extends CoapMessage {
   /// Initializes a request message.
   /// Defaults to confirmable
-  CoapRequest(final int code, {final bool confirmable = true})
+  CoapRequest(final CoapCode code, {final bool confirmable = true})
       : super(
-          code: code,
-          type: confirmable ? CoapMessageType.con : CoapMessageType.non,
-        );
+          code,
+          confirmable ? CoapMessageType.con : CoapMessageType.non,
+        ) {
+    if (!code.isRequest && !code.isEmpty) {
+      throw ArgumentError('Expected CoAP method code, got $code');
+    }
+  }
 
   /// The request method(code)
-  int get method => super.code;
+  CoapCode get method => code;
 
   @override
-  int get type {
+  CoapMessageType? get type {
     if (super.type == CoapMessageType.con && isMulticast) {
       return CoapMessageType.non;
     }
@@ -98,14 +102,20 @@ class CoapRequest extends CoapMessage {
   String toString() => '\n<<< Request Message >>>${super.toString()}';
 
   /// Construct a GET request.
-  factory CoapRequest.newGet() => CoapRequest(CoapCode.methodGET);
+  factory CoapRequest.newGet({final bool confirmable = true}) =>
+      CoapRequest(CoapCode.get, confirmable: confirmable);
 
   /// Construct a POST request.
-  factory CoapRequest.newPost() => CoapRequest(CoapCode.methodPOST);
+  factory CoapRequest.newPost({final bool confirmable = true}) =>
+      CoapRequest(CoapCode.post, confirmable: confirmable);
 
   /// Construct a PUT request.
-  factory CoapRequest.newPut() => CoapRequest(CoapCode.methodPUT);
+  factory CoapRequest.newPut({final bool confirmable = true}) =>
+      CoapRequest(CoapCode.put, confirmable: confirmable);
 
   /// Construct a DELETE request.
-  factory CoapRequest.newDelete() => CoapRequest(CoapCode.methodDELETE);
+  factory CoapRequest.newDelete({final bool confirmable = true}) =>
+      CoapRequest(CoapCode.delete, confirmable: confirmable);
+
+  // TODO(JKRhb): Add constructors for FETCH, PATCH, and iPATCH
 }

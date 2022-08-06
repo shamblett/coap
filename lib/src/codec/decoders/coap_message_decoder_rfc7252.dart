@@ -7,10 +7,8 @@
 
 import 'package:typed_data/typed_data.dart';
 
-import '../../coap_code.dart';
 import '../../coap_constants.dart';
 import '../../coap_message.dart';
-import '../../coap_message_type.dart';
 import '../../coap_option.dart';
 import '../../coap_option_type.dart';
 import '../../specification/rfcs/coap_rfc7252.dart';
@@ -48,15 +46,15 @@ class CoapMessageDecoder18 extends CoapMessageDecoder {
     _id = super.reader.read(CoapRfc7252.idBits);
   }
 
-  int _type = CoapMessageType.unknown;
+  int? _type;
 
   @override
-  int get type => _type;
+  int? get type => _type;
 
-  int _code = CoapCode.notSet;
+  int? _code;
 
   @override
-  int get code => _code;
+  int? get code => _code;
 
   @override
   void parseMessage(final CoapMessage message) {

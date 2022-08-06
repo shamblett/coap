@@ -170,7 +170,7 @@ void main() {
     }
 
     void testMessage(final CoapISpec spec, final int testNo) {
-      final CoapMessage msg = CoapRequest(CoapCode.methodGET)
+      final CoapMessage msg = CoapRequest(CoapCode.get)
         ..id = 12345
         ..payload = (typed.Uint8Buffer()..addAll('payload'.codeUnits));
       final data = spec.encode(msg)!;
@@ -188,7 +188,7 @@ void main() {
     }
 
     void testMessageWithOptions(final CoapISpec spec, final int testNo) {
-      final CoapMessage msg = CoapRequest(CoapCode.methodGET)
+      final CoapMessage msg = CoapRequest(CoapCode.get)
         ..id = 12345
         ..payload = (typed.Uint8Buffer()..addAll('payload'.codeUnits))
         ..addOption(
@@ -227,7 +227,7 @@ void main() {
     }
 
     void testMessageWithExtendedOption(final CoapISpec spec, final int testNo) {
-      final CoapMessage msg = CoapRequest(CoapCode.methodGET)
+      final CoapMessage msg = CoapRequest(CoapCode.get)
         ..id = 12345
         ..addOption(CoapOption.createVal(OptionType.contentFormat, 0));
       expect(msg.getFirstOption(OptionType.contentFormat)!.value, 0);
@@ -256,7 +256,7 @@ void main() {
     }
 
     void testRequestParsing(final CoapISpec spec, final int testNo) {
-      final request = CoapRequest(CoapCode.methodPOST, confirmable: false)
+      final request = CoapRequest(CoapCode.post, confirmable: false)
         ..id = 7
         ..token = (typed.Uint8Buffer()..addAll(<int>[11, 82, 165, 77, 3]))
         ..addIfMatchOpaque(typed.Uint8Buffer()..addAll(<int>[34, 239]))
@@ -287,8 +287,10 @@ void main() {
     }
 
     void testResponseParsing(final CoapISpec spec, final int testNo) {
-      final response = CoapResponse(CoapCode.content)
-        ..type = CoapMessageType.non
+      final response = CoapResponse(
+        CoapCode.content,
+        CoapMessageType.non,
+      )
         ..id = 9
         ..token = (typed.Uint8Buffer()..addAll(<int>[22, 255, 0, 78, 100, 22]))
         ..addETagOpaque(typed.Uint8Buffer()..addAll(<int>[1, 0, 0, 0, 0, 1]))
