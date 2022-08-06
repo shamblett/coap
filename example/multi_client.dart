@@ -13,7 +13,7 @@ import 'dart:async';
 import 'package:coap/coap.dart';
 import 'config/coap_config.dart';
 
-FutureOr<void> main(final List<String> args) async {
+FutureOr<void> main() async {
   final conf1 = CoapConfig();
   final uri1 = Uri(scheme: 'coap', host: 'coap.me', port: conf1.defaultPort);
   final client1 = CoapClient(uri1, conf1);

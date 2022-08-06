@@ -20,8 +20,7 @@ class CoapMulticastExchange extends CoapExchange {
 
   bool alreadyReceived(final CoapResponse response) {
     final filteredResponses = responses.where(
-      (final element) =>
-          element.source?.address.address == response.source?.address.address,
+      (final element) => element.source?.address == response.source?.address,
     );
 
     return filteredResponses.isNotEmpty;

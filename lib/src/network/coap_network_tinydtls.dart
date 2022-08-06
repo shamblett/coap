@@ -5,12 +5,15 @@
  * Copyright :  Jan Romann
  */
 
+import 'dart:async';
+import 'dart:io';
+
 import 'package:dart_tinydtls/dart_tinydtls.dart';
 import 'package:typed_data/typed_data.dart';
 
 import '../event/coap_event_bus.dart';
-import '../net/coap_internet_address.dart';
 import 'coap_inetwork.dart';
+import 'coap_network_udp.dart';
 import 'credentials/ecdsa_keys.dart' as internal;
 import 'credentials/psk_credentials.dart' as internal;
 
@@ -58,7 +61,7 @@ EcdsaKeys? _createTinyDtlsEcdsaKeys(final internal.EcdsaKeys? coapEcdsaKeys) {
 }
 
 /// DTLS network using dart_tinydtls
-class CoapNetworkTinyDtls implements CoapINetwork {
+class CoapNetworkUDPTinyDtls extends CoapNetworkUDP {
   /// Initialize with an [address] and a [port] as well as credentials.
   ///
   /// These credentials can either be provided by a [pskCredentialsCallback]
@@ -69,19 +72,17 @@ class CoapNetworkTinyDtls implements CoapINetwork {
   ///
   /// An optional [_tinyDtlsInstance] object can be passed in case
   /// [TinyDTLS] should not be available at the default locations.
-  CoapNetworkTinyDtls(
-    this.address,
-    this.port,
+  CoapNetworkUDPTinyDtls(
+    super.address,
+    super.port,
+    super.bindAddress,
     this._tinyDtlsInstance, {
-    final String namespace = '',
+    final super.namespace,
     final internal.PskCredentialsCallback? pskCredentialsCallback,
     final internal.EcdsaKeys? ecdsaKeys,
   })  : _tinydtlsPskCallback =
             _createTinyDtlsPskCallback(pskCredentialsCallback),
-        _ecdsaKeys = _createTinyDtlsEcdsaKeys(ecdsaKeys),
-        _eventBus = CoapEventBus(namespace: namespace);
-
-  final CoapEventBus _eventBus;
+        _ecdsaKeys = _createTinyDtlsEcdsaKeys(ecdsaKeys);
 
   final PskCallback? _tinydtlsPskCallback;
 
@@ -89,81 +90,67 @@ class CoapNetworkTinyDtls implements CoapINetwork {
 
   final TinyDTLS? _tinyDtlsInstance;
 
-  @override
-  final CoapInternetAddress address;
-
-  @override
-  final int port;
-
-  @override
-  String get namespace => _eventBus.namespace;
-
-  bool _bound = false;
-
   DtlsClient? _dtlsClient;
 
   DtlsConnection? _connection;
 
-  void _checkConnectionStatus() {
-    if (_connection?.connected != true) {
-      _bound = false;
-      _connection?.close();
-      throw CoapDtlsException('Not connected to DTLS peer!');
-    }
-  }
-
   @override
-  Future<int> send(
+  void send(
     final Uint8Buffer data, [
-    final CoapInternetAddress? address,
-  ]) async {
-    if (_connection?.connected != true) {
-      _bound = false;
-      await bind();
-    }
-
-    _checkConnectionStatus();
-
-    return _connection!.send(data.toList());
-  }
-
-  @override
-  void receive() {
-    _connection?.listen((final datagram) {
-      final buff = Uint8Buffer();
-      if (datagram.data.isNotEmpty) {
-        buff.addAll(datagram.data.toList());
-        final coapAddress =
-            CoapInternetAddress(datagram.address.type, datagram.address);
-        final rxEvent = CoapDataReceivedEvent(buff, coapAddress);
-        _eventBus.fire(rxEvent);
-      }
-    });
-  }
-
-  @override
-  Future<void> bind() async {
-    if (_bound) {
+    final InternetAddress? address,
+  ]) {
+    if (isClosed) {
       return;
     }
-    // Use a port of 0 here as we are a client, this will generate
-    // a random source port.
-    final bindAddress = address.bind;
-    _dtlsClient ??=
-        await DtlsClient.bind(bindAddress, 0, tinyDtls: _tinyDtlsInstance);
+
+    _connection!.send(data);
+  }
+
+  @override
+  Future<void> init() async {
+    if (!isClosed || !shouldReinitialize) {
+      return;
+    }
+
+    await bind();
+
+    _dtlsClient = DtlsClient(
+      socket!,
+      tinyDTLS: _tinyDtlsInstance,
+      maxTimeoutSeconds: CoapINetwork.initTimeout.inSeconds,
+    );
     _connection = await _dtlsClient!.connect(
-      address.address,
+      address,
       port,
       pskCallback: _tinydtlsPskCallback,
       ecdsaKeys: _ecdsaKeys,
     );
-    _checkConnectionStatus();
-    receive();
-    _bound = true;
+
+    _connection?.listen(
+      (final d) => eventBus.fire(CoapDataReceivedEvent(d.data, address)),
+      // ignore: avoid_types_on_closure_parameters
+      onError: (final Object e, final StackTrace s) =>
+          eventBus.fire(CoapSocketErrorEvent(e, s)),
+      onDone: () {
+        isClosed = true;
+        Timer.periodic(CoapINetwork.reinitPeriod, (final timer) async {
+          try {
+            socket?.close();
+            await init();
+            timer.cancel();
+          } on Exception catch (_) {
+            // Ignore errors, retry until successful
+          }
+        });
+      },
+    );
+
+    isClosed = false;
   }
 
   @override
   void close() {
     _dtlsClient?.close();
+    super.close();
   }
 }

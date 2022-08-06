@@ -1,51 +1,71 @@
 [![Build Status](https://github.com/shamblett/coap/actions/workflows/ci.yml/badge.svg)](https://github.com/shamblett/coap/actions/workflows/ci.yml)
 # coap
-A CoAP client library for Dart developers.
-The Constrained Application Protocol ([CoAP](https://datatracker.ietf.org/doc/html/rfc7252))
-is a RESTful web transfer protocol for resource-constrained networks and nodes.
-COAP is an implementation in Dart providing CoAP-based services to Dart applications.
-The code is a port from the C# .NET project [CoAP.NET](https://github.com/smeshlink/CoAP.NET). The dart implementation is that
-of a CoAP client only, not a server although the CoAP.NET project does supply a server.
-The COAP client provides many high level functions to control the request/response nature of the CoAP protocol,
-fine grained control however can be obtained by users directly constructing their own request messages.
-Configuration is achieved by editing a yaml based config file containing many of CoAP protocol configurations.
-This is a full implementation of the CoAP protocol including block wise transfer, deduplication, transmission retries using
-request/response token/id matching, piggy-backed and separate response handling is also supported. Proxying options can be set in request messages however full proxying support is
-not guaranteed. All CoAP options(if-match, if-none match, uri path/query, location path/query, content format, max age,
-etags et al.) are supported
+The Constrained Application Protocol is a RESTful web transfer protocol for resource-constrained networks and nodes.
+The CoAP library is an implementation in Dart providing a CoAP client, the code was initially a port from the C# .NET project [CoAP.NET](https://github.com/smeshlink/CoAP.NET).
 
-Observation of resources is supported with the client 'listening' for observed resource updates
-when configured for this. The client supports both IPV4 and IPV6 communications and multicast operation.
+## Features
+* CoAP over UDP [RFC 7252](https://tools.ietf.org/html/rfc7252)
+* Observe resources [RFC 7641](https://tools.ietf.org/html/rfc7641)
+* Block-wise transfers [RFC 7959](https://tools.ietf.org/html/rfc7959)
+* Multicast over UDP (not DTLS)
+* **Experimental**: CoAP over DTLS (using FFI)
+  * [dtls](https://pub.dev/packages/dtls) for OpenSSL
+  * [tinydtls](https://github.com/eclipse/tinydtls) for Pre-Shared Keys and Raw Public Keys
+* **Experimental**: Request proxying
 
-Experimental CoAPS support (secure CoAP over DTLS) is provided with via an OpenSSL binding
-using the [dtls](https://pub.dev/packages/dtls) library for certificate support and an
-[Eclipse tinydtls](https://github.com/eclipse/tinydtls/tree/develop) binding for Pre-Shared Keys and
-Raw Public Keys.
-In order to use CoAPS, OpenSSL and/or tinydtls binaries need to be available on your/the target system, and you
-need to enable at least one of the two backends in the config you are using.
+### Roadmap
+* CoAP over TCP/TLS [RFC 8323](https://tools.ietf.org/html/rfc8323)
 
-For Flutter apps, you can provide tinydtls binaries for Linux, Android, and Windows via the Plugin
-[dart_tinydtls_libs](https://pub.dev/packages/dart_tinydtls_libs). Alternatively, you can also download
-the binaries directly from the Plugin's [GitHub Repository](https://github.com/namib-project/dart_tinydtls_libs).
+## Example
 
-Many examples of usage are provided in the examples directory using the [coap.me](https://coap.me/) and [californium](https://www.eclipse.org/californium/) test servers.
+```dart
+FutureOr<void> main() async {
+  final conf = CoapConfig();
+  final uri = Uri(scheme: 'coap', host: 'coap.me', port: conf.defaultPort);
+  final client = CoapClient(uri, conf);
+
+  try {
+    final response =
+        await client.get('multi-format', accept: CoapMediaType.textPlain);
+    print('/multi-format response payload: ${response.payloadString}');
+  } on Exception catch (e) {
+    print('CoAP encountered an exception: $e');
+  }
+
+  client.close();
+}
+```
+
+For more detailed examples, see [examples](./example/).
 
 ## Setup
-* Add this as dependency in your `pubspec.yaml`:
+* Add the dependencies in your `pubspec.yaml`:
 ```yaml
 dependencies:
-  coap:
-```
-* Create a `.yaml` file containing your CoAP's configurations.
-    * The file name must be separated by `_`. Example: `coap_config`
-    * The file name must start with `coap_config`
-        * Example: `coap_config_all`. This will generate a file called `CoapConfigAll` that you will use in your code.
-        * Example: `coap_config_debug`. This will generate a file called `CoapConfigDebug` that you will use in your code.
-        * This file must contains at least the protocol version. See the example bellow.
-          This is a valid configuration file with all possible properties: [example/config/coap_config.yaml](./example/config/coap_config.yaml).
-* Run the command that will generate the configuration class.
-    * Run `pub run build_runner build` in a Dart project;
-    * Run `flutter pub run build_runner build` in a Flutter project;
-      After running the command above the configuration class will be generated next to the `.yaml` configuration file.
+  coap: ^4.2.1
 
-See the [examples](./example/) for example usage.
+devDependencies:
+  build_runner: ^2.1.11
+```
+* Create a `.yaml` file containing your CoAP's configurations:
+  * The file name must be separated by `_` and must start with `coap_config`
+    * Example: `coap_config_all`. This will generate a file called `CoapConfigAll` that you will use in your code.
+    * Example: `coap_config_debug`. This will generate a file called `CoapConfigDebug` that you will use in your code.
+    * This file must contain at least the protocol version.
+      This is a valid configuration file with all possible properties: [example/config/coap_config.yaml](./example/config/coap_config.yaml).
+* Run the command that will generate the configuration class:
+  * Run `dart pub run build_runner build` in your Dart project
+  * Run `flutter pub run build_runner build` in your Flutter project
+    After running the command above the configuration class will be generated next to the `.yaml` configuration file.
+
+## Considerations
+
+### Binaries for DTLS
+
+You can provide `tinydtls` binaries via the plugin [dart_tinydtls_libs](https://pub.dev/packages/dart_tinydtls_libs). Alternatively, you can also download the binaries directly from the Plugin's [GitHub Repository](https://github.com/namib-project/dart_tinydtls_libs).
+
+Likewise, if you are planning to use DTLS with OpenSSL, note that not all platforms support OpenSSL natively (iOS and Windows for example), in which case you need to ship the required binaries with your app.
+
+### Connectivity
+
+If connectivity is lost, the CoAP client will continuously try to re-initalize the socket. The library relies heavily on futures however, which might not survive in Flutter when the app runs in the background or when the display of the device is turned off. In this case, you might need to extend the `WidgetsBindingObserver` class and re-initialize the `CoapClient` in `didChangeAppLifecycleState` on `AppLifecycleState.resumed`.

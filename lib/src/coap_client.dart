@@ -30,7 +30,6 @@ import 'event/coap_event_bus.dart';
 import 'exceptions/coap_request_exception.dart';
 import 'net/coap_endpoint.dart';
 import 'net/coap_iendpoint.dart';
-import 'net/coap_internet_address.dart';
 import 'network/coap_inetwork.dart';
 import 'network/credentials/ecdsa_keys.dart';
 import 'network/credentials/psk_credentials.dart';
@@ -81,7 +80,7 @@ class CoapClient {
   CoapClient(
     this.uri,
     this._config, {
-    this.addressType = InternetAddressType.IPv4,
+    this.addressType = InternetAddressType.any,
     this.bindAddress,
     final EcdsaKeys? ecdsaKeys,
     final PskCredentialsCallback? pskCredentialsCallback,
@@ -292,13 +291,13 @@ class CoapClient {
     final relation = CoapObserveClientRelation(request);
     unawaited(
       () async {
-        _endpoint!.sendEpRequest(request);
         final resp = await _waitForResponse(request);
         if (!resp.hasOption(OptionType.observe)) {
           relation.isCancelled = true;
         }
       }(),
     );
+    _endpoint!.sendEpRequest(request);
     return relation;
   }
 
@@ -424,43 +423,38 @@ class CoapClient {
     await _lock.synchronized(() async {
       // Set endpoint if missing
       if (_endpoint == null) {
-        final destination =
-            await _lookupHost(uri.host, addressType, bindAddress);
+        final destination = await _lookupHost(uri.host, addressType);
         final socket = CoapINetwork.fromUri(
           uri,
           address: destination,
+          bindAddress: bindAddress,
           config: _config,
           namespace: _eventBus.namespace,
           pskCredentialsCallback: _pskCredentialsCallback,
           ecdsaKeys: _ecdsaKeys,
         );
-        await socket.bind();
+        await socket.init();
         _endpoint =
             CoapEndPoint(socket, _config, namespace: _eventBus.namespace);
-        await _endpoint!.start();
+        _endpoint!.start();
       }
     });
 
     request.endpoint = _endpoint;
   }
 
-  Future<CoapInternetAddress> _lookupHost(
+  Future<InternetAddress> _lookupHost(
     final String host,
     final InternetAddressType addressType,
-    final InternetAddress? bindAddress,
   ) async {
     final parsedAddress = InternetAddress.tryParse(host);
     if (parsedAddress != null) {
-      return CoapInternetAddress(
-        parsedAddress.type,
-        parsedAddress,
-        bindAddress,
-      );
+      return parsedAddress;
     }
 
     final addresses = await InternetAddress.lookup(host, type: addressType);
     if (addresses.isNotEmpty) {
-      return CoapInternetAddress(addressType, addresses[0], bindAddress);
+      return addresses[0];
     }
 
     throw SocketException("Failed host lookup: '$host'");

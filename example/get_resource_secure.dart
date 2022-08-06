@@ -33,7 +33,7 @@ class DtlsConfig extends DefaultCoapConfig {
   final dtlsBackend = DtlsBackend.TinyDtls;
 }
 
-FutureOr<void> main(final List<String> args) async {
+FutureOr<void> main() async {
   final conf = DtlsConfig();
   final uri = Uri(
     scheme: 'coaps',

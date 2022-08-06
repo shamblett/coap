@@ -5,12 +5,13 @@
  * Copyright :  S.Hamblett
  */
 
+import 'dart:io';
+
 import '../coap_config.dart';
 import '../coap_empty_message.dart';
 import '../coap_request.dart';
 import '../coap_response.dart';
 import 'coap_exchange.dart';
-import 'coap_internet_address.dart';
 import 'coap_ioutbox.dart';
 
 /// Events
@@ -18,7 +19,7 @@ import 'coap_ioutbox.dart';
 /// between (potentially multiple) clients and servers.
 abstract class CoapIEndPoint {
   /// The endpoint's destination
-  CoapInternetAddress? get destination;
+  InternetAddress? get destination;
 
   /// Gets this endpoint's configuration.
   DefaultCoapConfig get config;
@@ -30,7 +31,7 @@ abstract class CoapIEndPoint {
   CoapIOutbox get outbox;
 
   /// Starts this endpoint and all its components.
-  Future<void> start();
+  void start();
 
   /// The namespace which the endpoint belongs to
   String get namespace;
