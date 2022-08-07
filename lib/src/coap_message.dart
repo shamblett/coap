@@ -496,13 +496,27 @@ abstract class CoapMessage {
   }
 
   /// URI path
+  // TODO: Apply proper percent-encoding
   String get uriPath =>
-      CoapOption.join(getOptions(OptionType.uriPath), '/') ?? '';
+      getOptions(OptionType.uriPath)
+          ?.map((final e) => e.stringValue.replaceAll('/', '%2F'))
+          .join('/') ??
+      '';
 
-  /// Sets a number of Uri path options from a string, trims /
+  /// Sets a number of Uri path options from a string
   set uriPath(final String fullPath) {
-    final trimmedPath = _trimChar(fullPath, '/');
     clearUriPath();
+
+    var trimmedPath = fullPath;
+
+    if (fullPath.startsWith('/')) {
+      trimmedPath = fullPath.substring(1);
+    }
+
+    if (trimmedPath.isEmpty) {
+      return;
+    }
+
     trimmedPath.split('/').forEach(addUriPath);
   }
 
@@ -511,22 +525,21 @@ abstract class CoapMessage {
 
   /// Add a URI path
   void addUriPath(final String path) {
-    final trimmedPath = _trimChar(path, '/');
-    if (trimmedPath.contains('/')) {
+    if (path == '.' || path == '..') {
       throw ArgumentError.value(
         path,
         'Message::addUriPath',
-        'A single Uri Path can only contain leading or trailing slashes',
+        'The value of a Uri-Path Option must not be "." or ".."',
       );
     }
-    if (trimmedPath.length > 255) {
+    if (path.length > 255) {
       throw ArgumentError.value(
-        trimmedPath.length,
+        path.length,
         'Message::addUriPath',
         "Uri Path option's length must be between 0 and 255 inclusive",
       );
     }
-    addOption(CoapOption.createString(OptionType.uriPath, trimmedPath));
+    addOption(CoapOption.createString(OptionType.uriPath, path));
   }
 
   /// Remove a URI path
@@ -542,12 +555,16 @@ abstract class CoapMessage {
   void clearUriPath() => removeOptions(OptionType.uriPath);
 
   /// URI query
+  // TODO: Apply proper percent-encoding
   String get uriQuery =>
-      CoapOption.join(getOptions(OptionType.uriQuery), '&') ?? '';
+      getOptions(OptionType.uriQuery)
+          ?.map((final option) => option.stringValue.replaceAll('&', '%26'))
+          .join('&') ??
+      '';
 
   /// Set a URI query
   set uriQuery(final String fullQuery) {
-    var trimmedQuery = _trimChar(fullQuery, '&');
+    var trimmedQuery = fullQuery;
     if (trimmedQuery.startsWith('?')) {
       trimmedQuery = trimmedQuery.substring(1);
     }
@@ -560,17 +577,9 @@ abstract class CoapMessage {
 
   /// Add a URI query
   void addUriQuery(final String query) {
-    final trimmedQuery = _trimChar(query, '&');
-    if (trimmedQuery.contains('&')) {
+    if (query.length > 255) {
       throw ArgumentError.value(
-        query,
-        'Message::addUriQuery',
-        'A single Uri Query can only contain leading or trailing &',
-      );
-    }
-    if (trimmedQuery.length > 255) {
-      throw ArgumentError.value(
-        trimmedQuery.length,
+        query.length,
         'Message::addUriQuery',
         "Uri Query option's length must be between 0 and 255 inclusive",
       );
@@ -602,21 +611,23 @@ abstract class CoapMessage {
   }
 
   /// Location path as a string
-  String get locationPath {
-    final sb = StringBuffer();
-    for (final option in locationPaths) {
-      sb.write(option.stringValue);
-      if (option != locationPaths.last) {
-        sb.write('/');
-      }
-    }
-    return sb.toString();
-  }
+  // TODO: Apply proper percent-encoding
+  String get locationPath =>
+      getOptions(OptionType.locationPath)
+          ?.map((final option) => option.stringValue.replaceAll('/', '%2F'))
+          .join('/') ??
+      '';
 
   /// Set the location path from a string
   set locationPath(final String fullPath) {
-    final trimmedPath = _trimChar(fullPath, '/');
     clearLocationPath();
+
+    var trimmedPath = fullPath;
+
+    if (fullPath.startsWith('/')) {
+      trimmedPath = fullPath.substring(1);
+    }
+
     trimmedPath.split('/').forEach(addLocationPath);
   }
 
@@ -635,29 +646,21 @@ abstract class CoapMessage {
 
   /// Add a location path
   void addLocationPath(final String path) {
-    final trimmedPath = _trimChar(path, '/');
-    if (trimmedPath == '..' || trimmedPath == '.') {
+    if (path == '..' || path == '.') {
       throw ArgumentError.value(
         path,
         'Message::addLocationPath'
-        "A Location Path must not be only '.' or '..'",
+        'The value of a Location-Path Option must not be "." or ".."',
       );
     }
-    if (trimmedPath.contains('/')) {
+    if (path.length > 255) {
       throw ArgumentError.value(
-        path,
-        'Message::addLocationPath',
-        'A single Location Path can only contain leading or trailing slashes',
-      );
-    }
-    if (trimmedPath.length > 255) {
-      throw ArgumentError.value(
-        trimmedPath.length,
+        path.length,
         'Message::addLocationPath',
         "Location Path option's length must be between 0 and 255 inclusive",
       );
     }
-    addOption(CoapOption.createString(OptionType.locationPath, trimmedPath));
+    addOption(CoapOption.createString(OptionType.locationPath, path));
   }
 
   /// Remove a location path
@@ -673,12 +676,16 @@ abstract class CoapMessage {
   void clearLocationPath() => _optionMap.remove(OptionType.locationPath);
 
   /// Location query
+  // TODO: Apply proper percent-encoding
   String get locationQuery =>
-      CoapOption.join(getOptions(OptionType.locationQuery), '&') ?? '';
+      getOptions(OptionType.locationQuery)
+          ?.map((final e) => e.stringValue.replaceAll('&', '%26'))
+          .join('&') ??
+      '';
 
   /// Set a location query
   set locationQuery(final String fullQuery) {
-    var trimmedQuery = _trimChar(fullQuery, '&');
+    var trimmedQuery = fullQuery;
     if (trimmedQuery.startsWith('?')) {
       trimmedQuery = trimmedQuery.substring(1);
     }
@@ -692,20 +699,12 @@ abstract class CoapMessage {
 
   /// Add a location query
   void addLocationQuery(final String query) {
-    final trimmedQuery = _trimChar(query, '&');
-    if (trimmedQuery.length > 255) {
+    if (query.length > 255) {
       throw ArgumentError.value(
-        trimmedQuery.length,
+        query.length,
         'Message::addLocationQuery',
         "Location Query option's length must be between "
             '0 and 255 inclusive',
-      );
-    }
-    if (trimmedQuery.contains('&')) {
-      throw ArgumentError.value(
-        query,
-        'Message::addLocationQuery',
-        'A single Location Query can only contain leading or trailing &',
       );
     }
     addOption(CoapOption.createString(OptionType.locationQuery, query));
@@ -962,18 +961,5 @@ abstract class CoapMessage {
       str = value.toString();
     }
     return str != '' ? '  $name: $str,\n' : '';
-  }
-
-  String _trimChar(final String str, final String char) {
-    var trimmed = str;
-    if (trimmed.startsWith(char)) {
-      trimmed = trimmed.substring(1);
-    }
-
-    if (trimmed.endsWith('/')) {
-      trimmed = trimmed.substring(0, trimmed.length - 1);
-    }
-
-    return trimmed;
   }
 }
