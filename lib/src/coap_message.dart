@@ -289,7 +289,7 @@ abstract class CoapMessage {
   int get payloadSize => payload?.length ?? 0;
 
   /// The payload of this CoAP message in string representation.
-  String? get payloadString {
+  String get payloadString {
     final payload = this.payload;
     if (payload != null && payload.isNotEmpty) {
       try {
@@ -301,11 +301,11 @@ abstract class CoapMessage {
         return '<<<< Payload incomplete >>>>>';
       }
     }
-    return null;
+    return '';
   }
 
   /// Sets the payload from a string with a default media type
-  set payloadString(final String? value) =>
+  set payloadString(final String value) =>
       setPayloadMedia(value, CoapMediaType.textPlain);
 
   /// Sets the payload.
@@ -315,20 +315,17 @@ abstract class CoapMessage {
   }
 
   /// Sets the payload and media type of this CoAP message.
-  void setPayloadMedia(final String? payload, final CoapMediaType mediaType) {
-    if (payload == null) {
-      return;
-    }
-    this.payload ??= Uint8Buffer();
-    this.payload!.addAll(_utfEncoder.convert(payload));
+  void setPayloadMedia(final String payload, [final CoapMediaType? mediaType]) {
+    final payloadBuffer = Uint8Buffer()..addAll(_utfEncoder.convert(payload));
+    this.payload = payloadBuffer;
     contentType = mediaType;
   }
 
   /// Sets the payload of this CoAP message.
   void setPayloadMediaRaw(
-    final Uint8Buffer payload,
-    final CoapMediaType mediaType,
-  ) {
+    final Uint8Buffer payload, [
+    final CoapMediaType? mediaType,
+  ]) {
     this.payload = payload;
     contentType = mediaType;
   }

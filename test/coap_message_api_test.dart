@@ -40,7 +40,7 @@ void main() {
     expect(message.ackTimeout, 0);
     expect(message.payload, isNull);
     expect(message.payloadSize, 0);
-    expect(message.payloadString, isNull);
+    expect(message.payloadString, '');
   });
 
   test('Options', () {

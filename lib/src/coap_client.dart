@@ -129,7 +129,7 @@ class CoapClient {
   /// Sends a GET request.
   Future<CoapResponse> get(
     final String path, {
-    final CoapMediaType accept = CoapMediaType.textPlain,
+    final CoapMediaType? accept,
     final bool confirmable = true,
     final List<CoapOption>? options,
     final bool earlyBlock2Negotiation = false,
@@ -152,8 +152,8 @@ class CoapClient {
   Future<CoapResponse> post(
     final String path, {
     required final String payload,
-    final CoapMediaType format = CoapMediaType.textPlain,
-    final CoapMediaType accept = CoapMediaType.textPlain,
+    final CoapMediaType? format,
+    final CoapMediaType? accept,
     final bool confirmable = true,
     final List<CoapOption>? options,
     final bool earlyBlock2Negotiation = false,
@@ -177,8 +177,8 @@ class CoapClient {
   Future<CoapResponse> postBytes(
     final String path, {
     required final Uint8Buffer payload,
-    final CoapMediaType format = CoapMediaType.textPlain,
-    final CoapMediaType accept = CoapMediaType.textPlain,
+    final CoapMediaType? format,
+    final CoapMediaType? accept,
     final bool confirmable = true,
     final List<CoapOption>? options,
     final bool earlyBlock2Negotiation = false,
@@ -202,8 +202,8 @@ class CoapClient {
   Future<CoapResponse> put(
     final String path, {
     required final String payload,
-    final CoapMediaType format = CoapMediaType.textPlain,
-    final CoapMediaType accept = CoapMediaType.textPlain,
+    final CoapMediaType? format,
+    final CoapMediaType? accept,
     final bool confirmable = true,
     final List<Uint8Buffer>? etags,
     final MatchEtags matchEtags = MatchEtags.onMatch,
@@ -231,10 +231,10 @@ class CoapClient {
   Future<CoapResponse> putBytes(
     final String path, {
     required final Uint8Buffer payload,
-    final CoapMediaType format = CoapMediaType.textPlain,
+    final CoapMediaType? format,
     final MatchEtags matchEtags = MatchEtags.onMatch,
     final List<Uint8Buffer>? etags,
-    final CoapMediaType accept = CoapMediaType.textPlain,
+    final CoapMediaType? accept,
     final bool confirmable = true,
     final List<CoapOption>? options,
     final bool earlyBlock2Negotiation = false,
@@ -259,7 +259,7 @@ class CoapClient {
   /// Sends a DELETE request
   Future<CoapResponse> delete(
     final String path, {
-    final CoapMediaType accept = CoapMediaType.textPlain,
+    final CoapMediaType? accept,
     final bool confirmable = true,
     final List<CoapOption>? options,
     final bool earlyBlock2Negotiation = false,
@@ -313,7 +313,7 @@ class CoapClient {
     if (links.contentFormat != CoapMediaType.applicationLinkFormat) {
       return <CoapWebLink>[CoapWebLink('')];
     } else {
-      return CoapLinkFormat.parse(links.payloadString!);
+      return CoapLinkFormat.parse(links.payloadString);
     }
   }
 
@@ -377,7 +377,7 @@ class CoapClient {
   void _build(
     final CoapRequest request,
     final String path,
-    final CoapMediaType accept,
+    final CoapMediaType? accept,
     final List<CoapOption>? options,
     final bool earlyBlock2Negotiation,
     final int maxRetransmit, {
@@ -413,9 +413,7 @@ class CoapClient {
     request
       ..uri = uri
       ..timestamp = DateTime.now()
-      ..eventBus = _eventBus
-      // Set a default accept
-      ..accept ??= CoapMediaType.textPlain;
+      ..eventBus = _eventBus;
 
     await _lock.synchronized(() async {
       // Set endpoint if missing
