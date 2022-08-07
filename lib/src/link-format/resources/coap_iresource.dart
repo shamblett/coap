@@ -5,9 +5,9 @@
  * Copyright :  S.Hamblett
  */
 
-import '../net/coap_exchange.dart';
-import '../net/coap_iendpoint.dart';
-import '../observe/coap_observe_relation.dart';
+import '../../net/coap_exchange.dart';
+import '../../net/coap_iendpoint.dart';
+import '../../observe/coap_observe_relation.dart';
 import 'coap_resource_attributes.dart';
 
 /// Interface for a resource

@@ -5,8 +5,8 @@
  * Copyright :  S.Hamblett
  */
 
-import '../../coap_link_format.dart';
 import '../../coap_request.dart';
+import '../coap_link_format.dart';
 import 'coap_endpoint_resource.dart';
 
 /// This class describes the functionality of a CoAP remote resource.

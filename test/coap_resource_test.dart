@@ -7,7 +7,7 @@
  * Copyright :  S.Hamblett
  */
 import 'package:coap/coap.dart';
-import 'package:coap/src/endpoint/resources/coap_remote_resource.dart';
+import 'package:coap/src/link-format/resources/coap_remote_resource.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -115,6 +115,24 @@ void main() {
       final queried =
           CoapLinkFormat.serializeOptions(res, query, recursive: true);
       expect(queried, '$link2,$link1');
+    });
+
+    test('Resource Directory', () {
+      const input =
+          '</rd/1234>;base="coap://[2001:db8:3::127]:61616";rt=core.rd-ep;ct=40;'
+          'ep=node5;et="tag:example.com,2020:platform";title="Test"'
+          '</rd/4521>;base="coap://[2001:db8:3::129]:61616";ep=node7;'
+          'et="tag:example.com,2020:platform";ct=40;d=floor-3;rt=core.rd-ep';
+      final root = CoapRemoteResource.newRoot(input);
+      final res = root.getResourcePath('/rd/1234');
+      expect(res, isNotNull);
+      expect(res?.title, 'Test');
+      expect(res?.name, '1234');
+      expect(res?.contentTypeCode, 40);
+      expect(res?.resourceType, 'core.rd-ep');
+      expect(res?.endpointName, 'node5');
+      expect(res?.endpointType, 'tag:example.com,2020:platform');
+      expect(res?.observable, isFalse);
     });
   });
 }

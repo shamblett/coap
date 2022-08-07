@@ -10,8 +10,8 @@ import 'dart:io';
 
 import '../coap_config.dart';
 import '../coap_response.dart';
+import '../link-format/resources/coap_iresource.dart';
 import '../net/coap_exchange.dart';
-import '../resources/coap_iresource.dart';
 import 'coap_observing_endpoint.dart';
 
 /// Represents a relation between a client endpoint and a resource on the

@@ -9,9 +9,9 @@ import 'dart:collection';
 
 import 'package:collection/collection.dart';
 
-import '../../coap_link_attribute.dart';
-import '../../coap_link_format.dart';
 import '../../coap_request.dart';
+import '../coap_link_attribute.dart';
+import '../coap_link_format.dart';
 
 /// This class describes the functionality of a CoAP endpoint resource.
 abstract class CoapEndpointResource {
@@ -50,67 +50,104 @@ abstract class CoapEndpointResource {
 
   /// Resource type
   String? get resourceType =>
-      getAttributes(CoapLinkFormat.resourceType).firstOrNull?.valueAsString;
+      getAttributes(LinkFormatParameter.resourceType.short)
+          .firstOrNull
+          ?.valueAsString;
 
-  set resourceType(final String? value) =>
-      setAttribute(CoapLinkAttribute(CoapLinkFormat.resourceType, value));
+  set resourceType(final String? value) => setAttribute(
+        CoapLinkAttribute(LinkFormatParameter.resourceType.short, value),
+      );
+
+  /// Endpoint Name
+  String? get endpointName =>
+      getAttributes(LinkFormatParameter.endpointName.short)
+          .firstOrNull
+          ?.valueAsString;
+
+  set endpointName(final String? value) => setAttribute(
+        CoapLinkAttribute(LinkFormatParameter.endpointName.short, value),
+      );
+
+  /// Endpoint Type
+  String? get endpointType =>
+      getAttributes(LinkFormatParameter.endpointType.short)
+          .firstOrNull
+          ?.valueAsString;
+
+  set endpointType(final String? value) => setAttribute(
+        CoapLinkAttribute(LinkFormatParameter.endpointType.short, value),
+      );
 
   /// Title
   String? get title =>
-      getAttributes(CoapLinkFormat.title).firstOrNull?.valueAsString;
+      getAttributes(LinkFormatParameter.title.short).firstOrNull?.valueAsString;
 
   set title(final String? value) {
-    clearAttribute(CoapLinkFormat.title);
-    setAttribute(CoapLinkAttribute(CoapLinkFormat.resourceType, value));
+    setAttribute(
+      CoapLinkAttribute(LinkFormatParameter.title.short, value),
+    );
   }
 
   /// Interface descriptions
-  List<String?> get interfaceDescriptions =>
-      getStringValues(getAttributes(CoapLinkFormat.interfaceDescription))
-          .toList();
+  List<String?> get interfaceDescriptions => getStringValues(
+        getAttributes(LinkFormatParameter.interfaceDescription.short),
+      ).toList();
 
   /// The interface description
   String? get interfaceDescription =>
-      getAttributes(CoapLinkFormat.interfaceDescription)
+      getAttributes(LinkFormatParameter.interfaceDescription.short)
           .firstOrNull
           ?.valueAsString;
 
   set interfaceDescription(final String? value) => setAttribute(
-        CoapLinkAttribute(CoapLinkFormat.interfaceDescription, value),
+        CoapLinkAttribute(
+          LinkFormatParameter.interfaceDescription.short,
+          value,
+        ),
       );
 
   /// Content type codes
   List<int?> get contentTypeCodes =>
-      getIntValues(getAttributes(CoapLinkFormat.contentType)).toList();
+      getIntValues(getAttributes(LinkFormatParameter.contentType.short))
+          .toList();
 
   /// The content type code
   int? get contentTypeCode =>
-      getAttributes(CoapLinkFormat.contentType).firstOrNull?.valueAsInt;
+      getAttributes(LinkFormatParameter.contentType.short)
+          .firstOrNull
+          ?.valueAsInt;
 
-  set contentTypeCode(final int? value) =>
-      setAttribute(CoapLinkAttribute(CoapLinkFormat.contentType, value));
+  set contentTypeCode(final int? value) => setAttribute(
+        CoapLinkAttribute(LinkFormatParameter.contentType.short, value),
+      );
 
   /// Maximum size estimate
   int? get maximumSizeEstimate =>
-      getAttributes(CoapLinkFormat.maxSizeEstimate).firstOrNull?.valueAsInt;
+      getAttributes(LinkFormatParameter.maxSizeEstimate.short)
+          .firstOrNull
+          ?.valueAsInt;
 
-  set maximumSizeEstimate(final int? value) =>
-      setAttribute(CoapLinkAttribute(CoapLinkFormat.maxSizeEstimate, value));
+  set maximumSizeEstimate(final int? value) => setAttribute(
+        CoapLinkAttribute(LinkFormatParameter.maxSizeEstimate.short, value),
+      );
 
   /// Observable
-  bool get observable => getAttributes(CoapLinkFormat.observable).isNotEmpty;
+  bool get observable =>
+      getAttributes(LinkFormatParameter.observable.short).isNotEmpty;
 
   set observable(final bool value) {
     if (value) {
-      setAttribute(CoapLinkAttribute(CoapLinkFormat.observable, value));
+      setAttribute(
+        CoapLinkAttribute(LinkFormatParameter.observable.short, value),
+      );
     } else {
-      clearAttribute(CoapLinkFormat.observable);
+      clearAttribute(LinkFormatParameter.observable.short);
     }
   }
 
   /// Resource types
   Iterable<String?> get resourceTypes =>
-      getStringValues(getAttributes(CoapLinkFormat.resourceType));
+      getStringValues(getAttributes(LinkFormatParameter.resourceType.short));
 
   /// Gets the URI of this resource.
   String get path {
