@@ -10,11 +10,11 @@ import 'dart:async';
 import '../../coap_config.dart';
 import '../../coap_empty_message.dart';
 import '../../coap_message_type.dart';
-import '../../coap_option_type.dart';
 import '../../coap_request.dart';
 import '../../coap_response.dart';
 import '../../event/coap_event_bus.dart';
 import '../../net/exchange.dart';
+import '../../option/integer_option.dart';
 import '../base_layer.dart';
 
 /// Observe layer
@@ -99,7 +99,7 @@ class ObserveLayer extends BaseLayer {
   ) {
     final exchange = initialExchange;
 
-    if (response.hasOption(OptionType.observe)) {
+    if (response.hasOption<ObserveOption>()) {
       if (exchange.request!.isCancelled) {
         // The request was canceled and we no longer want notifications
         final rst = CoapEmptyMessage.newRST(response);

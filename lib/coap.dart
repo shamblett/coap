@@ -16,7 +16,6 @@ export 'config/coap_config_openssl.dart';
 export 'config/coap_config_tinydtls.dart';
 
 /// The Coap package exported interface
-export 'src/coap_block_option.dart';
 export 'src/coap_client.dart';
 export 'src/coap_code.dart';
 export 'src/coap_config.dart';
@@ -25,8 +24,6 @@ export 'src/coap_defined_address.dart';
 export 'src/coap_media_type.dart';
 export 'src/coap_message_type.dart';
 export 'src/coap_observe_client_relation.dart';
-export 'src/coap_option.dart';
-export 'src/coap_option_type.dart';
 export 'src/coap_request.dart';
 export 'src/coap_response.dart';
 export 'src/deduplication/crop_rotation_deduplicator.dart';
@@ -40,3 +37,10 @@ export 'src/link-format/coap_web_link.dart';
 export 'src/link-format/resources/coap_resource.dart';
 export 'src/network/credentials/ecdsa_keys.dart';
 export 'src/network/credentials/psk_credentials.dart';
+export 'src/option/coap_block_option.dart';
+export 'src/option/empty_option.dart';
+export 'src/option/integer_option.dart';
+export 'src/option/opaque_option.dart';
+export 'src/option/option.dart';
+export 'src/option/oscore_option.dart';
+export 'src/option/string_option.dart';

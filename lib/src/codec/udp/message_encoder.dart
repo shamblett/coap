@@ -11,8 +11,8 @@ import 'package:typed_data/typed_data.dart';
 import '../../coap_code.dart';
 import '../../coap_message.dart';
 import '../../coap_message_type.dart';
-import '../../coap_option.dart';
-import '../../coap_option_type.dart';
+import '../../option/coap_option_type.dart';
+import '../../option/option.dart';
 import 'datagram_writer.dart';
 import 'message_format.dart' as message_format;
 
@@ -55,7 +55,7 @@ Uint8Buffer serializeUdpMessage(final CoapMessage message) {
 
   var lastOptionNumber = 0;
   final options = message.getAllOptions();
-  insertionSort<CoapOption>(
+  insertionSort<Option<Object?>>(
     options,
     compare: (final a, final b) => a.type.compareTo(b.type),
   );

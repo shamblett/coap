@@ -11,8 +11,8 @@ import 'package:typed_data/typed_buffers.dart';
 import 'coap_code.dart';
 import 'coap_message.dart';
 import 'coap_message_type.dart';
-import 'coap_option.dart';
 import 'coap_request.dart';
+import 'option/option.dart';
 
 /// Represents a CoAP response to a CoAP request.
 /// A response is either a piggy-backed response with type ACK
@@ -75,7 +75,7 @@ class CoapResponse extends CoapMessage {
     required final CoapMessageType type,
     required final int id,
     required final Uint8Buffer token,
-    required final List<CoapOption> options,
+    required final List<Option<Object?>> options,
     required final Uint8Buffer? payload,
     required final bool hasUnknownCriticalOption,
     required final bool hasFormatError,

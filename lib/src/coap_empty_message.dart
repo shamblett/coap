@@ -11,7 +11,7 @@ import 'coap_code.dart';
 import 'coap_constants.dart';
 import 'coap_message.dart';
 import 'coap_message_type.dart';
-import 'coap_option.dart';
+import 'option/option.dart';
 
 /// Represents an empty CoAP message. An empty message has either
 /// the MessageType ACK or RST.
@@ -47,7 +47,7 @@ class CoapEmptyMessage extends CoapMessage {
     required final CoapMessageType type,
     required final int id,
     required final Uint8Buffer token,
-    required final List<CoapOption> options,
+    required final List<Option<Object?>> options,
     required final Uint8Buffer? payload,
     required final bool hasUnknownCriticalOption,
     required final bool hasFormatError,

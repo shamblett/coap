@@ -7,45 +7,70 @@
 
 import 'dart:collection';
 
+import 'package:typed_data/typed_buffers.dart';
+
+import 'coap_block_option.dart';
+import 'empty_option.dart';
+import 'integer_option.dart';
+import 'opaque_option.dart';
+import 'option.dart';
+import 'oscore_option.dart';
+import 'string_option.dart';
+
 /// Base class for [Exception]s that are thrown when an unknown CoapOption
 /// number is encountered during the parsing of a CoapMessage.
 abstract class UnknownOptionException implements Exception {
   /// The unknown option number that was encountered.
-  int optionNumber;
+  final int optionNumber;
+
+  final String errorMessage;
 
   /// Constructor.
-  UnknownOptionException(this.optionNumber);
+  UnknownOptionException(this.optionNumber, this.errorMessage);
 
   @override
-  String toString() =>
-      '$runtimeType:  Encountered unknown option number $optionNumber';
+  String toString() => '$runtimeType:  $errorMessage $optionNumber';
 }
 
 /// [Exception] that is thrown when an unknown elective CoapOption number is
 /// encountered during the parsing of a CoapMessage.
 class UnknownElectiveOptionException extends UnknownOptionException {
   /// Constructor.
-  UnknownElectiveOptionException(super.optionNumber);
+  UnknownElectiveOptionException(super.optionNumber, super.errorMessage);
 }
 
 /// [Exception] that is thrown when an unknown critical CoapOption number is
 /// encountered during the parsing of a CoapMessage.
 class UnknownCriticalOptionException extends UnknownOptionException {
   /// Constructor.
-  UnknownCriticalOptionException(super.optionNumber);
+  UnknownCriticalOptionException(super.optionNumber, super.errorMessage);
 }
 
 /// CoAP option types as defined in
 /// RFC 7252, Section 12.2 and other CoAP extensions.
 enum OptionType implements Comparable<OptionType> {
   /// C, opaque, 0-8 B, -
-  ifMatch(1, 'If-Match', OptionFormat.opaque, minLength: 0, maxLength: 8),
+  ifMatch(
+    1,
+    'If-Match',
+    OptionFormat.opaque,
+    minLength: 0,
+    maxLength: 8,
+    repeatable: true,
+  ),
 
   /// C, String, 1-270 B, ""
   uriHost(3, 'Uri-Host', OptionFormat.string, minLength: 1, maxLength: 255),
 
   /// E, sequence of bytes, 1-4 B, -
-  eTag(4, 'ETag', OptionFormat.opaque, minLength: 1, maxLength: 8),
+  eTag(
+    4,
+    'ETag',
+    OptionFormat.opaque,
+    minLength: 1,
+    maxLength: 8,
+    repeatable: true,
+  ),
 
   ifNoneMatch(
     5,
@@ -68,16 +93,23 @@ enum OptionType implements Comparable<OptionType> {
     OptionFormat.string,
     minLength: 0,
     maxLength: 255,
+    repeatable: true,
   ),
 
   /// C, String, 0-255 B, -
   ///
   /// Defined in [RFC 8613](https://datatracker.ietf.org/doc/html/rfc8613).
-  // TODO(JKRhb): Option format should be revisited.
-  oscore(9, 'OSCORE', OptionFormat.opaque, minLength: 0, maxLength: 255),
+  oscore(9, 'OSCORE', OptionFormat.oscore, minLength: 0, maxLength: 255),
 
   /// C, String, 1-270 B, ""
-  uriPath(11, 'Uri-Path', OptionFormat.string, minLength: 0, maxLength: 255),
+  uriPath(
+    11,
+    'Uri-Path',
+    OptionFormat.string,
+    minLength: 0,
+    maxLength: 255,
+    repeatable: true,
+  ),
 
   /// C, 8-bit uint, 1 B, 0 (text/plain)
   contentFormat(
@@ -99,7 +131,14 @@ enum OptionType implements Comparable<OptionType> {
   ),
 
   /// C, String, 1-270 B, ""
-  uriQuery(15, 'Uri-Query', OptionFormat.string, minLength: 0, maxLength: 255),
+  uriQuery(
+    15,
+    'Uri-Query',
+    OptionFormat.string,
+    minLength: 0,
+    maxLength: 255,
+    repeatable: true,
+  ),
 
   /// E, uint, 1 B, 16
   ///
@@ -132,15 +171,29 @@ enum OptionType implements Comparable<OptionType> {
     OptionFormat.string,
     minLength: 0,
     maxLength: 255,
+    repeatable: true,
   ),
-  block2(23, 'Block2', OptionFormat.integer, minLength: 0, maxLength: 3),
+  block2(
+    23,
+    'Block2',
+    OptionFormat.integer,
+    minLength: 0,
+    maxLength: 3,
+  ),
   block1(27, 'Block1', OptionFormat.integer, minLength: 0, maxLength: 3),
   size2(28, 'Size2', OptionFormat.integer, minLength: 0, maxLength: 4),
 
   /// C, uint, 0-3 B, -
   ///
   /// Defined in [RFC 9177](https://datatracker.ietf.org/doc/html/rfc9177).
-  qBlock2(31, 'Q-Block2', OptionFormat.integer, minLength: 0, maxLength: 3),
+  qBlock2(
+    31,
+    'Q-Block2',
+    OptionFormat.integer,
+    minLength: 0,
+    maxLength: 3,
+    repeatable: true,
+  ),
 
   /// C, String, 1-270 B, "coap"
   proxyUri(35, 'Proxy-Uri', OptionFormat.string, minLength: 1, maxLength: 1034),
@@ -215,6 +268,7 @@ enum OptionType implements Comparable<OptionType> {
     required this.minLength,
     required this.maxLength,
     this.defaultValue,
+    this.repeatable = false,
   });
 
   /// The number of this option.
@@ -224,7 +278,9 @@ enum OptionType implements Comparable<OptionType> {
   final String optionName;
 
   /// The [OptionFormat] of this option (integer, string, opaque, or unknown).
-  final OptionFormat optionFormat;
+  final OptionFormat<Object?> optionFormat;
+
+  final bool repeatable;
 
   /// The minimum length of this [OptionType] in bytes.
   final int minLength;
@@ -246,10 +302,12 @@ enum OptionType implements Comparable<OptionType> {
       return optionType;
     }
 
+    const errorMessage = 'Uncountered an unknown option number';
+
     if (type.isOdd) {
-      throw UnknownCriticalOptionException(type);
+      throw UnknownCriticalOptionException(type, errorMessage);
     } else {
-      throw UnknownElectiveOptionException(type);
+      throw UnknownElectiveOptionException(type, errorMessage);
     }
   }
 
@@ -277,7 +335,76 @@ enum OptionType implements Comparable<OptionType> {
 
   /// Checks whether an option is safe.
   bool get isSafe => !isUnsafe;
+
+  Option<Object?> parse(final Uint8Buffer bytes) {
+    switch (this) {
+      case OptionType.ifMatch:
+        return IfMatchOption(bytes);
+      case OptionType.uriHost:
+        return UriHostOption.parse(bytes);
+      case OptionType.eTag:
+        return ETagOption(bytes);
+      case OptionType.ifNoneMatch:
+        return IfNoneMatchOption();
+      case OptionType.observe:
+        return ObserveOption.parse(bytes);
+      case OptionType.uriPort:
+        return UriPortOption.parse(bytes);
+      case OptionType.locationPath:
+        return LocationPathOption.parse(bytes);
+      case OptionType.oscore:
+        return OscoreOption.parse(bytes);
+      case OptionType.uriPath:
+        return UriPathOption.parse(bytes);
+      case OptionType.contentFormat:
+        return ContentFormatOption.parse(bytes);
+      case OptionType.maxAge:
+        return MaxAgeOption.parse(bytes);
+      case OptionType.uriQuery:
+        return UriQueryOption.parse(bytes);
+      case OptionType.hopLimit:
+        return HopLimitOption.parse(bytes);
+      case OptionType.accept:
+        return AcceptOption.parse(bytes);
+      case OptionType.qBlock1:
+        return QBlock1Option.parse(bytes);
+      case OptionType.edhoc:
+        return EdhocOption();
+      case OptionType.locationQuery:
+        return LocationQueryOption.parse(bytes);
+      case OptionType.block2:
+        return Block2Option.parse(bytes);
+      case OptionType.block1:
+        return Block1Option.parse(bytes);
+      case OptionType.size2:
+        return Size2Option.parse(bytes);
+      case OptionType.qBlock2:
+        return QBlock2Option.parse(bytes);
+      case OptionType.proxyUri:
+        return ProxyUriOption.parse(bytes);
+      case OptionType.proxyScheme:
+        return ProxySchemeOption.parse(bytes);
+      case OptionType.size1:
+        return Size1Option.parse(bytes);
+      case OptionType.echo:
+        return EchoOption(bytes);
+      case OptionType.noResponse:
+        return NoResponseOption.parse(bytes);
+      case OptionType.requestTag:
+        return RequestTagOption(bytes);
+      case OptionType.ocfAcceptContentFormatVersion:
+        return OcfAcceptContentFormatVersion.parse(bytes);
+      case OptionType.ocfContentFormatVersion:
+        return OcfContentFormatVersion.parse(bytes);
+    }
+  }
 }
 
 /// CoAP option formats.
-enum OptionFormat { integer, string, opaque, empty }
+enum OptionFormat<T> {
+  integer<int>(),
+  string<String>(),
+  opaque<Uint8Buffer>(),
+  oscore<OscoreOptionValue>(),
+  empty<void>();
+}

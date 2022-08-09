@@ -13,7 +13,6 @@ import 'package:synchronized/synchronized.dart';
 import 'package:typed_data/typed_data.dart';
 
 import '../config/coap_config_default.dart';
-import 'coap_block_option.dart';
 import 'coap_code.dart';
 import 'coap_config.dart';
 import 'coap_constants.dart';
@@ -22,8 +21,6 @@ import 'coap_media_type.dart';
 import 'coap_message.dart';
 import 'coap_message_type.dart';
 import 'coap_observe_client_relation.dart';
-import 'coap_option.dart';
-import 'coap_option_type.dart';
 import 'coap_request.dart';
 import 'coap_response.dart';
 import 'event/coap_event_bus.dart';
@@ -34,8 +31,13 @@ import 'net/endpoint.dart';
 import 'network/coap_inetwork.dart';
 import 'network/credentials/ecdsa_keys.dart';
 import 'network/credentials/psk_credentials.dart';
+import 'option/coap_block_option.dart';
+import 'option/empty_option.dart';
+import 'option/integer_option.dart';
+import 'option/option.dart';
 
 /// The matching scheme to use for supplied ETags on PUT
+// FIXME: The name MatchETags might be a bit misleading, c.f. https://datatracker.ietf.org/doc/html/rfc7252#section-5.10.8.2
 enum MatchEtags {
   /// When the ETag matches
   onMatch,
@@ -136,7 +138,7 @@ class CoapClient {
     final String path, {
     final CoapMediaType? accept,
     final bool confirmable = true,
-    final List<CoapOption>? options,
+    final List<Option<Object?>>? options,
     final bool earlyBlock2Negotiation = false,
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
@@ -160,7 +162,7 @@ class CoapClient {
     final CoapMediaType? format,
     final CoapMediaType? accept,
     final bool confirmable = true,
-    final List<CoapOption>? options,
+    final List<Option<Object?>>? options,
     final bool earlyBlock2Negotiation = false,
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
@@ -185,7 +187,7 @@ class CoapClient {
     final CoapMediaType? format,
     final CoapMediaType? accept,
     final bool confirmable = true,
-    final List<CoapOption>? options,
+    final List<Option<Object?>>? options,
     final bool earlyBlock2Negotiation = false,
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
@@ -212,7 +214,7 @@ class CoapClient {
     final bool confirmable = true,
     final List<Uint8Buffer>? etags,
     final MatchEtags matchEtags = MatchEtags.onMatch,
-    final List<CoapOption>? options,
+    final List<Option<Object?>>? options,
     final bool earlyBlock2Negotiation = false,
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
@@ -241,7 +243,7 @@ class CoapClient {
     final List<Uint8Buffer>? etags,
     final CoapMediaType? accept,
     final bool confirmable = true,
-    final List<CoapOption>? options,
+    final List<Option<Object?>>? options,
     final bool earlyBlock2Negotiation = false,
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
@@ -266,7 +268,7 @@ class CoapClient {
     final String path, {
     final CoapMediaType? accept,
     final bool confirmable = true,
-    final List<CoapOption>? options,
+    final List<Option<Object?>>? options,
     final bool earlyBlock2Negotiation = false,
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
@@ -292,7 +294,7 @@ class CoapClient {
     final String path, {
     final CoapMediaType? accept,
     final bool confirmable = true,
-    final List<CoapOption>? options,
+    final List<Option<Object?>>? options,
     final bool earlyBlock2Negotiation = false,
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
@@ -322,7 +324,7 @@ class CoapClient {
     final bool confirmable = true,
     final List<Uint8Buffer>? etags,
     final MatchEtags matchEtags = MatchEtags.onMatch,
-    final List<CoapOption>? options,
+    final List<Option<Object?>>? options,
     final bool earlyBlock2Negotiation = false,
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
@@ -355,7 +357,7 @@ class CoapClient {
     final List<Uint8Buffer>? etags,
     final CoapMediaType? accept,
     final bool confirmable = true,
-    final List<CoapOption>? options,
+    final List<Option<Object?>>? options,
     final bool earlyBlock2Negotiation = false,
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
@@ -388,7 +390,7 @@ class CoapClient {
     final bool confirmable = true,
     final List<Uint8Buffer>? etags,
     final MatchEtags matchEtags = MatchEtags.onMatch,
-    final List<CoapOption>? options,
+    final List<Option<Object?>>? options,
     final bool earlyBlock2Negotiation = false,
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
@@ -421,7 +423,7 @@ class CoapClient {
     final List<Uint8Buffer>? etags,
     final CoapMediaType? accept,
     final bool confirmable = true,
-    final List<CoapOption>? options,
+    final List<Option<Object?>>? options,
     final bool earlyBlock2Negotiation = false,
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
@@ -454,7 +456,7 @@ class CoapClient {
     unawaited(
       () async {
         final resp = await _waitForResponse(request, responseStream);
-        if (!resp.hasOption(OptionType.observe)) {
+        if (!resp.hasOption<ObserveOption>()) {
           relation.isCancelled = true;
         }
       }(),
@@ -561,7 +563,7 @@ class CoapClient {
     final CoapRequest request,
     final String path,
     final CoapMediaType? accept,
-    final List<CoapOption>? options,
+    final List<Option<Object?>>? options,
     final bool earlyBlock2Negotiation,
     final int maxRetransmit, {
     final MatchEtags matchEtags = MatchEtags.onMatch,
@@ -580,7 +582,7 @@ class CoapClient {
           etags.forEach(request.addIfMatchOpaque);
           break;
         case MatchEtags.onNoneMatch:
-          etags.forEach(request.addIfNoneMatchOpaque);
+          request.addOption(IfNoneMatchOption());
       }
     }
     if (earlyBlock2Negotiation) {

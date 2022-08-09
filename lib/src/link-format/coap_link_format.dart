@@ -9,7 +9,7 @@
 
 import 'dart:collection';
 
-import '../coap_option.dart';
+import '../option/option.dart';
 import '../util/coap_scanner.dart';
 import 'coap_link_attribute.dart';
 import 'coap_web_link.dart';
@@ -286,7 +286,7 @@ class CoapLinkFormat {
   /// Serialize options
   static String serializeOptions(
     final CoapEndpointResource resource,
-    final Iterable<CoapOption>? query, {
+    final Iterable<Option<String>>? query, {
     required final bool recursive,
   }) {
     final linkFormat = StringBuffer();
@@ -379,13 +379,13 @@ class CoapLinkFormat {
 
   static bool _matchesOption(
     final CoapEndpointResource resource,
-    final Iterable<CoapOption>? query,
+    final Iterable<Option<String>>? query,
   ) {
     if (query == null) {
       return true;
     }
     for (final q in query) {
-      final s = q.stringValue;
+      final s = q.value;
       final delim = s.indexOf('=');
       if (delim == -1) {
         // flag attribute

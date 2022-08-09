@@ -14,8 +14,8 @@ import 'coap_code.dart';
 import 'coap_constants.dart';
 import 'coap_message.dart';
 import 'coap_message_type.dart';
-import 'coap_option.dart';
 import 'net/endpoint.dart';
+import 'option/option.dart';
 
 /// This class describes the functionality of a CoAP Request as
 /// a subclass of a CoAP Message. It provides:
@@ -55,7 +55,7 @@ class CoapRequest extends CoapMessage {
   /// The URI of this CoAP message.
   Uri get uri => _uri ??= Uri(
         scheme: CoapConstants.uriScheme,
-        host: uriHost ?? 'localhost',
+        host: uriHost,
         port: uriPort,
         path: uriPath,
         query: uriQuery,
@@ -65,9 +65,7 @@ class CoapRequest extends CoapMessage {
   set uri(final Uri value) {
     final host = value.host;
     var port = value.port;
-    if (host.isNotEmpty &&
-        InternetAddress.tryParse(host) == null &&
-        host != 'localhost') {
+    if (host.isNotEmpty && InternetAddress.tryParse(host) == null) {
       uriHost = host;
     }
     if (port <= 0) {
@@ -84,7 +82,6 @@ class CoapRequest extends CoapMessage {
         uriPort = CoapConstants.defaultPort;
       }
     }
-    resolveHost = host;
     _uri = value;
   }
 
@@ -136,7 +133,7 @@ class CoapRequest extends CoapMessage {
     required final CoapMessageType type,
     required final int id,
     required final Uint8Buffer token,
-    required final List<CoapOption> options,
+    required final List<Option<Object?>> options,
     required final Uint8Buffer? payload,
     required final bool hasUnknownCriticalOption,
     required final bool hasFormatError,

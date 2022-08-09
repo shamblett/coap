@@ -21,31 +21,13 @@ void main() {
   group('COAP All', () {
     final check = [
       <int>[64, 1, 48, 57, 255, 112, 97, 121, 108, 111, 97, 100],
+      <int>[64, 1, 48, 57, 192, 33, 30, 255, 112, 97, 121, 108, 111, 97, 100],
       <int>[
         64,
         1,
         48,
         57,
-        193,
-        0,
-        33,
-        30,
-        255,
-        112,
-        97,
-        121,
-        108,
-        111,
-        97,
-        100
-      ],
-      <int>[
-        64,
-        1,
-        48,
-        57,
-        193,
-        0,
+        192,
         255,
         112,
         97,
@@ -188,14 +170,11 @@ void main() {
         ..id = 12345
         ..payload = (typed.Uint8Buffer()..addAll('payload'.codeUnits))
         ..addOption(
-          CoapOption.createVal(
-            OptionType.contentFormat,
-            CoapMediaType.textPlain.numericValue,
-          ),
+          ContentFormatOption(CoapMediaType.textPlain.numericValue),
         )
-        ..addOption(CoapOption.createVal(OptionType.maxAge, 30));
-      expect(msg.getFirstOption(OptionType.contentFormat)!.intValue, 0);
-      expect(msg.getFirstOption(OptionType.maxAge)!.value, 30);
+        ..addOption(MaxAgeOption(30));
+      expect(msg.getFirstOption<ContentFormatOption>()!.value, 0);
+      expect(msg.getFirstOption<MaxAgeOption>()!.value, 30);
       final data = serializeUdpMessage(msg);
       checkData(data, testNo);
       final convMsg = deserializeUdpMessage(data);
@@ -212,10 +191,10 @@ void main() {
         isTrue,
       );
       expect(
-        convMsg.getFirstOption(OptionType.contentFormat)!.intValue,
+        convMsg.getFirstOption<ContentFormatOption>()!.value,
         CoapMediaType.textPlain.numericValue,
       );
-      expect(convMsg.getFirstOption(OptionType.maxAge)!.value, 30);
+      expect(convMsg.getFirstOption<MaxAgeOption>()!.value, 30);
       expect(
         leq.equals(msg.payload!.toList(), convMsg.payload!.toList()),
         isTrue,
@@ -225,8 +204,8 @@ void main() {
     void testMessageWithExtendedOption(final int testNo) {
       final CoapMessage msg = CoapRequest(CoapCode.get)
         ..id = 12345
-        ..addOption(CoapOption.createVal(OptionType.contentFormat, 0));
-      expect(msg.getFirstOption(OptionType.contentFormat)!.value, 0);
+        ..addOption(ContentFormatOption(0));
+      expect(msg.getFirstOption<ContentFormatOption>()!.value, 0);
       msg.payload = typed.Uint8Buffer()..addAll('payload'.codeUnits);
 
       final data = serializeUdpMessage(msg);
@@ -244,7 +223,7 @@ void main() {
         ),
         isTrue,
       );
-      expect(convMsg.getFirstOption(OptionType.contentFormat)!.value, 0);
+      expect(convMsg.getFirstOption<ContentFormatOption>()!.value, 0);
       expect(
         leq.equals(msg.payload!.toList(), convMsg.payload!.toList()),
         isTrue,

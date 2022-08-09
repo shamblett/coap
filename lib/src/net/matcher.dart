@@ -10,13 +10,14 @@ import 'dart:async';
 import '../coap_config.dart';
 import '../coap_empty_message.dart';
 import '../coap_message_type.dart';
-import '../coap_option_type.dart';
 import '../coap_request.dart';
 import '../coap_response.dart';
 import '../deduplication/deduplicator.dart';
 import '../deduplication/deduplicator_factory.dart';
 import '../event/coap_event_bus.dart';
 import '../observe/coap_observe_relation.dart';
+import '../option/coap_block_option.dart';
+import '../option/integer_option.dart';
 import 'exchange.dart';
 import 'multicast_exchange.dart';
 
@@ -91,12 +92,12 @@ class CoapMatcher {
     }
 
     // Blockwise transfers are identified by token
-    if (response.hasOption(OptionType.block2)) {
+    if (response.hasOption<Block2Option>()) {
       final request = exchange.currentRequest!;
       // Observe notifications only send the first block,
       // hence do not store them as ongoing.
       if (exchange.responseBlockStatus != null &&
-          !response.hasOption(OptionType.observe)) {
+          !response.hasOption<ObserveOption>()) {
         // Remember ongoing blockwise GET requests
         _ongoingExchanges[request.tokenString] = exchange;
       } else {
@@ -144,8 +145,8 @@ class CoapMatcher {
     // all exchanges that do not need blockwise transfer have simpler and
     // faster code than exchanges with blockwise transfer.
 
-    if (!request.hasOption(OptionType.block1) &&
-        !request.hasOption(OptionType.block2)) {
+    if (!request.hasOption<Block1Option>() &&
+        !request.hasOption<Block2Option>()) {
       final exchange =
           CoapExchange(request, CoapOrigin.remote, namespace: namespace);
       final previous = _deduplicator.findPrevious(request.id, exchange);
@@ -165,7 +166,7 @@ class CoapMatcher {
           // The exchange is continuing, we can (i.e., must)
           // clean up the previous response.
           if (ongoing.currentResponse!.type != CoapMessageType.ack &&
-              !ongoing.currentResponse!.hasOption(OptionType.observe)) {
+              !ongoing.currentResponse!.hasOption<ObserveOption>()) {
             _exchangesById.remove(ongoing.currentResponse!.id);
           }
         }
@@ -263,8 +264,8 @@ class CoapMatcher {
 
       final request = exchange.currentRequest;
       if (request != null &&
-          (request.hasOption(OptionType.block1) ||
-              (response != null && response.hasOption(OptionType.block2)))) {
+          (request.hasOption<Block1Option>() ||
+              (response != null && response.hasOption<Block2Option>()))) {
         _ongoingExchanges.remove(request.tokenString);
       }
 

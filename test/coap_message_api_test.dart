@@ -5,10 +5,14 @@
  * Copyright :  S.Hamblett
  */
 
+import 'dart:convert';
+
 import 'package:coap/coap.dart';
 import 'package:coap/src/coap_empty_message.dart';
 import 'package:coap/src/event/coap_event_bus.dart';
+import 'package:coap/src/option/coap_option_type.dart';
 import 'package:test/test.dart';
+import 'package:typed_data/typed_buffers.dart';
 
 // Note that not all API methods are tested here, some are tested in other unit
 // test suites, some in dynamic testing.
@@ -20,8 +24,7 @@ void main() {
     final message = CoapEmptyMessage(CoapMessageType.con);
     expect(message.type, CoapMessageType.con);
     expect(message.id, null);
-    expect(message.resolveHost, 'localhost');
-    expect(message.optionMap.isEmpty, isTrue);
+    expect(message.optionsLength == 0, isTrue);
     expect(message.bindAddress, isNull);
     expect(message.token, isNull);
     expect(message.tokenString, '');
@@ -45,51 +48,52 @@ void main() {
 
   test('Options', () {
     final message = CoapRequest(CoapCode.get);
-    final opt1 = CoapOption(OptionType.uriHost);
+    final opt1 = UriQueryOption.parse(Uint8Buffer());
     expect(
-      () => CoapOption.create(OptionType.fromTypeNumber(9000)),
+      () => OptionType.fromTypeNumber(9000),
       throwsA(const TypeMatcher<UnknownElectiveOptionException>()),
     );
     expect(
-      () => CoapOption.create(OptionType.fromTypeNumber(9001)),
+      () => OptionType.fromTypeNumber(9001),
       throwsA(const TypeMatcher<UnknownCriticalOptionException>()),
     );
-    final options = <CoapOption>[
-      opt1,
-    ];
+    final options = [opt1];
     message.addOptions(options);
-    expect(message.optionMap.length, 1);
-    expect(message.getOptions(OptionType.uriHost)!.length, 1);
+    expect(message.optionsLength, 1);
+    expect(message.getOptions<UriQueryOption>().length, 1);
     message.setOption(opt1);
-    expect(message.optionMap.length, 1);
-    expect(message.getOptions(OptionType.uriHost)!.length, 1);
+    expect(message.optionsLength, 1);
+    expect(message.getOptions<UriQueryOption>().length, 1);
     message.setOptions(options);
-    expect(message.optionMap.length, 1);
-    expect(message.getOptions(OptionType.uriHost)!.length, 1);
+    expect(message.optionsLength, 1);
+    expect(message.getOptions<UriQueryOption>().length, 1);
     expect(
-      message.getFirstOption(OptionType.uriHost)!.type,
-      OptionType.uriHost,
+      message.getFirstOption<UriQueryOption>()!.type,
+      OptionType.uriQuery,
     );
-    expect(message.getFirstOption(OptionType.uriPort), isNull);
-    expect(message.hasOption(OptionType.uriHost), isTrue);
-    expect(message.hasOption(OptionType.uriPort), isFalse);
-    message.removeOptions(OptionType.uriHost);
-    expect(message.optionMap.length, 0);
-    expect(message.getOptions(OptionType.uriHost), isNull);
-    expect(message.optionMap.length, 0);
-    expect(message.getOptions(OptionType.uriHost), isNull);
+    expect(message.getFirstOption<UriPortOption>(), isNull);
+    expect(message.hasOption<UriQueryOption>(), isTrue);
+    expect(message.hasOption<UriPortOption>(), isFalse);
+    message.removeOptions<UriQueryOption>();
+    expect(message.optionsLength, 0);
+    expect(message.getOptions<UriQueryOption>(), <Option<Object?>>[]);
+    expect(message.optionsLength, 0);
+    expect(message.getOptions<UriQueryOption>(), <Option<Object?>>[]);
     message.addOptions(options);
-    expect(message.optionMap.length, 1);
-    final opt2 = CoapOption(OptionType.uriHost);
+    expect(message.optionsLength, 1);
+    final opt2 = UriQueryOption.parse(Uint8Buffer());
     message.addOption(opt2);
-    expect(message.optionMap.length, 1);
-    expect(message.getOptions(OptionType.uriHost)!.length, 2);
+    expect(message.optionsLength, 2);
+    expect(message.getOptions<UriQueryOption>().length, 2);
     final ret = message.removeOption(opt1);
     expect(ret, isTrue);
-    expect(message.getOptions(OptionType.uriHost)!.length, 1);
-    expect(message.getOptions(OptionType.uriHost)!.toList()[0] == opt2, isTrue);
+    expect(message.getOptions<UriQueryOption>().length, 1);
+    expect(
+      message.getOptions<UriQueryOption>().toList()[0] == opt2,
+      isTrue,
+    );
     message.clearOptions();
-    expect(message.optionMap.length, 0);
+    expect(message.optionsLength, 0);
   });
 
   test('Acknowledged', () {
@@ -171,29 +175,25 @@ void main() {
       ..addIfMatch('ETag-1')
       ..addIfMatch('ETag-2');
     expect(message.ifMatches.length, 2);
-    expect(message.ifMatches.toList()[0].stringValue, 'ETag-1');
-    expect(message.ifMatches.toList()[1].stringValue, 'ETag-2');
+    expect(utf8.decode(message.ifMatches.toList()[0].byteValue), 'ETag-1');
+    expect(utf8.decode(message.ifMatches.toList()[1].byteValue), 'ETag-2');
     message.removeIfMatchOpaque(message.ifMatches.toList()[0].byteValue);
     expect(message.ifMatches.length, 1);
-    expect(message.ifMatches.toList()[0].stringValue, 'ETag-2');
+    expect(utf8.decode(message.ifMatches.toList()[0].byteValue), 'ETag-2');
     message.clearIfMatches();
     expect(message.ifMatches.length, 0);
-    final opt1 = CoapOption(OptionType.uriHost);
-    expect(() => message.removeIfMatch(opt1), throwsArgumentError);
-    final opt2 = CoapOption(OptionType.ifMatch)..stringValue = 'ETag-3';
-    message.addOption(opt2);
+    final opt1 = IfMatchOption(Uint8Buffer()..addAll('ETag-3'.codeUnits));
+    message.addOption(opt1);
     expect(message.ifMatches.length, 1);
-    message.removeIfMatch(opt2);
+    message.removeIfMatch(opt1);
     expect(message.ifMatches.length, 0);
   });
 
   test('ETags', () {
     final message = CoapEmptyMessage(CoapMessageType.rst)..isTimedOut = true;
     expect(message.etags.length, 0);
-    final none = CoapOption(OptionType.ifMatch);
-    final etag1 = CoapOption(OptionType.eTag)..stringValue = 'Etag-1';
-    final etag2 = CoapOption(OptionType.eTag)..stringValue = 'Etag-2';
-    expect(() => message.addEtag(none), throwsArgumentError);
+    final etag1 = ETagOption(Uint8Buffer()..addAll('ETag-1'.codeUnits));
+    final etag2 = ETagOption(Uint8Buffer()..addAll('ETag-2'.codeUnits));
     message.addEtag(etag1);
     expect(message.etags.length, 1);
     message.addETagOpaque(etag2.byteValue);
@@ -205,7 +205,6 @@ void main() {
     expect(message.etags.length, 0);
     message.addEtag(etag1);
     expect(message.etags.length, 1);
-    expect(() => message.removeEtag(none), throwsArgumentError);
     final ret = message.removeEtag(etag1);
     expect(ret, isTrue);
     expect(message.etags.length, 0);
@@ -214,21 +213,15 @@ void main() {
   test('If None match', () {
     final message = CoapEmptyMessage(CoapMessageType.rst)..isTimedOut = true;
     expect(message.ifNoneMatches.length, 0);
-    final none = CoapOption(OptionType.ifMatch);
-    final inm1 = CoapOption(OptionType.ifNoneMatch)..stringValue = 'Inm1';
-    final inm2 = CoapOption(OptionType.ifNoneMatch)..stringValue = 'Inm2';
+    final inm1 = IfNoneMatchOption();
+    final inm2 = IfNoneMatchOption();
+    expect(inm1 == inm2, isTrue);
+
     message
-      ..addIfNoneMatch(inm1)
-      ..addIfNoneMatch(inm2);
-    expect(message.ifNoneMatches.length, 2);
-    expect(() => message.addIfNoneMatch(none), throwsArgumentError);
-    final inm3 = CoapOption(OptionType.ifNoneMatch)..stringValue = 'Inm3';
-    message.addIfNoneMatchOpaque(inm3.byteValue);
-    expect(message.ifNoneMatches.length, 3);
-    message.removeIfNoneMatchOpaque(inm2.byteValue);
-    expect(message.ifNoneMatches.length, 2);
-    expect(() => message.removeIfNoneMatch(none), throwsArgumentError);
-    message.clearIfNoneMatches();
+      ..addOption(inm1)
+      ..addOption(inm2);
+    expect(message.ifNoneMatches.length, 1);
+    message.removeIfNoneMatch(inm1);
     expect(message.ifNoneMatches.length, 0);
   });
 
@@ -252,7 +245,10 @@ void main() {
     message.addLocationPath('no-double-slash//');
     expect(message.uriPath, 'a/uri/path//longer/multiple%2Fare%2Fallowed');
     final tooLong = 'n' * 1000;
-    expect(() => message.addUriPath(tooLong), throwsArgumentError);
+    expect(
+      () => message.addUriPath(tooLong),
+      throwsA(isA<UnknownCriticalOptionException>()),
+    );
     message.removeUriPath('path');
     expect(message.uriPaths.length, 5);
     expect(message.uriPath, 'a/uri//longer/multiple%2Fare%2Fallowed');
@@ -279,7 +275,10 @@ void main() {
     expect(message.uriQueries.length, 4);
     expect(message.uriQuery, 'a&uri=1&query=2&longer=3');
     final tooLong = 'n' * 1000;
-    expect(() => message.addUriQuery(tooLong), throwsArgumentError);
+    expect(
+      () => message.addUriQuery(tooLong),
+      throwsA(isA<UnknownCriticalOptionException>()),
+    );
     message.addUriQuery('allow=1&multiple=2&queries=3');
     expect(
       message.uriQuery,
@@ -336,7 +335,10 @@ void main() {
     message.addLocationPath('double-slash//');
     expect(message.locationPaths.length, 2);
     final tooLong = 'n' * 1000;
-    expect(() => message.addLocationPath(tooLong), throwsArgumentError);
+    expect(
+      () => message.addLocationPath(tooLong),
+      throwsA(isA<UnknownElectiveOptionException>()),
+    );
   });
 
   test('Location query', () {
@@ -349,7 +351,10 @@ void main() {
     expect(message.locationQueries.length, 4);
     expect(message.locationQuery, 'a&uri=1&query=2&longer=3');
     final tooLong = 'n' * 1000;
-    expect(() => message.addLocationQuery(tooLong), throwsArgumentError);
+    expect(
+      () => message.addLocationQuery(tooLong),
+      throwsA(isA<UnknownElectiveOptionException>()),
+    );
     message.addLocationQuery('allow=1&multiple=2&queries=3');
     expect(
       message.locationQuery,
