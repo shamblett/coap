@@ -280,4 +280,4 @@ enum OptionType implements Comparable<OptionType> {
 }
 
 /// CoAP option formats.
-enum OptionFormat { integer, string, opaque, empty, unknown }
+enum OptionFormat { integer, string, opaque, empty }
