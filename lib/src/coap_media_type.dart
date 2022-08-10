@@ -5,6 +5,7 @@
  * Copyright :  S.Hamblett
  */
 
+import 'dart:collection';
 import 'dart:io';
 import 'package:collection/collection.dart';
 
@@ -275,9 +276,14 @@ enum CoapMediaType {
         parameters: parameters,
       );
 
-  // TODO(JKRhb): Rework to switch statement?
-  static CoapMediaType? fromIntValue(final int value) => CoapMediaType.values
-      .firstWhereOrNull((final element) => element.numericValue == value);
+  static final _registry = HashMap.fromEntries(
+    values.map(
+      (final contentFormat) =>
+          MapEntry(contentFormat.numericValue, contentFormat),
+    ),
+  );
+
+  static CoapMediaType? fromIntValue(final int value) => _registry[value];
 
   /// Parses a string-based contentType [value] and [encoding] and returns
   /// a [CoapMediaType], if a match has been found.
