@@ -126,6 +126,6 @@ class CoapRequest extends CoapMessage {
       CoapRequest(CoapCode.patch, confirmable: confirmable);
 
   /// Construct a iPATCH request.
-  factory CoapRequest.newIpatch({final bool confirmable = true}) =>
+  factory CoapRequest.newIPatch({final bool confirmable = true}) =>
       CoapRequest(CoapCode.ipatch, confirmable: confirmable);
 }
