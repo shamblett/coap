@@ -117,5 +117,15 @@ class CoapRequest extends CoapMessage {
   factory CoapRequest.newDelete({final bool confirmable = true}) =>
       CoapRequest(CoapCode.delete, confirmable: confirmable);
 
-  // TODO(JKRhb): Add constructors for FETCH, PATCH, and iPATCH
+  /// Construct a FETCH request.
+  factory CoapRequest.newFetch({final bool confirmable = true}) =>
+      CoapRequest(CoapCode.fetch, confirmable: confirmable);
+
+  /// Construct a PATCH request.
+  factory CoapRequest.newPatch({final bool confirmable = true}) =>
+      CoapRequest(CoapCode.patch, confirmable: confirmable);
+
+  /// Construct a iPATCH request.
+  factory CoapRequest.newIpatch({final bool confirmable = true}) =>
+      CoapRequest(CoapCode.ipatch, confirmable: confirmable);
 }
