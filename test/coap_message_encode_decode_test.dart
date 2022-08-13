@@ -169,7 +169,7 @@ void main() {
       final CoapMessage msg = CoapRequest(CoapCode.get)
         ..id = 12345
         ..payload = (typed.Uint8Buffer()..addAll('payload'.codeUnits));
-      final data = CoapMessageEncoder().encodeMessage(msg)!;
+      final data = CoapMessageEncoder().encodeMessage(msg);
       checkData(data, testNo);
       final convMsg = CoapMessageDecoder(data).decodeMessage()!;
       expect(msg.code, convMsg.code);
@@ -196,7 +196,7 @@ void main() {
         ..addOption(CoapOption.createVal(OptionType.maxAge, 30));
       expect(msg.getFirstOption(OptionType.contentFormat)!.intValue, 0);
       expect(msg.getFirstOption(OptionType.maxAge)!.value, 30);
-      final data = CoapMessageEncoder().encodeMessage(msg)!;
+      final data = CoapMessageEncoder().encodeMessage(msg);
       checkData(data, testNo);
       final convMsg = CoapMessageDecoder(data).decodeMessage()!;
 
@@ -229,7 +229,7 @@ void main() {
       expect(msg.getFirstOption(OptionType.contentFormat)!.value, 0);
       msg.payload = typed.Uint8Buffer()..addAll('payload'.codeUnits);
 
-      final data = CoapMessageEncoder().encodeMessage(msg)!;
+      final data = CoapMessageEncoder().encodeMessage(msg);
       checkData(data, testNo);
       final convMsg = CoapMessageDecoder(data).decodeMessage()!;
 
@@ -262,7 +262,7 @@ void main() {
         ..contentType = CoapMediaType.fromIntValue(40)
         ..accept = CoapMediaType.fromIntValue(40);
 
-      final bytes = CoapMessageEncoder().encodeMessage(request)!;
+      final bytes = CoapMessageEncoder().encodeMessage(request);
       checkData(bytes, testNo);
       final decoder = CoapMessageDecoder(bytes);
       expect(decoder.isRequest, isTrue);
@@ -292,7 +292,7 @@ void main() {
         ..addETagOpaque(typed.Uint8Buffer()..addAll(<int>[1, 0, 0, 0, 0, 1]))
         ..locationPath = '/one/two/three/four/five/six/seven/eight/nine/ten';
 
-      final bytes = CoapMessageEncoder().encodeMessage(response)!;
+      final bytes = CoapMessageEncoder().encodeMessage(response);
       checkData(bytes, testNo);
 
       final decoder = CoapMessageDecoder(bytes);

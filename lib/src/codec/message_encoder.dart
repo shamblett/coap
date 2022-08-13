@@ -117,7 +117,7 @@ class CoapMessageEncoder {
   /// Encodes a CoAP message into a bytes array.
   /// Returns the encoded bytes, or null if the message can not be encoded,
   /// i.e. the message is not a Request, a Response or an EmptyMessage.
-  Uint8Buffer? encodeMessage(final CoapMessage message) {
+  Uint8Buffer encodeMessage(final CoapMessage message) {
     if (message.isRequest) {
       return encodeRequest(message as CoapRequest);
     } else if (message.isResponse) {
@@ -130,7 +130,8 @@ class CoapMessageEncoder {
         return encodeEmpty(message as CoapEmptyMessage);
       }
     } else {
-      return null;
+      // TODO(JKRhb): Get rid of error via an enum.
+      throw StateError('Encoding error: Unknown message type.');
     }
   }
 

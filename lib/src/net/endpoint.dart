@@ -121,7 +121,7 @@ class Endpoint implements Outbox {
             ..destination = event.address
             ..id = decoder.id;
           _eventBus.fire(CoapSendingEmptyMessageEvent(rst));
-          _socket.send(_serializeEmpty(rst), rst.destination);
+          _socket.send(rst.bytes, rst.destination);
         }
         return;
       }
@@ -179,7 +179,7 @@ class Endpoint implements Outbox {
     _eventBus.fire(CoapSendingRequestEvent(request));
 
     if (!request.isCancelled) {
-      _socket.send(_serializeRequest(request), request.destination);
+      _socket.send(request.bytes, request.destination);
     }
   }
 
@@ -189,7 +189,7 @@ class Endpoint implements Outbox {
     _eventBus.fire(CoapSendingResponseEvent(response));
 
     if (!response.isCancelled) {
-      _socket.send(_serializeResponse(response), response.destination);
+      _socket.send(response.bytes, response.destination);
     }
   }
 
@@ -202,7 +202,7 @@ class Endpoint implements Outbox {
     _eventBus.fire(CoapSendingEmptyMessageEvent(message));
 
     if (!message.isCancelled) {
-      _socket.send(_serializeEmpty(message), message.destination);
+      _socket.send(message.bytes, message.destination);
     }
   }
 
@@ -211,38 +211,7 @@ class Endpoint implements Outbox {
     _eventBus.fire(CoapSendingEmptyMessageEvent(rst));
 
     if (!rst.isCancelled) {
-      _socket.send(_serializeEmpty(rst), rst.destination);
+      _socket.send(rst.bytes, rst.destination);
     }
-  }
-
-  Uint8Buffer _serializeEmpty(final CoapEmptyMessage message) {
-    var bytes = message.bytes;
-    if (bytes == null) {
-      bytes = CoapMessageEncoder().encodeMessage(message);
-      message.bytes = bytes;
-    }
-    if (bytes != null) {
-      return bytes;
-    } else {
-      return Uint8Buffer();
-    }
-  }
-
-  Uint8Buffer _serializeRequest(final CoapMessage message) {
-    var bytes = message.bytes;
-    if (bytes == null) {
-      bytes = CoapMessageEncoder().encodeMessage(message);
-      message.bytes = bytes;
-    }
-    return bytes!;
-  }
-
-  Uint8Buffer _serializeResponse(final CoapMessage message) {
-    var bytes = message.bytes;
-    if (bytes == null) {
-      bytes = CoapMessageEncoder().encodeMessage(message);
-      message.bytes = bytes;
-    }
-    return bytes!;
   }
 }
