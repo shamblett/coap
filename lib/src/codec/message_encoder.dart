@@ -15,7 +15,7 @@ import '../coap_option.dart';
 import '../coap_option_type.dart';
 import '../coap_request.dart';
 import '../coap_response.dart';
-import 'datagram/coap_datagram_writer.dart';
+import 'datagram/datagram_writer.dart';
 import 'specification.dart' as specification;
 
 /// Provides methods to serialize outgoing messages to byte arrays.

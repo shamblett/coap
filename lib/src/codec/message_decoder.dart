@@ -16,7 +16,7 @@ import '../coap_option.dart';
 import '../coap_option_type.dart';
 import '../coap_request.dart';
 import '../coap_response.dart';
-import 'datagram/coap_datagram_reader.dart';
+import 'datagram/datagram_reader.dart';
 import 'specification.dart' as specification;
 
 /// Provides methods to parse incoming byte arrays to messages.

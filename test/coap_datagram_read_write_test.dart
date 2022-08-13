@@ -6,8 +6,8 @@
  */
 
 import 'package:coap/coap.dart';
-import 'package:coap/src/codec/datagram/coap_datagram_reader.dart';
-import 'package:coap/src/codec/datagram/coap_datagram_writer.dart';
+import 'package:coap/src/codec/datagram/datagram_reader.dart';
+import 'package:coap/src/codec/datagram/datagram_writer.dart';
 import 'package:collection/collection.dart';
 import 'package:test/test.dart';
 import 'package:typed_data/typed_data.dart' as typed;

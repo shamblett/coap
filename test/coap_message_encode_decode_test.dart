@@ -8,8 +8,8 @@
  */
 import 'package:coap/coap.dart';
 import 'package:coap/src/coap_message.dart';
-import 'package:coap/src/codec/coap_message_decoder.dart';
-import 'package:coap/src/codec/coap_message_encoder.dart';
+import 'package:coap/src/codec/message_decoder.dart';
+import 'package:coap/src/codec/message_encoder.dart';
 import 'package:collection/collection.dart';
 import 'package:test/test.dart';
 import 'package:typed_data/typed_data.dart' as typed;
