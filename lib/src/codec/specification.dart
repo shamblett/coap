@@ -5,31 +5,30 @@
  * Copyright :  S.Hamblett
  */
 
-/// RFC 7252
-class CoapRfc7252 {
-  static const int version = 1;
+/// The current CoAP version number
+// TODO(JKRhb): Refactor into enum
+const int version = 1;
 
-  /// Version bit length
-  static const int versionBits = 2;
+/// Version bit length
+const int versionBits = 2;
 
-  /// Type bit length
-  static const int typeBits = 2;
+/// Type bit length
+const int typeBits = 2;
 
-  /// Token bit length
-  static const int tokenLengthBits = 4;
+/// Token bit length
+const int tokenLengthBits = 4;
 
-  /// Code bit length
-  static const int codeBits = 8;
+/// Code bit length
+const int codeBits = 8;
 
-  /// Id bit length
-  static const int idBits = 16;
+/// Id bit length
+const int idBits = 16;
 
-  /// Option delta bit length
-  static const int optionDeltaBits = 4;
+/// Option delta bit length
+const int optionDeltaBits = 4;
 
-  /// Option length bit length
-  static const int optionLengthBits = 4;
+/// Option length bit length
+const int optionLengthBits = 4;
 
-  /// Payload marker
-  static const int payloadMarker = 0xFF;
-}
+/// Payload marker
+const int payloadMarker = 0xFF;

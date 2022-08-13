@@ -17,7 +17,7 @@ import '../coap_option_type.dart';
 import '../coap_request.dart';
 import '../coap_response.dart';
 import 'datagram/coap_datagram_reader.dart';
-import 'specification.dart';
+import 'specification.dart' as specification;
 
 /// Provides methods to parse incoming byte arrays to messages.
 class CoapMessageDecoder {
@@ -31,7 +31,7 @@ class CoapMessageDecoder {
   final CoapDatagramReader reader;
 
   /// Checks if the decoding message is well formed.
-  bool get isWellFormed => version == CoapRfc7252.version;
+  bool get isWellFormed => version == specification.version;
 
   int? _version;
 
@@ -48,11 +48,11 @@ class CoapMessageDecoder {
   /// Reads protocol headers.
   void readProtocol() {
     // Read headers
-    _version = reader.read(CoapRfc7252.versionBits);
-    _type = reader.read(CoapRfc7252.typeBits);
-    _tokenLength = reader.read(CoapRfc7252.tokenLengthBits);
-    _code = reader.read(CoapRfc7252.codeBits);
-    _id = reader.read(CoapRfc7252.idBits);
+    _version = reader.read(specification.versionBits);
+    _type = reader.read(specification.typeBits);
+    _tokenLength = reader.read(specification.tokenLengthBits);
+    _code = reader.read(specification.codeBits);
+    _id = reader.read(specification.idBits);
   }
 
   int? _type;
@@ -77,7 +77,7 @@ class CoapMessageDecoder {
     var currentOption = 0;
     while (reader.bytesAvailable) {
       final nextByte = reader.readNextByte();
-      if (nextByte == CoapRfc7252.payloadMarker) {
+      if (nextByte == specification.payloadMarker) {
         if (!reader.bytesAvailable) {
           // The presence of a marker followed by a zero-length payload
           // must be processed as a message format error

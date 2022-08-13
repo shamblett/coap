@@ -16,7 +16,7 @@ import '../coap_option_type.dart';
 import '../coap_request.dart';
 import '../coap_response.dart';
 import 'datagram/coap_datagram_writer.dart';
-import 'specification.dart';
+import 'specification.dart' as specification;
 
 /// Provides methods to serialize outgoing messages to byte arrays.
 class CoapMessageEncoder {
@@ -27,11 +27,11 @@ class CoapMessageEncoder {
   ) {
     // Write fixed-size CoAP headers
     writer
-      ..write(CoapRfc7252.version, CoapRfc7252.versionBits)
-      ..write(message.type?.code, CoapRfc7252.typeBits)
-      ..write(message.token?.length ?? 0, CoapRfc7252.tokenLengthBits)
-      ..write(code, CoapRfc7252.codeBits)
-      ..write(message.id, CoapRfc7252.idBits)
+      ..write(specification.version, specification.versionBits)
+      ..write(message.type?.code, specification.typeBits)
+      ..write(message.token?.length ?? 0, specification.tokenLengthBits)
+      ..write(code, specification.codeBits)
+      ..write(message.id, specification.idBits)
       // Write token, which may be 0 to 8 bytes, given by token length field
       ..writeBytes(message.token);
 
@@ -51,12 +51,12 @@ class CoapMessageEncoder {
       final optNum = opt.type.optionNumber;
       final optionDelta = optNum - lastOptionNumber;
       final optionDeltaNibble = _getOptionNibble(optionDelta);
-      writer.write(optionDeltaNibble, CoapRfc7252.optionDeltaBits);
+      writer.write(optionDeltaNibble, specification.optionDeltaBits);
 
       // Write 4-bit option length
       final optionLength = opt.length;
       final optionLengthNibble = _getOptionNibble(optionLength);
-      writer.write(optionLengthNibble, CoapRfc7252.optionLengthBits);
+      writer.write(optionLengthNibble, specification.optionLengthBits);
 
       // Write extended option delta field (0 - 2 bytes)
       if (optionDeltaNibble == 13) {
@@ -87,7 +87,7 @@ class CoapMessageEncoder {
       // If payload is present and of non-zero length, it is prefixed by
       // an one-byte Payload Marker (0xFF) which indicates the end of
       // options and the start of the payload
-      writer.writeByte(CoapRfc7252.payloadMarker);
+      writer.writeByte(specification.payloadMarker);
     }
     // Write payload
     writer.writeBytes(message.payload);
