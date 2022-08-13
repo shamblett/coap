@@ -72,24 +72,4 @@ class CoapConstants {
   /// Empty token
   ///
   static Uint8Buffer emptyToken = Uint8Buffer();
-
-  ///
-  /// The lowest value of a request code.
-  ///
-  static const int requestCodeLowerBound = 1;
-
-  ///
-  /// The highest value of a request code.
-  ///
-  static const int requestCodeUpperBound = 31;
-
-  ///
-  /// The lowest value of a response code.
-  ///
-  static const int responseCodeLowerBound = 64;
-
-  ///
-  /// The highest value of a response code.
-  ///
-  static const int responseCodeUpperBound = 191;
 }
