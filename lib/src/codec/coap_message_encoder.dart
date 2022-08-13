@@ -8,16 +8,18 @@
 import 'package:collection/collection.dart';
 import 'package:typed_data/typed_data.dart';
 
-import '../../coap_message.dart';
-import '../../coap_option.dart';
-import '../../coap_option_type.dart';
-import '../../specification/rfcs/coap_rfc7252.dart';
-import '../datagram/coap_datagram_writer.dart';
-import 'coap_message_encoder.dart';
+import '../coap_code.dart';
+import '../coap_empty_message.dart';
+import '../coap_message.dart';
+import '../coap_option.dart';
+import '../coap_option_type.dart';
+import '../coap_request.dart';
+import '../coap_response.dart';
+import 'datagram/coap_datagram_writer.dart';
+import 'specification.dart';
 
-/// Message encoder RFC 7252
-class CoapMessageEncoderRfc7252 extends CoapMessageEncoder {
-  @override
+/// Provides methods to serialize outgoing messages to byte arrays.
+class CoapMessageEncoder {
   void serialize(
     final CoapDatagramWriter writer,
     final CoapMessage message,
@@ -48,12 +50,12 @@ class CoapMessageEncoderRfc7252 extends CoapMessageEncoder {
       // Write 4-bit option delta
       final optNum = opt.type.optionNumber;
       final optionDelta = optNum - lastOptionNumber;
-      final optionDeltaNibble = CoapRfc7252.getOptionNibble(optionDelta);
+      final optionDeltaNibble = _getOptionNibble(optionDelta);
       writer.write(optionDeltaNibble, CoapRfc7252.optionDeltaBits);
 
       // Write 4-bit option length
       final optionLength = opt.length;
-      final optionLengthNibble = CoapRfc7252.getOptionNibble(optionLength);
+      final optionLengthNibble = _getOptionNibble(optionLength);
       writer.write(optionLengthNibble, CoapRfc7252.optionLengthBits);
 
       // Write extended option delta field (0 - 2 bytes)
@@ -89,5 +91,59 @@ class CoapMessageEncoderRfc7252 extends CoapMessageEncoder {
     }
     // Write payload
     writer.writeBytes(message.payload);
+  }
+
+  /// Encodes a request into a bytes array.
+  Uint8Buffer encodeRequest(final CoapRequest request) {
+    final writer = CoapDatagramWriter();
+    serialize(writer, request, request.code.code);
+    return writer.toByteArray();
+  }
+
+  /// Encodes a response into a bytes array.
+  Uint8Buffer encodeResponse(final CoapResponse response) {
+    final writer = CoapDatagramWriter();
+    serialize(writer, response, response.code.code);
+    return writer.toByteArray();
+  }
+
+  /// Encodes an empty message into a bytes array.
+  Uint8Buffer encodeEmpty(final CoapEmptyMessage message) {
+    final writer = CoapDatagramWriter();
+    serialize(writer, message, CoapCode.empty.code);
+    return writer.toByteArray();
+  }
+
+  /// Encodes a CoAP message into a bytes array.
+  /// Returns the encoded bytes, or null if the message can not be encoded,
+  /// i.e. the message is not a Request, a Response or an EmptyMessage.
+  Uint8Buffer? encodeMessage(final CoapMessage message) {
+    if (message.isRequest) {
+      return encodeRequest(message as CoapRequest);
+    } else if (message.isResponse) {
+      return encodeResponse(message as CoapResponse);
+    } else if (message.isEmpty) {
+      //A ping message is empty, but it is a request message so check for this
+      if (message is CoapRequest) {
+        return encodeRequest(message);
+      } else {
+        return encodeEmpty(message as CoapEmptyMessage);
+      }
+    } else {
+      return null;
+    }
+  }
+
+  /// Returns the 4-bit option header value.
+  static int _getOptionNibble(final int optionValue) {
+    if (optionValue <= 12) {
+      return optionValue;
+    } else if (optionValue <= 255 + 13) {
+      return 13;
+    } else if (optionValue <= 65535 + 269) {
+      return 14;
+    } else {
+      throw FormatException('Unsupported option delta $optionValue');
+    }
   }
 }

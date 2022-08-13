@@ -7,8 +7,6 @@
 
 import 'package:dart_tinydtls/dart_tinydtls.dart';
 
-import 'specification/coap_ispec.dart';
-import 'specification/rfcs/coap_rfc7252.dart';
 import 'coap_constants.dart';
 import 'deduplication/deduplicator_factory.dart';
 
@@ -26,16 +24,6 @@ abstract class DefaultCoapConfig {
 
   /// The version of the CoAP protocol.
   String get version => 'RFC7252';
-
-  /// The CoAP specification derived from the protocol version.
-  CoapISpec get spec {
-    switch (version) {
-      case 'RFC7252':
-        return CoapRfc7252();
-      default:
-        throw ArgumentError("Invalid or missing version");
-    }
-  }
 
   /// The default CoAP port for normal CoAP communication (not secure).
   int defaultPort = CoapConstants.defaultPort;

@@ -17,6 +17,7 @@ import '../coap_message.dart';
 import '../coap_message_type.dart';
 import '../coap_request.dart';
 import '../coap_response.dart';
+import '../codec/message_decoder.dart';
 import '../event/coap_event_bus.dart';
 import '../network/coap_inetwork.dart';
 import '../stack/layer_stack.dart';
@@ -108,7 +109,7 @@ class Endpoint implements Outbox {
     // clone the data, in case other objects want to do stuff with it, too
     final data = Uint8Buffer()..addAll(event.data);
     // Return if we have no data, should not happen but be defensive
-    final decoder = config.spec.newMessageDecoder(data);
+    final decoder = CoapMessageDecoder(data);
     if (decoder.isRequest) {
       CoapRequest? request;
       try {
@@ -217,7 +218,7 @@ class Endpoint implements Outbox {
   Uint8Buffer _serializeEmpty(final CoapEmptyMessage message) {
     var bytes = message.bytes;
     if (bytes == null) {
-      bytes = _config.spec.newMessageEncoder().encodeMessage(message);
+      bytes = CoapMessageEncoder().encodeMessage(message);
       message.bytes = bytes;
     }
     if (bytes != null) {
@@ -230,7 +231,7 @@ class Endpoint implements Outbox {
   Uint8Buffer _serializeRequest(final CoapMessage message) {
     var bytes = message.bytes;
     if (bytes == null) {
-      bytes = _config.spec.newMessageEncoder().encodeMessage(message);
+      bytes = CoapMessageEncoder().encodeMessage(message);
       message.bytes = bytes;
     }
     return bytes!;
@@ -239,7 +240,7 @@ class Endpoint implements Outbox {
   Uint8Buffer _serializeResponse(final CoapMessage message) {
     var bytes = message.bytes;
     if (bytes == null) {
-      bytes = _config.spec.newMessageEncoder().encodeMessage(message);
+      bytes = CoapMessageEncoder().encodeMessage(message);
       message.bytes = bytes;
     }
     return bytes!;
