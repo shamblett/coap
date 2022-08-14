@@ -20,9 +20,9 @@ void main() {
   test('Test32BitInt', () {
     const intIn = 0x87654321;
 
-    final writer = CoapDatagramWriter()..write(intIn, 32);
+    final writer = DatagramWriter()..write(intIn, 32);
 
-    final reader = CoapDatagramReader(writer.toByteArray());
+    final reader = DatagramReader(writer.toByteArray());
     final intOut = reader.read(32);
 
     expect(intIn, intOut);
@@ -30,9 +30,9 @@ void main() {
   test('Test32BitIntZero', () {
     const intIn = 0;
 
-    final writer = CoapDatagramWriter()..write(intIn, 32);
+    final writer = DatagramWriter()..write(intIn, 32);
 
-    final reader = CoapDatagramReader(writer.toByteArray());
+    final reader = DatagramReader(writer.toByteArray());
     final intOut = reader.read(32);
 
     expect(intIn, intOut);
@@ -40,9 +40,9 @@ void main() {
   test('Test32BitInt1', () {
     const intIn = 0xFFFFFFFF;
 
-    final writer = CoapDatagramWriter()..write(intIn, 32);
+    final writer = DatagramWriter()..write(intIn, 32);
 
-    final reader = CoapDatagramReader(writer.toByteArray());
+    final reader = DatagramReader(writer.toByteArray());
     final intOut = reader.read(32);
 
     expect(intIn, intOut);
@@ -50,9 +50,9 @@ void main() {
   test('Test16BitInt', () {
     const intIn = 0x00004321;
 
-    final writer = CoapDatagramWriter()..write(intIn, 16);
+    final writer = DatagramWriter()..write(intIn, 16);
 
-    final reader = CoapDatagramReader(writer.toByteArray());
+    final reader = DatagramReader(writer.toByteArray());
     final intOut = reader.read(16);
 
     expect(intIn, intOut);
@@ -60,9 +60,9 @@ void main() {
   test('Test8BitInt', () {
     const intIn = 0x00000021;
 
-    final writer = CoapDatagramWriter()..write(intIn, 8);
+    final writer = DatagramWriter()..write(intIn, 8);
 
-    final reader = CoapDatagramReader(writer.toByteArray());
+    final reader = DatagramReader(writer.toByteArray());
     final intOut = reader.read(8);
 
     expect(intIn, intOut);
@@ -71,9 +71,9 @@ void main() {
   test('Test4BitInt', () {
     const intIn = 0x00000005;
 
-    final writer = CoapDatagramWriter()..write(intIn, 4);
+    final writer = DatagramWriter()..write(intIn, 4);
 
-    final reader = CoapDatagramReader(writer.toByteArray());
+    final reader = DatagramReader(writer.toByteArray());
     final intOut = reader.read(4);
 
     expect(intIn, intOut);
@@ -81,9 +81,9 @@ void main() {
   test('Test2BitInt', () {
     const intIn = 0x00000002;
 
-    final writer = CoapDatagramWriter()..write(intIn, 2);
+    final writer = DatagramWriter()..write(intIn, 2);
 
-    final reader = CoapDatagramReader(writer.toByteArray());
+    final reader = DatagramReader(writer.toByteArray());
     final intOut = reader.read(2);
 
     expect(intIn, intOut);
@@ -91,9 +91,9 @@ void main() {
   test('Test1BitInt', () {
     const intIn = 0x00000001;
 
-    final writer = CoapDatagramWriter()..write(intIn, 1);
+    final writer = DatagramWriter()..write(intIn, 1);
 
-    final reader = CoapDatagramReader(writer.toByteArray());
+    final reader = DatagramReader(writer.toByteArray());
     final intOut = reader.read(1);
 
     expect(intIn, intOut);
@@ -101,9 +101,9 @@ void main() {
   test('TestAlignedBytes', () {
     final bytesIn = typed.Uint8Buffer()..addAll('Some aligned bytes'.codeUnits);
 
-    final writer = CoapDatagramWriter()..writeBytes(bytesIn);
+    final writer = DatagramWriter()..writeBytes(bytesIn);
 
-    final reader = CoapDatagramReader(writer.toByteArray());
+    final reader = DatagramReader(writer.toByteArray());
     final bytesOut = reader.readBytesLeft();
 
     expect(leq.equals(bytesIn.toList(), bytesOut.toList()), isTrue);
@@ -113,11 +113,11 @@ void main() {
     const bitsIn = 0x1;
     final bytesIn = typed.Uint8Buffer()..addAll('Some aligned bytes'.codeUnits);
 
-    final writer = CoapDatagramWriter()
+    final writer = DatagramWriter()
       ..write(bitsIn, bitCount)
       ..writeBytes(bytesIn);
 
-    final reader = CoapDatagramReader(writer.toByteArray());
+    final reader = DatagramReader(writer.toByteArray());
     final bitsOut = reader.read(bitCount);
     final bytesOut = reader.readBytes(bytesIn.length);
 
@@ -129,11 +129,11 @@ void main() {
     const bitsIn = 0x5;
     final bytesIn = typed.Uint8Buffer()..addAll('Some aligned bytes'.codeUnits);
 
-    final writer = CoapDatagramWriter()
+    final writer = DatagramWriter()
       ..write(bitsIn, bitCount)
       ..writeBytes(bytesIn);
 
-    final reader = CoapDatagramReader(writer.toByteArray());
+    final reader = DatagramReader(writer.toByteArray());
     final bitsOut = reader.read(bitCount);
     final bytesOut = reader.readBytes(bytesIn.length);
 
@@ -145,11 +145,11 @@ void main() {
     const bitsIn = 0x69;
     final bytesIn = typed.Uint8Buffer()..addAll('Some aligned bytes'.codeUnits);
 
-    final writer = CoapDatagramWriter()
+    final writer = DatagramWriter()
       ..write(bitsIn, bitCount)
       ..writeBytes(bytesIn);
 
-    final reader = CoapDatagramReader(writer.toByteArray());
+    final reader = DatagramReader(writer.toByteArray());
     final bitsOut = reader.read(bitCount);
     final bytesOut = reader.readBytes(bytesIn.length);
 
@@ -161,11 +161,11 @@ void main() {
     const bitsIn = 0xaa;
     final bytesIn = typed.Uint8Buffer()..addAll('Some aligned bytes'.codeUnits);
 
-    final writer = CoapDatagramWriter()
+    final writer = DatagramWriter()
       ..write(bitsIn, bitCount)
       ..writeBytes(bytesIn);
 
-    final reader = CoapDatagramReader(writer.toByteArray());
+    final reader = DatagramReader(writer.toByteArray());
     final bitsOut = reader.read(bitCount);
     final bytesOut = reader.readBytes(bytesIn.length);
 
@@ -177,11 +177,11 @@ void main() {
     const bitsIn = 0x55;
     final bytesIn = typed.Uint8Buffer()..addAll('Some aligned bytes'.codeUnits);
 
-    final writer = CoapDatagramWriter()
+    final writer = DatagramWriter()
       ..write(bitsIn, bitCount)
       ..writeBytes(bytesIn);
 
-    final reader = CoapDatagramReader(writer.toByteArray());
+    final reader = DatagramReader(writer.toByteArray());
     final bitsOut = reader.read(bitCount);
     final bytesOut = reader.readBytes(bytesIn.length);
 
@@ -200,7 +200,7 @@ void main() {
     const msgIdIn = 0x1234;
     const msgIdSz = 16;
 
-    final writer = CoapDatagramWriter()
+    final writer = DatagramWriter()
       ..write(versionIn, versionSz)
       ..write(typeIn, typeSz)
       ..write(optionCntIn, optionCntSz)
@@ -212,7 +212,7 @@ void main() {
 
     expect(leq.equals(dataRef.toList(), data.toList()), isTrue);
 
-    final reader = CoapDatagramReader(data);
+    final reader = DatagramReader(data);
     final versionOut = reader.read(versionSz);
     final typeOut = reader.read(typeSz);
     final optionCntOut = reader.read(optionCntSz);

@@ -17,7 +17,7 @@ import '../coap_message.dart';
 import '../coap_message_type.dart';
 import '../coap_request.dart';
 import '../coap_response.dart';
-import '../codec/udp/message_decoder.dart';
+import '../codec/udp/udp_message_decoder.dart';
 import '../event/coap_event_bus.dart';
 import '../network/coap_inetwork.dart';
 import '../stack/layer_stack.dart';

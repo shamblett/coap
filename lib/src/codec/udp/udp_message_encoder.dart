@@ -19,9 +19,9 @@ import 'datagram_writer.dart';
 import 'message_format.dart' as message_format;
 
 /// Provides methods to serialize outgoing messages to byte arrays.
-class CoapMessageEncoder {
+class UdpMessageEncoder {
   void serialize(
-    final CoapDatagramWriter writer,
+    final DatagramWriter writer,
     final CoapMessage message,
     final int code,
   ) {
@@ -95,21 +95,21 @@ class CoapMessageEncoder {
 
   /// Encodes a request into a bytes array.
   Uint8Buffer encodeRequest(final CoapRequest request) {
-    final writer = CoapDatagramWriter();
+    final writer = DatagramWriter();
     serialize(writer, request, request.code.code);
     return writer.toByteArray();
   }
 
   /// Encodes a response into a bytes array.
   Uint8Buffer encodeResponse(final CoapResponse response) {
-    final writer = CoapDatagramWriter();
+    final writer = DatagramWriter();
     serialize(writer, response, response.code.code);
     return writer.toByteArray();
   }
 
   /// Encodes an empty message into a bytes array.
   Uint8Buffer encodeEmpty(final CoapEmptyMessage message) {
-    final writer = CoapDatagramWriter();
+    final writer = DatagramWriter();
     serialize(writer, message, CoapCode.empty.code);
     return writer.toByteArray();
   }

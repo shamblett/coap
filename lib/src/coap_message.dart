@@ -20,7 +20,7 @@ import 'coap_media_type.dart';
 import 'coap_message_type.dart';
 import 'coap_option.dart';
 import 'coap_option_type.dart';
-import 'codec/udp/message_encoder.dart';
+import 'codec/udp/udp_message_encoder.dart';
 import 'event/coap_event_bus.dart';
 import 'util/coap_byte_array_util.dart';
 
@@ -258,7 +258,7 @@ abstract class CoapMessage {
   set duplicate(final bool val) => _duplicate = val;
 
   /// The serialized message as byte array
-  Uint8Buffer get bytes => CoapMessageEncoder().encodeMessage(this);
+  Uint8Buffer get bytes => UdpMessageEncoder().encodeMessage(this);
 
   DateTime? _timestamp;
 

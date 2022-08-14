@@ -12,9 +12,9 @@ import 'package:typed_data/typed_data.dart';
 
 /// This class describes the functionality to read raw network-ordered
 /// datagrams on bit-level.
-class CoapDatagramReader {
+class DatagramReader {
   /// Initializes a new DatagramReader object
-  CoapDatagramReader(this._buffer)
+  DatagramReader(this._buffer)
       : _currentByte = ByteData(1),
         _currentBitIndex = -1;
 

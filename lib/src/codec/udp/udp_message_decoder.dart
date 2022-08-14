@@ -22,13 +22,12 @@ import 'message_format.dart' as message_format;
 /// Provides methods to parse incoming byte arrays to messages.
 class CoapMessageDecoder {
   /// Instantiates.
-  CoapMessageDecoder(final Uint8Buffer data)
-      : reader = CoapDatagramReader(data) {
+  CoapMessageDecoder(final Uint8Buffer data) : reader = DatagramReader(data) {
     readProtocol();
   }
 
   /// The bytes reader
-  final CoapDatagramReader reader;
+  final DatagramReader reader;
 
   /// Checks if the decoding message is well formed.
   bool get isWellFormed => version == message_format.version;
@@ -211,7 +210,7 @@ class CoapMessageDecoder {
   /// in RFC 7252, section 3.1.
   int _getValueFromOptionNibble(
     final int nibble,
-    final CoapDatagramReader datagram,
+    final DatagramReader datagram,
   ) {
     if (nibble < 13) {
       return nibble;
