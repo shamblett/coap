@@ -8,15 +8,15 @@
 import 'package:collection/collection.dart';
 import 'package:typed_data/typed_data.dart';
 
-import '../coap_code.dart';
-import '../coap_empty_message.dart';
-import '../coap_message.dart';
-import '../coap_option.dart';
-import '../coap_option_type.dart';
-import '../coap_request.dart';
-import '../coap_response.dart';
-import 'datagram/datagram_writer.dart';
-import 'specification.dart' as specification;
+import '../../coap_code.dart';
+import '../../coap_empty_message.dart';
+import '../../coap_message.dart';
+import '../../coap_option.dart';
+import '../../coap_option_type.dart';
+import '../../coap_request.dart';
+import '../../coap_response.dart';
+import 'datagram_writer.dart';
+import 'message_format.dart' as message_format;
 
 /// Provides methods to serialize outgoing messages to byte arrays.
 class CoapMessageEncoder {
@@ -27,11 +27,11 @@ class CoapMessageEncoder {
   ) {
     // Write fixed-size CoAP headers
     writer
-      ..write(specification.version, specification.versionBits)
-      ..write(message.type?.code, specification.typeBits)
-      ..write(message.token?.length ?? 0, specification.tokenLengthBits)
-      ..write(code, specification.codeBits)
-      ..write(message.id, specification.idBits)
+      ..write(message_format.version, message_format.versionBits)
+      ..write(message.type?.code, message_format.typeBits)
+      ..write(message.token?.length ?? 0, message_format.tokenLengthBits)
+      ..write(code, message_format.codeBits)
+      ..write(message.id, message_format.idBits)
       // Write token, which may be 0 to 8 bytes, given by token length field
       ..writeBytes(message.token);
 
@@ -51,12 +51,12 @@ class CoapMessageEncoder {
       final optNum = opt.type.optionNumber;
       final optionDelta = optNum - lastOptionNumber;
       final optionDeltaNibble = _getOptionNibble(optionDelta);
-      writer.write(optionDeltaNibble, specification.optionDeltaBits);
+      writer.write(optionDeltaNibble, message_format.optionDeltaBits);
 
       // Write 4-bit option length
       final optionLength = opt.length;
       final optionLengthNibble = _getOptionNibble(optionLength);
-      writer.write(optionLengthNibble, specification.optionLengthBits);
+      writer.write(optionLengthNibble, message_format.optionLengthBits);
 
       // Write extended option delta field (0 - 2 bytes)
       if (optionDeltaNibble == 13) {
@@ -87,7 +87,7 @@ class CoapMessageEncoder {
       // If payload is present and of non-zero length, it is prefixed by
       // an one-byte Payload Marker (0xFF) which indicates the end of
       // options and the start of the payload
-      writer.writeByte(specification.payloadMarker);
+      writer.writeByte(message_format.payloadMarker);
     }
     // Write payload
     writer.writeBytes(message.payload);

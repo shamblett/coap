@@ -20,7 +20,7 @@ import 'coap_media_type.dart';
 import 'coap_message_type.dart';
 import 'coap_option.dart';
 import 'coap_option_type.dart';
-import 'codec/message_encoder.dart';
+import 'codec/udp/message_encoder.dart';
 import 'event/coap_event_bus.dart';
 import 'util/coap_byte_array_util.dart';
 

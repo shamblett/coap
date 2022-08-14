@@ -7,17 +7,17 @@
 
 import 'package:typed_data/typed_data.dart';
 
-import '../coap_code.dart';
-import '../coap_constants.dart';
-import '../coap_empty_message.dart';
-import '../coap_message.dart';
-import '../coap_message_type.dart';
-import '../coap_option.dart';
-import '../coap_option_type.dart';
-import '../coap_request.dart';
-import '../coap_response.dart';
-import 'datagram/datagram_reader.dart';
-import 'specification.dart' as specification;
+import '../../coap_code.dart';
+import '../../coap_constants.dart';
+import '../../coap_empty_message.dart';
+import '../../coap_message.dart';
+import '../../coap_message_type.dart';
+import '../../coap_option.dart';
+import '../../coap_option_type.dart';
+import '../../coap_request.dart';
+import '../../coap_response.dart';
+import 'datagram_reader.dart';
+import 'message_format.dart' as message_format;
 
 /// Provides methods to parse incoming byte arrays to messages.
 class CoapMessageDecoder {
@@ -31,7 +31,7 @@ class CoapMessageDecoder {
   final CoapDatagramReader reader;
 
   /// Checks if the decoding message is well formed.
-  bool get isWellFormed => version == specification.version;
+  bool get isWellFormed => version == message_format.version;
 
   int? _version;
 
@@ -48,11 +48,11 @@ class CoapMessageDecoder {
   /// Reads protocol headers.
   void readProtocol() {
     // Read headers
-    _version = reader.read(specification.versionBits);
-    _type = reader.read(specification.typeBits);
-    _tokenLength = reader.read(specification.tokenLengthBits);
-    _code = reader.read(specification.codeBits);
-    _id = reader.read(specification.idBits);
+    _version = reader.read(message_format.versionBits);
+    _type = reader.read(message_format.typeBits);
+    _tokenLength = reader.read(message_format.tokenLengthBits);
+    _code = reader.read(message_format.codeBits);
+    _id = reader.read(message_format.idBits);
   }
 
   int? _type;
@@ -77,7 +77,7 @@ class CoapMessageDecoder {
     var currentOption = 0;
     while (reader.bytesAvailable) {
       final nextByte = reader.readNextByte();
-      if (nextByte == specification.payloadMarker) {
+      if (nextByte == message_format.payloadMarker) {
         if (!reader.bytesAvailable) {
           // The presence of a marker followed by a zero-length payload
           // must be processed as a message format error
