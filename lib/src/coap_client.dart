@@ -12,6 +12,7 @@ import 'package:collection/collection.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:typed_data/typed_data.dart';
 
+import '../config/coap_config_default.dart';
 import 'coap_block_option.dart';
 import 'coap_code.dart';
 import 'coap_config.dart';
@@ -78,14 +79,19 @@ class CoapClient {
   /// If it is specified it will be prepared and used.
   /// Note that the host name part of the URI can be a name or an IP address,
   /// in which case it is not resolved.
+  ///
+  /// You can define a custom [config] for the creation of a [CoapClient].
+  /// If no [config] is provided, then an instance of the [CoapConfigDefault]
+  /// class will be used instead.
   CoapClient(
-    this.uri,
-    this._config, {
+    this.uri, {
     this.addressType = InternetAddressType.any,
     this.bindAddress,
     final EcdsaKeys? ecdsaKeys,
     final PskCredentialsCallback? pskCredentialsCallback,
-  })  : _ecdsaKeys = ecdsaKeys,
+    final DefaultCoapConfig? config,
+  })  : _config = config ?? CoapConfigDefault(),
+        _ecdsaKeys = ecdsaKeys,
         _pskCredentialsCallback = pskCredentialsCallback {
     _eventBus = CoapEventBus(namespace: hashCode.toString());
   }

@@ -40,8 +40,11 @@ FutureOr<void> main() async {
     host: 'californium.eclipseprojects.io',
     port: conf.defaultSecurePort,
   );
-  final client =
-      CoapClient(uri, conf, pskCredentialsCallback: pskCredentialsCallback);
+  final client = CoapClient(
+    uri,
+    config: conf,
+    pskCredentialsCallback: pskCredentialsCallback,
+  );
 
   try {
     print('Sending get /test to ${uri.host}');

@@ -20,7 +20,7 @@ FutureOr<void> main() async {
     host: 'californium.eclipseprojects.io',
     port: conf.defaultPort,
   );
-  final client = CoapClient(uri, conf);
+  final client = CoapClient(uri, config: conf);
 
   try {
     print('Pinging client on ${uri.host}');
