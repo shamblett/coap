@@ -450,8 +450,8 @@ class CoapClient {
     request
       ..observe = 0
       ..maxRetransmit = maxRetransmit;
-    await _prepare(request);
-    final relation = CoapObserveClientRelation(request);
+    final responseStream = _sendWithStreamResponse(request).asBroadcastStream();
+    final relation = CoapObserveClientRelation(request, responseStream);
     unawaited(
       () async {
         final resp = await _waitForResponse(request);
@@ -486,7 +486,7 @@ class CoapClient {
     final CoapRequest request, {
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) async {
-    await _prepare(request);
+    final responseStream = _sendWithStreamResponse(request).asBroadcastStream();
     if (request.isMulticast) {
       if (onMulticastResponse == null) {
         throw ArgumentError('Missing onMulticastResponse argument');
@@ -508,6 +508,26 @@ class CoapClient {
     }
     _endpoint!.sendEpRequest(request);
     return _waitForResponse(request);
+  }
+
+  Stream<CoapResponse> _sendWithStreamResponse(
+    final CoapRequest request,
+  ) async* {
+    await _prepare(request);
+
+    final stream = _eventBus
+        .on<CoapRespondEvent>()
+        .map((final event) => event.resp)
+        .where(
+          (final response) =>
+              response.token!.equals(request.token!) ||
+              (response.multicastToken?.equals(request.token!) ?? false),
+        )
+        .takeWhile((final _) => !request.isTimedOut && !request.isCancelled);
+
+    _endpoint!.sendEpRequest(request);
+
+    yield* stream;
   }
 
   /// Cancel ongoing observable request
