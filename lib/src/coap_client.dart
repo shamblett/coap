@@ -513,7 +513,7 @@ class CoapClient {
               response.token!.equals(request.token!) ||
               (response.multicastToken?.equals(request.token!) ?? false),
         )
-        .takeWhile((final _) => !request.isTimedOut && !request.isCancelled);
+        .takeWhile((final _) => request.isActive);
 
     _endpoint!.sendEpRequest(request);
 
@@ -659,7 +659,7 @@ class CoapClient {
         .where((final e) => e.msg.id == req.id)
         .take(1)
         .listen((final e) {
-      if (req.isTimedOut || req.isCancelled) {
+      if (!req.isActive) {
         completer.complete(null);
       } else {
         e.msg.timestamp = DateTime.now();

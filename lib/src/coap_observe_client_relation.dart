@@ -40,8 +40,8 @@ class CoapObserveClientRelation extends Stream<CoapResponse> {
   final Stream<CoapResponse> _responseStream;
 
   Stream<CoapResponse> get _filteredStream => _responseStream
-      .takeWhile(_requestIsActive);
       .where(_responseTokenIsMatched)
+      .takeWhile((final _) => _request.isActive);
 
   bool _responseTokenIsMatched(final CoapResponse response) {
     final requestToken = _request.token;
@@ -53,9 +53,6 @@ class CoapObserveClientRelation extends Stream<CoapResponse> {
 
     return requestToken.equals(responseToken);
   }
-
-  bool _requestIsActive(final CoapResponse _) =>
-      !_request.isTimedOut && !_request.isCancelled;
 
   bool _cancelled = false;
 
