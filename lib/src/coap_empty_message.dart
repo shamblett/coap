@@ -5,10 +5,13 @@
  * Copyright :  S.Hamblett
  */
 
+import 'package:typed_data/typed_data.dart';
+
 import 'coap_code.dart';
 import 'coap_constants.dart';
 import 'coap_message.dart';
 import 'coap_message_type.dart';
+import 'coap_option.dart';
 
 /// Represents an empty CoAP message. An empty message has either
 /// the MessageType ACK or RST.
@@ -38,4 +41,24 @@ class CoapEmptyMessage extends CoapMessage {
       CoapEmptyMessage(CoapMessageType.con)
         ..token = CoapConstants.emptyToken
         ..destination = message.source;
+
+  CoapEmptyMessage.fromParsed({
+    required final CoapCode coapCode,
+    required final CoapMessageType type,
+    required final int id,
+    required final Uint8Buffer token,
+    required final List<CoapOption> options,
+    required final Uint8Buffer? payload,
+    required final bool hasUnknownCriticalOption,
+    required final bool hasFormatError,
+  }) : super.fromParsed(
+          coapCode,
+          type,
+          id: id,
+          token: token,
+          options: options,
+          hasUnknownCriticalOption: hasUnknownCriticalOption,
+          hasFormatError: hasFormatError,
+          payload: payload,
+        );
 }

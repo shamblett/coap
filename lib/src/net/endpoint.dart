@@ -17,7 +17,6 @@ import '../coap_message.dart';
 import '../coap_message_type.dart';
 import '../coap_request.dart';
 import '../coap_response.dart';
-import '../codec/udp/udp_message_decoder.dart';
 import '../event/coap_event_bus.dart';
 import '../network/coap_inetwork.dart';
 import '../stack/layer_stack.dart';
@@ -105,36 +104,57 @@ class Endpoint implements Outbox {
     _coapStack.sendEmptyMessage(exchange, message);
   }
 
+  // TODO(JKRhb): Maybe this can be refactored to a needsRejection getter on the
+  //              CoapMessage class
+  static bool _checkNeedForRejection(final CoapMessage message) =>
+      (message.type == CoapMessageType.non &&
+          message.hasUnknownCriticalOption) ||
+      message.hasFormatError ||
+      (message is CoapResponse && message.hasUnknownCriticalOption);
+
   void _receiveData(final CoapDataReceivedEvent event) {
     // clone the data, in case other objects want to do stuff with it, too
     final data = Uint8Buffer()..addAll(event.data);
-    // Return if we have no data, should not happen but be defensive
-    final decoder = CoapMessageDecoder(data);
-    if (decoder.isRequest) {
-      CoapRequest? request;
-      try {
-        request = decoder.decodeRequest();
-      } on Exception catch (_) {
-        if (!decoder.isReply) {
-          // Manually build RST from raw information
-          final rst = CoapEmptyMessage(CoapMessageType.rst)
-            ..destination = event.address
-            ..id = decoder.id;
-          _eventBus.fire(CoapSendingEmptyMessageEvent(rst));
-          _socket.send(rst.bytes, rst.destination);
-        }
-        return;
-      }
+    final message = CoapMessage.fromUdpPayload(data);
 
-      request!.source = event.address;
+    if (message == null) {
+      return;
+    }
+
+    if (_checkNeedForRejection(message)) {
+      _reject(message);
+      return;
+    }
+
+    message.source = event.address;
+
+    if (message is CoapRequest) {
+      // TODO(JKRhb): Does this still need to be taken into account somehow?
+
+      // CoapRequest? request;
+      // try {
+      //   request = decoder.decodeRequest();
+      // } on Exception catch (_) {
+      //   if (!decoder.isReply) {
+      //     // Manually build RST from raw information
+      //     final rst = CoapEmptyMessage(CoapMessageType.rst)
+      //       ..destination = event.address
+      //       ..id = decoder.id;
+      //     _eventBus.fire(CoapSendingEmptyMessageEvent(rst));
+      //     _socket.send(rst.toUdpPayload(), rst.destination);
+      //   }
+      //   return;
+      // }
+
+      final request = message;
       _eventBus.fire(CoapReceivingRequestEvent(request));
 
       if (!request.isCancelled) {
         final exchange = _matcher.receiveRequest(request)..endpoint = this;
         _coapStack.receiveRequest(exchange, request);
       }
-    } else if (decoder.isResponse) {
-      final response = decoder.decodeResponse()!..source = event.address;
+    } else if (message is CoapResponse) {
+      final response = message;
       _eventBus.fire(CoapReceivingResponseEvent(response));
 
       if (response.hasUnknownCriticalOption) {
@@ -149,9 +169,7 @@ class Endpoint implements Outbox {
           _reject(response);
         }
       }
-    } else if (decoder.isEmpty) {
-      final message = decoder.decodeEmptyMessage()!..source = event.address;
-
+    } else if (message is CoapEmptyMessage) {
       _eventBus.fire(CoapReceivingEmptyMessageEvent(message));
 
       if (!message.isCancelled) {
@@ -179,7 +197,7 @@ class Endpoint implements Outbox {
     _eventBus.fire(CoapSendingRequestEvent(request));
 
     if (!request.isCancelled) {
-      _socket.send(request.bytes, request.destination);
+      _socket.send(request.toUdpPayload(), request.destination);
     }
   }
 
@@ -189,7 +207,7 @@ class Endpoint implements Outbox {
     _eventBus.fire(CoapSendingResponseEvent(response));
 
     if (!response.isCancelled) {
-      _socket.send(response.bytes, response.destination);
+      _socket.send(response.toUdpPayload(), response.destination);
     }
   }
 
@@ -202,7 +220,7 @@ class Endpoint implements Outbox {
     _eventBus.fire(CoapSendingEmptyMessageEvent(message));
 
     if (!message.isCancelled) {
-      _socket.send(message.bytes, message.destination);
+      _socket.send(message.toUdpPayload(), message.destination);
     }
   }
 
@@ -211,7 +229,7 @@ class Endpoint implements Outbox {
     _eventBus.fire(CoapSendingEmptyMessageEvent(rst));
 
     if (!rst.isCancelled) {
-      _socket.send(rst.bytes, rst.destination);
+      _socket.send(rst.toUdpPayload(), rst.destination);
     }
   }
 }

@@ -5,21 +5,33 @@
  * Copyright :  S.Hamblett
  */
 
-/// The current CoAP version number
-// TODO(JKRhb): Refactor into enum
-const int version = 1;
+/// The defined versions for CoAP using UDP.
+///
+/// At the moment (and probably for the foreseeable future) only version 1 has
+/// been defined.
+enum Version {
+  /// The current CoAP version number
+  version1(1);
 
-/// Version bit length
-const int versionBits = 2;
+  const Version(this.numericValue);
 
-/// Type bit length
-const int typeBits = 2;
+  /// The numeric value (e.g., `1`) of this [Version].
+  final int numericValue;
+
+  static Version? decode(final int number) {
+    if (number != version1.numericValue) {
+      return null;
+    }
+
+    return version1;
+  }
+
+  /// Version bit length
+  static const int bitLength = 2;
+}
 
 /// Token bit length
 const int tokenLengthBits = 4;
-
-/// Code bit length
-const int codeBits = 8;
 
 /// Id bit length
 const int idBits = 16;

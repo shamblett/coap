@@ -8,8 +8,8 @@
  */
 import 'package:coap/coap.dart';
 import 'package:coap/src/coap_message.dart';
-import 'package:coap/src/codec/udp/udp_message_decoder.dart';
-import 'package:coap/src/codec/udp/udp_message_encoder.dart';
+import 'package:coap/src/codec/udp/message_decoder.dart';
+import 'package:coap/src/codec/udp/message_encoder.dart';
 import 'package:collection/collection.dart';
 import 'package:test/test.dart';
 import 'package:typed_data/typed_data.dart' as typed;
@@ -169,10 +169,11 @@ void main() {
       final CoapMessage msg = CoapRequest(CoapCode.get)
         ..id = 12345
         ..payload = (typed.Uint8Buffer()..addAll('payload'.codeUnits));
-      final data = UdpMessageEncoder().encodeMessage(msg);
+      final data = UdpMessageEncoder().serializeMessage(msg);
       checkData(data, testNo);
-      final convMsg = CoapMessageDecoder(data).decodeMessage()!;
-      expect(msg.code, convMsg.code);
+      final decoder = UdpMessageDecoder();
+      final convMsg = decoder.parseMessage(data);
+      expect(msg.code, convMsg!.code);
       expect(msg.type, convMsg.type);
       expect(msg.id, convMsg.id);
       expect(msg.getAllOptions().length, convMsg.getAllOptions().length);
@@ -196,11 +197,12 @@ void main() {
         ..addOption(CoapOption.createVal(OptionType.maxAge, 30));
       expect(msg.getFirstOption(OptionType.contentFormat)!.intValue, 0);
       expect(msg.getFirstOption(OptionType.maxAge)!.value, 30);
-      final data = UdpMessageEncoder().encodeMessage(msg);
+      final data = UdpMessageEncoder().serializeMessage(msg);
       checkData(data, testNo);
-      final convMsg = CoapMessageDecoder(data).decodeMessage()!;
+      final decoder = UdpMessageDecoder();
+      final convMsg = decoder.parseMessage(data);
 
-      expect(msg.code, convMsg.code);
+      expect(msg.code, convMsg!.code);
       expect(msg.type, convMsg.type);
       expect(msg.id, convMsg.id);
       expect(msg.getAllOptions().length, convMsg.getAllOptions().length);
@@ -229,11 +231,12 @@ void main() {
       expect(msg.getFirstOption(OptionType.contentFormat)!.value, 0);
       msg.payload = typed.Uint8Buffer()..addAll('payload'.codeUnits);
 
-      final data = UdpMessageEncoder().encodeMessage(msg);
+      final data = UdpMessageEncoder().serializeMessage(msg);
       checkData(data, testNo);
-      final convMsg = CoapMessageDecoder(data).decodeMessage()!;
+      final decoder = UdpMessageDecoder();
+      final convMsg = decoder.parseMessage(data);
 
-      expect(msg.code, convMsg.code);
+      expect(msg.code, convMsg!.code);
       expect(msg.type, convMsg.type);
       expect(msg.id, convMsg.id);
       expect(msg.getAllOptions().length, convMsg.getAllOptions().length);
@@ -262,12 +265,12 @@ void main() {
         ..contentType = CoapMediaType.fromIntValue(40)
         ..accept = CoapMediaType.fromIntValue(40);
 
-      final bytes = UdpMessageEncoder().encodeMessage(request);
+      final bytes = UdpMessageEncoder().serializeMessage(request);
       checkData(bytes, testNo);
-      final decoder = CoapMessageDecoder(bytes);
-      expect(decoder.isRequest, isTrue);
+      final decoder = UdpMessageDecoder();
+      final result = decoder.parseMessage(bytes);
+      expect(result!.isRequest, isTrue);
 
-      final result = decoder.decodeRequest()!;
       expect(request.id, result.id);
       expect(
         leq.equals(request.token!.toList(), result.token!.toList()),
@@ -292,26 +295,26 @@ void main() {
         ..addETagOpaque(typed.Uint8Buffer()..addAll(<int>[1, 0, 0, 0, 0, 1]))
         ..locationPath = '/one/two/three/four/five/six/seven/eight/nine/ten';
 
-      final bytes = UdpMessageEncoder().encodeMessage(response);
+      final bytes = UdpMessageEncoder().serializeMessage(response);
       checkData(bytes, testNo);
 
-      final decoder = CoapMessageDecoder(bytes);
-      expect(decoder.isResponse, isTrue);
+      final decoder = UdpMessageDecoder();
+      final message = decoder.parseMessage(bytes);
+      expect(message!.isResponse, isTrue);
 
-      final result = decoder.decodeResponse()!;
-      expect(response.id, result.id);
+      expect(response.id, message.id);
       expect(
-        leq.equals(response.token!.toList(), result.token!.toList()),
+        leq.equals(response.token!.toList(), message.token!.toList()),
         isTrue,
       );
       expect(
         response.etags.toList().toString(),
-        result.etags.toList().toString(),
+        message.etags.toList().toString(),
       );
       expect(
         leq.equals(
           response.locationPaths.toList(),
-          result.locationPaths.toList(),
+          message.locationPaths.toList(),
         ),
         isTrue,
       );

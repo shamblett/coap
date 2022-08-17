@@ -9,28 +9,39 @@ import 'package:collection/collection.dart';
 import 'package:typed_data/typed_data.dart';
 
 import '../../coap_code.dart';
-import '../../coap_empty_message.dart';
 import '../../coap_message.dart';
+import '../../coap_message_type.dart';
 import '../../coap_option.dart';
 import '../../coap_option_type.dart';
-import '../../coap_request.dart';
-import '../../coap_response.dart';
+import '../message_encoder.dart';
 import 'datagram_writer.dart';
 import 'message_format.dart' as message_format;
 
 /// Provides methods to serialize outgoing messages to byte arrays.
-class UdpMessageEncoder {
-  void serialize(
-    final DatagramWriter writer,
-    final CoapMessage message,
-    final int code,
-  ) {
+class UdpMessageEncoder implements MessageEncoder {
+  /// Encodes a CoAP message into a bytes array.
+  /// Returns the encoded bytes, or null if the message can not be encoded,
+  /// i.e. the message is not a Request, a Response or an EmptyMessage.
+  @override
+  Uint8Buffer serializeMessage(final CoapMessage message) {
+    final writer = DatagramWriter();
+
+    const version = message_format.Version.version1;
+    const versionLength = message_format.Version.bitLength;
+    final type = message.type;
+
+    if (type == null) {
+      throw const FormatException(
+        'Message serialization failed due to undefined type.',
+      );
+    }
+
     // Write fixed-size CoAP headers
     writer
-      ..write(message_format.version, message_format.versionBits)
-      ..write(message.type?.code, message_format.typeBits)
+      ..write(version.numericValue, versionLength)
+      ..write(type.code, CoapMessageType.bitLength)
       ..write(message.token?.length ?? 0, message_format.tokenLengthBits)
-      ..write(code, message_format.codeBits)
+      ..write(message.code.code, CoapCode.bitLength)
       ..write(message.id, message_format.idBits)
       // Write token, which may be 0 to 8 bytes, given by token length field
       ..writeBytes(message.token);
@@ -91,48 +102,8 @@ class UdpMessageEncoder {
     }
     // Write payload
     writer.writeBytes(message.payload);
-  }
 
-  /// Encodes a request into a bytes array.
-  Uint8Buffer encodeRequest(final CoapRequest request) {
-    final writer = DatagramWriter();
-    serialize(writer, request, request.code.code);
     return writer.toByteArray();
-  }
-
-  /// Encodes a response into a bytes array.
-  Uint8Buffer encodeResponse(final CoapResponse response) {
-    final writer = DatagramWriter();
-    serialize(writer, response, response.code.code);
-    return writer.toByteArray();
-  }
-
-  /// Encodes an empty message into a bytes array.
-  Uint8Buffer encodeEmpty(final CoapEmptyMessage message) {
-    final writer = DatagramWriter();
-    serialize(writer, message, CoapCode.empty.code);
-    return writer.toByteArray();
-  }
-
-  /// Encodes a CoAP message into a bytes array.
-  /// Returns the encoded bytes, or null if the message can not be encoded,
-  /// i.e. the message is not a Request, a Response or an EmptyMessage.
-  Uint8Buffer encodeMessage(final CoapMessage message) {
-    if (message.isRequest) {
-      return encodeRequest(message as CoapRequest);
-    } else if (message.isResponse) {
-      return encodeResponse(message as CoapResponse);
-    } else if (message.isEmpty) {
-      //A ping message is empty, but it is a request message so check for this
-      if (message is CoapRequest) {
-        return encodeRequest(message);
-      } else {
-        return encodeEmpty(message as CoapEmptyMessage);
-      }
-    } else {
-      // TODO(JKRhb): Get rid of error via an enum.
-      throw StateError('Encoding error: Unknown message type.');
-    }
   }
 
   /// Returns the 4-bit option header value.

@@ -20,7 +20,8 @@ import 'coap_media_type.dart';
 import 'coap_message_type.dart';
 import 'coap_option.dart';
 import 'coap_option_type.dart';
-import 'codec/udp/udp_message_encoder.dart';
+import 'codec/udp/message_decoder.dart';
+import 'codec/udp/message_encoder.dart';
 import 'event/coap_event_bus.dart';
 import 'util/coap_byte_array_util.dart';
 
@@ -33,7 +34,24 @@ typedef HookFunction = void Function();
 abstract class CoapMessage {
   CoapMessage(this.code, this._type);
 
+  CoapMessage.fromParsed(
+    this.code,
+    this._type, {
+    required final int id,
+    required final Uint8Buffer token,
+    required final List<CoapOption> options,
+    required this.hasUnknownCriticalOption,
+    required this.hasFormatError,
+    this.payload,
+  }) {
+    this.id = id;
+    this.token = token;
+    setOptions(options);
+  }
+
   bool hasUnknownCriticalOption = false;
+
+  bool hasFormatError = false;
 
   CoapMessageType? _type;
 
@@ -256,9 +274,6 @@ abstract class CoapMessage {
   bool get duplicate => _duplicate;
   @internal
   set duplicate(final bool val) => _duplicate = val;
-
-  /// The serialized message as byte array
-  Uint8Buffer get bytes => UdpMessageEncoder().encodeMessage(this);
 
   DateTime? _timestamp;
 
@@ -961,4 +976,10 @@ abstract class CoapMessage {
     }
     return str != '' ? '  $name: $str,\n' : '';
   }
+
+  static CoapMessage? fromUdpPayload(final Uint8Buffer data) =>
+      UdpMessageDecoder().parseMessage(data);
+
+  /// The serialized message as byte array
+  Uint8Buffer toUdpPayload() => UdpMessageEncoder().serializeMessage(this);
 }

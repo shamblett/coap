@@ -8,11 +8,13 @@
 import 'dart:io';
 
 import 'package:meta/meta.dart';
+import 'package:typed_data/typed_buffers.dart';
 
 import 'coap_code.dart';
 import 'coap_constants.dart';
 import 'coap_message.dart';
 import 'coap_message_type.dart';
+import 'coap_option.dart';
 import 'net/endpoint.dart';
 
 /// This class describes the functionality of a CoAP Request as
@@ -128,4 +130,24 @@ class CoapRequest extends CoapMessage {
   /// Construct a iPATCH request.
   factory CoapRequest.newIPatch({final bool confirmable = true}) =>
       CoapRequest(CoapCode.ipatch, confirmable: confirmable);
+
+  CoapRequest.fromParsed({
+    required final CoapCode coapCode,
+    required final CoapMessageType type,
+    required final int id,
+    required final Uint8Buffer token,
+    required final List<CoapOption> options,
+    required final Uint8Buffer? payload,
+    required final bool hasUnknownCriticalOption,
+    required final bool hasFormatError,
+  }) : super.fromParsed(
+          coapCode,
+          type,
+          id: id,
+          token: token,
+          options: options,
+          hasUnknownCriticalOption: hasUnknownCriticalOption,
+          hasFormatError: hasFormatError,
+          payload: payload,
+        );
 }
