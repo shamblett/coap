@@ -11,9 +11,6 @@ import 'package:coap/src/link-format/resources/coap_remote_resource.dart';
 import 'package:test/test.dart';
 
 void main() {
-  final DefaultCoapConfig conf = CoapConfigAll();
-  print('Configuration version is ${conf.version}');
-
   group('Endpoint resource', () {
     test('Construction', () {
       var res = CoapRemoteResource('billy');

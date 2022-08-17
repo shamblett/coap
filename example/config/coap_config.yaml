@@ -2,7 +2,6 @@
 # Syntax is YAML
 
 # Protocol section
-version: "RFC7252"
 defaultPort: 5683
 defaultSecurePort: 5684
 httpPort: 8080

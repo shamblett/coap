@@ -4,7 +4,6 @@
 # empty in practice.
 
 # Protocol section
-version: "RFC7252"
 defaultPort: 1
 defaultSecurePort: 2
 httpPort: 3

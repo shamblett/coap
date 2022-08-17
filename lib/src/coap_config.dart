@@ -22,9 +22,6 @@ enum DtlsBackend {
 abstract class DefaultCoapConfig {
   /// Protocol options
 
-  /// The version of the CoAP protocol.
-  String get version => 'RFC7252';
-
   /// The default CoAP port for normal CoAP communication (not secure).
   int defaultPort = CoapConstants.defaultPort;
 
