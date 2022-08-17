@@ -520,6 +520,16 @@ class CoapClient {
     yield* stream;
   }
 
+  /// Sends a [request] and returns a [Stream] of [CoapResponse]s.
+  ///
+  /// This method is especially useful for multicast scenarios, allowing the
+  /// caller to asynchronously iterate over incoming responses. However, you
+  /// can also use it for obtaining the response to a unicast requests as a
+  ///[Stream].
+  Stream<CoapResponse> sendMulticast(final CoapRequest request) async* {
+    yield* _sendWithStreamResponse(request);
+  }
+
   /// Cancel ongoing observable request
   Future<void> cancelObserveProactive(
     final CoapObserveClientRelation relation,
