@@ -12,7 +12,7 @@ import '../coap_request.dart';
 import '../coap_response.dart';
 import '../event/coap_event_bus.dart';
 import '../observe/coap_observe_relation.dart';
-import '../stack/coap_blockwise_status.dart';
+import '../stack/blockwise_status.dart';
 import 'endpoint.dart';
 import 'outbox.dart';
 
@@ -64,11 +64,11 @@ class CoapExchange {
 
   /// the status of the blockwise transfer of the response,
   /// or null in case of a normal transfer,
-  CoapBlockwiseStatus? responseBlockStatus;
+  BlockwiseStatus? responseBlockStatus;
 
   /// The status of the blockwise transfer of the request,
   /// or null in case of a normal transfer
-  CoapBlockwiseStatus? requestBlockStatus;
+  BlockwiseStatus? requestBlockStatus;
 
   /// The block option of the last block of a blockwise sent request.
   /// When the server sends the response, this block option has
@@ -147,8 +147,9 @@ class CoapExchange {
       _eventBus.fire(CoapRespondingEvent(resp));
 
   // Fire the respond event
-  void fireRespond(final CoapResponse resp) =>
-      _eventBus.fire(CoapRespondEvent(resp));
+  void fireRespond(final CoapResponse resp) {
+    _eventBus.fire(CoapRespondEvent(resp));
+  }
 
   /// Fire a [CoapCancelledEvent].
   void fireCancel(final CoapEmptyMessage cancellationMessage) =>

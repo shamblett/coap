@@ -19,7 +19,7 @@ import '../coap_request.dart';
 import '../coap_response.dart';
 import '../event/coap_event_bus.dart';
 import '../network/coap_inetwork.dart';
-import '../stack/coap_stack.dart';
+import '../stack/layer_stack.dart';
 import 'exchange.dart';
 import 'matcher.dart';
 import 'outbox.dart';
@@ -31,7 +31,7 @@ class Endpoint implements Outbox {
   Endpoint(this._socket, this._config, {required final String namespace})
       : _eventBus = CoapEventBus(namespace: namespace),
         _matcher = CoapMatcher(_config, namespace: namespace),
-        _coapStack = CoapStack(_config),
+        _coapStack = LayerStack(_config),
         _currentId = _config.useRandomIDStart ? Random().nextInt(1 << 16) : 0 {
     subscr = _eventBus.on<CoapDataReceivedEvent>().listen(_receiveData);
   }
@@ -55,7 +55,7 @@ class Endpoint implements Outbox {
 
   InternetAddress? get destination => _socket.address;
 
-  final CoapStack _coapStack;
+  final LayerStack _coapStack;
   late final StreamSubscription<CoapDataReceivedEvent> subscr;
 
   final CoapMatcher _matcher;
