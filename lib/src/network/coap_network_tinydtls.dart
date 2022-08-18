@@ -6,11 +6,11 @@
  */
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:dart_tinydtls/dart_tinydtls.dart';
 import 'package:typed_data/typed_data.dart';
 
+import '../coap_message.dart';
 import '../event/coap_event_bus.dart';
 import 'coap_inetwork.dart';
 import 'coap_network_udp.dart';
@@ -95,15 +95,12 @@ class CoapNetworkUDPTinyDtls extends CoapNetworkUDP {
   DtlsConnection? _connection;
 
   @override
-  void send(
-    final Uint8Buffer data, [
-    final InternetAddress? address,
-  ]) {
+  void send(final CoapMessage coapMessage) {
     if (isClosed) {
       return;
     }
 
-    _connection!.send(data);
+    _connection!.send(coapMessage.toUdpPayload());
   }
 
   @override
@@ -127,7 +124,11 @@ class CoapNetworkUDPTinyDtls extends CoapNetworkUDP {
     );
 
     _connection?.listen(
-      (final d) => eventBus.fire(CoapDataReceivedEvent(d.data, address)),
+      (final d) {
+        final message =
+            CoapMessage.fromUdpPayload(Uint8Buffer()..addAll(d.data));
+        eventBus.fire(CoapMessageReceivedEvent(message, address));
+      },
       // ignore: avoid_types_on_closure_parameters
       onError: (final Object e, final StackTrace s) =>
           eventBus.fire(CoapSocketErrorEvent(e, s)),

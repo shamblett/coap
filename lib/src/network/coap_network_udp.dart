@@ -9,6 +9,7 @@ import 'dart:io';
 
 import 'package:typed_data/typed_data.dart';
 
+import '../coap_message.dart';
 import '../event/coap_event_bus.dart';
 import 'coap_inetwork.dart';
 
@@ -43,17 +44,14 @@ class CoapNetworkUDP implements CoapINetwork {
   bool isClosed = true;
 
   @override
-  void send(
-    final Uint8Buffer data, [
-    final InternetAddress? address,
-  ]) {
+  void send(final CoapMessage coapMessage) {
     if (isClosed) {
       return;
     }
 
     _socket!.send(
-      data,
-      address ?? this.address,
+      coapMessage.toUdpPayload(),
+      coapMessage.destination ?? address,
       port,
     );
   }
@@ -94,7 +92,9 @@ class CoapNetworkUDP implements CoapINetwork {
               return;
             }
             // d.address can differ from address with multicast
-            eventBus.fire(CoapDataReceivedEvent(d.data, d.address));
+            final message =
+                CoapMessage.fromUdpPayload(Uint8Buffer()..addAll(d.data));
+            eventBus.fire(CoapMessageReceivedEvent(message, d.address));
             break;
           // When we manually closed the socket (no need to do anything)
           case RawSocketEvent.closed:

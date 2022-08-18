@@ -9,8 +9,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:typed_data/typed_data.dart';
-
 import '../coap_config.dart';
 import '../coap_empty_message.dart';
 import '../coap_message.dart';
@@ -33,7 +31,7 @@ class Endpoint implements Outbox {
         _matcher = CoapMatcher(_config, namespace: namespace),
         _coapStack = LayerStack(_config),
         _currentId = _config.useRandomIDStart ? Random().nextInt(1 << 16) : 0 {
-    subscr = _eventBus.on<CoapDataReceivedEvent>().listen(_receiveData);
+    subscr = _eventBus.on<CoapMessageReceivedEvent>().listen(_receiveMessage);
   }
 
   final CoapEventBus _eventBus;
@@ -56,7 +54,7 @@ class Endpoint implements Outbox {
   InternetAddress? get destination => _socket.address;
 
   final LayerStack _coapStack;
-  late final StreamSubscription<CoapDataReceivedEvent> subscr;
+  late final StreamSubscription<CoapMessageReceivedEvent> subscr;
 
   final CoapMatcher _matcher;
 
@@ -112,10 +110,8 @@ class Endpoint implements Outbox {
       message.hasFormatError ||
       (message is CoapResponse && message.hasUnknownCriticalOption);
 
-  void _receiveData(final CoapDataReceivedEvent event) {
-    // clone the data, in case other objects want to do stuff with it, too
-    final data = Uint8Buffer()..addAll(event.data);
-    final message = CoapMessage.fromUdpPayload(data);
+  void _receiveMessage(final CoapMessageReceivedEvent event) {
+    final message = event.coapMessage;
 
     if (message == null) {
       return;
@@ -141,7 +137,7 @@ class Endpoint implements Outbox {
       //       ..destination = event.address
       //       ..id = decoder.id;
       //     _eventBus.fire(CoapSendingEmptyMessageEvent(rst));
-      //     _socket.send(rst.toUdpPayload(), rst.destination);
+      //     _socket.send(rst, rst.destination);
       //   }
       //   return;
       // }
@@ -196,9 +192,7 @@ class Endpoint implements Outbox {
     _matcher.sendRequest(exchange, request);
     _eventBus.fire(CoapSendingRequestEvent(request));
 
-    if (!request.isCancelled) {
-      _socket.send(request.toUdpPayload(), request.destination);
-    }
+    _sendMessage(request);
   }
 
   @override
@@ -206,9 +200,7 @@ class Endpoint implements Outbox {
     _matcher.sendResponse(exchange, response);
     _eventBus.fire(CoapSendingResponseEvent(response));
 
-    if (!response.isCancelled) {
-      _socket.send(response.toUdpPayload(), response.destination);
-    }
+    _sendMessage(response);
   }
 
   @override
@@ -219,17 +211,19 @@ class Endpoint implements Outbox {
     _matcher.sendEmptyMessage(exchange, message);
     _eventBus.fire(CoapSendingEmptyMessageEvent(message));
 
-    if (!message.isCancelled) {
-      _socket.send(message.toUdpPayload(), message.destination);
-    }
+    _sendMessage(message);
   }
 
   void _reject(final CoapMessage message) {
     final rst = CoapEmptyMessage.newRST(message);
     _eventBus.fire(CoapSendingEmptyMessageEvent(rst));
 
-    if (!rst.isCancelled) {
-      _socket.send(rst.toUdpPayload(), rst.destination);
+    _sendMessage(rst);
+  }
+
+  void _sendMessage(final CoapMessage message) {
+    if (!message.isCancelled) {
+      _socket.send(message);
     }
   }
 }

@@ -13,8 +13,9 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dtls/dtls.dart';
-import 'package:typed_data/typed_data.dart';
+import 'package:typed_data/typed_buffers.dart';
 
+import '../coap_message.dart';
 import '../event/coap_event_bus.dart';
 import 'coap_inetwork.dart';
 import 'coap_network_udp.dart';
@@ -49,14 +50,12 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
   final bool _withTrustedRoots;
 
   @override
-  void send(
-    final Uint8Buffer data, [
-    final InternetAddress? address,
-  ]) {
+  void send(final CoapMessage coapMessage) {
     if (isClosed) {
       return;
     }
 
+    final data = coapMessage.toUdpPayload();
     final bytes = Uint8List.view(data.buffer, data.offsetInBytes, data.length);
     _dtlsConnection?.send(bytes);
   }
@@ -116,7 +115,11 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
           eventBus.fire(CoapSocketErrorEvent(e, s)),
     );
     _dtlsConnection?.received.listen(
-      (final frame) => eventBus.fire(CoapDataReceivedEvent(frame, address)),
+      (final frame) {
+        final message =
+            CoapMessage.fromUdpPayload(Uint8Buffer()..addAll(frame));
+        eventBus.fire(CoapMessageReceivedEvent(message, address));
+      },
       onError: (final Object e, final StackTrace s) =>
           eventBus.fire(CoapSocketErrorEvent(e, s)),
       onDone: () {

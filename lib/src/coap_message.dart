@@ -978,9 +978,29 @@ abstract class CoapMessage {
     return str != '' ? '  $name: $str,\n' : '';
   }
 
+  /// Serializes this CoAP message from the UDP message format.
+  ///
+  /// Is also used for DTLS.
   static CoapMessage? fromUdpPayload(final Uint8Buffer data) =>
       deserializeUdpMessage(data);
 
-  /// The serialized message as byte array
+  /// Serializes this CoAP message into the UDP message format.
+  ///
+  /// Is also used for DTLS.
   Uint8Buffer toUdpPayload() => serializeUdpMessage(this);
+
+  /// Serializes this CoAP message from the TCP message format.
+  ///
+  /// Is also used for TLS.
+  static CoapMessage? fromTcpPayload(final Uint8Buffer data) =>
+      throw UnimplementedError(
+        'TCP segment deserialization is not implemented yet.',
+      );
+
+  /// Serializes this CoAP message into the TCP message format.
+  ///
+  /// Is also used for TLS.
+  Uint8Buffer toTcpPayload() => throw UnimplementedError(
+        'TCP segment serialization is not implemented yet.',
+      );
 }

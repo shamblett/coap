@@ -7,10 +7,9 @@
 
 import 'dart:io';
 
-import 'package:typed_data/typed_data.dart';
-
 import '../coap_config.dart';
 import '../coap_constants.dart';
+import '../coap_message.dart';
 import 'coap_network_openssl.dart';
 import 'coap_network_tinydtls.dart';
 import 'coap_network_udp.dart';
@@ -77,11 +76,8 @@ abstract class CoapINetwork {
   /// Bind (UDP) or connect (TCP) to the network and listen
   Future<void> init();
 
-  /// Sends [data] over the socket, [address] is used for multicast over UDP.
-  void send(
-    final Uint8Buffer data, [
-    final InternetAddress? address,
-  ]);
+  /// Sends a [coapMessage] over the socket.
+  void send(final CoapMessage coapMessage);
 
   /// Close the socket
   void close();

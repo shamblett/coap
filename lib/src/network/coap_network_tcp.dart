@@ -10,6 +10,7 @@ import 'dart:io';
 
 import 'package:typed_data/typed_data.dart';
 
+import '../coap_message.dart';
 import '../event/coap_event_bus.dart';
 import 'coap_inetwork.dart';
 
@@ -51,14 +52,14 @@ class CoapNetworkTCP implements CoapINetwork {
 
   @override
   void send(
-    final Uint8Buffer data, [
+    final CoapMessage message, [
     final InternetAddress? _,
   ]) {
     if (isClosed) {
       return;
     }
 
-    _socket?.add(data);
+    _socket?.add(message.toTcpPayload());
   }
 
   @override
@@ -98,7 +99,10 @@ class CoapNetworkTCP implements CoapINetwork {
 
   void _receive() {
     socket?.listen(
-      (final data) => eventBus.fire(CoapDataReceivedEvent(data, address)),
+      (final data) {
+        final message = CoapMessage.fromTcpPayload(Uint8Buffer()..addAll(data));
+        eventBus.fire(CoapMessageReceivedEvent(message, address));
+      },
       // ignore: avoid_types_on_closure_parameters
       onError: (final Object e, final StackTrace s) =>
           eventBus.fire(CoapSocketErrorEvent(e, s)),
