@@ -5,13 +5,13 @@
  * Copyright :  S.Hamblett
  */
 
-import '../../net/coap_exchange.dart';
-import '../../net/coap_iendpoint.dart';
+import '../../net/exchange.dart';
+import '../../net/endpoint.dart';
 import '../../observe/coap_observe_relation.dart';
 import 'coap_resource_attributes.dart';
 
 /// Interface for a resource
-abstract class CoapIResource {
+abstract class CoapResource {
   /// The name of the resource.
   /// Note that changing the name of a resource changes
   /// the path and URI of all children.
@@ -54,28 +54,28 @@ abstract class CoapIResource {
   /// Gets the attributes of this resource.
   CoapResourceAttributes? get attributes => _attributes;
 
-  Iterable<CoapIEndPoint>? _endpoints;
+  Iterable<Endpoint>? _endpoints;
 
   /// Gets the endpoints this resource is bound to.
-  Iterable<CoapIEndPoint>? get endpoints => _endpoints;
+  Iterable<Endpoint>? get endpoints => _endpoints;
 
   /// The parent of this resource.
-  CoapIResource? parent;
+  CoapResource? parent;
 
-  Iterable<CoapIResource>? _children;
+  Iterable<CoapResource>? _children;
 
   /// Gets all child resources.
-  Iterable<CoapIResource>? get children => _children;
+  Iterable<CoapResource>? get children => _children;
 
   /// Adds the specified resource as child.
-  void add(final CoapIResource child);
+  void add(final CoapResource child);
 
   /// Removes the the specified child.
   /// Returns true if the child was found, otherwise false
-  bool remove(final CoapIResource child);
+  bool remove(final CoapResource child);
 
   /// Gets the child with the specified name.
-  CoapIResource getChild(final String name);
+  CoapResource getChild(final String name);
 
   /// Adds the specified CoAP observe relation.
   void addObserveRelation(final CoapObserveRelation relation);

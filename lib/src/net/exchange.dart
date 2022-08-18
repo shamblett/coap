@@ -13,8 +13,8 @@ import '../coap_response.dart';
 import '../event/coap_event_bus.dart';
 import '../observe/coap_observe_relation.dart';
 import '../stack/coap_blockwise_status.dart';
-import 'coap_iendpoint.dart';
-import 'coap_ioutbox.dart';
+import 'endpoint.dart';
+import 'outbox.dart';
 
 /// Represents the complete state of an exchange of one request
 /// and one or more responses. The lifecycle of an exchange ends
@@ -55,7 +55,7 @@ class CoapExchange {
   CoapResponse? currentResponse;
 
   /// The endpoint which has created and processed this exchange.
-  CoapIEndPoint? endpoint;
+  Endpoint? endpoint;
 
   DateTime? _timestamp;
 
@@ -102,12 +102,12 @@ class CoapExchange {
     }
   }
 
-  CoapIOutbox? _outbox;
+  Outbox? _outbox;
 
   /// Outbox
-  CoapIOutbox? get outbox => _outbox ?? endpoint?.outbox;
+  Outbox? get outbox => _outbox ?? endpoint?.outbox;
 
-  set outbox(final CoapIOutbox? value) => _outbox = value;
+  set outbox(final Outbox? value) => _outbox = value;
 
   /// Reject this exchange and therefore the request.
   /// Sends an RST back to the client.

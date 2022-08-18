@@ -10,8 +10,8 @@ import 'dart:io';
 
 import '../coap_config.dart';
 import '../coap_response.dart';
-import '../link-format/resources/coap_iresource.dart';
-import '../net/coap_exchange.dart';
+import '../link-format/resources/coap_resource.dart';
+import '../net/exchange.dart';
 import 'coap_observing_endpoint.dart';
 
 /// Represents a relation between a client endpoint and a resource on the
@@ -24,7 +24,7 @@ class CoapObserveRelation {
   CoapObserveRelation(
     this.config,
     final CoapObservingEndpoint endpoint,
-    final CoapIResource resource,
+    final CoapResource resource,
     final CoapExchange exchange,
   )   : _endpoint = endpoint,
         _resource = resource,
@@ -38,10 +38,10 @@ class CoapObserveRelation {
   /// Source endpoint of the observing endpoint
   InternetAddress? get source => _endpoint.endpoint;
 
-  final CoapIResource _resource;
+  final CoapResource _resource;
 
   /// The resource
-  CoapIResource? get resource => _resource;
+  CoapResource? get resource => _resource;
 
   final CoapExchange _exchange;
 

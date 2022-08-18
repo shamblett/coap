@@ -8,7 +8,7 @@
 import '../coap_empty_message.dart';
 import '../coap_request.dart';
 import '../coap_response.dart';
-import '../net/coap_exchange.dart';
+import '../net/exchange.dart';
 import 'coap_ilayer.dart';
 
 /// A partial implementation of a layer.

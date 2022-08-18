@@ -8,13 +8,13 @@
 import 'dart:async';
 
 import '../coap_config.dart';
-import '../net/coap_exchange.dart';
-import 'coap_ideduplicator.dart';
+import '../net/exchange.dart';
+import 'deduplicator.dart';
 
 /// Sweep deduplicator
-class CoapSweepDeduplicator implements CoapIDeduplicator {
+class SweepDeduplicator implements Deduplicator {
   /// Construction
-  CoapSweepDeduplicator(this._config);
+  SweepDeduplicator(this._config);
 
   Timer? _timer;
   final Map<int?, CoapExchange> _incomingMessages = <int?, CoapExchange>{};

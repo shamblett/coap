@@ -30,8 +30,7 @@ import 'event/coap_event_bus.dart';
 import 'exceptions/coap_request_exception.dart';
 import 'link-format/coap_link_format.dart';
 import 'link-format/coap_web_link.dart';
-import 'net/coap_endpoint.dart';
-import 'net/coap_iendpoint.dart';
+import 'net/endpoint.dart';
 import 'network/coap_inetwork.dart';
 import 'network/credentials/ecdsa_keys.dart';
 import 'network/credentials/psk_credentials.dart';
@@ -112,7 +111,7 @@ class CoapClient {
   CoapEventBus get events => _eventBus;
 
   final DefaultCoapConfig _config;
-  CoapIEndPoint? _endpoint;
+  Endpoint? _endpoint;
   final _lock = Lock();
 
   /// Raw Public Keys for CoAPS with tinyDtls.
@@ -613,8 +612,7 @@ class CoapClient {
           ecdsaKeys: _ecdsaKeys,
         );
         await socket.init();
-        _endpoint =
-            CoapEndPoint(socket, _config, namespace: _eventBus.namespace);
+        _endpoint = Endpoint(socket, _config, namespace: _eventBus.namespace);
         _endpoint!.start();
       }
     });

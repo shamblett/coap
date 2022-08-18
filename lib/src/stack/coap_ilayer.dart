@@ -8,7 +8,7 @@
 import '../coap_empty_message.dart';
 import '../coap_request.dart';
 import '../coap_response.dart';
-import '../net/coap_exchange.dart';
+import '../net/exchange.dart';
 
 /// Represent a next layer in the stack.
 abstract class CoapINextLayer {

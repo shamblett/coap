@@ -10,7 +10,7 @@ import 'package:dart_tinydtls/dart_tinydtls.dart';
 import 'specification/coap_ispec.dart';
 import 'specification/rfcs/coap_rfc7252.dart';
 import 'coap_constants.dart';
-import 'deduplication/coap_deduplicator_factory.dart';
+import 'deduplication/deduplicator_factory.dart';
 
 enum DtlsBackend {
   OpenSsl,
@@ -81,7 +81,7 @@ abstract class DefaultCoapConfig {
 
   int get notificationReregistrationBackoff => 2000; // ms
 
-  String get deduplicator => CoapDeduplicatorFactory.markAndSweepDeduplicator;
+  String get deduplicator => DeduplicatorFactory.markAndSweepDeduplicator;
 
   int get cropRotationPeriod => 2000; // ms
 

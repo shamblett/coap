@@ -8,13 +8,13 @@
 import 'dart:async';
 
 import '../coap_config.dart';
-import '../net/coap_exchange.dart';
-import 'coap_ideduplicator.dart';
+import '../net/exchange.dart';
+import 'deduplicator.dart';
 
 /// Crop rotation deduplicator
-class CoapCropRotationDeduplicator implements CoapIDeduplicator {
+class CropRotationDeduplicator implements Deduplicator {
   /// Construction
-  CoapCropRotationDeduplicator(this._config)
+  CropRotationDeduplicator(this._config)
       : _maps = List<Map<int?, CoapExchange>>.filled(3, <int?, CoapExchange>{});
 
   final List<Map<int?, CoapExchange>> _maps;

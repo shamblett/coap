@@ -8,13 +8,13 @@
  */
 
 import '../coap_config.dart';
-import 'coap_crop_rotation_deduplicator.dart';
-import 'coap_ideduplicator.dart';
-import 'coap_noop_deduplicator.dart';
-import 'coap_sweep_deduplicator.dart';
+import 'crop_rotation_deduplicator.dart';
+import 'deduplicator.dart';
+import 'noop_deduplicator.dart';
+import 'sweep_deduplicator.dart';
 
 /// Deduplicator factory
-class CoapDeduplicatorFactory {
+class DeduplicatorFactory {
   /// Mark and sweep
   static const String markAndSweepDeduplicator = 'MarkAndSweep';
 
@@ -25,13 +25,13 @@ class CoapDeduplicatorFactory {
   static const String noopDeduplicator = 'Noop';
 
   /// Create
-  static CoapIDeduplicator createDeduplicator(final DefaultCoapConfig config) {
+  static Deduplicator createDeduplicator(final DefaultCoapConfig config) {
     final type = config.deduplicator;
     if (type == markAndSweepDeduplicator) {
-      return CoapSweepDeduplicator(config);
+      return SweepDeduplicator(config);
     } else if (type == cropRotationDeduplicator) {
-      return CoapCropRotationDeduplicator(config);
+      return CropRotationDeduplicator(config);
     }
-    return CoapNoopDeduplicator();
+    return NoopDeduplicator();
   }
 }

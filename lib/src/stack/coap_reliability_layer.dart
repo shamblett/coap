@@ -15,7 +15,7 @@ import '../coap_message_type.dart';
 import '../coap_request.dart';
 import '../coap_response.dart';
 import '../event/coap_event_bus.dart';
-import '../net/coap_exchange.dart';
+import '../net/exchange.dart';
 import 'coap_abstract_layer.dart';
 import 'coap_ilayer.dart';
 

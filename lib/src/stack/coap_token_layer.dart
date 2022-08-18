@@ -13,7 +13,7 @@ import '../coap_config.dart';
 import '../coap_constants.dart';
 import '../coap_request.dart';
 import '../coap_response.dart';
-import '../net/coap_exchange.dart';
+import '../net/exchange.dart';
 import 'coap_abstract_layer.dart';
 import 'coap_ilayer.dart';
 
