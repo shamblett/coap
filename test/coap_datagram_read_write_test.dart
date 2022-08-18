@@ -6,6 +6,7 @@
  */
 
 import 'package:coap/coap.dart';
+import 'package:coap/src/coap_message.dart';
 import 'package:coap/src/codec/udp/datagram_reader.dart';
 import 'package:coap/src/codec/udp/datagram_writer.dart';
 import 'package:collection/collection.dart';
@@ -224,5 +225,29 @@ void main() {
     expect(optionCntIn, optionCntOut);
     expect(codeIn, codeOut);
     expect(msgIdIn, msgIdOut);
+  });
+
+  test('Extended Token Length', () {
+    const leq = ListEquality<int>();
+
+    for (final tokenLength in [200, 500]) {
+      final token = (typed.Uint8Buffer()
+        ..addAll(
+          List<int>.generate(tokenLength, ((final index) => index % 256)),
+        ));
+      print(token);
+      final request = CoapRequest(CoapCode.get)
+        ..id = 5
+        ..token = token;
+
+      final payload = request.toUdpPayload();
+      expect(
+        leq.equals(
+          CoapMessage.fromUdpPayload(payload)?.token?.toList(),
+          token,
+        ),
+        isTrue,
+      );
+    }
   });
 }

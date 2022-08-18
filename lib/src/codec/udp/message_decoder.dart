@@ -29,6 +29,7 @@ class UdpMessageDecoder implements MessageDecoder {
   @override
   CoapMessage? parseMessage(final Uint8Buffer data) {
     final reader = DatagramReader(data);
+    var hasFormatError = false;
 
     final version = message_format.Version.decode(
       reader.read(message_format.Version.bitLength),
@@ -44,7 +45,8 @@ class UdpMessageDecoder implements MessageDecoder {
       return null;
     }
 
-    final tokenLength = reader.read(message_format.tokenLengthBits);
+    int? tokenLength = reader.read(message_format.tokenLengthBits);
+
     final code = CoapCode.decode(reader.read(CoapCode.bitLength));
 
     if (code == null) {
@@ -54,16 +56,20 @@ class UdpMessageDecoder implements MessageDecoder {
     final id = reader.read(message_format.idBits);
 
     // Read token
-    final Uint8Buffer token;
-    if (tokenLength > 0) {
-      token = reader.readBytes(tokenLength);
-    } else {
-      token = CoapConstants.emptyToken;
+    var token = CoapConstants.emptyToken;
+    if (tokenLength > 14) {
+      hasFormatError = true;
+    } else if (tokenLength > 0) {
+      tokenLength = _readExtendedTokenLength(tokenLength, reader);
+      if (tokenLength == null) {
+        hasFormatError = true;
+      } else {
+        token = reader.readBytes(tokenLength);
+      }
     }
 
     Uint8Buffer? payload;
     var hasUnknownCriticalOption = false;
-    var hasFormatError = false;
     final options = <CoapOption>[];
     // Read options
     var currentOption = 0;
@@ -166,17 +172,32 @@ class UdpMessageDecoder implements MessageDecoder {
     return null;
   }
 
+  /// Read a potentially extended token length as specified in [RFC 8974].
+  ///
+  /// [RFC 8974]: https://datatracker.ietf.org/doc/html/rfc8974
+  int? _readExtendedTokenLength(
+    final int tokenLength,
+    final DatagramReader reader,
+  ) =>
+      _parseExtendedLength(tokenLength, reader);
+
   /// Calculates the value used in the extended option fields as specified
   /// in RFC 7252, section 3.1.
   int? _getValueFromOptionNibble(
     final int nibble,
     final DatagramReader datagram,
+  ) =>
+      _parseExtendedLength(nibble, datagram);
+
+  int? _parseExtendedLength(
+    final int value,
+    final DatagramReader datagram,
   ) {
-    if (nibble < 13) {
-      return nibble;
-    } else if (nibble == 13) {
+    if (value < 13) {
+      return value;
+    } else if (value == 13) {
       return datagram.read(8) + 13;
-    } else if (nibble == 14) {
+    } else if (value == 14) {
       return datagram.read(16) + 269;
     }
 

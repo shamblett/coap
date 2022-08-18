@@ -8,6 +8,7 @@ The CoAP library is an implementation in Dart providing a CoAP client, the code 
 * Observe resources [RFC 7641](https://tools.ietf.org/html/rfc7641)
 * Block-wise transfers [RFC 7959](https://tools.ietf.org/html/rfc7959)
 * FETCH, PATCH, and iPATCH methods [RFC 8132](https://www.rfc-editor.org/rfc/rfc8132.html)
+* Extended Token Length [RFC 8974](https://tools.ietf.org/html/rfc8974)
 * Multicast over UDP (not DTLS)
 * **Experimental**: CoAP over DTLS (using FFI)
   * [dtls](https://pub.dev/packages/dtls) for OpenSSL

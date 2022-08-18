@@ -170,11 +170,12 @@ abstract class CoapMessage {
   }
 
   set token(final Uint8Buffer? value) {
-    if (value != null && value.length > 8) {
+    const maxValue = (1 << 16) - 270;
+    if (value != null && value.length > maxValue) {
       throw ArgumentError.value(
         value,
         'Message::token',
-        'Token length must be between 0 and 8 inclusive.',
+        'Token length must be between 0 and $maxValue inclusive.',
       );
     }
     _token = value;
