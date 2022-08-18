@@ -169,10 +169,9 @@ void main() {
       final CoapMessage msg = CoapRequest(CoapCode.get)
         ..id = 12345
         ..payload = (typed.Uint8Buffer()..addAll('payload'.codeUnits));
-      final data = UdpMessageEncoder().serializeMessage(msg);
+      final data = serializeUdpMessage(msg);
       checkData(data, testNo);
-      final decoder = UdpMessageDecoder();
-      final convMsg = decoder.parseMessage(data);
+      final convMsg = deserializeUdpMessage(data);
       expect(msg.code, convMsg!.code);
       expect(msg.type, convMsg.type);
       expect(msg.id, convMsg.id);
@@ -197,10 +196,9 @@ void main() {
         ..addOption(CoapOption.createVal(OptionType.maxAge, 30));
       expect(msg.getFirstOption(OptionType.contentFormat)!.intValue, 0);
       expect(msg.getFirstOption(OptionType.maxAge)!.value, 30);
-      final data = UdpMessageEncoder().serializeMessage(msg);
+      final data = serializeUdpMessage(msg);
       checkData(data, testNo);
-      final decoder = UdpMessageDecoder();
-      final convMsg = decoder.parseMessage(data);
+      final convMsg = deserializeUdpMessage(data);
 
       expect(msg.code, convMsg!.code);
       expect(msg.type, convMsg.type);
@@ -231,10 +229,9 @@ void main() {
       expect(msg.getFirstOption(OptionType.contentFormat)!.value, 0);
       msg.payload = typed.Uint8Buffer()..addAll('payload'.codeUnits);
 
-      final data = UdpMessageEncoder().serializeMessage(msg);
+      final data = serializeUdpMessage(msg);
       checkData(data, testNo);
-      final decoder = UdpMessageDecoder();
-      final convMsg = decoder.parseMessage(data);
+      final convMsg = deserializeUdpMessage(data);
 
       expect(msg.code, convMsg!.code);
       expect(msg.type, convMsg.type);
@@ -265,10 +262,9 @@ void main() {
         ..contentType = CoapMediaType.fromIntValue(40)
         ..accept = CoapMediaType.fromIntValue(40);
 
-      final bytes = UdpMessageEncoder().serializeMessage(request);
+      final bytes = serializeUdpMessage(request);
       checkData(bytes, testNo);
-      final decoder = UdpMessageDecoder();
-      final result = decoder.parseMessage(bytes);
+      final result = deserializeUdpMessage(bytes);
       expect(result!.isRequest, isTrue);
 
       expect(request.id, result.id);
@@ -295,11 +291,10 @@ void main() {
         ..addETagOpaque(typed.Uint8Buffer()..addAll(<int>[1, 0, 0, 0, 0, 1]))
         ..locationPath = '/one/two/three/four/five/six/seven/eight/nine/ten';
 
-      final bytes = UdpMessageEncoder().serializeMessage(response);
+      final bytes = serializeUdpMessage(response);
       checkData(bytes, testNo);
 
-      final decoder = UdpMessageDecoder();
-      final message = decoder.parseMessage(bytes);
+      final message = deserializeUdpMessage(bytes);
       expect(message!.isResponse, isTrue);
 
       expect(response.id, message.id);

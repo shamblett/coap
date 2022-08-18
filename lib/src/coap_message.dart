@@ -979,8 +979,8 @@ abstract class CoapMessage {
   }
 
   static CoapMessage? fromUdpPayload(final Uint8Buffer data) =>
-      UdpMessageDecoder().parseMessage(data);
+      deserializeUdpMessage(data);
 
   /// The serialized message as byte array
-  Uint8Buffer toUdpPayload() => UdpMessageEncoder().serializeMessage(this);
+  Uint8Buffer toUdpPayload() => serializeUdpMessage(this);
 }
