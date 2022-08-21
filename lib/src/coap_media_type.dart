@@ -219,7 +219,7 @@ enum CoapMediaType {
   ),
 
   /// application/td+json
-  applicationTdJson(432, 'application', 'application/td+json'),
+  applicationTdJson(432, 'application', 'td+json'),
 
   /// application/voucher-cose+cbor
   applicationVoucerCoseCbor(836, 'application', 'voucher-cose+cbor'),
