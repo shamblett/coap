@@ -11,9 +11,9 @@ import 'coap_exchange.dart';
 
 class CoapMulticastExchange extends CoapExchange {
   CoapMulticastExchange(
-    final CoapRequest super.request,
+    CoapRequest super.request,
     super.origin, {
-    required final super.namespace,
+    required super.namespace,
   });
 
   final List<CoapResponse> responses = [];

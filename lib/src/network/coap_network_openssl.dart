@@ -34,7 +34,7 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
     super.bindAddress, {
     required final bool verify,
     required final bool withTrustedRoots,
-    final super.namespace,
+    super.namespace,
     final String? ciphers,
   })  : _ciphers = ciphers,
         _verify = verify,

@@ -125,7 +125,7 @@ class CoapReceivingResponseEvent extends CoapResponseEvent {
 
 /// Occurs when an empty message has been received.
 class CoapReceivingEmptyMessageEvent extends CoapMessageEvent {
-  CoapReceivingEmptyMessageEvent(final CoapEmptyMessage super.empty);
+  CoapReceivingEmptyMessageEvent(CoapEmptyMessage super.empty);
 }
 
 /// Completed event

@@ -77,7 +77,7 @@ class CoapNetworkUDPTinyDtls extends CoapNetworkUDP {
     super.port,
     super.bindAddress,
     this._tinyDtlsInstance, {
-    final super.namespace,
+    super.namespace,
     final internal.PskCredentialsCallback? pskCredentialsCallback,
     final internal.EcdsaKeys? ecdsaKeys,
   })  : _tinydtlsPskCallback =
