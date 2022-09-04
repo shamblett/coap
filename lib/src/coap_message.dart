@@ -20,6 +20,7 @@ import 'coap_media_type.dart';
 import 'coap_message_type.dart';
 import 'coap_option.dart';
 import 'coap_option_type.dart';
+import 'coap_response.dart';
 import 'codec/udp/message_decoder.dart';
 import 'codec/udp/message_encoder.dart';
 import 'event/coap_event_bus.dart';
@@ -96,6 +97,12 @@ abstract class CoapMessage {
   /// Adds an option to the list of options of this CoAP message.
   void addOption(final CoapOption option) =>
       _optionMap[option.type] = (_optionMap[option.type] ?? [])..add(option);
+
+  bool get needsRejection =>
+      // TODO(JKRhb): Revisit conditions for rejection
+      (type == CoapMessageType.non && hasUnknownCriticalOption) ||
+      hasFormatError ||
+      (this is CoapResponse && hasUnknownCriticalOption);
 
   /// Remove a specific option, returns true if the option has been removed.
   bool removeOption(final CoapOption option) {

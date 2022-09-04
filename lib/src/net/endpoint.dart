@@ -102,14 +102,6 @@ class Endpoint implements Outbox {
     _coapStack.sendEmptyMessage(exchange, message);
   }
 
-  // TODO(JKRhb): Maybe this can be refactored to a needsRejection getter on the
-  //              CoapMessage class
-  static bool _checkNeedForRejection(final CoapMessage message) =>
-      (message.type == CoapMessageType.non &&
-          message.hasUnknownCriticalOption) ||
-      message.hasFormatError ||
-      (message is CoapResponse && message.hasUnknownCriticalOption);
-
   void _receiveMessage(final CoapMessageReceivedEvent event) {
     final message = event.coapMessage;
 
@@ -117,7 +109,7 @@ class Endpoint implements Outbox {
       return;
     }
 
-    if (_checkNeedForRejection(message)) {
+    if (message.needsRejection) {
       _reject(message);
       return;
     }
@@ -125,23 +117,6 @@ class Endpoint implements Outbox {
     message.source = event.address;
 
     if (message is CoapRequest) {
-      // TODO(JKRhb): Does this still need to be taken into account somehow?
-
-      // CoapRequest? request;
-      // try {
-      //   request = decoder.decodeRequest();
-      // } on Exception catch (_) {
-      //   if (!decoder.isReply) {
-      //     // Manually build RST from raw information
-      //     final rst = CoapEmptyMessage(CoapMessageType.rst)
-      //       ..destination = event.address
-      //       ..id = decoder.id;
-      //     _eventBus.fire(CoapSendingEmptyMessageEvent(rst));
-      //     _socket.send(rst, rst.destination);
-      //   }
-      //   return;
-      // }
-
       final request = message;
       _eventBus.fire(CoapReceivingRequestEvent(request));
 
