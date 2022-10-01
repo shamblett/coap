@@ -278,6 +278,164 @@ class CoapClient {
     return send(request, onMulticastResponse: onMulticastResponse);
   }
 
+  /// Sends a FETCH request.
+  ///
+  /// See [RFC 8132, section 2].
+  ///
+  /// [RFC 8132, section 2]: https://www.rfc-editor.org/rfc/rfc8132.html#section-2
+  Future<CoapResponse> fetch(
+    final String path, {
+    final CoapMediaType? accept,
+    final bool confirmable = true,
+    final List<CoapOption>? options,
+    final bool earlyBlock2Negotiation = false,
+    final int maxRetransmit = 0,
+    final CoapMulticastResponseHandler? onMulticastResponse,
+  }) {
+    final request = CoapRequest.newFetch(confirmable: confirmable);
+    _build(
+      request,
+      path,
+      accept,
+      options,
+      earlyBlock2Negotiation,
+      maxRetransmit,
+    );
+    return send(request, onMulticastResponse: onMulticastResponse);
+  }
+
+  /// Sends a PATCH request.
+  ///
+  /// See [RFC 8132, section 3].
+  ///
+  /// [RFC 8132, section 3]: https://www.rfc-editor.org/rfc/rfc8132.html#section-3
+  Future<CoapResponse> patch(
+    final String path, {
+    required final String payload,
+    final CoapMediaType? format,
+    final CoapMediaType? accept,
+    final bool confirmable = true,
+    final List<Uint8Buffer>? etags,
+    final MatchEtags matchEtags = MatchEtags.onMatch,
+    final List<CoapOption>? options,
+    final bool earlyBlock2Negotiation = false,
+    final int maxRetransmit = 0,
+    final CoapMulticastResponseHandler? onMulticastResponse,
+  }) {
+    final request = CoapRequest.newPatch(confirmable: confirmable)
+      ..setPayloadMedia(payload, format);
+    _build(
+      request,
+      path,
+      accept,
+      options,
+      earlyBlock2Negotiation,
+      maxRetransmit,
+      etags: etags,
+      matchEtags: matchEtags,
+    );
+    return send(request, onMulticastResponse: onMulticastResponse);
+  }
+
+  /// Sends a PATCH request with the specified byte payload.
+  ///
+  /// See [RFC 8132, section 3].
+  ///
+  /// [RFC 8132, section 3]: https://www.rfc-editor.org/rfc/rfc8132.html#section-3
+  Future<CoapResponse> patchBytes(
+    final String path, {
+    required final Uint8Buffer payload,
+    final CoapMediaType? format,
+    final MatchEtags matchEtags = MatchEtags.onMatch,
+    final List<Uint8Buffer>? etags,
+    final CoapMediaType? accept,
+    final bool confirmable = true,
+    final List<CoapOption>? options,
+    final bool earlyBlock2Negotiation = false,
+    final int maxRetransmit = 0,
+    final CoapMulticastResponseHandler? onMulticastResponse,
+  }) {
+    final request = CoapRequest.newPatch(confirmable: confirmable)
+      ..setPayloadMediaRaw(payload, format);
+    _build(
+      request,
+      path,
+      accept,
+      options,
+      earlyBlock2Negotiation,
+      maxRetransmit,
+      etags: etags,
+      matchEtags: matchEtags,
+    );
+    return send(request, onMulticastResponse: onMulticastResponse);
+  }
+
+  /// Sends an iPATCH request.
+  ///
+  /// See [RFC 8132, section 3].
+  ///
+  /// [RFC 8132, section 3]: https://www.rfc-editor.org/rfc/rfc8132.html#section-3
+  Future<CoapResponse> iPatch(
+    final String path, {
+    required final String payload,
+    final CoapMediaType? format,
+    final CoapMediaType? accept,
+    final bool confirmable = true,
+    final List<Uint8Buffer>? etags,
+    final MatchEtags matchEtags = MatchEtags.onMatch,
+    final List<CoapOption>? options,
+    final bool earlyBlock2Negotiation = false,
+    final int maxRetransmit = 0,
+    final CoapMulticastResponseHandler? onMulticastResponse,
+  }) {
+    final request = CoapRequest.newIPatch(confirmable: confirmable)
+      ..setPayloadMedia(payload, format);
+    _build(
+      request,
+      path,
+      accept,
+      options,
+      earlyBlock2Negotiation,
+      maxRetransmit,
+      etags: etags,
+      matchEtags: matchEtags,
+    );
+    return send(request, onMulticastResponse: onMulticastResponse);
+  }
+
+  /// Sends a iPATCH request with the specified byte payload.
+  ///
+  /// See [RFC 8132, section 3].
+  ///
+  /// [RFC 8132, section 3]: https://www.rfc-editor.org/rfc/rfc8132.html#section-3
+  Future<CoapResponse> iPatchBytes(
+    final String path, {
+    required final Uint8Buffer payload,
+    final CoapMediaType? format,
+    final MatchEtags matchEtags = MatchEtags.onMatch,
+    final List<Uint8Buffer>? etags,
+    final CoapMediaType? accept,
+    final bool confirmable = true,
+    final List<CoapOption>? options,
+    final bool earlyBlock2Negotiation = false,
+    final int maxRetransmit = 0,
+    final CoapMulticastResponseHandler? onMulticastResponse,
+  }) {
+    final request = CoapRequest.newIPatch(confirmable: confirmable)
+      ..setPayloadMediaRaw(payload, format);
+    _build(
+      request,
+      path,
+      accept,
+      options,
+      earlyBlock2Negotiation,
+      maxRetransmit,
+      etags: etags,
+      matchEtags: matchEtags,
+    );
+    return send(request, onMulticastResponse: onMulticastResponse);
+  }
+
   /// Observe
   Future<CoapObserveClientRelation> observe(
     final CoapRequest request, {
