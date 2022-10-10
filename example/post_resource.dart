@@ -16,7 +16,7 @@ import 'config/coap_config.dart';
 FutureOr<void> main() async {
   final conf = CoapConfig();
   final uri = Uri(scheme: 'coap', host: 'coap.me', port: conf.defaultPort);
-  final client = CoapClient(uri, conf);
+  final client = CoapClient(uri, config: conf);
 
   final opt = CoapOption.createUriQuery(
     '${LinkFormatParameter.title.short}=This is an SJH Post request',

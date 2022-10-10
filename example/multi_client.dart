@@ -16,7 +16,7 @@ import 'config/coap_config.dart';
 FutureOr<void> main() async {
   final conf1 = CoapConfig();
   final uri1 = Uri(scheme: 'coap', host: 'coap.me', port: conf1.defaultPort);
-  final client1 = CoapClient(uri1, conf1);
+  final client1 = CoapClient(uri1, config: conf1);
 
   final conf2 = CoapConfig();
   final uri2 = Uri(
@@ -24,7 +24,7 @@ FutureOr<void> main() async {
     host: 'californium.eclipseprojects.io',
     port: conf2.defaultPort,
   );
-  final client2 = CoapClient(uri2, conf2);
+  final client2 = CoapClient(uri2, config: conf2);
 
   try {
     print('Sending get /hello to ${uri1.host}');
