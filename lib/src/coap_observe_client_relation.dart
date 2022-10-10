@@ -5,27 +5,54 @@
  * Copyright :  S.Hamblett
  */
 
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 
 import 'coap_request.dart';
-import 'event/coap_event_bus.dart';
+import 'coap_response.dart';
 
 /// Represents a CoAP observe relation between a CoAP client and a
 /// resource on a server.
 /// Provides a simple API to check whether a relation has successfully
 /// established and to cancel or refresh the relation.
-class CoapObserveClientRelation {
+class CoapObserveClientRelation extends Stream<CoapResponse> {
   /// Construction
-  CoapObserveClientRelation(this._request);
+  CoapObserveClientRelation(this._request, this._responseStream);
 
-  /// Response stream
-  Stream<CoapRespondEvent> get stream => _request.eventBus!
-      .on<CoapRespondEvent>()
-      .where((final e) => e.resp.token!.equals(_request.token!))
-      .takeWhile((final _) => !_request.isTimedOut && !_request.isCancelled);
+  @override
+  StreamSubscription<CoapResponse> listen(
+    final void Function(CoapResponse event)? onData, {
+    final Function? onError,
+    final void Function()? onDone,
+    final bool? cancelOnError,
+  }) =>
+      _filteredStream.listen(
+        onData,
+        onError: onError,
+        onDone: onDone,
+        cancelOnError: cancelOnError,
+      );
 
   final CoapRequest _request;
+
+  final Stream<CoapResponse> _responseStream;
+
+  Stream<CoapResponse> get _filteredStream => _responseStream
+      .where(_responseTokenIsMatched)
+      .takeWhile((final _) => _request.isActive);
+
+  bool _responseTokenIsMatched(final CoapResponse response) {
+    final requestToken = _request.token;
+    final responseToken = response.token;
+
+    if (requestToken == null || responseToken == null) {
+      return false;
+    }
+
+    return requestToken.equals(responseToken);
+  }
 
   bool _cancelled = false;
 

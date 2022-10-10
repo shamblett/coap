@@ -28,8 +28,8 @@ FutureOr<void> main() async {
   try {
     print('Observing /obs on ${uri.host}');
     final obs = await client.observe(reqObs);
-    obs.stream.listen((final e) {
-      print('/obs response: ${e.resp.payloadString}');
+    obs.listen((final e) {
+      print('/obs response: ${e.payloadString}');
     });
 
     final reqObsNon = CoapRequest(CoapCode.get, confirmable: false)
@@ -37,8 +37,8 @@ FutureOr<void> main() async {
 
     print('Observing /obs-non on ${uri.host}');
     final obsNon = await client.observe(reqObsNon);
-    obsNon.stream.listen((final e) {
-      print('/obs-non response: ${e.resp.payloadString}');
+    obsNon.listen((final e) {
+      print('/obs-non response: ${e.payloadString}');
     });
 
     final futures = <Future<void>>[];

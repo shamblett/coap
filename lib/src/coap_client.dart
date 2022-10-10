@@ -47,7 +47,7 @@ enum MatchEtags {
 
 /// Response event handler for multicast responses
 class CoapMulticastResponseHandler {
-  final void Function(CoapRespondEvent)? onData;
+  final void Function(CoapResponse)? onData;
   final Function? onError;
   final void Function()? onDone;
   final bool? cancelOnError;
@@ -450,17 +450,16 @@ class CoapClient {
     request
       ..observe = 0
       ..maxRetransmit = maxRetransmit;
-    await _prepare(request);
-    final relation = CoapObserveClientRelation(request);
+    final responseStream = _sendWithStreamResponse(request).asBroadcastStream();
+    final relation = CoapObserveClientRelation(request, responseStream);
     unawaited(
       () async {
-        final resp = await _waitForResponse(request);
+        final resp = await _waitForResponse(request, responseStream);
         if (!resp.hasOption(OptionType.observe)) {
           relation.isCancelled = true;
         }
       }(),
     );
-    _endpoint!.sendEpRequest(request);
     return relation;
   }
 
@@ -486,28 +485,49 @@ class CoapClient {
     final CoapRequest request, {
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) async {
-    await _prepare(request);
+    final responseStream = _sendWithStreamResponse(request).asBroadcastStream();
     if (request.isMulticast) {
       if (onMulticastResponse == null) {
         throw ArgumentError('Missing onMulticastResponse argument');
       }
-      _eventBus
-          .on<CoapRespondEvent>()
-          .where(
-            (final e) =>
-                e.resp.token!.equals(request.token!) ||
-                e.resp.multicastToken!.equals(request.token!),
-          )
-          .takeWhile((final _) => !request.isTimedOut && !request.isCancelled)
-          .listen(
-            onMulticastResponse.onData,
-            onError: onMulticastResponse.onError,
-            onDone: onMulticastResponse.onDone,
-            cancelOnError: onMulticastResponse.cancelOnError,
-          );
+      responseStream.listen(
+        onMulticastResponse.onData,
+        onError: onMulticastResponse.onError,
+        onDone: onMulticastResponse.onDone,
+        cancelOnError: onMulticastResponse.cancelOnError,
+      );
     }
+    return _waitForResponse(request, responseStream);
+  }
+
+  Stream<CoapResponse> _sendWithStreamResponse(
+    final CoapRequest request,
+  ) async* {
+    await _prepare(request);
+
+    final stream = _eventBus
+        .on<CoapRespondEvent>()
+        .map((final event) => event.resp)
+        .where(
+          (final response) =>
+              response.token!.equals(request.token!) ||
+              (response.multicastToken?.equals(request.token!) ?? false),
+        )
+        .takeWhile((final _) => request.isActive);
+
     _endpoint!.sendEpRequest(request);
-    return _waitForResponse(request);
+
+    yield* stream;
+  }
+
+  /// Sends a [request] and returns a [Stream] of [CoapResponse]s.
+  ///
+  /// This method is especially useful for multicast scenarios, allowing the
+  /// caller to asynchronously iterate over incoming responses. However, you
+  /// can also use it for obtaining the response to a unicast requests as a
+  ///[Stream].
+  Stream<CoapResponse> sendMulticast(final CoapRequest request) async* {
+    yield* _sendWithStreamResponse(request);
   }
 
   /// Cancel ongoing observable request
@@ -621,20 +641,20 @@ class CoapClient {
 
   /// Wait for a response.
   /// Returns the response, or null if timeout occured.
-  Future<CoapResponse> _waitForResponse(final CoapRequest req) {
+  static Future<CoapResponse> _waitForResponse(
+    final CoapRequest request,
+    final Stream<CoapResponse> responseStream,
+  ) {
     final completer = Completer<CoapResponse>();
-    _eventBus
-        .on<CoapRespondEvent>()
-        .where((final e) => e.resp.token!.equals(req.token!))
-        .take(1)
-        .listen((final e) {
-      if (req.isTimedOut) {
-        completer.completeError(CoapRequestTimeoutException(req.retransmits));
-      } else if (req.isCancelled) {
+    responseStream.take(1).listen((final response) {
+      if (request.isTimedOut) {
+        completer
+            .completeError(CoapRequestTimeoutException(request.retransmits));
+      } else if (request.isCancelled) {
         completer.completeError(CoapRequestCancellationException());
       } else {
-        e.resp.timestamp = DateTime.now();
-        completer.complete(e.resp);
+        response.timestamp = DateTime.now();
+        completer.complete(response);
       }
     });
     return completer.future;
@@ -649,7 +669,7 @@ class CoapClient {
         .where((final e) => e.msg.id == req.id)
         .take(1)
         .listen((final e) {
-      if (req.isTimedOut || req.isCancelled) {
+      if (!req.isActive) {
         completer.complete(null);
       } else {
         e.msg.timestamp = DateTime.now();

@@ -61,9 +61,8 @@ class CoapTransmissionContext {
     // Do not retransmit a message if it has been acknowledged,
     // rejected, canceled or already been retransmitted for the maximum
     // number of times.
-    if (!_message.isCancelled &&
-        !_message.isRejected &&
-        !_message.isTimedOut &&
+    if (!_message.isRejected &&
+        _message.isActive &&
         failedTransmissionCount <=
             (_message.maxRetransmit != 0
                 ? _message.maxRetransmit
