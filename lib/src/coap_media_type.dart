@@ -240,7 +240,11 @@ enum CoapMediaType {
     parameters: {'id': 'name'},
   ),
 
-  /// application/td+json
+  /// Content-Format for Media-Type `application/td+json`.
+  ///
+  /// Defined in [Web of Things (WoT) Thing Description 1.1].
+  ///
+  /// [Web of Things (WoT) Thing Description 1.1]: https://www.w3.org/TR/wot-thing-description11/
   applicationTdJson(432, 'application', 'td+json'),
 
   /// Content-Format for Media-Type `application/tm+json`.
