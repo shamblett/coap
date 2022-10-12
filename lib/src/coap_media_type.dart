@@ -221,6 +221,13 @@ enum CoapMediaType {
   /// application/td+json
   applicationTdJson(432, 'application', 'td+json'),
 
+  /// Content-Format for Media-Type `application/tm+json`.
+  ///
+  /// Defined in [Web of Things (WoT) Thing Description 1.1].
+  ///
+  /// [Web of Things (WoT) Thing Description 1.1]: https://www.w3.org/TR/wot-thing-description11/
+  applicationTmJson(433, 'application', 'tm+json'),
+
   /// application/voucher-cose+cbor
   applicationVoucerCoseCbor(836, 'application', 'voucher-cose+cbor'),
 
