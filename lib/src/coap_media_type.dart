@@ -162,6 +162,17 @@ enum CoapMediaType {
     'concise-problem-details+cbor',
   ),
 
+  /// Content-Format for Media-Type `application/swid+cbor`.
+  ///
+  /// Defined in [RFC-ietf-sacm-coswid-22].
+  ///
+  /// [RFC-ietf-sacm-coswid-22]: https://datatracker.ietf.org/doc/html/draft-ietf-sacm-coswid-22
+  applicationSwidCbor(
+    258,
+    'application',
+    'swid+cbor',
+  ),
+
   /// application/dots+cbor
   applicationDotsCbor(271, 'application', 'dots+cbor'),
 
