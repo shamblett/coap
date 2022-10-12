@@ -151,6 +151,17 @@ enum CoapMediaType {
   /// application/coap-group+json
   applicationCoapGroupJson(256, 'application', 'coap-group+json'),
 
+  /// Content-Format for Media-Type `application/concise-problem-details+cbor`.
+  ///
+  /// Defined in [RFC-ietf-core-problem-details-08].
+  ///
+  /// [RFC-ietf-core-problem-details-08]: https://datatracker.ietf.org/doc/html/draft-ietf-core-problem-details-08
+  applicationConciseProblemDetailsCbor(
+    257,
+    'application',
+    'concise-problem-details+cbor',
+  ),
+
   /// application/dots+cbor
   applicationDotsCbor(271, 'application', 'dots+cbor'),
 
