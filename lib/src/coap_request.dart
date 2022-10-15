@@ -13,7 +13,7 @@ import 'coap_code.dart';
 import 'coap_constants.dart';
 import 'coap_message.dart';
 import 'coap_message_type.dart';
-import 'net/coap_iendpoint.dart';
+import 'net/endpoint.dart';
 
 /// This class describes the functionality of a CoAP Request as
 /// a subclass of a CoAP Message. It provides:
@@ -86,13 +86,13 @@ class CoapRequest extends CoapMessage {
     _uri = value;
   }
 
-  CoapIEndPoint? _endpoint;
+  Endpoint? _endpoint;
 
   /// The endpoint for this request
   @internal
-  CoapIEndPoint? get endpoint => _endpoint;
+  Endpoint? get endpoint => _endpoint;
   @internal
-  set endpoint(final CoapIEndPoint? endpoint) {
+  set endpoint(final Endpoint? endpoint) {
     super.id = endpoint!.nextMessageId;
     super.destination = endpoint.destination;
     _endpoint = endpoint;

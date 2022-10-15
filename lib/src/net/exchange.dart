@@ -12,9 +12,9 @@ import '../coap_request.dart';
 import '../coap_response.dart';
 import '../event/coap_event_bus.dart';
 import '../observe/coap_observe_relation.dart';
-import '../stack/coap_blockwise_status.dart';
-import 'coap_iendpoint.dart';
-import 'coap_ioutbox.dart';
+import '../stack/blockwise_status.dart';
+import 'endpoint.dart';
+import 'outbox.dart';
 
 /// Represents the complete state of an exchange of one request
 /// and one or more responses. The lifecycle of an exchange ends
@@ -55,7 +55,7 @@ class CoapExchange {
   CoapResponse? currentResponse;
 
   /// The endpoint which has created and processed this exchange.
-  CoapIEndPoint? endpoint;
+  Endpoint? endpoint;
 
   DateTime? _timestamp;
 
@@ -64,11 +64,11 @@ class CoapExchange {
 
   /// the status of the blockwise transfer of the response,
   /// or null in case of a normal transfer,
-  CoapBlockwiseStatus? responseBlockStatus;
+  BlockwiseStatus? responseBlockStatus;
 
   /// The status of the blockwise transfer of the request,
   /// or null in case of a normal transfer
-  CoapBlockwiseStatus? requestBlockStatus;
+  BlockwiseStatus? requestBlockStatus;
 
   /// The block option of the last block of a blockwise sent request.
   /// When the server sends the response, this block option has
@@ -102,12 +102,12 @@ class CoapExchange {
     }
   }
 
-  CoapIOutbox? _outbox;
+  Outbox? _outbox;
 
   /// Outbox
-  CoapIOutbox? get outbox => _outbox ?? endpoint?.outbox;
+  Outbox? get outbox => _outbox ?? endpoint?.outbox;
 
-  set outbox(final CoapIOutbox? value) => _outbox = value;
+  set outbox(final Outbox? value) => _outbox = value;
 
   /// Reject this exchange and therefore the request.
   /// Sends an RST back to the client.
@@ -147,8 +147,9 @@ class CoapExchange {
       _eventBus.fire(CoapRespondingEvent(resp));
 
   // Fire the respond event
-  void fireRespond(final CoapResponse resp) =>
-      _eventBus.fire(CoapRespondEvent(resp));
+  void fireRespond(final CoapResponse resp) {
+    _eventBus.fire(CoapRespondEvent(resp));
+  }
 
   /// Fire a [CoapCancelledEvent].
   void fireCancel(final CoapEmptyMessage cancellationMessage) =>

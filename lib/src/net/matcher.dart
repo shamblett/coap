@@ -13,20 +13,19 @@ import '../coap_message_type.dart';
 import '../coap_option_type.dart';
 import '../coap_request.dart';
 import '../coap_response.dart';
-import '../deduplication/coap_deduplicator_factory.dart';
-import '../deduplication/coap_ideduplicator.dart';
+import '../deduplication/deduplicator_factory.dart';
+import '../deduplication/deduplicator.dart';
 import '../event/coap_event_bus.dart';
 import '../observe/coap_observe_relation.dart';
-import 'coap_exchange.dart';
-import 'coap_imatcher.dart';
-import 'coap_multicast_exchange.dart';
+import 'exchange.dart';
+import 'multicast_exchange.dart';
 
 /// Matcher class
-class CoapMatcher implements CoapIMatcher {
+class CoapMatcher {
   /// Construction
   CoapMatcher(final DefaultCoapConfig config, {required this.namespace}) {
     _eventBus = CoapEventBus(namespace: namespace);
-    _deduplicator = CoapDeduplicatorFactory.createDeduplicator(config);
+    _deduplicator = DeduplicatorFactory.createDeduplicator(config);
     subscr = _eventBus.on<CoapCompletedEvent>().listen(onExchangeCompleted);
   }
 
@@ -43,20 +42,17 @@ class CoapMatcher implements CoapIMatcher {
   /// For blockwise
   final Map<String, CoapExchange> _ongoingExchanges = <String, CoapExchange>{};
 
-  late final CoapIDeduplicator _deduplicator;
+  late final Deduplicator _deduplicator;
 
-  @override
   void start() {
     _deduplicator.start();
   }
 
-  @override
   void stop() {
     _deduplicator.stop();
     subscr.cancel();
   }
 
-  @override
   void clear() {
     _exchangesById.clear();
     _exchangesByToken.clear();
@@ -64,7 +60,6 @@ class CoapMatcher implements CoapIMatcher {
     _deduplicator.clear();
   }
 
-  @override
   void sendRequest(final CoapExchange exchange, final CoapRequest request) {
     // The request is a CON or NON and must be prepared for these responses
     // - CON => ACK / RST / ACK+response / CON+response / NON+response
@@ -76,7 +71,6 @@ class CoapMatcher implements CoapIMatcher {
     _exchangesByToken[request.tokenString] = exchange;
   }
 
-  @override
   void sendResponse(final CoapExchange exchange, final CoapResponse response) {
     // The response is a CON or NON or ACK and must be prepared for these
     // - CON => ACK / RST // we only care to stop retransmission
@@ -123,7 +117,6 @@ class CoapMatcher implements CoapIMatcher {
     }
   }
 
-  @override
   void sendEmptyMessage(
     final CoapExchange exchange,
     final CoapEmptyMessage message,
@@ -134,7 +127,6 @@ class CoapMatcher implements CoapIMatcher {
     }
   }
 
-  @override
   CoapExchange receiveRequest(final CoapRequest request) {
     // This request could be
     //  - Complete origin request => deliver with new exchange
@@ -201,7 +193,6 @@ class CoapMatcher implements CoapIMatcher {
     } // if blockwise
   }
 
-  @override
   CoapExchange? receiveResponse(final CoapResponse response) {
     // This response could be
     // The first CON/NON/ACK+response => deliver
@@ -242,7 +233,6 @@ class CoapMatcher implements CoapIMatcher {
     }
   }
 
-  @override
   CoapExchange? receiveEmptyMessage(final CoapEmptyMessage message) {
     // Local namespace
     final exchange = _exchangesById[message.id];

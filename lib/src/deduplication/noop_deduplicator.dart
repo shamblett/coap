@@ -5,11 +5,11 @@
  * Copyright :  S.Hamblett
  */
 
-import '../net/coap_exchange.dart';
-import 'coap_ideduplicator.dart';
+import '../net/exchange.dart';
+import 'deduplicator.dart';
 
 /// A dummy implementation that does no deduplication.
-class CoapNoopDeduplicator implements CoapIDeduplicator {
+class NoopDeduplicator implements Deduplicator {
   @override
   void start() {
     // Do nothing

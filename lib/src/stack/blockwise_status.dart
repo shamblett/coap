@@ -10,12 +10,12 @@ import 'package:typed_data/typed_data.dart';
 import '../../coap.dart';
 
 /// Represents the status of a blockwise transfer of a request or a response.
-class CoapBlockwiseStatus {
+class BlockwiseStatus {
   /// Instantiates a new blockwise status.
-  CoapBlockwiseStatus(this._contentFormat);
+  BlockwiseStatus(this._contentFormat);
 
   /// Instantiates a new blockwise status.
-  CoapBlockwiseStatus.withSize(
+  BlockwiseStatus.withSize(
     this._contentFormat,
     this.currentNUM,
     this.currentSZX,

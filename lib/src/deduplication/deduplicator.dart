@@ -5,11 +5,11 @@
  * Copyright :  S.Hamblett
  */
 
-import '../net/coap_exchange.dart';
+import '../net/exchange.dart';
 
 /// Provides methods to detect duplicates.
 /// Note that CONs and NONs can be duplicates.
-abstract class CoapIDeduplicator {
+abstract class Deduplicator {
   /// Starts.
   void start();
 

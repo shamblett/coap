@@ -7,64 +7,20 @@
 
 import 'dart:async';
 
-import '../coap_config.dart';
-import '../coap_empty_message.dart';
-import '../coap_message_type.dart';
-import '../coap_option_type.dart';
-import '../coap_request.dart';
-import '../coap_response.dart';
-import '../event/coap_event_bus.dart';
-import '../net/coap_exchange.dart';
-import 'coap_abstract_layer.dart';
-import 'coap_ilayer.dart';
-
-/// Registration context
-class CoapReregistrationContext {
-  /// Construction
-  CoapReregistrationContext(this._exchange, this._timeout, this._reregister);
-
-  final CoapExchange _exchange;
-  final void Function(CoapRequest) _reregister;
-  Timer? _timer;
-  final int _timeout;
-
-  /// Start
-  void start() {
-    _timer = Timer(Duration(milliseconds: _timeout), _timerElapsed);
-  }
-
-  /// Restart
-  void restart() {
-    cancel();
-    _timer = Timer(Duration(milliseconds: _timeout), _timerElapsed);
-  }
-
-  /// Cancel
-  void cancel() {
-    _timer?.cancel();
-  }
-
-  void _timerElapsed() {
-    final request = _exchange.request!;
-    if (!request.isCancelled) {
-      final refresh = CoapRequest.newGet()
-        ..setOptions(request.getAllOptions())
-        // Make sure Observe is set and zero
-        ..observe = 0
-        // Use same Token
-        ..token = request.token
-        ..destination = request.destination
-        ..copyEventHandler(request);
-      _exchange.fireReregistering(refresh);
-      _reregister(refresh);
-    }
-  }
-}
+import '../../coap_config.dart';
+import '../../coap_empty_message.dart';
+import '../../coap_message_type.dart';
+import '../../coap_option_type.dart';
+import '../../coap_request.dart';
+import '../../coap_response.dart';
+import '../../event/coap_event_bus.dart';
+import '../../net/exchange.dart';
+import '../base_layer.dart';
 
 /// Observe layer
-class CoapObserveLayer extends CoapAbstractLayer {
+class ObserveLayer extends BaseLayer {
   /// Constructs a new observe layer.
-  CoapObserveLayer(final DefaultCoapConfig config) {
+  ObserveLayer(final DefaultCoapConfig config) {
     _backoff = config.notificationReregistrationBackoff;
   }
 
@@ -76,7 +32,6 @@ class CoapObserveLayer extends CoapAbstractLayer {
 
   @override
   void sendResponse(
-    final CoapINextLayer nextLayer,
     final CoapExchange initialExchange,
     final CoapResponse response,
   ) {
@@ -115,7 +70,7 @@ class CoapObserveLayer extends CoapAbstractLayer {
       //  postponed we forget any former notification.
 
       if (response.type == CoapMessageType.con) {
-        _prepareSelfReplacement(nextLayer, exchange, response);
+        _prepareSelfReplacement(exchange, response);
       }
 
       // The decision whether to postpone this notification or not and the
@@ -134,12 +89,11 @@ class CoapObserveLayer extends CoapAbstractLayer {
       }
     }
     // Else no observe was requested or the resource does not allow it
-    super.sendResponse(nextLayer, exchange, response);
+    super.sendResponse(exchange, response);
   }
 
   @override
   void receiveResponse(
-    final CoapINextLayer nextLayer,
     final CoapExchange initialExchange,
     final CoapResponse response,
   ) {
@@ -150,24 +104,23 @@ class CoapObserveLayer extends CoapAbstractLayer {
         // The request was canceled and we no longer want notifications
         final rst = CoapEmptyMessage.newRST(response);
         // Matcher sets exchange as complete when RST is sent
-        sendEmptyMessage(nextLayer, exchange, rst);
+        sendEmptyMessage(exchange, rst);
         _prepareReregistration(
           exchange,
           response,
-          (final msg) => sendRequest(nextLayer, exchange, msg),
+          (final msg) => sendRequest(exchange, msg),
         );
       } else {
-        super.receiveResponse(nextLayer, exchange, response);
+        super.receiveResponse(exchange, response);
       }
     } else {
       // No observe option in response => always deliver
-      super.receiveResponse(nextLayer, exchange, response);
+      super.receiveResponse(exchange, response);
     }
   }
 
   @override
   void receiveEmptyMessage(
-    final CoapINextLayer nextLayer,
     final CoapExchange initialExchange,
     final CoapEmptyMessage message,
   ) {
@@ -183,7 +136,7 @@ class CoapObserveLayer extends CoapAbstractLayer {
       } // Else there was no observe relation ship and this
       // layer ignores the rst.
     }
-    super.receiveEmptyMessage(nextLayer, exchange, message);
+    super.receiveEmptyMessage(exchange, message);
   }
 
   static bool _isInTransit(final CoapResponse response) {
@@ -195,7 +148,6 @@ class CoapObserveLayer extends CoapAbstractLayer {
   }
 
   void _prepareSelfReplacement(
-    final CoapINextLayer nextLayer,
     final CoapExchange exchange,
     final CoapResponse response,
   ) {
@@ -209,7 +161,7 @@ class CoapObserveLayer extends CoapAbstractLayer {
         if (next != null) {
           // this is not a self replacement, hence a new ID
           next.id = null;
-          sendResponse(nextLayer, exchange, next);
+          sendResponse(exchange, next);
         }
       }
       ..retransmittingHook = () {
@@ -224,12 +176,12 @@ class CoapObserveLayer extends CoapAbstractLayer {
           // Convert all notification retransmissions to CON
           if (next.type != CoapMessageType.con) {
             next.type = CoapMessageType.con;
-            _prepareSelfReplacement(nextLayer, exchange, next);
+            _prepareSelfReplacement(exchange, next);
           }
           relation
             ..currentControlNotification = next
             ..nextControlNotification = null;
-          sendResponse(nextLayer, exchange, next);
+          sendResponse(exchange, next);
         }
       }
       ..timedOutHook = () {
@@ -244,10 +196,53 @@ class CoapObserveLayer extends CoapAbstractLayer {
   ) {
     final timeout = response.maxAge * 1000 + _backoff;
     exchange
-        .getOrAdd<CoapReregistrationContext>(
+        .getOrAdd<_ReregistrationContext>(
           reregistrationContextKey,
-          CoapReregistrationContext(exchange, timeout, reregister),
+          _ReregistrationContext(exchange, timeout, reregister),
         )!
         .restart();
+  }
+}
+
+/// Registration context
+class _ReregistrationContext {
+  /// Construction
+  _ReregistrationContext(this._exchange, this._timeout, this._reregister);
+
+  final CoapExchange _exchange;
+  final void Function(CoapRequest) _reregister;
+  Timer? _timer;
+  final int _timeout;
+
+  /// Start
+  void start() {
+    _timer = Timer(Duration(milliseconds: _timeout), _timerElapsed);
+  }
+
+  /// Restart
+  void restart() {
+    cancel();
+    _timer = Timer(Duration(milliseconds: _timeout), _timerElapsed);
+  }
+
+  /// Cancel
+  void cancel() {
+    _timer?.cancel();
+  }
+
+  void _timerElapsed() {
+    final request = _exchange.request!;
+    if (!request.isCancelled) {
+      final refresh = CoapRequest.newGet()
+        ..setOptions(request.getAllOptions())
+        // Make sure Observe is set and zero
+        ..observe = 0
+        // Use same Token
+        ..token = request.token
+        ..destination = request.destination
+        ..copyEventHandler(request);
+      _exchange.fireReregistering(refresh);
+      _reregister(refresh);
+    }
   }
 }

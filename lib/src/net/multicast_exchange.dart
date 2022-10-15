@@ -7,7 +7,7 @@
 
 import '../coap_request.dart';
 import '../coap_response.dart';
-import 'coap_exchange.dart';
+import 'exchange.dart';
 
 class CoapMulticastExchange extends CoapExchange {
   CoapMulticastExchange(

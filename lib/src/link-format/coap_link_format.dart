@@ -14,8 +14,8 @@ import '../util/coap_scanner.dart';
 import 'coap_link_attribute.dart';
 import 'coap_web_link.dart';
 import 'resources/coap_endpoint_resource.dart';
-import 'resources/coap_iresource.dart';
 import 'resources/coap_remote_resource.dart';
+import 'resources/coap_resource.dart';
 import 'resources/coap_resource_attributes.dart';
 
 enum LinkFormatParameterType {
@@ -157,11 +157,11 @@ class CoapLinkFormat {
   static final RegExp equalRegex = RegExp('=');
 
   /// Serialize
-  static String serialize(final CoapIResource root) =>
+  static String serialize(final CoapResource root) =>
       _serializeQueries(root, null);
 
   static String _serializeQueries(
-    final CoapIResource root,
+    final CoapResource root,
     final Iterable<String>? queries,
   ) {
     final linkFormat = StringBuffer();
@@ -231,7 +231,7 @@ class CoapLinkFormat {
   }
 
   static void _serializeTree(
-    final CoapIResource resource,
+    final CoapResource resource,
     final Iterable<String>? queries,
     final StringBuffer sb,
   ) {
@@ -240,7 +240,7 @@ class CoapLinkFormat {
       sb.write(',');
     }
     // sort by resource name
-    final children = resource.children! as List<CoapIResource>
+    final children = resource.children! as List<CoapResource>
       ..sort(
         (final r1, final r2) => r1.name!.compareTo(r2.name!),
       );
@@ -250,7 +250,7 @@ class CoapLinkFormat {
   }
 
   static void _serializeResource(
-    final CoapIResource resource,
+    final CoapResource resource,
     final StringBuffer sb,
   ) {
     sb.write('<${resource.path}${resource.name}>');
@@ -431,7 +431,7 @@ class CoapLinkFormat {
   }
 
   static bool _matchesString(
-    final CoapIResource resource,
+    final CoapResource resource,
     final Iterable<String>? query,
   ) {
     if (query == null) {

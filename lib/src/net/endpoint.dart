@@ -19,38 +19,33 @@ import '../coap_request.dart';
 import '../coap_response.dart';
 import '../event/coap_event_bus.dart';
 import '../network/coap_inetwork.dart';
-import '../stack/coap_stack.dart';
-import 'coap_exchange.dart';
-import 'coap_iendpoint.dart';
-import 'coap_imatcher.dart';
-import 'coap_ioutbox.dart';
-import 'coap_matcher.dart';
+import '../stack/layer_stack.dart';
+import 'exchange.dart';
+import 'matcher.dart';
+import 'outbox.dart';
 
 /// EndPoint encapsulates the stack that executes the CoAP protocol.
-class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
+class Endpoint implements Outbox {
   /// Instantiates a new endpoint with the
   /// specified channel and configuration.
-  CoapEndPoint(this._socket, this._config, {required final String namespace})
+  Endpoint(this._socket, this._config, {required final String namespace})
       : _eventBus = CoapEventBus(namespace: namespace),
         _matcher = CoapMatcher(_config, namespace: namespace),
-        _coapStack = CoapStack(_config),
+        _coapStack = LayerStack(_config),
         _currentId = _config.useRandomIDStart ? Random().nextInt(1 << 16) : 0 {
     subscr = _eventBus.on<CoapDataReceivedEvent>().listen(_receiveData);
   }
 
   final CoapEventBus _eventBus;
 
-  @override
   String get namespace => _eventBus.namespace;
 
   final DefaultCoapConfig _config;
 
-  @override
   DefaultCoapConfig get config => _config;
 
   int _currentId;
 
-  @override
   int get nextMessageId {
     if (++_currentId >= (1 << 16)) {
       _currentId = 1;
@@ -58,20 +53,17 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
     return _currentId;
   }
 
-  @override
   InternetAddress? get destination => _socket.address;
 
-  final CoapStack _coapStack;
+  final LayerStack _coapStack;
   late final StreamSubscription<CoapDataReceivedEvent> subscr;
 
-  final CoapIMatcher _matcher;
+  final CoapMatcher _matcher;
 
   final CoapINetwork _socket;
 
-  @override
-  CoapIOutbox get outbox => this;
+  Outbox get outbox => this;
 
-  @override
   void start() {
     try {
       subscr.resume();
@@ -82,7 +74,6 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
     }
   }
 
-  @override
   void stop() {
     _matcher.stop();
     _socket.close();
@@ -91,17 +82,14 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
     _eventBus.destroy();
   }
 
-  @override
   void clear() {
     _matcher.clear();
   }
 
-  @override
   void sendEpRequest(final CoapRequest request) {
     _coapStack.sendRequest(request);
   }
 
-  @override
   void sendEpResponse(
     final CoapExchange exchange,
     final CoapResponse response,
@@ -109,7 +97,6 @@ class CoapEndPoint implements CoapIEndPoint, CoapIOutbox {
     _coapStack.sendResponse(exchange, response);
   }
 
-  @override
   void sendEpEmptyMessage(
     final CoapExchange exchange,
     final CoapEmptyMessage message,

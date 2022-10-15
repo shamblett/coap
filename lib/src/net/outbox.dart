@@ -8,10 +8,10 @@
 import '../coap_empty_message.dart';
 import '../coap_request.dart';
 import '../coap_response.dart';
-import 'coap_exchange.dart';
+import 'exchange.dart';
 
 /// Interface for an Outbox
-abstract class CoapIOutbox {
+abstract class Outbox {
   /// Sends the specified request over the connector that the
   /// stack is connected to.
   void sendRequest(final CoapExchange exchange, final CoapRequest request);
