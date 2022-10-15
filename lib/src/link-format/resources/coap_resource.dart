@@ -5,8 +5,8 @@
  * Copyright :  S.Hamblett
  */
 
-import '../../net/exchange.dart';
 import '../../net/endpoint.dart';
+import '../../net/exchange.dart';
 import '../../observe/coap_observe_relation.dart';
 import 'coap_resource_attributes.dart';
 
