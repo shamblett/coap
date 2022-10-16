@@ -118,6 +118,33 @@ class ContentFormatOption extends IntegerOption implements OscoreOptionClassE {
       : super.parse(OptionType.contentFormat, bytes);
 }
 
+/// Models the legal values for including the [ObserveOption] an a CoAP GET
+/// request.
+///
+/// See [RFC 7641, section 2] for more information.
+///
+///
+/// [RFC 7641, section 2]: https://www.rfc-editor.org/rfc/rfc7641#section-2
+enum ObserveRegistration {
+  register(0),
+  deregister(1),
+  ;
+
+  /// Constructor
+  const ObserveRegistration(this.value);
+
+  /// The numeric value associated with this [ObserveRegistration].
+  final int value;
+
+  static final _registry = Map.fromEntries(
+    values.map((final value) => MapEntry(value.value, value)),
+  );
+
+  /// Parses a numeric [value] and returns an [ObserveRegistration] enum value
+  /// if it matches.
+  static ObserveRegistration? parse(final int value) => _registry[value];
+}
+
 /// Option for observing resources with CoAP.
 ///
 /// Specified in [RFC 7641, section 2].
@@ -130,6 +157,19 @@ class ObserveOption extends IntegerOption
 
   ObserveOption.parse(final Uint8Buffer bytes)
       : super.parse(OptionType.observe, bytes);
+
+  /// Creates a [ObserveOption] that starts an observation process when included
+  /// in a GET request.
+  ObserveOption.register() : this(ObserveRegistration.register.value);
+
+  /// Creates a [ObserveOption] that terminates an observation process when
+  /// included in a GET request.
+  ObserveOption.deregister() : this(ObserveRegistration.deregister.value);
+
+  /// Returns the [ObserveRegistration] value this option represents if its
+  /// value can be parsed as either a registration (= 0) or a deregistration.
+  ObserveRegistration? get registrationValue =>
+      ObserveRegistration.parse(value);
 }
 
 class UriPortOption extends IntegerOption implements OscoreOptionClassU {

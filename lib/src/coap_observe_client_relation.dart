@@ -12,6 +12,7 @@ import 'package:meta/meta.dart';
 
 import 'coap_request.dart';
 import 'coap_response.dart';
+import 'option/integer_option.dart';
 
 /// Represents a CoAP observe relation between a CoAP client and a
 /// resource on a server.
@@ -69,7 +70,7 @@ class CoapObserveClientRelation extends Stream<CoapResponse> {
   CoapRequest newCancel() => CoapRequest.newGet()
     // Copy options, but set Observe to cancel
     ..setOptions(_request.getAllOptions())
-    ..observe = 1
+    ..observe = ObserveRegistration.deregister.value
     // Use same Token
     ..token = _request.token
     ..destination = _request.destination

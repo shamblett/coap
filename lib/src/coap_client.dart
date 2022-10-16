@@ -449,7 +449,7 @@ class CoapClient {
     final int maxRetransmit = 0,
   }) async {
     request
-      ..observe = 0
+      ..observe = ObserveRegistration.register.value
       ..maxRetransmit = maxRetransmit;
     final responseStream = _sendWithStreamResponse(request).asBroadcastStream();
     final relation = CoapObserveClientRelation(request, responseStream);

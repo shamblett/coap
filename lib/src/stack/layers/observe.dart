@@ -236,7 +236,7 @@ class _ReregistrationContext {
       final refresh = CoapRequest.newGet()
         ..setOptions(request.getAllOptions())
         // Make sure Observe is set and zero
-        ..observe = 0
+        ..observe = ObserveRegistration.register.value
         // Use same Token
         ..token = request.token
         ..destination = request.destination

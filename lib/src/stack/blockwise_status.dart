@@ -21,9 +21,6 @@ class BlockwiseStatus {
     this.currentSZX,
   );
 
-  /// Not observing
-  static const int noObserve = -1;
-
   /// Current num
   int currentNUM = 0;
 
@@ -46,7 +43,7 @@ class BlockwiseStatus {
   bool complete = false;
 
   /// Observe
-  int observe = noObserve;
+  int? observe;
 
   /// Blocks
   List<Uint8Buffer> blocks = <Uint8Buffer>[];

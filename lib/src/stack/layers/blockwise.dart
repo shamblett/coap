@@ -358,7 +358,7 @@ class BlockwiseLayer extends BaseLayer {
 
           // Check if this response is a notification
           final observe = status.observe;
-          if (observe != BlockwiseStatus.noObserve) {
+          if (observe != null) {
             assembled.addOption(ObserveOption(observe));
             // This is necessary for notifications that are sent blockwise:
             // Reset block number AND container with all blocks
