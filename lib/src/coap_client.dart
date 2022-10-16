@@ -587,7 +587,7 @@ class CoapClient {
     }
     if (earlyBlock2Negotiation) {
       request.setBlock2(
-        CoapBlockOption.encodeSZX(_config.preferredBlockSize),
+        BlockSize.fromDecodedValue(_config.preferredBlockSize),
         0,
         m: false,
       );

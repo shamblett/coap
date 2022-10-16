@@ -732,7 +732,7 @@ abstract class CoapMessage {
   }
 
   /// Block 1
-  void setBlock1(final int szx, final int num, {required final bool m}) {
+  void setBlock1(final BlockSize szx, final int num, {required final bool m}) {
     setOption(
       Block1Option.fromParts(num, szx, m: m),
     );
@@ -750,7 +750,7 @@ abstract class CoapMessage {
   }
 
   /// Block 2
-  void setBlock2(final int szx, final int num, {required final bool m}) {
+  void setBlock2(final BlockSize szx, final int num, {required final bool m}) {
     setOption(
       Block2Option.fromParts(num, szx, m: m),
     );

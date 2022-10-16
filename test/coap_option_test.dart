@@ -129,7 +129,7 @@ void main() {
       /// Helper function that creates a BlockOption with the specified
       /// parameters and serializes them to a byte array.
       typed.Uint8Buffer? toBytes(
-        final int szx,
+        final BlockSize szx,
         final int num, {
         required final bool m,
       }) {
@@ -138,28 +138,28 @@ void main() {
       }
 
       // Test assumes network byte ordering is needed
-      expect(toBytes(0, 0, m: false), <int>[]);
-      expect(toBytes(0, 1, m: false), [0x10]);
-      expect(toBytes(0, 15, m: false), [0xf0]);
+      expect(toBytes(BlockSize.blockSize16, 0, m: false), <int>[]);
+      expect(toBytes(BlockSize.blockSize16, 1, m: false), [0x10]);
+      expect(toBytes(BlockSize.blockSize16, 15, m: false), [0xf0]);
       expect(
-        toBytes(0, 16, m: false),
+        toBytes(BlockSize.blockSize16, 16, m: false),
         [0x01, 0x00].reversed,
       );
       expect(
-        toBytes(0, 79, m: false),
+        toBytes(BlockSize.blockSize16, 79, m: false),
         [0x04, 0xf0].reversed,
       );
       expect(
-        toBytes(0, 113, m: false),
+        toBytes(BlockSize.blockSize16, 113, m: false),
         [0x07, 0x10].reversed,
       );
 
       expect(
-        () => toBytes(0, 26387, m: false),
+        () => toBytes(BlockSize.blockSize16, 26387, m: false),
         throwsA(isA<UnknownCriticalOptionException>()),
       );
       expect(
-        () => toBytes(0, 1048575, m: false),
+        () => toBytes(BlockSize.blockSize16, 1048575, m: false),
         throwsA(isA<UnknownCriticalOptionException>()),
       );
     });
@@ -167,7 +167,11 @@ void main() {
     test('Combined', () {
       /// Converts a BlockOption with the specified parameters to a byte array
       /// and back and checks that the result is the same as the original.
-      void testCombined(final int szx, final int num, {required final bool m}) {
+      void testCombined(
+        final BlockSize szx,
+        final int num, {
+        required final bool m,
+      }) {
         final block = Block1Option.fromParts(num, szx, m: m);
         final copy = Block1Option.parse(block.byteValue);
         expect(block.szx, copy.szx);
@@ -175,19 +179,19 @@ void main() {
         expect(block.num, copy.num);
       }
 
-      testCombined(0, 0, m: false);
-      testCombined(0, 1, m: false);
-      testCombined(0, 15, m: false);
-      testCombined(0, 16, m: false);
-      testCombined(0, 79, m: false);
-      testCombined(0, 113, m: false);
+      testCombined(BlockSize.blockSize16, 0, m: false);
+      testCombined(BlockSize.blockSize16, 1, m: false);
+      testCombined(BlockSize.blockSize16, 15, m: false);
+      testCombined(BlockSize.blockSize16, 16, m: false);
+      testCombined(BlockSize.blockSize16, 79, m: false);
+      testCombined(BlockSize.blockSize16, 113, m: false);
 
       expect(
-        () => testCombined(0, 26387, m: false),
+        () => testCombined(BlockSize.blockSize16, 26387, m: false),
         throwsA(isA<UnknownCriticalOptionException>()),
       );
       expect(
-        () => testCombined(0, 1048575, m: false),
+        () => testCombined(BlockSize.blockSize16, 1048575, m: false),
         throwsA(isA<UnknownCriticalOptionException>()),
       );
     });

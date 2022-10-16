@@ -50,8 +50,7 @@ class BlockwiseLayer extends BaseLayer {
       // Note: We do not regard it as random access when the block num is
       // 0. This is because the user might just want to do early block
       // size negotiation but actually wants to receive all blocks.
-      final status = BlockwiseStatus(request.contentFormat)
-        ..currentSZX = request.block2!.szx
+      final status = BlockwiseStatus(request.contentFormat, request.block2!.szx)
         ..currentNUM = request.block2!.num
         ..randomAccess = true;
       exchange.responseBlockStatus = status;
@@ -84,7 +83,7 @@ class BlockwiseLayer extends BaseLayer {
       var status = _findRequestBlockStatus(exchange, request);
       if (block1.num == 0 && status.currentNUM > 0) {
         // Reset the blockwise transfer
-        status = BlockwiseStatus(request.contentType);
+        status = BlockwiseStatus(request.contentType, status.currentSZX);
         exchange.requestBlockStatus = status;
       }
 
@@ -222,7 +221,7 @@ class BlockwiseLayer extends BaseLayer {
 
   BlockwiseStatus _copyBlockStatus(
     final BlockwiseStatus? oldBlockwiseStatus,
-    final int currentSZX,
+    final BlockSize currentSZX,
   ) {
     final newStatus = BlockwiseStatus.withSize(
       oldBlockwiseStatus!.contentFormat,
@@ -276,11 +275,8 @@ class BlockwiseLayer extends BaseLayer {
       final status = exchange.requestBlockStatus!;
       if (!status.complete) {
         // Send next block
-        final currentSize = 1 << (4 + status.currentSZX);
-        final nextNum =
-            (status.currentNUM + currentSize / block1.size()).toInt();
         status
-          ..currentNUM = nextNum
+          ..currentNUM = status.currentNUM + 1
           ..currentSZX = block1.szx;
         final nextBlock = _getNextRequestBlock(exchange.request!, status);
         if (exchange is CoapMulticastExchange) {
@@ -337,7 +333,7 @@ class BlockwiseLayer extends BaseLayer {
           if (exchange is CoapMulticastExchange) {
             status = _copyBlockStatus(
               exchange.responseBlockStatus,
-              nextBlock.value,
+              nextBlock.szx,
             );
             exchange = _convertMutlicastToUnicastExchange(exchange, block);
           } else {
@@ -398,8 +394,8 @@ class BlockwiseLayer extends BaseLayer {
   ) {
     var status = exchange.requestBlockStatus;
     if (status == null) {
-      status = BlockwiseStatus(request.contentType)
-        ..currentSZX = CoapBlockOption.encodeSZX(_preferredBlockSize);
+      final blockSize = BlockSize.fromDecodedValue(_preferredBlockSize);
+      status = BlockwiseStatus(request.contentType, blockSize);
       exchange.requestBlockStatus = status;
     }
     // sets a timeout to complete exchange
@@ -419,7 +415,7 @@ class BlockwiseLayer extends BaseLayer {
       ..destination = request.destination
       ..token = request.token;
 
-    final currentSize = 1 << (4 + szx);
+    final currentSize = szx.decodedValue;
     final from = num * currentSize;
     final to = min((num + 1) * currentSize, request.payloadSize);
     final length = to - from;
@@ -474,8 +470,10 @@ class BlockwiseLayer extends BaseLayer {
     var status = exchange.responseBlockStatus;
     if (status == null || exchange is CoapMulticastExchange) {
       final blockOptions = response!.getOptions<Block2Option>();
-      status = BlockwiseStatus(response.contentType)
-        ..currentSZX = CoapBlockOption.encodeSZX(_preferredBlockSize)
+      status = BlockwiseStatus(
+        response.contentType,
+        BlockSize.fromDecodedValue(_preferredBlockSize),
+      )
         ..currentNUM = blockOptions.toList()[0].value
         ..complete = false;
       exchange.responseBlockStatus = status;
@@ -506,7 +504,7 @@ class BlockwiseLayer extends BaseLayer {
     }
 
     final payloadSize = response.payloadSize;
-    final currentSize = 1 << (4 + szx);
+    final currentSize = szx.decodedValue;
     final from = num * currentSize;
     if (payloadSize > 0 && payloadSize > from) {
       final to = min((num + 1) * currentSize, response.payloadSize);
