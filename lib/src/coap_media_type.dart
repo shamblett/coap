@@ -151,6 +151,28 @@ enum CoapMediaType {
   /// application/coap-group+json
   applicationCoapGroupJson(256, 'application', 'coap-group+json'),
 
+  /// Content-Format for Media-Type `application/concise-problem-details+cbor`.
+  ///
+  /// Defined in [RFC-ietf-core-problem-details-08].
+  ///
+  /// [RFC-ietf-core-problem-details-08]: https://datatracker.ietf.org/doc/html/draft-ietf-core-problem-details-08
+  applicationConciseProblemDetailsCbor(
+    257,
+    'application',
+    'concise-problem-details+cbor',
+  ),
+
+  /// Content-Format for Media-Type `application/swid+cbor`.
+  ///
+  /// Defined in [RFC-ietf-sacm-coswid-22].
+  ///
+  /// [RFC-ietf-sacm-coswid-22]: https://datatracker.ietf.org/doc/html/draft-ietf-sacm-coswid-22
+  applicationSwidCbor(
+    258,
+    'application',
+    'swid+cbor',
+  ),
+
   /// application/dots+cbor
   applicationDotsCbor(271, 'application', 'dots+cbor'),
 
@@ -218,8 +240,19 @@ enum CoapMediaType {
     parameters: {'id': 'name'},
   ),
 
-  /// application/td+json
+  /// Content-Format for Media-Type `application/td+json`.
+  ///
+  /// Defined in [Web of Things (WoT) Thing Description 1.1].
+  ///
+  /// [Web of Things (WoT) Thing Description 1.1]: https://www.w3.org/TR/wot-thing-description11/
   applicationTdJson(432, 'application', 'td+json'),
+
+  /// Content-Format for Media-Type `application/tm+json`.
+  ///
+  /// Defined in [Web of Things (WoT) Thing Description 1.1].
+  ///
+  /// [Web of Things (WoT) Thing Description 1.1]: https://www.w3.org/TR/wot-thing-description11/
+  applicationTmJson(433, 'application', 'tm+json'),
 
   /// application/voucher-cose+cbor
   applicationVoucerCoseCbor(836, 'application', 'voucher-cose+cbor'),
