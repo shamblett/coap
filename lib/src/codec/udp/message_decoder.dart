@@ -50,12 +50,7 @@ CoapMessage? deserializeUdpMessage(final Uint8Buffer data) {
   }
 
   final id = reader.read(message_format.idBits);
-
-  var token = _readToken(tokenLength, reader);
-  if (token == null) {
-    token = Uint8Buffer();
-    hasFormatError = true;
-  }
+  final token = _readToken(tokenLength, reader);
 
   Uint8Buffer? payload;
   var hasUnknownCriticalOption = false;
@@ -161,11 +156,7 @@ CoapMessage? deserializeUdpMessage(final Uint8Buffer data) {
   return null;
 }
 
-Uint8Buffer? _readToken(final int? tokenLength, final DatagramReader reader) {
-  if (tokenLength == null) {
-    return null;
-  }
-
+Uint8Buffer _readToken(final int tokenLength, final DatagramReader reader) {
   if (tokenLength > 0 && tokenLength < 15) {
     final actualTokenLength = _readExtendedTokenLength(tokenLength, reader);
 
@@ -174,7 +165,7 @@ Uint8Buffer? _readToken(final int? tokenLength, final DatagramReader reader) {
     }
   }
 
-  return null;
+  return Uint8Buffer();
 }
 
 /// Read a potentially extended token length as specified in
