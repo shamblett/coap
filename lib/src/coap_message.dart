@@ -20,6 +20,9 @@ import 'coap_media_type.dart';
 import 'coap_message_type.dart';
 import 'coap_option.dart';
 import 'coap_option_type.dart';
+import 'coap_response.dart';
+import 'codec/udp/message_decoder.dart';
+import 'codec/udp/message_encoder.dart';
 import 'event/coap_event_bus.dart';
 import 'util/coap_byte_array_util.dart';
 
@@ -32,7 +35,24 @@ typedef HookFunction = void Function();
 abstract class CoapMessage {
   CoapMessage(this.code, this._type);
 
+  CoapMessage.fromParsed(
+    this.code,
+    this._type, {
+    required final int id,
+    required final Uint8Buffer token,
+    required final List<CoapOption> options,
+    required this.hasUnknownCriticalOption,
+    required this.hasFormatError,
+    this.payload,
+  }) {
+    this.id = id;
+    this.token = token;
+    setOptions(options);
+  }
+
   bool hasUnknownCriticalOption = false;
+
+  bool hasFormatError = false;
 
   CoapMessageType? _type;
 
@@ -77,6 +97,12 @@ abstract class CoapMessage {
   /// Adds an option to the list of options of this CoAP message.
   void addOption(final CoapOption option) =>
       _optionMap[option.type] = (_optionMap[option.type] ?? [])..add(option);
+
+  bool get needsRejection =>
+      // TODO(JKRhb): Revisit conditions for rejection
+      (type == CoapMessageType.non && hasUnknownCriticalOption) ||
+      hasFormatError ||
+      (this is CoapResponse && hasUnknownCriticalOption);
 
   /// Remove a specific option, returns true if the option has been removed.
   bool removeOption(final CoapOption option) {
@@ -151,11 +177,12 @@ abstract class CoapMessage {
   }
 
   set token(final Uint8Buffer? value) {
-    if (value != null && value.length > 8) {
+    const maxValue = (1 << 16) - 270;
+    if (value != null && value.length > maxValue) {
       throw ArgumentError.value(
         value,
         'Message::token',
-        'Token length must be between 0 and 8 inclusive.',
+        'Token length must be between 0 and $maxValue inclusive.',
       );
     }
     _token = value;
@@ -255,13 +282,6 @@ abstract class CoapMessage {
   bool get duplicate => _duplicate;
   @internal
   set duplicate(final bool val) => _duplicate = val;
-
-  Uint8Buffer? _bytes;
-
-  /// The serialized message as byte array, or null if not serialized yet.
-  Uint8Buffer? get bytes => _bytes;
-  @internal
-  set bytes(final Uint8Buffer? val) => _bytes = val;
 
   DateTime? _timestamp;
 
@@ -964,4 +984,30 @@ abstract class CoapMessage {
     }
     return str != '' ? '  $name: $str,\n' : '';
   }
+
+  /// Serializes this CoAP message from the UDP message format.
+  ///
+  /// Is also used for DTLS.
+  static CoapMessage? fromUdpPayload(final Uint8Buffer data) =>
+      deserializeUdpMessage(data);
+
+  /// Serializes this CoAP message into the UDP message format.
+  ///
+  /// Is also used for DTLS.
+  Uint8Buffer toUdpPayload() => serializeUdpMessage(this);
+
+  /// Serializes this CoAP message from the TCP message format.
+  ///
+  /// Is also used for TLS.
+  static CoapMessage? fromTcpPayload(final Uint8Buffer data) =>
+      throw UnimplementedError(
+        'TCP segment deserialization is not implemented yet.',
+      );
+
+  /// Serializes this CoAP message into the TCP message format.
+  ///
+  /// Is also used for TLS.
+  Uint8Buffer toTcpPayload() => throw UnimplementedError(
+        'TCP segment serialization is not implemented yet.',
+      );
 }

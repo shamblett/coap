@@ -8,8 +8,5 @@ import 'package:coap/coap.dart';
 /// The file can't be empty, so version must as a minimum be present.
 class CoapConfigDefault extends DefaultCoapConfig {
   @override
-  String get version => 'RFC7252';
-
-  @override
   String get deduplicator => 'MarkAndSweep';
 }

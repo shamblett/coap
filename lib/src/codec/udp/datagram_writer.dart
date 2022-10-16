@@ -11,9 +11,9 @@ import 'package:typed_data/typed_data.dart';
 
 /// This class describes the functionality to write raw network-ordered
 /// datagrams on bit-level.
-class CoapDatagramWriter {
+class DatagramWriter {
   /// Initializes a new DatagramWriter object
-  CoapDatagramWriter()
+  DatagramWriter()
       : _buffer = Uint8Buffer(),
         _currentByte = ByteData(1)..setUint8(0, 0),
         _currentBitIndex = 7;

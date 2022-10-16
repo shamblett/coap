@@ -8,9 +8,6 @@ import 'package:coap/coap.dart';
 /// The file can't be empty, so version must as a minimum be present.
 class CoapConfig extends DefaultCoapConfig {
   @override
-  String get version => 'RFC7252';
-
-  @override
   int get defaultPort => 5683;
 
   @override

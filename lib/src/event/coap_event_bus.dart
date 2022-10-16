@@ -6,7 +6,6 @@
  */
 
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:event_bus/event_bus.dart';
 
@@ -143,18 +142,18 @@ enum CoapOrigin {
 }
 
 /// Data received Event
-class CoapDataReceivedEvent {
+class CoapMessageReceivedEvent {
   /// Construction
-  CoapDataReceivedEvent(this.data, this.address);
+  CoapMessageReceivedEvent(this.coapMessage, this.address);
 
   /// The data
-  Uint8List data;
+  final CoapMessage? coapMessage;
 
   /// The address
   InternetAddress address;
 
   @override
-  String toString() => '$runtimeType:\n$data from ${address.address}';
+  String toString() => '$runtimeType:\n$coapMessage from ${address.address}';
 }
 
 class CoapSocketInitEvent {

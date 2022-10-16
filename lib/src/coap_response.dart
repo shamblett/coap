@@ -11,6 +11,7 @@ import 'package:typed_data/typed_buffers.dart';
 import 'coap_code.dart';
 import 'coap_message.dart';
 import 'coap_message_type.dart';
+import 'coap_option.dart';
 import 'coap_request.dart';
 
 /// Represents a CoAP response to a CoAP request.
@@ -68,4 +69,24 @@ class CoapResponse extends CoapMessage {
       CoapResponse(statusCode, type)
         ..destination = request.source
         ..token = request.token;
+
+  CoapResponse.fromParsed({
+    required final CoapCode coapCode,
+    required final CoapMessageType type,
+    required final int id,
+    required final Uint8Buffer token,
+    required final List<CoapOption> options,
+    required final Uint8Buffer? payload,
+    required final bool hasUnknownCriticalOption,
+    required final bool hasFormatError,
+  }) : super.fromParsed(
+          coapCode,
+          type,
+          id: id,
+          token: token,
+          options: options,
+          hasUnknownCriticalOption: hasUnknownCriticalOption,
+          hasFormatError: hasFormatError,
+          payload: payload,
+        );
 }

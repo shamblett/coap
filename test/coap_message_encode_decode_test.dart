@@ -8,8 +8,8 @@
  */
 import 'package:coap/coap.dart';
 import 'package:coap/src/coap_message.dart';
-import 'package:coap/src/specification/coap_ispec.dart';
-import 'package:coap/src/specification/rfcs/coap_rfc7252.dart';
+import 'package:coap/src/codec/udp/message_decoder.dart';
+import 'package:coap/src/codec/udp/message_encoder.dart';
 import 'package:collection/collection.dart';
 import 'package:test/test.dart';
 import 'package:typed_data/typed_data.dart' as typed;
@@ -19,164 +19,160 @@ void main() {
   // ignore: unused_local_variable
   final DefaultCoapConfig conf = CoapConfigDefault();
   group('COAP All', () {
-    final check = <String, List<List<int>>>{
-      'RFC 7252': <List<int>>[
-        <int>[64, 1, 48, 57, 255, 112, 97, 121, 108, 111, 97, 100],
-        <int>[
-          64,
-          1,
-          48,
-          57,
-          193,
-          0,
-          33,
-          30,
-          255,
-          112,
-          97,
-          121,
-          108,
-          111,
-          97,
-          100
-        ],
-        <int>[
-          64,
-          1,
-          48,
-          57,
-          193,
-          0,
-          255,
-          112,
-          97,
-          121,
-          108,
-          111,
-          97,
-          100,
-        ],
-        <int>[
-          85,
-          2,
-          0,
-          7,
-          11,
-          82,
-          165,
-          77,
-          3,
-          18,
-          34,
-          239,
-          5,
-          88,
-          12,
-          254,
-          157,
-          5,
-          177,
-          40,
-          81,
-          40
-        ],
-        <int>[
-          86,
-          69,
-          0,
-          9,
-          22,
-          255,
-          0,
-          78,
-          100,
-          22,
-          70,
-          1,
-          0,
-          0,
-          0,
-          0,
-          1,
-          67,
-          111,
-          110,
-          101,
-          3,
-          116,
-          119,
-          111,
-          5,
-          116,
-          104,
-          114,
-          101,
-          101,
-          4,
-          102,
-          111,
-          117,
-          114,
-          4,
-          102,
-          105,
-          118,
-          101,
-          3,
-          115,
-          105,
-          120,
-          5,
-          115,
-          101,
-          118,
-          101,
-          110,
-          5,
-          101,
-          105,
-          103,
-          104,
-          116,
-          4,
-          110,
-          105,
-          110,
-          101,
-          3,
-          116,
-          101,
-          110
-        ]
+    final check = [
+      <int>[64, 1, 48, 57, 255, 112, 97, 121, 108, 111, 97, 100],
+      <int>[
+        64,
+        1,
+        48,
+        57,
+        193,
+        0,
+        33,
+        30,
+        255,
+        112,
+        97,
+        121,
+        108,
+        111,
+        97,
+        100
+      ],
+      <int>[
+        64,
+        1,
+        48,
+        57,
+        193,
+        0,
+        255,
+        112,
+        97,
+        121,
+        108,
+        111,
+        97,
+        100,
+      ],
+      <int>[
+        85,
+        2,
+        0,
+        7,
+        11,
+        82,
+        165,
+        77,
+        3,
+        18,
+        34,
+        239,
+        5,
+        88,
+        12,
+        254,
+        157,
+        5,
+        177,
+        40,
+        81,
+        40
+      ],
+      <int>[
+        86,
+        69,
+        0,
+        9,
+        22,
+        255,
+        0,
+        78,
+        100,
+        22,
+        70,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        67,
+        111,
+        110,
+        101,
+        3,
+        116,
+        119,
+        111,
+        5,
+        116,
+        104,
+        114,
+        101,
+        101,
+        4,
+        102,
+        111,
+        117,
+        114,
+        4,
+        102,
+        105,
+        118,
+        101,
+        3,
+        115,
+        105,
+        120,
+        5,
+        115,
+        101,
+        118,
+        101,
+        110,
+        5,
+        101,
+        105,
+        103,
+        104,
+        116,
+        4,
+        110,
+        105,
+        110,
+        101,
+        3,
+        116,
+        101,
+        110
       ]
-    };
+    ];
 
     /// Helper functions
-    void printData(final String name, final List<int> data, final int testNo) {
-      print('Specification name is - $name');
+    void printData(final List<int> data, final int testNo) {
       print('Test number is $testNo');
       print('Data is - $data');
-      print('Chk  is - ${check[name]![testNo]}');
+      print('Chk  is - ${check[testNo]}');
     }
 
     void checkData(
-      final String name,
       final typed.Uint8Buffer data,
       final int testNo,
     ) {
-      printData(name, data.toList(), testNo);
-      expect(data.toList().length, check[name]![testNo].length);
-      expect(leq.equals(data.toList(), check[name]![testNo]), isTrue);
+      printData(data.toList(), testNo);
+      expect(data.toList().length, check[testNo].length);
+      expect(leq.equals(data.toList(), check[testNo]), isTrue);
     }
 
-    void testMessage(final CoapISpec spec, final int testNo) {
+    void testMessage(final int testNo) {
       final CoapMessage msg = CoapRequest(CoapCode.get)
         ..id = 12345
         ..payload = (typed.Uint8Buffer()..addAll('payload'.codeUnits));
-      final data = spec.encode(msg)!;
-      checkData(spec.name, data, testNo);
-      final convMsg = spec.decode(data)!;
-      expect(msg.code, convMsg.code);
+      final data = serializeUdpMessage(msg);
+      checkData(data, testNo);
+      final convMsg = deserializeUdpMessage(data);
+      expect(msg.code, convMsg!.code);
       expect(msg.type, convMsg.type);
       expect(msg.id, convMsg.id);
       expect(msg.getAllOptions().length, convMsg.getAllOptions().length);
@@ -187,7 +183,7 @@ void main() {
       expect(msg.payloadString, convMsg.payloadString);
     }
 
-    void testMessageWithOptions(final CoapISpec spec, final int testNo) {
+    void testMessageWithOptions(final int testNo) {
       final CoapMessage msg = CoapRequest(CoapCode.get)
         ..id = 12345
         ..payload = (typed.Uint8Buffer()..addAll('payload'.codeUnits))
@@ -200,11 +196,11 @@ void main() {
         ..addOption(CoapOption.createVal(OptionType.maxAge, 30));
       expect(msg.getFirstOption(OptionType.contentFormat)!.intValue, 0);
       expect(msg.getFirstOption(OptionType.maxAge)!.value, 30);
-      final data = spec.encode(msg)!;
-      checkData(spec.name, data, testNo);
-      final convMsg = spec.decode(data)!;
+      final data = serializeUdpMessage(msg);
+      checkData(data, testNo);
+      final convMsg = deserializeUdpMessage(data);
 
-      expect(msg.code, convMsg.code);
+      expect(msg.code, convMsg!.code);
       expect(msg.type, convMsg.type);
       expect(msg.id, convMsg.id);
       expect(msg.getAllOptions().length, convMsg.getAllOptions().length);
@@ -226,18 +222,18 @@ void main() {
       );
     }
 
-    void testMessageWithExtendedOption(final CoapISpec spec, final int testNo) {
+    void testMessageWithExtendedOption(final int testNo) {
       final CoapMessage msg = CoapRequest(CoapCode.get)
         ..id = 12345
         ..addOption(CoapOption.createVal(OptionType.contentFormat, 0));
       expect(msg.getFirstOption(OptionType.contentFormat)!.value, 0);
       msg.payload = typed.Uint8Buffer()..addAll('payload'.codeUnits);
 
-      final data = spec.encode(msg)!;
-      checkData(spec.name, data, testNo);
-      final convMsg = spec.decode(data)!;
+      final data = serializeUdpMessage(msg);
+      checkData(data, testNo);
+      final convMsg = deserializeUdpMessage(data);
 
-      expect(msg.code, convMsg.code);
+      expect(msg.code, convMsg!.code);
       expect(msg.type, convMsg.type);
       expect(msg.id, convMsg.id);
       expect(msg.getAllOptions().length, convMsg.getAllOptions().length);
@@ -255,7 +251,7 @@ void main() {
       );
     }
 
-    void testRequestParsing(final CoapISpec spec, final int testNo) {
+    void testRequestParsing(final int testNo) {
       final request = CoapRequest(CoapCode.post, confirmable: false)
         ..id = 7
         ..token = (typed.Uint8Buffer()..addAll(<int>[11, 82, 165, 77, 3]))
@@ -266,12 +262,11 @@ void main() {
         ..contentType = CoapMediaType.fromIntValue(40)
         ..accept = CoapMediaType.fromIntValue(40);
 
-      final bytes = spec.encode(request)!;
-      checkData(spec.name, bytes, testNo);
-      final decoder = spec.newMessageDecoder(bytes);
-      expect(decoder.isRequest, isTrue);
+      final bytes = serializeUdpMessage(request);
+      checkData(bytes, testNo);
+      final result = deserializeUdpMessage(bytes);
+      expect(result!.isRequest, isTrue);
 
-      final result = decoder.decodeRequest()!;
       expect(request.id, result.id);
       expect(
         leq.equals(request.token!.toList(), result.token!.toList()),
@@ -286,7 +281,7 @@ void main() {
       );
     }
 
-    void testResponseParsing(final CoapISpec spec, final int testNo) {
+    void testResponseParsing(final int testNo) {
       final response = CoapResponse(
         CoapCode.content,
         CoapMessageType.non,
@@ -296,37 +291,36 @@ void main() {
         ..addETagOpaque(typed.Uint8Buffer()..addAll(<int>[1, 0, 0, 0, 0, 1]))
         ..locationPath = '/one/two/three/four/five/six/seven/eight/nine/ten';
 
-      final bytes = spec.encode(response)!;
-      checkData(spec.name, bytes, testNo);
+      final bytes = serializeUdpMessage(response);
+      checkData(bytes, testNo);
 
-      final decoder = spec.newMessageDecoder(bytes);
-      expect(decoder.isResponse, isTrue);
+      final message = deserializeUdpMessage(bytes);
+      expect(message!.isResponse, isTrue);
 
-      final result = decoder.decodeResponse()!;
-      expect(response.id, result.id);
+      expect(response.id, message.id);
       expect(
-        leq.equals(response.token!.toList(), result.token!.toList()),
+        leq.equals(response.token!.toList(), message.token!.toList()),
         isTrue,
       );
       expect(
         response.etags.toList().toString(),
-        result.etags.toList().toString(),
+        message.etags.toList().toString(),
       );
       expect(
         leq.equals(
           response.locationPaths.toList(),
-          result.locationPaths.toList(),
+          message.locationPaths.toList(),
         ),
         isTrue,
       );
     }
 
     test('Test RFC 7252', () {
-      testMessage(CoapRfc7252(), 0);
-      testMessageWithOptions(CoapRfc7252(), 1);
-      testMessageWithExtendedOption(CoapRfc7252(), 2);
-      testRequestParsing(CoapRfc7252(), 3);
-      testResponseParsing(CoapRfc7252(), 4);
+      testMessage(0);
+      testMessageWithOptions(1);
+      testMessageWithExtendedOption(2);
+      testRequestParsing(3);
+      testResponseParsing(4);
     });
   });
 }

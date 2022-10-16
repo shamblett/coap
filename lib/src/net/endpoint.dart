@@ -9,8 +9,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:typed_data/typed_data.dart';
-
 import '../coap_config.dart';
 import '../coap_empty_message.dart';
 import '../coap_message.dart';
@@ -33,7 +31,7 @@ class Endpoint implements Outbox {
         _matcher = CoapMatcher(_config, namespace: namespace),
         _coapStack = LayerStack(_config),
         _currentId = _config.useRandomIDStart ? Random().nextInt(1 << 16) : 0 {
-    subscr = _eventBus.on<CoapDataReceivedEvent>().listen(_receiveData);
+    subscr = _eventBus.on<CoapMessageReceivedEvent>().listen(_receiveMessage);
   }
 
   final CoapEventBus _eventBus;
@@ -56,7 +54,7 @@ class Endpoint implements Outbox {
   InternetAddress? get destination => _socket.address;
 
   final LayerStack _coapStack;
-  late final StreamSubscription<CoapDataReceivedEvent> subscr;
+  late final StreamSubscription<CoapMessageReceivedEvent> subscr;
 
   final CoapMatcher _matcher;
 
@@ -104,36 +102,30 @@ class Endpoint implements Outbox {
     _coapStack.sendEmptyMessage(exchange, message);
   }
 
-  void _receiveData(final CoapDataReceivedEvent event) {
-    // clone the data, in case other objects want to do stuff with it, too
-    final data = Uint8Buffer()..addAll(event.data);
-    // Return if we have no data, should not happen but be defensive
-    final decoder = config.spec.newMessageDecoder(data);
-    if (decoder.isRequest) {
-      CoapRequest? request;
-      try {
-        request = decoder.decodeRequest();
-      } on Exception catch (_) {
-        if (!decoder.isReply) {
-          // Manually build RST from raw information
-          final rst = CoapEmptyMessage(CoapMessageType.rst)
-            ..destination = event.address
-            ..id = decoder.id;
-          _eventBus.fire(CoapSendingEmptyMessageEvent(rst));
-          _socket.send(_serializeEmpty(rst), rst.destination);
-        }
-        return;
-      }
+  void _receiveMessage(final CoapMessageReceivedEvent event) {
+    final message = event.coapMessage;
 
-      request!.source = event.address;
+    if (message == null) {
+      return;
+    }
+
+    if (message.needsRejection) {
+      _reject(message);
+      return;
+    }
+
+    message.source = event.address;
+
+    if (message is CoapRequest) {
+      final request = message;
       _eventBus.fire(CoapReceivingRequestEvent(request));
 
       if (!request.isCancelled) {
         final exchange = _matcher.receiveRequest(request)..endpoint = this;
         _coapStack.receiveRequest(exchange, request);
       }
-    } else if (decoder.isResponse) {
-      final response = decoder.decodeResponse()!..source = event.address;
+    } else if (message is CoapResponse) {
+      final response = message;
       _eventBus.fire(CoapReceivingResponseEvent(response));
 
       if (response.hasUnknownCriticalOption) {
@@ -148,9 +140,7 @@ class Endpoint implements Outbox {
           _reject(response);
         }
       }
-    } else if (decoder.isEmpty) {
-      final message = decoder.decodeEmptyMessage()!..source = event.address;
-
+    } else if (message is CoapEmptyMessage) {
       _eventBus.fire(CoapReceivingEmptyMessageEvent(message));
 
       if (!message.isCancelled) {
@@ -177,9 +167,7 @@ class Endpoint implements Outbox {
     _matcher.sendRequest(exchange, request);
     _eventBus.fire(CoapSendingRequestEvent(request));
 
-    if (!request.isCancelled) {
-      _socket.send(_serializeRequest(request), request.destination);
-    }
+    _sendMessage(request);
   }
 
   @override
@@ -187,9 +175,7 @@ class Endpoint implements Outbox {
     _matcher.sendResponse(exchange, response);
     _eventBus.fire(CoapSendingResponseEvent(response));
 
-    if (!response.isCancelled) {
-      _socket.send(_serializeResponse(response), response.destination);
-    }
+    _sendMessage(response);
   }
 
   @override
@@ -200,48 +186,19 @@ class Endpoint implements Outbox {
     _matcher.sendEmptyMessage(exchange, message);
     _eventBus.fire(CoapSendingEmptyMessageEvent(message));
 
-    if (!message.isCancelled) {
-      _socket.send(_serializeEmpty(message), message.destination);
-    }
+    _sendMessage(message);
   }
 
   void _reject(final CoapMessage message) {
     final rst = CoapEmptyMessage.newRST(message);
     _eventBus.fire(CoapSendingEmptyMessageEvent(rst));
 
-    if (!rst.isCancelled) {
-      _socket.send(_serializeEmpty(rst), rst.destination);
-    }
+    _sendMessage(rst);
   }
 
-  Uint8Buffer _serializeEmpty(final CoapEmptyMessage message) {
-    var bytes = message.bytes;
-    if (bytes == null) {
-      bytes = _config.spec.newMessageEncoder().encodeMessage(message);
-      message.bytes = bytes;
+  void _sendMessage(final CoapMessage message) {
+    if (!message.isCancelled) {
+      _socket.send(message);
     }
-    if (bytes != null) {
-      return bytes;
-    } else {
-      return Uint8Buffer();
-    }
-  }
-
-  Uint8Buffer _serializeRequest(final CoapMessage message) {
-    var bytes = message.bytes;
-    if (bytes == null) {
-      bytes = _config.spec.newMessageEncoder().encodeMessage(message);
-      message.bytes = bytes;
-    }
-    return bytes!;
-  }
-
-  Uint8Buffer _serializeResponse(final CoapMessage message) {
-    var bytes = message.bytes;
-    if (bytes == null) {
-      bytes = _config.spec.newMessageEncoder().encodeMessage(message);
-      message.bytes = bytes;
-    }
-    return bytes!;
   }
 }

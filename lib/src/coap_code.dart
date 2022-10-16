@@ -239,6 +239,9 @@ enum CoapCode {
 
   final String description;
 
+  /// Code bit length
+  static const int bitLength = 8;
+
   @override
   String toString() {
     final formattedDetail = codeDetail.toString().padLeft(2, '0');

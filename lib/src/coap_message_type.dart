@@ -28,6 +28,9 @@ enum CoapMessageType {
 
   final String description;
 
+  /// Message type bit length
+  static const int bitLength = 2;
+
   static final _registry = HashMap.fromEntries(
     values.map((final value) => MapEntry(value.code, value)),
   );
