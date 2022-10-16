@@ -19,7 +19,7 @@ import 'package:coap/coap.dart';
 FutureOr<void> main() async {
   final uri = Uri(
     scheme: 'coap',
-    host: CoapDefinedAddress.allNodesIPV6,
+    host: MulticastAddress.allNodesIPV6.address,
   );
   final client = CoapClient(uri);
 
