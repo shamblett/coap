@@ -116,7 +116,7 @@ class _CoapUdpServer extends CoapServer {
       final message = CoapMessage.fromUdpPayload(data);
       if (message is CoapRequest && !message.hasFormatError) {
         if (message.hasUnknownCriticalOption) {
-          _rejectMessage(message, datagram.address, datagram.port);
+          _rejectRequest(message, datagram.address, datagram.port);
           return;
         }
         message
@@ -157,15 +157,23 @@ class _CoapUdpServer extends CoapServer {
     final InternetAddress address,
     final int port,
   ) {
-    _socket.send(response.toUdpPayload().toList(), address, port);
+    _send(response, address, port);
   }
 
-  void _rejectMessage(
+  void _rejectRequest(
+    final CoapRequest request,
+    final InternetAddress address,
+    final int port,
+  ) {
+    final resetMessage = CoapEmptyMessage.newRST(request);
+    _send(resetMessage, address, port);
+  }
+
+  void _send(
     final CoapMessage message,
     final InternetAddress address,
     final int port,
   ) {
-    final resetMessage = CoapEmptyMessage.newRST(message);
-    _socket.send(resetMessage.toUdpPayload().toList(), address, port);
+    _socket.send(message.toUdpPayload().toList(), address, port);
   }
 }
