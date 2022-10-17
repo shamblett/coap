@@ -25,7 +25,9 @@ FutureOr<void> main() async {
         request,
         CoapCode.content,
         CoapMessageType.ack,
-      )..id = request.id;
+      )
+        ..id = request.id
+        ..payloadString = 'Hello World!';
       print('Sending response: $response\n');
       server
         ..sendResponse(response, request.source!, request.uriPort)

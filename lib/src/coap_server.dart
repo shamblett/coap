@@ -15,6 +15,8 @@ import 'package:typed_data/typed_data.dart';
 
 import '../config/coap_config_default.dart';
 import 'coap_config.dart';
+import 'coap_empty_message.dart';
+import 'coap_message.dart';
 import 'coap_request.dart';
 import 'coap_response.dart';
 import 'stack/layer_stack.dart';
@@ -111,16 +113,16 @@ class _CoapUdpServer extends CoapServer {
         return;
       }
       final data = Uint8Buffer()..addAll(datagram.data);
-      final decoder = _config.spec.newMessageDecoder(data);
-      if (decoder.isRequest) {
-        final request = decoder.decodeRequest();
-        if (request == null) {
+      final message = CoapMessage.fromUdpPayload(data);
+      if (message is CoapRequest && !message.hasFormatError) {
+        if (message.hasUnknownCriticalOption) {
+          _rejectMessage(message, datagram.address, datagram.port);
           return;
         }
-        request
+        message
           ..source = datagram.address
           ..uriPort = datagram.port;
-        streamController.sink.add(request);
+        streamController.sink.add(message);
       }
     });
   }
@@ -155,9 +157,15 @@ class _CoapUdpServer extends CoapServer {
     final InternetAddress address,
     final int port,
   ) {
-    final encoder = _config.spec.newMessageEncoder();
-    final bytes = encoder.encodeResponse(response);
-    final buffer = Uint8List.fromList(bytes.toList(growable: false));
-    _socket.send(buffer, address, port);
+    _socket.send(response.toUdpPayload().toList(), address, port);
+  }
+
+  void _rejectMessage(
+    final CoapMessage message,
+    final InternetAddress address,
+    final int port,
+  ) {
+    final resetMessage = CoapEmptyMessage.newRST(message);
+    _socket.send(resetMessage.toUdpPayload().toList(), address, port);
   }
 }
