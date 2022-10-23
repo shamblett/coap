@@ -507,11 +507,7 @@ class CoapClient {
     final stream = _eventBus
         .on<CoapCompletionEvent>()
         .transform<CoapResponse>(_filterEventStream(request))
-        .where(
-          (final response) =>
-              response.token!.equals(request.token!) ||
-              (response.multicastToken?.equals(request.token!) ?? false),
-        )
+        .where((final response) => _matchResponse(response, request))
         .takeWhile((final _) => request.isActive);
 
     _endpoint!.sendEpRequest(request);
@@ -673,6 +669,10 @@ class CoapClient {
     return completer.future;
   }
 }
+
+bool _matchResponse(final CoapResponse response, final CoapRequest request) =>
+    response.token!.equals(request.token!) ||
+    (response.multicastToken?.equals(request.token!) ?? false);
 
 StreamTransformer<CoapCompletionEvent, CoapResponse> _filterEventStream(
   final CoapRequest request,
