@@ -505,13 +505,9 @@ class CoapClient {
     await _prepare(request);
 
     final stream = _eventBus
-        .on<CoapRespondEvent>()
-        .map((final event) => event.resp)
-        .where(
-          (final response) =>
-              response.token!.equals(request.token!) ||
-              (response.multicastToken?.equals(request.token!) ?? false),
-        )
+        .on<CoapCompletionEvent>()
+        .transform<CoapResponse>(_filterEventStream(request))
+        .where((final response) => _matchResponse(response, request))
         .takeWhile((final _) => request.isActive);
 
     _endpoint!.sendEpRequest(request);
@@ -644,17 +640,13 @@ class CoapClient {
     final Stream<CoapResponse> responseStream,
   ) {
     final completer = Completer<CoapResponse>();
-    responseStream.take(1).listen((final response) {
-      if (request.isTimedOut) {
-        completer
-            .completeError(CoapRequestTimeoutException(request.retransmits));
-      } else if (request.isCancelled) {
-        completer.completeError(CoapRequestCancellationException());
-      } else {
+    responseStream.take(1).listen(
+      (final response) {
         response.timestamp = DateTime.now();
         completer.complete(response);
-      }
-    });
+      },
+      onError: completer.completeError,
+    );
     return completer.future;
   }
 
@@ -677,3 +669,38 @@ class CoapClient {
     return completer.future;
   }
 }
+
+bool _matchResponse(final CoapResponse response, final CoapRequest request) =>
+    response.token!.equals(request.token!) ||
+    (response.multicastToken?.equals(request.token!) ?? false);
+
+StreamTransformer<CoapCompletionEvent, CoapResponse> _filterEventStream(
+  final CoapRequest request,
+) =>
+    StreamTransformer<CoapCompletionEvent, CoapResponse>(
+        (final input, final cancelOnError) {
+      final controller = StreamController<CoapResponse>();
+
+      controller.onListen = () {
+        final subscription = input.listen(
+          (final event) async {
+            if (event is CoapRespondEvent) {
+              controller.add(event.resp);
+            } else if (event is CoapTimedOutEvent) {
+              controller.addError(
+                CoapRequestTimeoutException(request.maxRetransmit),
+              );
+            }
+          },
+          onDone: controller.close,
+          onError: controller.addError,
+          cancelOnError: cancelOnError,
+        );
+        controller
+          ..onPause = subscription.pause
+          ..onResume = subscription.resume
+          ..onCancel = subscription.cancel;
+      };
+
+      return controller.stream.listen(null);
+    });

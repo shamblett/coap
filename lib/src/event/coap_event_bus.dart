@@ -15,6 +15,9 @@ import '../coap_request.dart';
 import '../coap_response.dart';
 import '../net/exchange.dart';
 
+/// Interface for events that yield a [CoapResponse] or an [Exception].
+abstract class CoapCompletionEvent {}
+
 abstract class CoapMessageEvent {
   CoapMessageEvent(this.msg);
 
@@ -73,7 +76,8 @@ class CoapRetransmitEvent extends CoapMessageEvent {
 }
 
 /// Timed out event
-class CoapTimedOutEvent extends CoapMessageEvent {
+class CoapTimedOutEvent extends CoapMessageEvent
+    implements CoapCompletionEvent {
   CoapTimedOutEvent(super.msg);
 }
 
@@ -83,7 +87,8 @@ class CoapCancelledEvent extends CoapMessageEvent {
 }
 
 /// Response event
-class CoapRespondEvent extends CoapResponseEvent {
+class CoapRespondEvent extends CoapResponseEvent
+    implements CoapCompletionEvent {
   CoapRespondEvent(super.resp);
 }
 
