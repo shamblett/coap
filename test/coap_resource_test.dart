@@ -108,7 +108,7 @@ void main() {
       const format = '$link1,$link2,$link3';
       final res = CoapRemoteResource.newRoot(format);
 
-      final query = <CoapOption>[CoapOption.createUriQuery('rt=MyName')];
+      final query = <Option<String>>[UriQueryOption('rt=MyName')];
       final queried =
           CoapLinkFormat.serializeOptions(res, query, recursive: true);
       expect(queried, '$link2,$link1');

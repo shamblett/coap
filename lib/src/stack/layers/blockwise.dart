@@ -10,18 +10,17 @@ import 'dart:math';
 
 import 'package:typed_data/typed_data.dart';
 
-import '../../coap_block_option.dart';
 import '../../coap_code.dart';
 import '../../coap_config.dart';
 import '../../coap_empty_message.dart';
 import '../../coap_message.dart';
 import '../../coap_message_type.dart';
-import '../../coap_option.dart';
-import '../../coap_option_type.dart';
 import '../../coap_request.dart';
 import '../../coap_response.dart';
 import '../../net/exchange.dart';
 import '../../net/multicast_exchange.dart';
+import '../../option/coap_block_option.dart';
+import '../../option/integer_option.dart';
 import '../base_layer.dart';
 import '../blockwise_status.dart';
 
@@ -45,14 +44,13 @@ class BlockwiseLayer extends BaseLayer {
   ) {
     final exchange = initialExchange;
 
-    if (request.hasOption(OptionType.block2) && request.block2!.num > 0) {
+    if (request.hasOption<Block2Option>() && request.block2!.num > 0) {
       // This is the case if the user has explicitly added a block option
       // for random access.
       // Note: We do not regard it as random access when the block num is
       // 0. This is because the user might just want to do early block
       // size negotiation but actually wants to receive all blocks.
-      final status = BlockwiseStatus(request.contentFormat)
-        ..currentSZX = request.block2!.szx
+      final status = BlockwiseStatus(request.contentFormat, request.block2!.szx)
         ..currentNUM = request.block2!.num
         ..randomAccess = true;
       exchange.responseBlockStatus = status;
@@ -78,14 +76,14 @@ class BlockwiseLayer extends BaseLayer {
   ) {
     final exchange = initialExchange;
 
-    if (request.hasOption(OptionType.block1)) {
+    if (request.hasOption<Block1Option>()) {
       // This must be a large POST or PUT request
       final block1 = request.block1!;
 
       var status = _findRequestBlockStatus(exchange, request);
       if (block1.num == 0 && status.currentNUM > 0) {
         // Reset the blockwise transfer
-        status = BlockwiseStatus(request.contentType);
+        status = BlockwiseStatus(request.contentType, status.currentSZX);
         exchange.requestBlockStatus = status;
       }
 
@@ -99,12 +97,7 @@ class BlockwiseLayer extends BaseLayer {
             CoapMessageType.con,
           )
             ..addOption(
-              CoapBlockOption.fromParts(
-                OptionType.block1,
-                block1.num,
-                block1.szx,
-                m: block1.m,
-              ),
+              Block1Option.fromParts(block1.num, block1.szx, m: block1.m),
             )
             ..setPayload('Changed Content-Format');
 
@@ -120,14 +113,7 @@ class BlockwiseLayer extends BaseLayer {
             CoapCode.continues,
             CoapMessageType.ack,
           )
-            ..addOption(
-              CoapBlockOption.fromParts(
-                OptionType.block1,
-                block1.num,
-                block1.szx,
-                m: true,
-              ),
-            )
+            ..addOption(Block1Option.fromParts(block1.num, block1.szx, m: true))
             ..last = false;
 
           exchange.currentResponse = piggybacked;
@@ -156,19 +142,13 @@ class BlockwiseLayer extends BaseLayer {
           CoapMessageType.con,
         )
           ..addOption(
-            CoapBlockOption.fromParts(
-              OptionType.block1,
-              block1.num,
-              block1.szx,
-              m: block1.m,
-            ),
+            Block1Option.fromParts(block1.num, block1.szx, m: block1.m),
           )
           ..setPayload('Wrong block number');
         exchange.currentResponse = error;
         super.sendResponse(exchange, error);
       }
-    } else if (exchange.response != null &&
-        request.hasOption(OptionType.block2)) {
+    } else if (exchange.response != null && request.hasOption<Block2Option>()) {
       // The response has already been generated and the client just wants
       // the next block of it
       final block2 = request.block2!;
@@ -179,7 +159,7 @@ class BlockwiseLayer extends BaseLayer {
 
       final block = _getNextResponseBlock(response, status)
         ..token = request.token
-        ..removeOptions(OptionType.observe);
+        ..removeOptions<ObserveOption>();
 
       if (status.complete) {
         // Clean up blockwise status
@@ -241,7 +221,7 @@ class BlockwiseLayer extends BaseLayer {
 
   BlockwiseStatus _copyBlockStatus(
     final BlockwiseStatus? oldBlockwiseStatus,
-    final int currentSZX,
+    final BlockSize currentSZX,
   ) {
     final newStatus = BlockwiseStatus.withSize(
       oldBlockwiseStatus!.contentFormat,
@@ -282,8 +262,8 @@ class BlockwiseLayer extends BaseLayer {
       return;
     }
 
-    if (!response.hasOption(OptionType.block1) &&
-        !response.hasOption(OptionType.block2)) {
+    if (!response.hasOption<Block1Option>() &&
+        !response.hasOption<Block2Option>()) {
       // There is no block1 or block2 option, therefore it is a normal response
       exchange.response = response;
       super.receiveResponse(exchange, response);
@@ -295,11 +275,8 @@ class BlockwiseLayer extends BaseLayer {
       final status = exchange.requestBlockStatus!;
       if (!status.complete) {
         // Send next block
-        final currentSize = 1 << (4 + status.currentSZX);
-        final nextNum =
-            (status.currentNUM + currentSize / block1.size()).toInt();
         status
-          ..currentNUM = nextNum
+          ..currentNUM = status.currentNUM + 1
           ..currentSZX = block1.szx;
         final nextBlock = _getNextRequestBlock(exchange.request!, status);
         if (exchange is CoapMulticastExchange) {
@@ -310,7 +287,7 @@ class BlockwiseLayer extends BaseLayer {
         exchange.currentRequest = nextBlock;
         super.sendRequest(exchange, nextBlock);
         // Do not deliver response
-      } else if (!response.hasOption(OptionType.block2)) {
+      } else if (!response.hasOption<Block2Option>()) {
         // All request block have been acknowledged and we
         // receive a piggy-backed response that needs no blockwise
         // transfer. Thus, deliver it.
@@ -322,8 +299,7 @@ class BlockwiseLayer extends BaseLayer {
     final block2 = response.block2;
     if (block2 != null) {
       var status = _findResponseBlockStatus(exchange, response);
-      final blockStatus = CoapBlockOption(OptionType.block2)
-        ..rawValue = status.currentNUM;
+      final blockStatus = Block2Option(status.currentNUM);
       if (block2.num == blockStatus.num) {
         // We got the block we expected
         status.addBlock(response.payload);
@@ -346,19 +322,18 @@ class BlockwiseLayer extends BaseLayer {
           final szx = block2.szx;
           final m = block2.m;
 
-          final nextBlock =
-              CoapBlockOption.fromParts(OptionType.block2, num, szx, m: m);
+          final nextBlock = Block2Option.fromParts(num, szx, m: m);
           final block = CoapRequest(request.method)
             ..endpoint = request.endpoint
             // NON could make sense over SMS or similar transports
             ..setOptions(request.getAllOptions())
             ..setOption(nextBlock)
             ..destination = response.source
-            ..uriHost = response.source?.host;
+            ..uriHost = response.source?.host ?? '';
           if (exchange is CoapMulticastExchange) {
             status = _copyBlockStatus(
               exchange.responseBlockStatus,
-              nextBlock.intValue,
+              nextBlock.szx,
             );
             exchange = _convertMutlicastToUnicastExchange(exchange, block);
           } else {
@@ -368,8 +343,8 @@ class BlockwiseLayer extends BaseLayer {
           }
 
           // Make sure not to use Observe for block retrieval
-          block.removeOptions(OptionType.observe);
-          status.currentNUM = nextBlock.intValue;
+          block.removeOptions<ObserveOption>();
+          status.currentNUM = nextBlock.value;
           exchange
             ..currentRequest = block
             ..responseBlockStatus = status;
@@ -383,9 +358,8 @@ class BlockwiseLayer extends BaseLayer {
 
           // Check if this response is a notification
           final observe = status.observe;
-          if (observe != BlockwiseStatus.noObserve) {
-            assembled
-                .addOption(CoapOption.createVal(OptionType.observe, observe));
+          if (observe != null) {
+            assembled.addOption(ObserveOption(observe));
             // This is necessary for notifications that are sent blockwise:
             // Reset block number AND container with all blocks
             exchange.responseBlockStatus = null;
@@ -420,8 +394,8 @@ class BlockwiseLayer extends BaseLayer {
   ) {
     var status = exchange.requestBlockStatus;
     if (status == null) {
-      status = BlockwiseStatus(request.contentType)
-        ..currentSZX = CoapBlockOption.encodeSZX(_preferredBlockSize);
+      final blockSize = BlockSize.fromDecodedValue(_preferredBlockSize);
+      status = BlockwiseStatus(request.contentType, blockSize);
       exchange.requestBlockStatus = status;
     }
     // sets a timeout to complete exchange
@@ -441,7 +415,7 @@ class BlockwiseLayer extends BaseLayer {
       ..destination = request.destination
       ..token = request.token;
 
-    final currentSize = 1 << (4 + szx);
+    final currentSize = szx.decodedValue;
     final from = num * currentSize;
     final to = min((num + 1) * currentSize, request.payloadSize);
     final length = to - from;
@@ -449,9 +423,7 @@ class BlockwiseLayer extends BaseLayer {
       ..addAll(request.payload!.getRange(from, from + length));
 
     final m = to < request.payloadSize;
-    block.addOption(
-      CoapBlockOption.fromParts(OptionType.block1, num, szx, m: m),
-    );
+    block.addOption(Block1Option.fromParts(num, szx, m: m));
 
     status.complete = !m;
     return block;
@@ -463,7 +435,7 @@ class BlockwiseLayer extends BaseLayer {
   ) {
     // Call this method when a request has completely arrived (might have
     // been sent in one piece without blockwise).
-    if (request.hasOption(OptionType.block2)) {
+    if (request.hasOption<Block2Option>()) {
       final block2 = request.block2!;
       final status2 = BlockwiseStatus.withSize(
         request.contentType,
@@ -497,10 +469,12 @@ class BlockwiseLayer extends BaseLayer {
   ) {
     var status = exchange.responseBlockStatus;
     if (status == null || exchange is CoapMulticastExchange) {
-      final blockOptions = response!.getOptions(OptionType.block2)!;
-      status = BlockwiseStatus(response.contentType)
-        ..currentSZX = CoapBlockOption.encodeSZX(_preferredBlockSize)
-        ..currentNUM = blockOptions.toList()[0].value as int
+      final blockOptions = response!.getOptions<Block2Option>();
+      status = BlockwiseStatus(
+        response.contentType,
+        BlockSize.fromDecodedValue(_preferredBlockSize),
+      )
+        ..currentNUM = blockOptions.toList()[0].value
         ..complete = false;
       exchange.responseBlockStatus = status;
     }
@@ -518,7 +492,7 @@ class BlockwiseLayer extends BaseLayer {
     final szx = status.currentSZX;
     final num = status.currentNUM;
 
-    if (response.hasOption(OptionType.observe)) {
+    if (response.hasOption<ObserveOption>()) {
       // A blockwise notification transmits the first block only
       block = response;
     } else {
@@ -530,7 +504,7 @@ class BlockwiseLayer extends BaseLayer {
     }
 
     final payloadSize = response.payloadSize;
-    final currentSize = 1 << (4 + szx);
+    final currentSize = szx.decodedValue;
     final from = num * currentSize;
     if (payloadSize > 0 && payloadSize > from) {
       final to = min((num + 1) * currentSize, response.payloadSize);
@@ -545,14 +519,12 @@ class BlockwiseLayer extends BaseLayer {
       block
         ..payload = blockPayload
         // Do not complete notifications
-        ..last = !m && !response.hasOption(OptionType.observe);
+        ..last = !m && !response.hasOption<ObserveOption>();
 
       status.complete = !m;
     } else {
       block
-        ..addOption(
-          CoapBlockOption.fromParts(OptionType.block2, num, szx),
-        )
+        ..addOption(Block2Option.fromParts(num, szx))
         ..last = true;
       status.complete = true;
     }

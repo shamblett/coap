@@ -1,9 +1,10 @@
-import '../../coap_option_type.dart';
 import '../../coap_request.dart';
 import '../../coap_response.dart';
 import '../../event/coap_event_bus.dart';
 import '../../net/exchange.dart';
 import '../../net/multicast_exchange.dart';
+import '../../option/coap_block_option.dart';
+import '../../option/integer_option.dart';
 import '../base_layer.dart';
 
 /// Top layer
@@ -58,15 +59,15 @@ class CoapStackTopLayer extends BaseLayer {
     final CoapExchange initialExchange,
     final CoapResponse response,
   ) {
-    if (response.hasOption(OptionType.block2) ||
-        response.hasOption(OptionType.block1)) {
+    if (response.hasOption<Block2Option>() ||
+        response.hasOption<Block1Option>()) {
       initialExchange.request!.token ??= response.token;
 
       super.receiveResponse(initialExchange, response);
       return;
     }
 
-    if (!response.hasOption(OptionType.observe) &&
+    if (!response.hasOption<ObserveOption>() &&
         initialExchange is! CoapMulticastExchange) {
       initialExchange.complete = true;
     }

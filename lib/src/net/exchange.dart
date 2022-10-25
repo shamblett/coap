@@ -5,13 +5,13 @@
  * Copyright :  S.Hamblett
  */
 
-import '../coap_block_option.dart';
 import '../coap_empty_message.dart';
 import '../coap_message_type.dart';
 import '../coap_request.dart';
 import '../coap_response.dart';
 import '../event/coap_event_bus.dart';
 import '../observe/coap_observe_relation.dart';
+import '../option/coap_block_option.dart';
 import '../stack/blockwise_status.dart';
 import 'endpoint.dart';
 import 'outbox.dart';

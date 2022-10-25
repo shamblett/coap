@@ -12,7 +12,7 @@ import '../../coap.dart';
 /// Represents the status of a blockwise transfer of a request or a response.
 class BlockwiseStatus {
   /// Instantiates a new blockwise status.
-  BlockwiseStatus(this._contentFormat);
+  BlockwiseStatus(this._contentFormat, this.currentSZX);
 
   /// Instantiates a new blockwise status.
   BlockwiseStatus.withSize(
@@ -21,14 +21,11 @@ class BlockwiseStatus {
     this.currentSZX,
   );
 
-  /// Not observing
-  static const int noObserve = -1;
-
   /// Current num
   int currentNUM = 0;
 
   /// Vurrent SZX
-  int currentSZX = 0;
+  BlockSize currentSZX;
 
   /// Random access indicator
   bool randomAccess = false;
@@ -46,7 +43,7 @@ class BlockwiseStatus {
   bool complete = false;
 
   /// Observe
-  int observe = noObserve;
+  int? observe;
 
   /// Blocks
   List<Uint8Buffer> blocks = <Uint8Buffer>[];

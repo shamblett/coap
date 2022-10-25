@@ -18,8 +18,8 @@ FutureOr<void> main() async {
   final uri = Uri(scheme: 'coap', host: 'coap.me', port: conf.defaultPort);
   final client = CoapClient(uri, config: conf);
 
-  final opt = CoapOption.createUriQuery(
-    '${LinkFormatParameter.title}=This is an SJH Put request',
+  final opt = UriQueryOption(
+    '${LinkFormatParameter.title.short}=This is an SJH Put request',
   );
 
   try {

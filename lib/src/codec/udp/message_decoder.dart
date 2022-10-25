@@ -5,16 +5,18 @@
  * Copyright :  S.Hamblett
  */
 
+import 'dart:typed_data';
+
 import 'package:typed_data/typed_data.dart';
 
 import '../../coap_code.dart';
 import '../../coap_empty_message.dart';
 import '../../coap_message.dart';
 import '../../coap_message_type.dart';
-import '../../coap_option.dart';
-import '../../coap_option_type.dart';
 import '../../coap_request.dart';
 import '../../coap_response.dart';
+import '../../option/coap_option_type.dart';
+import '../../option/option.dart';
 import 'datagram_reader.dart';
 import 'message_format.dart' as message_format;
 
@@ -54,7 +56,7 @@ CoapMessage? deserializeUdpMessage(final Uint8Buffer data) {
 
   Uint8Buffer? payload;
   var hasUnknownCriticalOption = false;
-  final options = <CoapOption>[];
+  final options = <Option<Object?>>[];
   // Read options
   var currentOption = 0;
   while (reader.bytesAvailable) {
@@ -96,10 +98,15 @@ CoapMessage? deserializeUdpMessage(final Uint8Buffer data) {
       }
 
       // Read option
-      final CoapOption opt;
       try {
         final optionType = OptionType.fromTypeNumber(currentOption);
-        opt = CoapOption.create(optionType);
+        var optionBytes = reader.readBytes(optionLength);
+        if (Endian.host == Endian.little &&
+            optionType.optionFormat is OptionFormat<int>) {
+          optionBytes = Uint8Buffer()..addAll(optionBytes.reversed);
+        }
+        final option = optionType.parse(optionBytes);
+        options.add(option);
       } on UnknownElectiveOptionException catch (_) {
         // Unknown elective options must be silently ignored
         continue;
@@ -108,13 +115,6 @@ CoapMessage? deserializeUdpMessage(final Uint8Buffer data) {
         hasUnknownCriticalOption = true;
         break;
       }
-      opt.byteValue = reader.readBytes(optionLength);
-      // Reverse byte order for numeric options
-      if (opt.type.optionFormat == OptionFormat.integer) {
-        opt.byteValue = Uint8Buffer()..addAll(opt.byteValue.reversed);
-      }
-
-      options.add(opt);
     }
   }
 
