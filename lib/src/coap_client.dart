@@ -690,7 +690,7 @@ StreamTransformer<CoapCompletionEvent, CoapResponse> _filterEventStream(
               controller.add(event.resp);
             } else if (event is CoapTimedOutEvent) {
               controller.addError(
-                CoapRequestTimeoutException(request.maxRetransmit),
+                CoapRequestTimeoutException(request.retransmits),
               );
             }
           },
