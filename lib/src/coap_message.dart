@@ -235,8 +235,7 @@ abstract class CoapMessage {
 
   /// Returns `true` if this [CoapMessage] has neither timed out nor has been
   /// canceled.
-  // TODO(JKRhb): Should rejections be included here as well?
-  bool get isActive => !isTimedOut && !isCancelled;
+  bool get isActive => !isTimedOut && !isCancelled && !isRejected;
 
   /// Retransmit hook function
   HookFunction? retransmittingHook;
