@@ -46,7 +46,7 @@ class CoapConstants {
   ///
   /// The max times that a message would be retransmitted
   ///
-  static const int maxRetransmit = 8;
+  static const int maxRetransmit = 4;
 
   ///
   /// Default preferred size used for block-wise transfers
