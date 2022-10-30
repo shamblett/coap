@@ -187,8 +187,7 @@ class MaxAgeOption extends IntegerOption
       : super.parse(OptionType.maxAge, bytes);
 }
 
-// TODO(JKRhb): Is this really a class U option?
-class HopLimitOption extends IntegerOption implements OscoreOptionClassU {
+class HopLimitOption extends IntegerOption implements OscoreOptionClassE {
   HopLimitOption(final int value) : super(OptionType.hopLimit, value);
 
   HopLimitOption.parse(final Uint8Buffer bytes)
@@ -225,7 +224,6 @@ class NoResponseOption extends IntegerOption {
       : super.parse(OptionType.noResponse, bytes);
 }
 
-// TODO(JKRhb): Is this really a class E option?
 class OcfAcceptContentFormatVersion extends IntegerOption
     implements OscoreOptionClassE {
   OcfAcceptContentFormatVersion(final int value)
@@ -235,7 +233,6 @@ class OcfAcceptContentFormatVersion extends IntegerOption
       : super.parse(OptionType.ocfAcceptContentFormatVersion, bytes);
 }
 
-// TODO(JKRhb): Is this really a class E option?
 class OcfContentFormatVersion extends IntegerOption
     implements OscoreOptionClassE {
   OcfContentFormatVersion(final int value)
