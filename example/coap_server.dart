@@ -24,8 +24,12 @@ FutureOr<void> main() async {
       print('Received the following request: $request\n');
       print('Sending response...\n');
       server
-        ..reply(request,
-            payload: utf8.encode('Hello World'), responseCode: CoapCode.content)
+        ..reply(
+          request,
+          payload: utf8.encode('Hello World'),
+          responseCode: CoapCode.content,
+          contentFormat: CoapMediaType.applicationTdJson,
+        )
         ..close();
     },
     onDone: () => print('Done!'),

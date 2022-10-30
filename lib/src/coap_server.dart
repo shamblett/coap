@@ -13,6 +13,7 @@ import 'dart:typed_data';
 
 import 'package:typed_data/typed_data.dart';
 
+import '../coap.dart';
 import '../config/coap_config_default.dart';
 import 'coap_code.dart';
 import 'coap_config.dart';
@@ -92,6 +93,7 @@ abstract class CoapServer extends Stream<CoapRequest> {
     final CoapRequest request, {
     required final CoapCode responseCode,
     final List<int>? payload,
+    final CoapMediaType? contentFormat,
   });
 
   void close();
@@ -190,12 +192,15 @@ class _CoapUdpServer extends CoapServer {
     final CoapRequest request, {
     required final CoapCode responseCode,
     final List<int>? payload,
+    final CoapMediaType? contentFormat,
   }) {
     final response = CoapResponse.createResponse(
       request,
       CoapCode.content,
       CoapMessageType.ack,
-    )..id = request.id;
+    )
+      ..id = request.id
+      ..contentFormat = contentFormat;
 
     if (payload != null) {
       response.payload = Uint8Buffer()..addAll(payload);
