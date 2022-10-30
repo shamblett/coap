@@ -58,13 +58,13 @@ abstract class CoapMessage {
 
   bool hasFormatError = false;
 
-  CoapMessageType? _type;
+  CoapMessageType _type;
 
   @internal
-  set type(final CoapMessageType? type) => _type = type;
+  set type(final CoapMessageType type) => _type = type;
 
   /// The type of this CoAP message.
-  CoapMessageType? get type => _type;
+  CoapMessageType get type => _type;
 
   /// The code of this CoAP message.
   final CoapCode code;

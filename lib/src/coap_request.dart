@@ -39,7 +39,7 @@ class CoapRequest extends CoapMessage {
   CoapCode get method => code;
 
   @override
-  CoapMessageType? get type {
+  CoapMessageType get type {
     if (super.type == CoapMessageType.con && isMulticast) {
       return CoapMessageType.non;
     }
