@@ -10,6 +10,7 @@
  */
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:coap/coap.dart';
 
@@ -21,16 +22,10 @@ FutureOr<void> main() async {
   server.listen(
     (final request) async {
       print('Received the following request: $request\n');
-      final response = CoapResponse.createResponse(
-        request,
-        CoapCode.content,
-        CoapMessageType.ack,
-      )
-        ..id = request.id
-        ..payloadString = 'Hello World!';
-      print('Sending response: $response\n');
+      print('Sending response...\n');
       server
-        ..sendResponse(response, request.source!, request.uriPort)
+        ..reply(request,
+            payload: utf8.encode('Hello World'), responseCode: CoapCode.content)
         ..close();
     },
     onDone: () => print('Done!'),

@@ -14,9 +14,11 @@ import 'dart:typed_data';
 import 'package:typed_data/typed_data.dart';
 
 import '../config/coap_config_default.dart';
+import 'coap_code.dart';
 import 'coap_config.dart';
 import 'coap_empty_message.dart';
 import 'coap_message.dart';
+import 'coap_message_type.dart';
 import 'coap_request.dart';
 import 'coap_response.dart';
 import 'stack/layer_stack.dart';
@@ -85,6 +87,12 @@ abstract class CoapServer extends Stream<CoapRequest> {
     final InternetAddress address,
     final int port,
   );
+
+  void reply(
+    final CoapRequest request, {
+    required final CoapCode responseCode,
+    final List<int>? payload,
+  });
 
   void close();
 }
@@ -175,5 +183,24 @@ class _CoapUdpServer extends CoapServer {
     final int port,
   ) {
     _socket.send(message.toUdpPayload().toList(), address, port);
+  }
+
+  @override
+  void reply(
+    final CoapRequest request, {
+    required final CoapCode responseCode,
+    final List<int>? payload,
+  }) {
+    final response = CoapResponse.createResponse(
+      request,
+      CoapCode.content,
+      CoapMessageType.ack,
+    )..id = request.id;
+
+    if (payload != null) {
+      response.payload = Uint8Buffer()..addAll(payload);
+    }
+
+    _send(response, request.source!, request.uriPort);
   }
 }
