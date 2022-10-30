@@ -34,7 +34,7 @@ class CoapConstants {
   ///
   /// The initial time (ms) for a CoAP message
   ///
-  static const int ackTimeout = 3000;
+  static const int ackTimeout = 2000;
 
   ///
   /// The initial timeout is set
