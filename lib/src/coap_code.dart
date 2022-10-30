@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_classes_with_only_static_members
-
 /*
  * Package : Coap
  * Author : S. Hamblett <steve.hamblett@linux.com>
@@ -9,11 +7,109 @@
 
 import 'dart:collection';
 
-enum CoapCode {
+import 'package:meta/meta.dart';
+
+const _request = 0;
+const _success = 2;
+const _clientError = 4;
+const _serverError = 5;
+const _signal = 7;
+
+/// Models CoAP codes as described in [RFC 7252, section 3].
+///
+/// Can [decode] the codes empty messages, requsts, responses, and signaling
+/// messages.
+///
+/// [RFC 7252, section 3]: https://www.rfc-editor.org/rfc/rfc7252#section-3
+@immutable
+class CoapCode {
+  const CoapCode(
+    this.codeClass,
+    this.codeDetail,
+    this.description,
+  ) : code = (codeClass << 5) + codeDetail;
+
+  static CoapCode? decode(final int code) {
+    if (code == 0) {
+      return RequestMethod.empty.coapCode;
+    }
+
+    final codeClass = code >> 5;
+
+    switch (codeClass) {
+      case _request:
+        return RequestMethod.decode(code)?.coapCode;
+      case _success:
+      case _clientError:
+      case _serverError:
+        return ResponseCode.decode(code)?.coapCode;
+      case _signal:
+        return SignalingCode.decode(code)?.coapCode;
+    }
+
+    return null;
+  }
+
+  /// An 8-bit representation combining the [codeClass] and the [codeDetail].
+  final int code;
+
+  /// The code class of this [CoapCode] (in the range of 0 to 7).
+  final int codeClass;
+
+  /// The code detail of this [CoapCode] (in the range of 0 to 31).
+  final int codeDetail;
+
+  /// A human-readable description of this [ResponseCode].
+  final String description;
+
+  /// Checks whether this [CoapCode] indicates an empty message.
+  bool get isEmpty => this == RequestMethod.empty.coapCode;
+
+  /// Checks whether this [CoapCode] indicates a request message.
+  bool get isRequest => codeClass == _request && !isEmpty;
+
+  /// Checks whether this [CoapCode] indicates a response message.
+  bool get isResponse => codeClass >= _success && codeClass <= _serverError;
+
+  /// Checks whether this [CoapCode] represents a success response code.
+  bool get isSuccess => codeClass == _success;
+
+  /// Checks whether this [CoapCode] represents a client error response code.
+  bool get isErrorResponse => codeClass == _clientError;
+
+  /// Checks whether this [CoapCode] represents a server error response code.
+  bool get isServerError => codeClass == _serverError;
+
+  /// Checks whether this [CoapCode] indicates a signaling message.
+  bool get isSignaling => codeClass == _signal;
+
+  /// Code bit length
+  static const int bitLength = 8;
+
+  @override
+  int get hashCode => code;
+
+  @override
+  bool operator ==(final Object other) =>
+      other is CoapCode && code == other.code;
+
+  @override
+  String toString() {
+    final formattedDetail = codeDetail.toString().padLeft(2, '0');
+    return '$codeClass.$formattedDetail $description';
+  }
+}
+
+/// Enumerates the currently specified values for request method codes.
+///
+/// Also includes the code for [empty] messages for now due to technical
+/// reasons.
+enum RequestMethod {
   /// Indicates an empty message
   ///
   /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
-  empty(0, 00, 'Empty'),
+  // TODO(JKRhb): Should become its own constant/class
+  empty(0, 0, 'Empty'),
 
   /// The GET method
   ///
@@ -49,7 +145,46 @@ enum CoapCode {
   ///
   /// Defined in [RFC 8132](https://datatracker.ietf.org/doc/html/rfc8132).
   ipatch(0, 07, 'iPATCH'),
+  ;
 
+  const RequestMethod(
+    this.codeClass,
+    this.codeDetail,
+    this.description,
+  );
+
+  /// The code class of this [RequestMethod] (always 0).
+  final int codeClass;
+
+  /// The code detail of this [RequestMethod] (in the range of 0 to 7).
+  final int codeDetail;
+
+  /// A human-readable description of this [RequestMethod].
+  final String description;
+
+  /// Returns the [CoapCode] representing this [RequestMethod].
+  CoapCode get coapCode => CoapCode(codeClass, codeDetail, description);
+
+  /// Returns the [RequestMethod] corresponding with a numeric [code]
+  /// (if defined).
+  static RequestMethod? decode(final int code) => _codeRegistry[code];
+
+  /// Returns the [RequestMethod] corresponding with a given [CoapCode] (if
+  /// defined).
+  static RequestMethod? fromCoapCode(final CoapCode code) =>
+      _codeRegistry[code.code];
+
+  static final _codeRegistry = HashMap.fromEntries(
+    values.map((final value) => MapEntry(value.coapCode.code, value)),
+  );
+
+  @override
+  String toString() => coapCode.toString();
+}
+
+/// Enumerates the currently specified values for response codes (indicating
+/// success, a client error, or a server error).
+enum ResponseCode {
   /// 2.01 Created
   ///
   /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252).
@@ -193,7 +328,48 @@ enum CoapCode {
   ///
   /// Defined in [RFC 8768](https://datatracker.ietf.org/doc/html/rfc8768).
   hopLimitReached(5, 08, 'Hop Limit Reached'),
+  ;
 
+  const ResponseCode(
+    this.codeClass,
+    this.codeDetail,
+    this.description,
+  );
+
+  /// The code class of this [ResponseCode] (either 2, 4, or 5).
+  final int codeClass;
+
+  /// The code detail of this [ResponseCode].
+  final int codeDetail;
+
+  /// A human-readable description of this [ResponseCode].
+  final String description;
+
+  /// Returns the [CoapCode] representing this [ResponseCode].
+  CoapCode get coapCode => CoapCode(codeClass, codeDetail, description);
+
+  /// Returns the [ResponseCode] corresponding with a numeric [code]
+  /// (if defined).
+  static ResponseCode? decode(final int code) => _codeRegistry[code];
+
+  /// Returns the [ResponseCode] corresponding with a given [CoapCode] (if
+  /// defined).
+  static ResponseCode? fromCoapCode(final CoapCode code) =>
+      _codeRegistry[code.code];
+
+  static final _codeRegistry = HashMap.fromEntries(
+    values.map((final value) => MapEntry(value.coapCode.code, value)),
+  );
+
+  @override
+  String toString() => coapCode.toString();
+}
+
+/// Enumerates the currently specified values for signaling codes (see
+/// [RFC 8323, section 5.1]).
+///
+/// [RFC 8323, section 5.1]: https://www.rfc-editor.org/rfc/rfc8323#section-5.1
+enum SignalingCode {
   /// 7.01 CSM
   ///
   /// Defined in [RFC 8323](https://datatracker.ietf.org/doc/html/rfc8323).
@@ -219,53 +395,37 @@ enum CoapCode {
   /// Defined in [RFC 8323](https://datatracker.ietf.org/doc/html/rfc8323).
   abort(7, 05, 'Abort');
 
-  const CoapCode(
+  const SignalingCode(
     this.codeClass,
     this.codeDetail,
     this.description,
-  ) : code = (codeClass << 5) + codeDetail;
-
-  static CoapCode? decode(final int code) => _codeRegistry[code];
-
-  static final _codeRegistry = HashMap.fromEntries(
-    values.map((final value) => MapEntry(value.code, value)),
   );
 
-  final int code;
-
+  /// The code class of this [SignalingCode] (always 7).
   final int codeClass;
 
+  /// The code detail of this [SignalingCode] (in the range of 1 to 5).
   final int codeDetail;
 
+  /// A human-readable description of this [SignalingCode].
   final String description;
 
-  /// Code bit length
-  static const int bitLength = 8;
+  /// Returns the [CoapCode] representing this [SignalingCode].
+  CoapCode get coapCode => CoapCode(codeClass, codeDetail, description);
+
+  /// Returns the [SignalingCode] corresponding with a numeric [code]
+  /// (if defined).
+  static SignalingCode? decode(final int code) => _codeRegistry[code];
+
+  /// Returns the [SignalingCode] corresponding with a given [CoapCode] (if
+  /// defined).
+  static SignalingCode? fromCoapCode(final CoapCode code) =>
+      _codeRegistry[code.code];
+
+  static final _codeRegistry = HashMap.fromEntries(
+    values.map((final value) => MapEntry(value.coapCode.code, value)),
+  );
 
   @override
-  String toString() {
-    final formattedDetail = codeDetail.toString().padLeft(2, '0');
-    return '$codeClass.$formattedDetail $description';
-  }
-
-  /// Checks whether this [CoapCode] indicates an empty message.
-  bool get isEmpty => this == empty;
-
-  /// Checks whether this [CoapCode] indicates a request message.
-  bool get isRequest => codeClass == 0 && !isEmpty;
-
-  /// Checks whether this [CoapCode] indicates a response message.
-  bool get isResponse => codeClass >= 2 && codeClass <= 5;
-
-  /// Checks whether this [CoapCode] represents a success response code.
-  bool get isSuccess => codeClass == 2;
-
-  /// Checks whether this [CoapCode] represents a client error response code.
-  bool get isErrorResponse => codeClass == 4;
-
-  /// Checks whether this [CoapCode] represents a server error response code.
-  bool get isServerError => codeClass == 5;
-
-  /// Checks whether this [CoapCode] indicates a signaling message.
-  bool get isSignaling => codeClass == 7;
+  String toString() => coapCode.toString();
 }

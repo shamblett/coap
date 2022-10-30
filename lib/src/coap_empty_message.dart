@@ -17,7 +17,8 @@ import 'option/option.dart';
 /// the MessageType ACK or RST.
 class CoapEmptyMessage extends CoapMessage {
   /// Instantiates a new empty message.
-  CoapEmptyMessage(final CoapMessageType type) : super(CoapCode.empty, type);
+  CoapEmptyMessage(final CoapMessageType type)
+      : super(RequestMethod.empty.coapCode, type);
 
   /// Create a new acknowledgment for the specified message.
   /// Returns the acknowledgment.
@@ -43,7 +44,6 @@ class CoapEmptyMessage extends CoapMessage {
         ..destination = message.source;
 
   CoapEmptyMessage.fromParsed({
-    required final CoapCode coapCode,
     required final CoapMessageType type,
     required final int id,
     required final Uint8Buffer token,
@@ -52,7 +52,7 @@ class CoapEmptyMessage extends CoapMessage {
     required final bool hasUnknownCriticalOption,
     required final bool hasFormatError,
   }) : super.fromParsed(
-          coapCode,
+          RequestMethod.empty.coapCode,
           type,
           id: id,
           token: token,

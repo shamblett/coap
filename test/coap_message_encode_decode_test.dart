@@ -148,7 +148,7 @@ void main() {
     }
 
     void testMessage(final int testNo) {
-      final CoapMessage msg = CoapRequest(CoapCode.get)
+      final CoapMessage msg = CoapRequest(RequestMethod.get)
         ..id = 12345
         ..payload = (typed.Uint8Buffer()..addAll('payload'.codeUnits));
       final data = serializeUdpMessage(msg);
@@ -166,7 +166,7 @@ void main() {
     }
 
     void testMessageWithOptions(final int testNo) {
-      final CoapMessage msg = CoapRequest(CoapCode.get)
+      final CoapMessage msg = CoapRequest(RequestMethod.get)
         ..id = 12345
         ..payload = (typed.Uint8Buffer()..addAll('payload'.codeUnits))
         ..addOption(
@@ -202,7 +202,7 @@ void main() {
     }
 
     void testMessageWithExtendedOption(final int testNo) {
-      final CoapMessage msg = CoapRequest(CoapCode.get)
+      final CoapMessage msg = CoapRequest(RequestMethod.get)
         ..id = 12345
         ..addOption(ContentFormatOption(0));
       expect(msg.getFirstOption<ContentFormatOption>()!.value, 0);
@@ -231,7 +231,7 @@ void main() {
     }
 
     void testRequestParsing(final int testNo) {
-      final request = CoapRequest(CoapCode.post, confirmable: false)
+      final request = CoapRequest(RequestMethod.post, confirmable: false)
         ..id = 7
         ..token = (typed.Uint8Buffer()..addAll(<int>[11, 82, 165, 77, 3]))
         ..addIfMatchOpaque(typed.Uint8Buffer()..addAll(<int>[34, 239]))
@@ -262,7 +262,7 @@ void main() {
 
     void testResponseParsing(final int testNo) {
       final response = CoapResponse(
-        CoapCode.content,
+        ResponseCode.content,
         CoapMessageType.non,
       )
         ..id = 9

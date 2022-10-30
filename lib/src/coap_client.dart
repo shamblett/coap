@@ -125,7 +125,7 @@ class CoapClient {
 
   /// Performs a CoAP ping.
   Future<bool> ping() async {
-    final request = CoapRequest(CoapCode.empty)
+    final request = CoapRequest(RequestMethod.empty)
       ..token = CoapConstants.emptyToken;
     await _prepare(request);
     _endpoint!.sendEpRequest(request);

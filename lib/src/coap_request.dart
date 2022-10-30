@@ -25,18 +25,14 @@ import 'option/option.dart';
 class CoapRequest extends CoapMessage {
   /// Initializes a request message.
   /// Defaults to confirmable
-  CoapRequest(final CoapCode code, {final bool confirmable = true})
+  CoapRequest(this.method, {final bool confirmable = true})
       : super(
-          code,
+          method.coapCode,
           confirmable ? CoapMessageType.con : CoapMessageType.non,
-        ) {
-    if (!code.isRequest && !code.isEmpty) {
-      throw ArgumentError('Expected CoAP method code, got $code');
-    }
-  }
+        );
 
   /// The request method(code)
-  CoapCode get method => code;
+  final RequestMethod method;
 
   @override
   CoapMessageType get type {
@@ -102,34 +98,34 @@ class CoapRequest extends CoapMessage {
 
   /// Construct a GET request.
   factory CoapRequest.newGet({final bool confirmable = true}) =>
-      CoapRequest(CoapCode.get, confirmable: confirmable);
+      CoapRequest(RequestMethod.get, confirmable: confirmable);
 
   /// Construct a POST request.
   factory CoapRequest.newPost({final bool confirmable = true}) =>
-      CoapRequest(CoapCode.post, confirmable: confirmable);
+      CoapRequest(RequestMethod.post, confirmable: confirmable);
 
   /// Construct a PUT request.
   factory CoapRequest.newPut({final bool confirmable = true}) =>
-      CoapRequest(CoapCode.put, confirmable: confirmable);
+      CoapRequest(RequestMethod.put, confirmable: confirmable);
 
   /// Construct a DELETE request.
   factory CoapRequest.newDelete({final bool confirmable = true}) =>
-      CoapRequest(CoapCode.delete, confirmable: confirmable);
+      CoapRequest(RequestMethod.delete, confirmable: confirmable);
 
   /// Construct a FETCH request.
   factory CoapRequest.newFetch({final bool confirmable = true}) =>
-      CoapRequest(CoapCode.fetch, confirmable: confirmable);
+      CoapRequest(RequestMethod.fetch, confirmable: confirmable);
 
   /// Construct a PATCH request.
   factory CoapRequest.newPatch({final bool confirmable = true}) =>
-      CoapRequest(CoapCode.patch, confirmable: confirmable);
+      CoapRequest(RequestMethod.patch, confirmable: confirmable);
 
   /// Construct a iPATCH request.
   factory CoapRequest.newIPatch({final bool confirmable = true}) =>
-      CoapRequest(CoapCode.ipatch, confirmable: confirmable);
+      CoapRequest(RequestMethod.ipatch, confirmable: confirmable);
 
-  CoapRequest.fromParsed({
-    required final CoapCode coapCode,
+  CoapRequest.fromParsed(
+    this.method, {
     required final CoapMessageType type,
     required final int id,
     required final Uint8Buffer token,
@@ -138,7 +134,7 @@ class CoapRequest extends CoapMessage {
     required final bool hasUnknownCriticalOption,
     required final bool hasFormatError,
   }) : super.fromParsed(
-          coapCode,
+          method.coapCode,
           type,
           id: id,
           token: token,
