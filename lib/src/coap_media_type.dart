@@ -332,15 +332,6 @@ enum CoapMediaType {
     );
   }
 
-  /// Indicates if this [CoapMediaType] is printable.
-  // TODO(JKRhb): Are there any uncovered cases?
-  bool get isPrintable =>
-      primaryType == 'text' ||
-      subType.endsWith('xml') ||
-      subType.endsWith('json') ||
-      this == applicationLinkFormat ||
-      this == applicationJavascript;
-
   /// Checks whether the given media type is a type of image.
   /// True iff the media type is a type of image.
   bool get isImage => primaryType == 'image';

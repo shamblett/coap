@@ -12,7 +12,6 @@ void main() {
     test('Properties', () {
       const type = CoapMediaType.applicationJson;
       expect(type.mimeType, 'application/json');
-      expect(type.isPrintable, true);
       expect(type.isImage, false);
 
       const unknownType = 200;
