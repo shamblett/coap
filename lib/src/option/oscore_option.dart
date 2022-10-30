@@ -19,7 +19,6 @@ class OscoreOptionValue {
         kid = _parseKid(byteValue),
         kidContext = _parseKidContext(byteValue);
 
-  // TODO(JKRhb): Maybe this can be done more elegantly
   static Uint8List _encodeInteger(final int integer) => Uint8List.fromList(
         Uint8List.sublistView(Uint64List.fromList([integer]))
             .take((integer / 8).ceil())
