@@ -103,8 +103,11 @@ abstract class CoapMessage {
     _options.add(option);
   }
 
+  /// Indicates if this message needs to be rejected as specified in
+  /// [RFC 7252, section 5.4.1].
+  ///
+  /// [RFC 7252, section 5.4.1]: https://www.rfc-editor.org/rfc/rfc7252#section-5.4.1
   bool get needsRejection =>
-      // TODO(JKRhb): Revisit conditions for rejection
       (type == CoapMessageType.non && hasUnknownCriticalOption) ||
       hasFormatError ||
       (this is CoapResponse && hasUnknownCriticalOption);
