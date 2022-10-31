@@ -89,12 +89,14 @@ abstract class CoapServer extends Stream<CoapRequest> {
     final int port,
   );
 
-  void reply(
+  void respond(
     final CoapRequest request, {
     required final CoapCode responseCode,
-    final List<int>? payload,
+    final Uint8List? payload,
     final CoapMediaType? contentFormat,
   });
+
+  void reject(final CoapRequest request);
 
   void close();
 }
@@ -188,10 +190,10 @@ class _CoapUdpServer extends CoapServer {
   }
 
   @override
-  void reply(
+  void respond(
     final CoapRequest request, {
     required final CoapCode responseCode,
-    final List<int>? payload,
+    final Uint8List? payload,
     final CoapMediaType? contentFormat,
   }) {
     final response = CoapResponse.createResponse(
@@ -207,5 +209,10 @@ class _CoapUdpServer extends CoapServer {
     }
 
     _send(response, request.source!, request.uriPort);
+  }
+
+  @override
+  void reject(final CoapRequest request) {
+    _rejectRequest(request, request.source!, request.uriPort);
   }
 }

@@ -12,6 +12,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:coap/coap.dart';
 
 FutureOr<void> main() async {
@@ -24,9 +25,9 @@ FutureOr<void> main() async {
       print('Received the following request: $request\n');
       print('Sending response...\n');
       server
-        ..reply(
+        ..respond(
           request,
-          payload: utf8.encode('Hello World'),
+          payload: Uint8List.fromList(utf8.encode('Hello World')),
           responseCode: CoapCode.content,
           contentFormat: CoapMediaType.applicationTdJson,
         )
