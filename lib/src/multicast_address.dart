@@ -8,6 +8,15 @@
 import 'dart:io';
 
 /// Defines well-known multicast addresses from RFC 7252 and RFC 9176.
+///
+/// This enum's [toString] method returns the [address] field. In the case of
+/// IPv6 addresses, the [address] string gets wrapped in square brackets. This
+/// makes it easier to use the enum values in URI strings, such as the
+/// following:
+///
+/// ```dart
+/// final uri = Uri.parse('coap://${MulticastAddress.allNodesLinkLocalIPV6}');
+/// ```
 enum MulticastAddress {
   // Multicast IPV4
   allRoutersIPV4('224.0.0.2'),
@@ -66,4 +75,13 @@ enum MulticastAddress {
   ///
   /// Returns either [InternetAddressType.IPv4] or [InternetAddressType.IPv6].
   InternetAddressType get addressType => internetAddress.type;
+
+  @override
+  String toString() {
+    if (addressType == InternetAddressType.IPv6) {
+      return '[$address]';
+    }
+
+    return address;
+  }
 }
