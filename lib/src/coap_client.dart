@@ -36,13 +36,20 @@ import 'option/empty_option.dart';
 import 'option/integer_option.dart';
 import 'option/option.dart';
 
-/// The matching scheme to use for supplied ETags on PUT
-// FIXME: The name MatchETags might be a bit misleading, c.f. https://datatracker.ietf.org/doc/html/rfc7252#section-5.10.8.2
+/// The strategy applied for conditional requsts.
+///
+/// Can either specifiy that one of the supplied ETags must match the
+/// target resource [onMatch] or that the target resource must not exist
+/// [onNoneMatch].
+///
+/// See [RFC 7252, section 5.10.8] for more information on conditional requests.
+///
+/// [RFC 7252, section 5.10.8]: https://www.rfc-editor.org/rfc/rfc7252#section-5.10.8
 enum MatchEtags {
-  /// When the ETag matches
+  /// One or more of the supplied ETags must match.
   onMatch,
 
-  /// When none of the ETag matches
+  /// The target resource must not exist.
   onNoneMatch,
 }
 

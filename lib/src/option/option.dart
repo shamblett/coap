@@ -90,7 +90,12 @@ abstract class Option<T> {
 /// Interface for an Oscore class E option (encrypted and integrity protected).
 /// See [RFC 8613, section 4.1.1].
 ///
+/// Also applies to all options that are unknown or or for which OSCORE
+/// processing is not defined (see [RFC 8613, section 4.1]).
+///
 /// [RFC 8613, section 4.1.1]: https://www.rfc-editor.org/rfc/rfc8613.html#section-4.1.1
+/// [RFC 8613, section 4.1]: https://www.rfc-editor.org/rfc/rfc8613.html#section-4.1
+/// https://www.rfc-editor.org/rfc/rfc8613.html#section-4.1
 abstract class OscoreOptionClassE {
   OscoreOptionClassE._();
 }
