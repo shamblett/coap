@@ -91,7 +91,7 @@ abstract class CoapServer extends Stream<CoapRequest> {
 
   void respond(
     final CoapRequest request, {
-    required final CoapCode responseCode,
+    required final ResponseCode responseCode,
     final Uint8List? payload,
     final CoapMediaType? contentFormat,
   });
@@ -192,13 +192,13 @@ class _CoapUdpServer extends CoapServer {
   @override
   void respond(
     final CoapRequest request, {
-    required final CoapCode responseCode,
+    required final ResponseCode responseCode,
     final Uint8List? payload,
     final CoapMediaType? contentFormat,
   }) {
     final response = CoapResponse.createResponse(
       request,
-      CoapCode.content,
+      ResponseCode.content,
       CoapMessageType.ack,
     )
       ..id = request.id

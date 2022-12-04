@@ -28,7 +28,7 @@ FutureOr<void> main() async {
         ..respond(
           request,
           payload: Uint8List.fromList(utf8.encode('Hello World')),
-          responseCode: CoapCode.content,
+          responseCode: ResponseCode.content,
           contentFormat: CoapMediaType.applicationTdJson,
         )
         ..close();
