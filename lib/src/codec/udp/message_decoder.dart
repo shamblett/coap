@@ -119,10 +119,15 @@ CoapMessage? deserializeUdpMessage(final Uint8Buffer data) {
   }
 
   if (code.isRequest) {
+    final method = RequestMethod.fromCoapCode(code);
+    if (method == null) {
+      return null;
+    }
+
     return CoapRequest.fromParsed(
+      method,
       id: id,
       type: type,
-      coapCode: code,
       token: token,
       options: options,
       payload: payload,
@@ -130,10 +135,15 @@ CoapMessage? deserializeUdpMessage(final Uint8Buffer data) {
       hasFormatError: hasFormatError,
     );
   } else if (code.isResponse) {
+    final responseCode = ResponseCode.fromCoapCode(code);
+    if (responseCode == null) {
+      return null;
+    }
+
     return CoapResponse.fromParsed(
+      responseCode,
       id: id,
       type: type,
-      coapCode: code,
       token: token,
       options: options,
       payload: payload,
@@ -144,7 +154,6 @@ CoapMessage? deserializeUdpMessage(final Uint8Buffer data) {
     return CoapEmptyMessage.fromParsed(
       id: id,
       type: type,
-      coapCode: code,
       token: token,
       options: options,
       payload: payload,

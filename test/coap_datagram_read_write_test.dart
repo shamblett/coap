@@ -235,7 +235,7 @@ void main() {
         ..addAll(
           List<int>.generate(tokenLength, ((final index) => index % 256)),
         ));
-      final request = CoapRequest(CoapCode.get)
+      final request = CoapRequest(RequestMethod.get)
         ..id = 5
         ..token = token;
 

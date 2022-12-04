@@ -19,11 +19,10 @@ import 'option/option.dart';
 /// or a separate response with type CON or NON.
 class CoapResponse extends CoapMessage {
   /// Initializes a response message.
-  CoapResponse(super.code, super.type) {
-    if (!code.isResponse) {
-      throw ArgumentError('Expected CoAP response code, got $code');
-    }
-  }
+  CoapResponse(this.responseCode, final CoapMessageType type)
+      : super(responseCode.coapCode, type);
+
+  final ResponseCode responseCode;
 
   /// Status code as a string
   String get statusCodeString => code.toString();
@@ -63,15 +62,15 @@ class CoapResponse extends CoapMessage {
   /// Type and ID are usually set automatically by the ReliabilityLayer>.
   factory CoapResponse.createResponse(
     final CoapRequest request,
-    final CoapCode statusCode,
+    final ResponseCode statusCode,
     final CoapMessageType type,
   ) =>
       CoapResponse(statusCode, type)
         ..destination = request.source
         ..token = request.token;
 
-  CoapResponse.fromParsed({
-    required final CoapCode coapCode,
+  CoapResponse.fromParsed(
+    this.responseCode, {
     required final CoapMessageType type,
     required final int id,
     required final Uint8Buffer token,
@@ -80,7 +79,7 @@ class CoapResponse extends CoapMessage {
     required final bool hasUnknownCriticalOption,
     required final bool hasFormatError,
   }) : super.fromParsed(
-          coapCode,
+          responseCode.coapCode,
           type,
           id: id,
           token: token,

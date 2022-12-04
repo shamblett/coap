@@ -47,7 +47,7 @@ void main() {
   });
 
   test('Options', () {
-    final message = CoapRequest(CoapCode.get);
+    final message = CoapRequest(RequestMethod.get);
     final opt1 = UriQueryOption.parse(Uint8Buffer());
     expect(
       () => OptionType.fromTypeNumber(9000),

@@ -93,7 +93,7 @@ class BlockwiseLayer extends BaseLayer {
         } else {
           final error = CoapResponse.createResponse(
             request,
-            CoapCode.requestEntityIncomplete,
+            ResponseCode.requestEntityIncomplete,
             CoapMessageType.con,
           )
             ..addOption(
@@ -110,7 +110,7 @@ class BlockwiseLayer extends BaseLayer {
         if (block1.m) {
           final piggybacked = CoapResponse.createResponse(
             request,
-            CoapCode.continues,
+            ResponseCode.continues,
             CoapMessageType.ack,
           )
             ..addOption(Block1Option.fromParts(block1.num, block1.szx, m: true))
@@ -138,7 +138,7 @@ class BlockwiseLayer extends BaseLayer {
         // ERROR, wrong number, Incomplete
         final error = CoapResponse.createResponse(
           request,
-          CoapCode.requestEntityIncomplete,
+          ResponseCode.requestEntityIncomplete,
           CoapMessageType.con,
         )
           ..addOption(
@@ -350,7 +350,7 @@ class BlockwiseLayer extends BaseLayer {
             ..responseBlockStatus = status;
           super.sendRequest(exchange, block);
         } else {
-          final assembled = CoapResponse(response.code, response.type);
+          final assembled = CoapResponse(response.responseCode, response.type);
           _assembleMessage(status, assembled, response);
 
           // Set overall transfer RTT
@@ -382,7 +382,8 @@ class BlockwiseLayer extends BaseLayer {
   }
 
   bool _requiresBlockwise(final CoapRequest request) {
-    if (request.method == CoapCode.put || request.method == CoapCode.post) {
+    if (request.method == RequestMethod.put ||
+        request.method == RequestMethod.post) {
       return request.payloadSize > _maxMessageSize;
     }
     return false;
@@ -496,7 +497,7 @@ class BlockwiseLayer extends BaseLayer {
       // A blockwise notification transmits the first block only
       block = response;
     } else {
-      block = CoapResponse(response.code, response.type)
+      block = CoapResponse(response.responseCode, response.type)
         ..destination = response.destination
         ..token = response.token
         ..setOptions(response.getAllOptions())
