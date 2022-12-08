@@ -35,13 +35,17 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
     super.bindAddress, {
     required final bool verify,
     required final bool withTrustedRoots,
+    required final List<Uint8List> rootCertificates,
     super.namespace,
     final String? ciphers,
   })  : _ciphers = ciphers,
         _verify = verify,
-        _withTrustedRoots = withTrustedRoots;
+        _withTrustedRoots = withTrustedRoots,
+        _rootCertificates = rootCertificates;
 
   DtlsClientConnection? _dtlsConnection;
+
+  final List<Uint8List> _rootCertificates;
 
   final bool _verify;
 
@@ -73,6 +77,7 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
       context: DtlsClientContext(
         verify: _verify,
         withTrustedRoots: _withTrustedRoots,
+        rootCertificates: _rootCertificates,
         ciphers: _ciphers,
       ),
       hostname: address.host,
