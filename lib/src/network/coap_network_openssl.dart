@@ -66,9 +66,6 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
       return;
     }
 
-    await bind();
-    _receive();
-
     _dtlsConnection = DtlsClientConnection(
       context: DtlsClientContext(
         verify: _verify,
@@ -79,10 +76,14 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
     );
 
     _dtlsConnection?.outgoing.listen(
-      (final d) => socket?.send(d, address, port),
+          (final d) => socket?.send(d, address, port),
       onError: (final Object e, final StackTrace s) =>
           eventBus.fire(CoapSocketErrorEvent(e, s)),
     );
+
+    await bind();
+    _receive();
+
     await _dtlsConnection?.connect().timeout(CoapINetwork.initTimeout);
 
     isClosed = false;
