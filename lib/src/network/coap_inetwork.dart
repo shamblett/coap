@@ -127,6 +127,7 @@ abstract class CoapINetwork {
               address,
               port ?? config.defaultSecurePort,
               bindAddress ?? defaultBindAddress,
+              namespace: namespace,
               verify: config.dtlsVerify,
               withTrustedRoots: config.dtlsWithTrustedRoots,
               ciphers: config.dtlsCiphers,
