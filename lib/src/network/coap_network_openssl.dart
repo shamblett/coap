@@ -81,7 +81,7 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
     );
 
     _dtlsConnection?.outgoing.listen(
-          (final d) => socket?.send(d, address, port),
+      (final d) => socket?.send(d, address, port),
       onError: (final Object e, final StackTrace s) =>
           eventBus.fire(CoapSocketErrorEvent(e, s)),
     );
