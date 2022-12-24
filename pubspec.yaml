@@ -1,7 +1,8 @@
 name: coap
 description: A CoAP library for Dart. A full implementation of an IPV4/6 CoAP client
-version: 6.0.0
+version: 7.0.0
 homepage: https://github.com/shamblett/coap
+repository: https://github.com/shamblett/coap
 
 funding:
   - https://www.darticulate.com/#funding
