@@ -89,7 +89,12 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
     await bind();
     _receive();
 
-    await _dtlsConnection?.connect().timeout(CoapINetwork.initTimeout);
+    try {
+      await _dtlsConnection?.connect().timeout(CoapINetwork.initTimeout);
+    } on TimeoutException {
+      close();
+      rethrow;
+    }
 
     isClosed = false;
   }
