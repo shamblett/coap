@@ -12,13 +12,33 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:dtls/dtls.dart';
+import 'package:dtls2/dtls2.dart';
 import 'package:typed_data/typed_buffers.dart';
 
 import '../coap_message.dart';
 import '../event/coap_event_bus.dart';
 import 'coap_inetwork.dart';
 import 'coap_network_udp.dart';
+import 'credentials/psk_credentials.dart' as internal;
+
+/// Maps an [internal.PskCredentialsCallback] to one provided by the `dtls2`
+/// libary.
+PskCredentialsCallback? _createOpenSslPskCallback(
+  final internal.PskCredentialsCallback? coapPskCredentialsCallback,
+) {
+  if (coapPskCredentialsCallback == null) {
+    return null;
+  }
+
+  return (final identityHint) {
+    final pskCredentials = coapPskCredentialsCallback(identityHint);
+
+    return PskCredentials(
+      identity: pskCredentials.identity,
+      preSharedKey: pskCredentials.preSharedKey,
+    );
+  };
+}
 
 /// DTLS network using OpenSSL
 class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
@@ -27,6 +47,9 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
   /// This [CoapINetwork] can be configured to be used [withTrustedRoots] and
   /// to [verify] certificate chains. You can also indicate a list of [ciphers],
   /// see the [OpenSSL documentation] for more information on this.
+  ///
+  /// When passing a [pskCredentialsCallback], this network is also capable of
+  /// using DTLS in Pre-Shared Key mode.
   ///
   /// [OpenSSL documentation]: https://www.openssl.org/docs/man1.1.1/man1/ciphers.html
   CoapNetworkUDPOpenSSL(
@@ -38,10 +61,12 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
     required final List<Uint8List> rootCertificates,
     super.namespace,
     final String? ciphers,
+    final internal.PskCredentialsCallback? pskCredentialsCallback,
   })  : _ciphers = ciphers,
         _verify = verify,
         _withTrustedRoots = withTrustedRoots,
-        _rootCertificates = rootCertificates;
+        _rootCertificates = rootCertificates,
+        _openSslPskCallback = _createOpenSslPskCallback(pskCredentialsCallback);
 
   DtlsClientConnection? _dtlsConnection;
 
@@ -52,6 +77,8 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
   final String? _ciphers;
 
   final bool _withTrustedRoots;
+
+  final PskCredentialsCallback? _openSslPskCallback;
 
   @override
   void send(final CoapMessage coapMessage) {
@@ -76,6 +103,7 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
         withTrustedRoots: _withTrustedRoots,
         rootCertificates: _rootCertificates,
         ciphers: _ciphers,
+        pskCredentialsCallback: _openSslPskCallback,
       ),
       hostname: address.host,
     );

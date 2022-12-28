@@ -30,7 +30,10 @@ PskCredentials pskCredentialsCallback(final Uint8List indentity) =>
 
 class DtlsConfig extends DefaultCoapConfig {
   @override
-  final dtlsBackend = DtlsBackend.TinyDtls;
+  final dtlsBackend = DtlsBackend.OpenSsl;
+
+  @override
+  String? get dtlsCiphers => 'PSK-AES128-CCM8';
 }
 
 FutureOr<void> main() async {

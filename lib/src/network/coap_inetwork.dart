@@ -132,6 +132,7 @@ abstract class CoapINetwork {
               withTrustedRoots: config.dtlsWithTrustedRoots,
               ciphers: config.dtlsCiphers,
               rootCertificates: config.rootCertificates,
+              pskCredentialsCallback: pskCredentialsCallback,
             );
           case null:
             throw CoapDtlsException(
