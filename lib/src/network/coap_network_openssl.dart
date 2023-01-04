@@ -9,7 +9,6 @@
  */
 
 import 'dart:async';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dtls2/dtls2.dart';
@@ -68,7 +67,9 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
         _rootCertificates = rootCertificates,
         _openSslPskCallback = _createOpenSslPskCallback(pskCredentialsCallback);
 
-  DtlsClientConnection? _dtlsConnection;
+  DtlsClient? _dtlsClient;
+
+  DtlsConnection? _dtlsConnection;
 
   final List<Uint8List> _rootCertificates;
 
@@ -97,66 +98,43 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
       return;
     }
 
-    _dtlsConnection = DtlsClientConnection(
-      context: DtlsClientContext(
-        verify: _verify,
-        withTrustedRoots: _withTrustedRoots,
-        rootCertificates: _rootCertificates,
-        ciphers: _ciphers,
-        pskCredentialsCallback: _openSslPskCallback,
-      ),
-      hostname: address.host,
-    );
-
-    _dtlsConnection?.outgoing.listen(
-      (final d) => socket?.send(d, address, port),
-      onError: (final Object e, final StackTrace s) =>
-          eventBus.fire(CoapSocketErrorEvent(e, s)),
+    final context = DtlsClientContext(
+      verify: _verify,
+      withTrustedRoots: _withTrustedRoots,
+      rootCertificates: _rootCertificates,
+      ciphers: _ciphers,
+      pskCredentialsCallback: _openSslPskCallback,
     );
 
     await bind();
-    _receive();
 
+    // TODO(JKRhb): Maybe the hostname needs to be included here as well.
+    _dtlsClient = DtlsClient(socket!, context);
     try {
-      await _dtlsConnection?.connect().timeout(CoapINetwork.initTimeout);
+      _dtlsConnection = await _dtlsClient
+          ?.connect(address, port)
+          .timeout(CoapINetwork.initTimeout);
     } on TimeoutException {
-      close();
+      await close();
       rethrow;
     }
+
+    _receive();
 
     isClosed = false;
   }
 
   @override
-  void close() {
-    _dtlsConnection?.free();
+  Future<void> close() async {
+    await _dtlsClient?.close();
     super.close();
   }
 
   void _receive() {
-    socket?.listen(
-      (final event) {
-        switch (event) {
-          case RawSocketEvent.read:
-            final d = socket?.receive();
-            if (d == null) {
-              return;
-            }
-            _dtlsConnection?.incoming(d.data);
-            break;
-          case RawSocketEvent.closed:
-          case RawSocketEvent.readClosed:
-          case RawSocketEvent.write:
-            break;
-        }
-      },
-      onError: (final Object e, final StackTrace s) =>
-          eventBus.fire(CoapSocketErrorEvent(e, s)),
-    );
-    _dtlsConnection?.received.listen(
-      (final frame) {
+    _dtlsConnection?.listen(
+      (final datagram) {
         final message =
-            CoapMessage.fromUdpPayload(Uint8Buffer()..addAll(frame));
+            CoapMessage.fromUdpPayload(Uint8Buffer()..addAll(datagram.data));
         eventBus.fire(CoapMessageReceivedEvent(message, address));
       },
       onError: (final Object e, final StackTrace s) =>
