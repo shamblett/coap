@@ -133,6 +133,8 @@ abstract class CoapINetwork {
               ciphers: config.dtlsCiphers,
               rootCertificates: config.rootCertificates,
               pskCredentialsCallback: pskCredentialsCallback,
+              libCrypto: config.libCryptoInstance,
+              libSsl: config.libSslInstance,
             );
           case null:
             throw CoapDtlsException(

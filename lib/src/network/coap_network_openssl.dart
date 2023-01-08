@@ -61,10 +61,14 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
     super.namespace,
     final String? ciphers,
     final internal.PskCredentialsCallback? pskCredentialsCallback,
+    final OpenSsl? libSsl,
+    final OpenSsl? libCrypto,
   })  : _ciphers = ciphers,
         _verify = verify,
         _withTrustedRoots = withTrustedRoots,
         _rootCertificates = rootCertificates,
+        _libSsl = libSsl,
+        _libCrypto = libCrypto,
         _openSslPskCallback = _createOpenSslPskCallback(pskCredentialsCallback);
 
   DtlsClient? _dtlsClient;
@@ -80,6 +84,10 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
   final bool _withTrustedRoots;
 
   final PskCredentialsCallback? _openSslPskCallback;
+
+  final OpenSsl? _libSsl;
+
+  final OpenSsl? _libCrypto;
 
   @override
   void send(final CoapMessage coapMessage) {
@@ -109,7 +117,12 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
     await bind();
 
     // TODO(JKRhb): Maybe the hostname needs to be included here as well.
-    _dtlsClient = DtlsClient(socket!, context);
+    _dtlsClient = DtlsClient(
+      socket!,
+      context,
+      libSsl: _libSsl,
+      libCrypto: _libCrypto,
+    );
     try {
       _dtlsConnection = await _dtlsClient
           ?.connect(address, port)

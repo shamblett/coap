@@ -6,6 +6,7 @@
  */
 
 import 'package:dart_tinydtls/dart_tinydtls.dart';
+import 'package:dtls2/dtls2.dart';
 import 'dart:typed_data';
 
 import 'coap_constants.dart';
@@ -98,4 +99,12 @@ abstract class DefaultCoapConfig {
 
   /// Can be used to specify the Ciphers that should be used by OpenSSL.
   String? get dtlsCiphers => null;
+
+  /// Custom libssl instance that can be registered if OpenSSL
+  /// should not be available at the default locations.
+  OpenSsl? get libSslInstance => null;
+
+  /// Custom libcrypto instance that can be registered if OpenSSL
+  /// should not be available at the default locations.
+  OpenSsl? get libCryptoInstance => null;
 }
