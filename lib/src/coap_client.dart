@@ -460,14 +460,10 @@ class CoapClient {
       ..maxRetransmit = maxRetransmit;
     final responseStream = _sendWithStreamResponse(request).asBroadcastStream();
     final relation = CoapObserveClientRelation(request, responseStream);
-    unawaited(
-      () async {
-        final resp = await _waitForResponse(request, responseStream);
-        if (!resp.hasOption<ObserveOption>()) {
-          relation.isCancelled = true;
-        }
-      }(),
-    );
+    final resp = await _waitForResponse(request, responseStream);
+    if (!resp.hasOption<ObserveOption>()) {
+      relation.isCancelled = true;
+    }
     return relation;
   }
 
