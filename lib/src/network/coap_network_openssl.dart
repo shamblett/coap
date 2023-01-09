@@ -64,12 +64,14 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
     final internal.PskCredentialsCallback? pskCredentialsCallback,
     final DynamicLibrary? libSsl,
     final DynamicLibrary? libCrypto,
+    final String? hostName,
   })  : _ciphers = ciphers,
         _verify = verify,
         _withTrustedRoots = withTrustedRoots,
         _rootCertificates = rootCertificates,
         _libSsl = libSsl,
         _libCrypto = libCrypto,
+        _hostname = hostName,
         _openSslPskCallback = _createOpenSslPskCallback(pskCredentialsCallback);
 
   DtlsClient? _dtlsClient;
@@ -89,6 +91,8 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
   final DynamicLibrary? _libSsl;
 
   final DynamicLibrary? _libCrypto;
+
+  final String? _hostname;
 
   @override
   void send(final CoapMessage coapMessage) {
@@ -135,6 +139,7 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
         address,
         port,
         context,
+        hostname: _hostname,
         timeout: CoapINetwork.initTimeout,
       );
     } on TimeoutException {

@@ -116,6 +116,7 @@ abstract class CoapINetwork {
           pskCredentialsCallback: pskCredentialsCallback,
           libCrypto: config.libCryptoInstance,
           libSsl: config.libSslInstance,
+          hostName: uri.host,
         );
       default:
         throw UnsupportedProtocolException(uri.scheme);
