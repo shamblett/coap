@@ -72,9 +72,6 @@ abstract class DefaultCoapConfig {
 
   int get channelReceivePacketSize => 2048;
 
-  /// Whether OpenSSL bindings via the [dtls] package should be used for CoAPS.
-  bool get dtlsUseOpenSSL => false;
-
   /// Whether certificates should be verified by OpenSSL.
   bool get dtlsVerify => true;
 
