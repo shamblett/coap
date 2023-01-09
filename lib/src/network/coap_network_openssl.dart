@@ -100,11 +100,8 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
     _dtlsConnection?.send(bytes);
   }
 
-  @override
-  Future<void> init() async {
-    if (!isClosed || !shouldReinitialize) {
-      return;
-    }
+  Future<void> _initializeClient() async {
+    eventBus.fire(CoapSocketInitEvent());
 
     final context = DtlsClientContext(
       verify: _verify,
@@ -114,15 +111,26 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
       pskCredentialsCallback: _openSslPskCallback,
     );
 
-    await bind();
-
     // TODO(JKRhb): Maybe the hostname needs to be included here as well.
-    _dtlsClient = DtlsClient(
-      socket!,
+    _dtlsClient = await DtlsClient.bind(
+      bindAddress,
+      0,
       context,
       libSsl: _libSsl,
       libCrypto: _libCrypto,
     );
+  }
+
+  @override
+  Future<void> init() async {
+    if (!isClosed || !shouldReinitialize) {
+      return;
+    }
+
+    if (_dtlsClient == null) {
+      await _initializeClient();
+    }
+
     try {
       _dtlsConnection = await _dtlsClient
           ?.connect(address, port)
@@ -139,8 +147,8 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
 
   @override
   Future<void> close() async {
-    await _dtlsClient?.close();
     super.close();
+    await _dtlsClient?.close();
   }
 
   void _receive() {
@@ -154,9 +162,13 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
           eventBus.fire(CoapSocketErrorEvent(e, s)),
       onDone: () {
         isClosed = true;
+
+        if (!shouldReinitialize) {
+          return;
+        }
+
         Timer.periodic(CoapINetwork.reinitPeriod, (final timer) async {
           try {
-            socket?.close();
             await init();
             timer.cancel();
           } on Exception catch (_) {
