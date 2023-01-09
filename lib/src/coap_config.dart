@@ -5,17 +5,11 @@
  * Copyright :  S.Hamblett
  */
 
-import 'package:dart_tinydtls/dart_tinydtls.dart';
-import 'package:dtls2/dtls2.dart';
 import 'dart:typed_data';
+import 'dart:ffi';
 
 import 'coap_constants.dart';
 import 'deduplication/deduplicator_factory.dart';
-
-enum DtlsBackend {
-  OpenSsl,
-  TinyDtls,
-}
 
 /// Configuration loading class. The config file itself is a YAML
 /// file. The configuration items below are marked as optional to allow
@@ -78,13 +72,6 @@ abstract class DefaultCoapConfig {
 
   int get channelReceivePacketSize => 2048;
 
-  /// Indicates which [DtlsBackend] a new [CoapClient] should use.
-  DtlsBackend? get dtlsBackend => null;
-
-  /// Custom [TinyDTLS] instance that can be registered if tinyDTLS
-  /// should not be available at the default locations.
-  TinyDTLS? get tinyDtlsInstance => null;
-
   /// Whether OpenSSL bindings via the [dtls] package should be used for CoAPS.
   bool get dtlsUseOpenSSL => false;
 
@@ -102,9 +89,9 @@ abstract class DefaultCoapConfig {
 
   /// Custom libssl instance that can be registered if OpenSSL
   /// should not be available at the default locations.
-  OpenSsl? get libSslInstance => null;
+  DynamicLibrary? get libSslInstance => null;
 
   /// Custom libcrypto instance that can be registered if OpenSSL
   /// should not be available at the default locations.
-  OpenSsl? get libCryptoInstance => null;
+  DynamicLibrary? get libCryptoInstance => null;
 }

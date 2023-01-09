@@ -11,7 +11,6 @@ import '../coap_config.dart';
 import '../coap_constants.dart';
 import '../coap_message.dart';
 import 'coap_network_openssl.dart';
-import 'coap_network_tinydtls.dart';
 import 'coap_network_udp.dart';
 import 'credentials/ecdsa_keys.dart';
 import 'credentials/psk_credentials.dart';
@@ -105,43 +104,19 @@ abstract class CoapINetwork {
           namespace: namespace,
         );
       case CoapConstants.secureUriScheme:
-        switch (config.dtlsBackend) {
-          case DtlsBackend.TinyDtls:
-            if (pskCredentialsCallback == null && ecdsaKeys == null) {
-              throw CoapCredentialsException(
-                'A PSK credentials callback and/or ECDSA keys have been expected '
-                'to use CoAPS, but neither have been found!',
-              );
-            }
-            return CoapNetworkUDPTinyDtls(
-              address,
-              port ?? config.defaultSecurePort,
-              bindAddress ?? defaultBindAddress,
-              config.tinyDtlsInstance,
-              namespace: namespace,
-              pskCredentialsCallback: pskCredentialsCallback,
-              ecdsaKeys: ecdsaKeys,
-            );
-          case DtlsBackend.OpenSsl:
-            return CoapNetworkUDPOpenSSL(
-              address,
-              port ?? config.defaultSecurePort,
-              bindAddress ?? defaultBindAddress,
-              namespace: namespace,
-              verify: config.dtlsVerify,
-              withTrustedRoots: config.dtlsWithTrustedRoots,
-              ciphers: config.dtlsCiphers,
-              rootCertificates: config.rootCertificates,
-              pskCredentialsCallback: pskCredentialsCallback,
-              libCrypto: config.libCryptoInstance,
-              libSsl: config.libSslInstance,
-            );
-          case null:
-            throw CoapDtlsException(
-              'Encountered a coaps:// URI scheme but no DTLS backend has been '
-              'enabled in the config.',
-            );
-        }
+        return CoapNetworkUDPOpenSSL(
+          address,
+          port ?? config.defaultSecurePort,
+          bindAddress ?? defaultBindAddress,
+          namespace: namespace,
+          verify: config.dtlsVerify,
+          withTrustedRoots: config.dtlsWithTrustedRoots,
+          ciphers: config.dtlsCiphers,
+          rootCertificates: config.rootCertificates,
+          pskCredentialsCallback: pskCredentialsCallback,
+          libCrypto: config.libCryptoInstance,
+          libSsl: config.libSslInstance,
+        );
       default:
         throw UnsupportedProtocolException(uri.scheme);
     }

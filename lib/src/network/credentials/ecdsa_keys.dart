@@ -78,8 +78,8 @@ class _Secp256r1ValidationError extends _EcdsaValidationError {
 /// Class representing ECC keys (one private key and the x and y coordinates of
 /// a public one).
 ///
-/// Currently, only the mandatory Cipher Suite
-/// `TLS_ECDHE_ECDSA_WITH_AES_128_CCM_8` is supported via tinydtls.
+/// Currently, ECC is not supported by this package (anymore) but might be added
+/// later once OpenSSL supports it.
 class EcdsaKeys {
   /// The elliptic curve these keys are associated with.
   final EcdsaCurve ecdsaCurve;

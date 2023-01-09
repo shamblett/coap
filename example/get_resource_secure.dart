@@ -30,9 +30,6 @@ PskCredentials pskCredentialsCallback(final Uint8List indentity) =>
 
 class DtlsConfig extends DefaultCoapConfig {
   @override
-  final dtlsBackend = DtlsBackend.OpenSsl;
-
-  @override
   String? get dtlsCiphers => 'PSK-AES128-CCM8';
 }
 

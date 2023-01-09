@@ -9,6 +9,7 @@
  */
 
 import 'dart:async';
+import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:dtls2/dtls2.dart';
@@ -61,8 +62,8 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
     super.namespace,
     final String? ciphers,
     final internal.PskCredentialsCallback? pskCredentialsCallback,
-    final OpenSsl? libSsl,
-    final OpenSsl? libCrypto,
+    final DynamicLibrary? libSsl,
+    final DynamicLibrary? libCrypto,
   })  : _ciphers = ciphers,
         _verify = verify,
         _withTrustedRoots = withTrustedRoots,
@@ -85,9 +86,9 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
 
   final PskCredentialsCallback? _openSslPskCallback;
 
-  final OpenSsl? _libSsl;
+  final DynamicLibrary? _libSsl;
 
-  final OpenSsl? _libCrypto;
+  final DynamicLibrary? _libCrypto;
 
   @override
   void send(final CoapMessage coapMessage) {
@@ -103,19 +104,9 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
   Future<void> _initializeClient() async {
     eventBus.fire(CoapSocketInitEvent());
 
-    final context = DtlsClientContext(
-      verify: _verify,
-      withTrustedRoots: _withTrustedRoots,
-      rootCertificates: _rootCertificates,
-      ciphers: _ciphers,
-      pskCredentialsCallback: _openSslPskCallback,
-    );
-
-    // TODO(JKRhb): Maybe the hostname needs to be included here as well.
     _dtlsClient = await DtlsClient.bind(
       bindAddress,
       0,
-      context,
       libSsl: _libSsl,
       libCrypto: _libCrypto,
     );
@@ -131,10 +122,21 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
       await _initializeClient();
     }
 
+    final context = DtlsClientContext(
+      verify: _verify,
+      withTrustedRoots: _withTrustedRoots,
+      rootCertificates: _rootCertificates,
+      ciphers: _ciphers,
+      pskCredentialsCallback: _openSslPskCallback,
+    );
+
     try {
-      _dtlsConnection = await _dtlsClient
-          ?.connect(address, port)
-          .timeout(CoapINetwork.initTimeout);
+      _dtlsConnection = await _dtlsClient?.connect(
+        address,
+        port,
+        context,
+        timeout: CoapINetwork.initTimeout,
+      );
     } on TimeoutException {
       await close();
       rethrow;
