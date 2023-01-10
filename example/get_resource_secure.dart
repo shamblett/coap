@@ -10,8 +10,8 @@
  * Get requests with different accepted media types using CoAPS and a Pre-Shared
  * Key.
  *
- * You need to have a compiled tinyDTLS version available in order to be able
- * to use this example.
+ * You need to have OpenSSL available on your system to be able to run this
+ * example. See the README file or the dtls2 documentation for more information.
  */
 
 import 'dart:async';
