@@ -31,7 +31,6 @@ export 'src/link-format/coap_link_format.dart';
 export 'src/link-format/coap_web_link.dart';
 export 'src/link-format/resources/coap_resource.dart';
 export 'src/multicast_address.dart';
-export 'src/network/credentials/ecdsa_keys.dart';
 export 'src/network/credentials/psk_credentials.dart';
 export 'src/option/coap_block_option.dart';
 export 'src/option/empty_option.dart';

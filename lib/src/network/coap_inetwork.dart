@@ -12,7 +12,6 @@ import '../coap_constants.dart';
 import '../coap_message.dart';
 import 'coap_network_openssl.dart';
 import 'coap_network_udp.dart';
-import 'credentials/ecdsa_keys.dart';
 import 'credentials/psk_credentials.dart';
 
 /// This [Exception] is thrown when an unsupported URI scheme is encountered.
@@ -66,7 +65,6 @@ abstract class CoapINetwork {
     final String namespace = '',
     final InternetAddress? bindAddress,
     final PskCredentialsCallback? pskCredentialsCallback,
-    final EcdsaKeys? ecdsaKeys,
   }) {
     final defaultBindAddress = address.type == InternetAddressType.IPv4
         ? InternetAddress.anyIPv4
