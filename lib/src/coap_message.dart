@@ -17,6 +17,7 @@ import 'coap_code.dart';
 import 'coap_constants.dart';
 import 'coap_media_type.dart';
 import 'coap_message_type.dart';
+import 'coap_request.dart';
 import 'coap_response.dart';
 import 'codec/udp/message_decoder.dart';
 import 'codec/udp/message_encoder.dart';
@@ -114,6 +115,10 @@ abstract class CoapMessage {
 
   /// Remove a specific option, returns true if the option has been removed.
   bool removeOption(final Option<Object?> option) => _options.remove(option);
+
+  /// Removes all options for which the given [test] function returns `true`.
+  void removeOptionWhere(final bool Function(Option<Object?>) test) =>
+      _options.removeWhere(test);
 
   /// Adds options to the list of options of this CoAP message.
   void addOptions(final Iterable<Option<Object?>> options) =>
@@ -344,11 +349,8 @@ abstract class CoapMessage {
     contentType = mediaType;
   }
 
-  /// Select options helper
-  List<T> _selectOptions<T extends Option<Object?>>() => getOptions<T>();
-
   /// If-Matches.
-  List<IfMatchOption> get ifMatches => _selectOptions<IfMatchOption>();
+  List<IfMatchOption> get ifMatches => getOptions<IfMatchOption>();
 
   /// Add an if match option
   void addIfMatch(final String etag) =>
@@ -377,7 +379,7 @@ abstract class CoapMessage {
   }
 
   /// Etags
-  List<ETagOption> get etags => _selectOptions<ETagOption>();
+  List<ETagOption> get etags => getOptions<ETagOption>();
 
   /// Contains an opaque E-tag
   bool containsETagOpaque(final Uint8Buffer opaque) =>
@@ -409,189 +411,12 @@ abstract class CoapMessage {
   void clearETags() => removeOptions<ETagOption>();
 
   /// If-None Matches.
-  List<IfNoneMatchOption> get ifNoneMatches =>
-      _selectOptions<IfNoneMatchOption>();
+  List<IfNoneMatchOption> get ifNoneMatches => getOptions<IfNoneMatchOption>();
 
   /// Remove an if none match option
   void removeIfNoneMatch(final IfNoneMatchOption option) {
     removeOption(option);
   }
-
-  /// Uri's
-  String get uriHost {
-    final host = getFirstOption<UriHostOption>();
-    return host?.toString() ?? '';
-  }
-
-  @internal
-  set uriHost(final String value) {
-    setOption(UriHostOption(value));
-  }
-
-  /// URI path
-  // TODO(JKRhb): Apply proper percent-encoding
-  String get uriPath => getOptions<UriPathOption>()
-      .map((final e) => e.value.replaceAll('/', '%2F'))
-      .join('/');
-
-  /// Sets a number of Uri path options from a string
-  set uriPath(final String fullPath) {
-    clearUriPath();
-
-    var trimmedPath = fullPath;
-
-    if (fullPath.startsWith('/')) {
-      trimmedPath = fullPath.substring(1);
-    }
-
-    if (trimmedPath.isEmpty) {
-      return;
-    }
-
-    trimmedPath.split('/').forEach(addUriPath);
-  }
-
-  /// URI paths
-  List<UriPathOption> get uriPaths => _selectOptions<UriPathOption>();
-
-  /// Add a URI path
-  void addUriPath(final String path) => addOption(UriPathOption(path));
-
-  /// Remove a URI path
-  void removeUriPath(final String path) {
-    _options.removeWhere(
-      (final element) => element is UriPathOption && element.value == path,
-    );
-  }
-
-  /// Clear URI paths
-  void clearUriPath() => removeOptions<UriPathOption>();
-
-  /// URI query
-  // TODO(JKRhb): Apply proper percent-encoding
-  String get uriQuery => getOptions<UriQueryOption>()
-      .map((final option) => option.value.replaceAll('&', '%26'))
-      .join('&');
-
-  /// Set a URI query
-  set uriQuery(final String fullQuery) {
-    var trimmedQuery = fullQuery;
-    if (trimmedQuery.startsWith('?')) {
-      trimmedQuery = trimmedQuery.substring(1);
-    }
-    clearUriQuery();
-    trimmedQuery.split('&').forEach(addUriQuery);
-  }
-
-  /// URI queries
-  List<UriQueryOption> get uriQueries => _selectOptions<UriQueryOption>();
-
-  /// Add a URI query
-  void addUriQuery(final String query) => addOption(UriQueryOption(query));
-
-  /// Remove a URI query
-  void removeUriQuery(final String query) {
-    _options.removeWhere(
-      (final element) => element is UriQueryOption && element.value == query,
-    );
-  }
-
-  /// Clear URI queries
-  void clearUriQuery() => removeOptions<UriQueryOption>();
-
-  /// Uri port
-  int get uriPort => getFirstOption<UriPortOption>()?.value ?? 0;
-
-  set uriPort(final int value) {
-    if (value == 0) {
-      removeOptions<UriPortOption>();
-    } else {
-      addOption(UriPortOption(value));
-    }
-  }
-
-  /// Location path as a string
-  // TODO(JKRhb): Apply proper percent-encoding
-  String get locationPath => getOptions<LocationPathOption>()
-      .map((final option) => option.value.replaceAll('/', '%2F'))
-      .join('/');
-
-  /// Set the location path from a string
-  set locationPath(final String fullPath) {
-    clearLocationPath();
-
-    var trimmedPath = fullPath;
-
-    if (fullPath.startsWith('/')) {
-      trimmedPath = fullPath.substring(1);
-    }
-
-    trimmedPath.split('/').forEach(addLocationPath);
-  }
-
-  /// Location paths
-  List<LocationPathOption> get locationPaths =>
-      _selectOptions<LocationPathOption>();
-
-  /// Location
-  String get location {
-    var path = '/$locationPath';
-    final query = locationQuery;
-    if (query.isNotEmpty) {
-      path += '?$query';
-    }
-    return path;
-  }
-
-  /// Add a location path
-  void addLocationPath(final String path) =>
-      addOption(LocationPathOption(path));
-
-  /// Remove a location path
-  void removelocationPath(final String path) {
-    _options.removeWhere(
-      (final element) => element is LocationPathOption && element.value == path,
-    );
-  }
-
-  /// Clear location path
-  void clearLocationPath() =>
-      _options.removeWhere((final option) => option is LocationPathOption);
-
-  /// Location query
-  // TODO(JKRhb): Apply proper percent-encoding
-  String get locationQuery => getOptions<LocationQueryOption>()
-      .map((final e) => e.value.replaceAll('&', '%26'))
-      .join('&');
-
-  /// Set a location query
-  set locationQuery(final String fullQuery) {
-    var trimmedQuery = fullQuery;
-    if (trimmedQuery.startsWith('?')) {
-      trimmedQuery = trimmedQuery.substring(1);
-    }
-    clearLocationQuery();
-    trimmedQuery.split('&').forEach(addLocationQuery);
-  }
-
-  /// Location queries
-  List<LocationQueryOption> get locationQueries =>
-      _selectOptions<LocationQueryOption>();
-
-  /// Add a location query
-  void addLocationQuery(final String query) =>
-      addOption(LocationQueryOption(query));
-
-  /// Remove a location query
-  void removeLocationQuery(final String query) {
-    _options.removeWhere(
-      (final element) =>
-          element is LocationQueryOption && element.value == query,
-    );
-  }
-
-  /// Clear location  queries
-  void clearLocationQuery() => removeOptions<LocationQueryOption>();
 
   /// Content type
   CoapMediaType? get contentType {
@@ -773,6 +598,25 @@ abstract class CoapMessage {
       'Payload: $payloadString';
 
   String _optionsToString() {
+    // TODO(JKRhb): Refactor
+    final message = this;
+    Object? uriHost;
+    var uriPort = 0;
+    Object? locationPaths;
+    Object? uriPath;
+    Object? uriQueries;
+    Object? locationQueries;
+
+    if (message is CoapRequest) {
+      uriHost = message.uriHost;
+      uriPort = message.uriPort;
+      uriPath = message.uriPath;
+      uriQueries = message.uriQueries;
+    } else if (message is CoapResponse) {
+      locationPaths = message.locationPaths;
+      locationQueries = message.locationQueries;
+    }
+
     final sb = StringBuffer()
       ..writeln('[')
       ..write(_optionString('If-Match', ifMatches))

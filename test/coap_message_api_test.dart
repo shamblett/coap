@@ -6,11 +6,13 @@
  */
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:coap/coap.dart';
 import 'package:coap/src/coap_empty_message.dart';
 import 'package:coap/src/event/coap_event_bus.dart';
 import 'package:coap/src/option/coap_option_type.dart';
+import 'package:convert/convert.dart';
 import 'package:test/test.dart';
 import 'package:typed_data/typed_buffers.dart';
 
@@ -226,7 +228,7 @@ void main() {
   });
 
   test('Uri path', () {
-    final message = CoapEmptyMessage(CoapMessageType.rst)..isTimedOut = true;
+    final message = CoapRequest(RequestMethod.get)..isTimedOut = true;
     expect(message.uriPaths.length, 0);
     for (final path in ['', '/']) {
       message.uriPath = path;
@@ -235,38 +237,48 @@ void main() {
     for (final path in ['a/uri/path/', '/a/uri/path/']) {
       message.uriPath = path;
       expect(message.uriPaths.length, 4);
-      expect(message.uriPath, 'a/uri/path/');
+      expect(message.uriPath, '/a/uri/path/');
     }
     message.addUriPath('longer');
     expect(message.uriPaths.length, 5);
-    expect(message.uriPath, 'a/uri/path//longer');
+    expect(message.uriPath, '/a/uri/path//longer');
     message.addUriPath('multiple/are/allowed');
-    expect(message.uriPath, 'a/uri/path//longer/multiple%2Fare%2Fallowed');
-    message.addLocationPath('no-double-slash//');
-    expect(message.uriPath, 'a/uri/path//longer/multiple%2Fare%2Fallowed');
+    expect(message.uriPath, '/a/uri/path//longer/multiple%2Fare%2Fallowed');
+    message.addUriPath('no-double-slash//');
+    expect(
+      message.uriPath,
+      '/a/uri/path//longer/multiple%2Fare%2Fallowed/no-double-slash%2F%2F',
+    );
     final tooLong = 'n' * 1000;
     expect(
       () => message.addUriPath(tooLong),
       throwsA(isA<UnknownCriticalOptionException>()),
     );
     message.removeUriPath('path');
-    expect(message.uriPaths.length, 5);
-    expect(message.uriPath, 'a/uri//longer/multiple%2Fare%2Fallowed');
+    expect(message.uriPaths.length, 6);
+    expect(
+      message.uriPath,
+      '/a/uri//longer/multiple%2Fare%2Fallowed/no-double-slash%2F%2F',
+    );
     message.clearUriPath();
     expect(message.uriPaths.length, 0);
-    expect(message.uriPath.isEmpty, isTrue);
-    message.uriPath = 'a//uri/path';
+    expect(message.uriPath.isEmpty, isFalse);
+    message.uriPath = '/a//uri/path';
     expect(message.uriPaths.length, 4);
-    expect(message.uriPath, 'a//uri/path');
+    expect(message.uriPath, '/a//uri/path');
     message
       ..clearUriPath()
       ..addUriPath('');
     expect(message.uriPaths.length, 1);
-    expect(message.uriPath, '');
+    expect(message.uriPath, '/');
+
+    message.uriPath = 'ä/ö/ü';
+    expect(message.uriPaths.length, 3);
+    expect(message.uriPath, '/%C3%A4/%C3%B6/%C3%BC');
   });
 
   test('Uri query', () {
-    final message = CoapEmptyMessage(CoapMessageType.rst);
+    final message = CoapRequest(RequestMethod.get);
     expect(message.uriQueries.length, 0);
     message.uriQuery = 'a&uri=1&query=2';
     expect(message.uriQueries.length, 3);
@@ -282,52 +294,56 @@ void main() {
     message.addUriQuery('allow=1&multiple=2&queries=3');
     expect(
       message.uriQuery,
-      'a&uri=1&query=2&longer=3&allow=1%26multiple=2%26queries=3',
+      'a&uri=1&query=2&longer=3&allow=1%26multiple%3D2%26queries%3D3',
     );
-    message.addLocationQuery('no_double_and=1&&');
+    message.addUriPath('no_double_and=1&&');
     expect(
       message.uriQuery,
-      'a&uri=1&query=2&longer=3&allow=1%26multiple=2%26queries=3',
+      'a&uri=1&query=2&longer=3&allow=1%26multiple%3D2%26queries%3D3',
     );
     message.removeUriQuery('query=2');
     expect(message.uriQueries.length, 4);
     expect(
       message.uriQuery,
-      'a&uri=1&longer=3&allow=1%26multiple=2%26queries=3',
+      'a&uri=1&longer=3&allow=1%26multiple%3D2%26queries%3D3',
     );
     message.clearUriQuery();
     expect(message.uriQueries.length, 0);
+
+    message.uriQuery = 'äöü';
+    expect(message.uriQueries.length, 1);
+    expect(message.uriQuery, '%C3%A4%C3%B6%C3%BC');
   });
 
   test('Location path', () {
-    final message = CoapEmptyMessage(CoapMessageType.rst);
+    final message = CoapResponse(ResponseCode.content, CoapMessageType.ack);
     expect(message.locationPaths.length, 0);
     message.locationPath = '';
     expect(message.locationPaths.length, 1);
-    expect(message.locationPath, '');
+    expect(message.locationPath, '/');
     message.locationPath = '/';
     expect(message.locationPaths.length, 1);
-    expect(message.locationPath, '');
+    expect(message.locationPath, '/');
     message.locationPath = 'a/location/path/';
     expect(message.locationPaths.length, 4);
-    expect(message.locationPath, 'a/location/path/');
+    expect(message.locationPath, '/a/location/path/');
     message.addLocationPath('longer');
     expect(message.locationPaths.length, 5);
-    expect(message.locationPath, 'a/location/path//longer');
+    expect(message.locationPath, '/a/location/path//longer');
     message.removelocationPath('path');
     expect(message.locationPaths.length, 4);
-    expect(message.locationPath, 'a/location//longer');
+    expect(message.locationPath, '/a/location//longer');
     message.clearLocationPath();
     expect(message.locationPaths.length, 0);
-    expect(message.locationPath.isEmpty, isTrue);
+    expect(message.locationPath.isEmpty, isFalse);
     message.locationPath = 'a//uri/path';
     expect(message.locationPaths.length, 4);
-    expect(message.locationPath, 'a//uri/path');
+    expect(message.locationPath, '/a//uri/path');
     message
       ..clearLocationPath()
       ..addLocationPath('');
     expect(message.locationPaths.length, 1);
-    expect(message.locationPath, '');
+    expect(message.locationPath, '/');
     expect(() => message.locationPath = '..', throwsFormatException);
     expect(() => message.locationPath = '.', throwsFormatException);
     message.addLocationPath('multiple/are/allowed');
@@ -339,10 +355,14 @@ void main() {
       () => message.addLocationPath(tooLong),
       throwsA(isA<UnknownElectiveOptionException>()),
     );
+
+    message.locationPath = 'ä/ö/ü';
+    expect(message.locationPaths.length, 3);
+    expect(message.locationPath, '/%C3%A4/%C3%B6/%C3%BC');
   });
 
   test('Location query', () {
-    final message = CoapEmptyMessage(CoapMessageType.rst);
+    final message = CoapResponse(ResponseCode.content, CoapMessageType.ack);
     expect(message.locationQueries.length, 0);
     message.locationQuery = 'a&uri=1&query=2';
     expect(message.locationQueries.length, 3);
@@ -358,21 +378,77 @@ void main() {
     message.addLocationQuery('allow=1&multiple=2&queries=3');
     expect(
       message.locationQuery,
-      'a&uri=1&query=2&longer=3&allow=1%26multiple=2%26queries=3',
+      'a&uri=1&query=2&longer=3&allow=1%26multiple%3D2%26queries%3D3',
     );
     message.addLocationQuery('double_and=1&&');
     expect(
       message.locationQuery,
-      'a&uri=1&query=2&longer=3&allow=1%26multiple=2%26queries=3'
+      'a&uri=1&query=2&longer=3&allow=1%26multiple%3D2%26queries%3D3'
       '&double_and=1%26%26',
     );
     message.removeLocationQuery('query=2');
     expect(message.locationQueries.length, 5);
     expect(
       message.locationQuery,
-      'a&uri=1&longer=3&allow=1%26multiple=2%26queries=3&double_and=1%26%26',
+      'a&uri=1&longer=3&allow=1%26multiple%3D2%26queries%3D3'
+      '&double_and=1%26%26',
     );
     message.clearLocationQuery();
     expect(message.locationQueries.length, 0);
+
+    message.locationQuery = 'ä&ö/ü';
+    expect(message.locationQueries.length, 2);
+    expect(message.locationQuery, '%C3%A4&%C3%B6%2F%C3%BC');
+  });
+
+  /// Runs examples from [RFC 7252, Appendix B].
+  ///
+  /// [RFC 7252, Appendix B]: https://www.rfc-editor.org/rfc/rfc7252#appendix-B
+  test('Multiple URI options', () {
+    final message1 = CoapRequest(RequestMethod.get)
+      ..uriHost = '[2001:db8::2:1]'
+      ..uriPort = 5683;
+
+    expect(message1.uri.toString(), 'coap://[2001:db8::2:1]/');
+
+    final message2 = CoapRequest(RequestMethod.get)
+      ..uriHost = 'example.net'
+      ..uriPort = 5683;
+
+    expect(message2.uri.toString(), 'coap://example.net/');
+
+    final message3 = CoapRequest(RequestMethod.get)
+      ..uriHost = 'example.net'
+      ..uriPort = 5683
+      ..addUriPath('.well-known')
+      ..addUriPath('core');
+
+    expect(message3.uri.toString(), 'coap://example.net/.well-known/core');
+
+    final message4 = CoapRequest(RequestMethod.get)
+      ..uriHost = 'xn--18j4d.example'
+      ..uriPort = 5683
+      ..addUriPath(utf8.decode(hex.decode('E38193E38293E381ABE381A1E381AF')));
+
+    expect(
+      message4.uri.toString(),
+      'coap://xn--18j4d.example/%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF',
+    );
+
+    final message5 = CoapRequest(RequestMethod.get)
+      ..destination = InternetAddress('198.51.100.1')
+      ..uriPort = 61616
+      ..addUriPath('')
+      ..addUriPath('/')
+      ..addUriPath('')
+      ..addUriPath('')
+      ..addUriQuery('//')
+      ..addUriQuery('?&');
+
+    expect(
+      message5.uri.toString(),
+      // FIXME: Should be "coap://198.51.100.1:61616//%2F//?%2F%2F&?%26"
+      'coap://198.51.100.1:61616//%2F//?%2F%2F&%3F%26',
+    );
   });
 }

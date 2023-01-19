@@ -13,6 +13,7 @@ import 'coap_message.dart';
 import 'coap_message_type.dart';
 import 'coap_request.dart';
 import 'option/option.dart';
+import 'option/string_option.dart';
 
 /// Represents a CoAP response to a CoAP request.
 /// A response is either a piggy-backed response with type ACK
@@ -88,4 +89,93 @@ class CoapResponse extends CoapMessage {
           hasFormatError: hasFormatError,
           payload: payload,
         );
+
+  /// Relative [Uri] that consists either of an absolute path, a query string,
+  /// or both.
+  ///
+  /// May be included in a 2.01 (Created) response to indicate the location of
+  /// the resource created as the result of a POST request (see
+  /// [RFC 7252, Section 5.8.2]).
+  ///
+  /// The location is supposed to be resolved relative to the request URI.
+  ///
+  /// [RFC 7252, Section 5.8.2]: https://www.rfc-editor.org/rfc/rfc7252#section-5.8.2
+  Uri get location {
+    final path = getOptions<LocationPathOption>()
+        .map((final option) => option.pathSegment)
+        .join();
+    final queryParameters = Map.fromEntries(
+      getOptions<LocationQueryOption>().map(
+        (final option) => option.queryParameter,
+      ),
+    );
+
+    return Uri(
+      path: path.isNotEmpty ? path : '/',
+      queryParameters: queryParameters.isNotEmpty ? queryParameters : null,
+    );
+  }
+
+  /// Location path as a string
+  String get locationPath => location.path;
+
+  /// Set the location path from a string
+  set locationPath(final String fullPath) {
+    clearLocationPath();
+
+    var trimmedPath = fullPath;
+
+    if (fullPath.startsWith('/')) {
+      trimmedPath = fullPath.substring(1);
+    }
+
+    trimmedPath.split('/').forEach(addLocationPath);
+  }
+
+  /// Location paths
+  List<LocationPathOption> get locationPaths =>
+      getOptions<LocationPathOption>();
+
+  /// Add a location path
+  void addLocationPath(final String path) =>
+      addOption(LocationPathOption(path));
+
+  /// Remove a location path
+  void removelocationPath(final String path) =>
+      removeOptionWhere((final element) => element.value == path);
+
+  /// Clear location path
+  void clearLocationPath() => removeOptions<LocationPathOption>();
+
+  /// Location query
+  String get locationQuery => location.query;
+
+  /// Set a location query
+  set locationQuery(final String fullQuery) {
+    var trimmedQuery = fullQuery;
+    if (trimmedQuery.startsWith('?')) {
+      trimmedQuery = trimmedQuery.substring(1);
+    }
+    clearLocationQuery();
+    trimmedQuery.split('&').forEach(addLocationQuery);
+  }
+
+  /// Location queries
+  List<LocationQueryOption> get locationQueries =>
+      getOptions<LocationQueryOption>();
+
+  /// Add a location query
+  void addLocationQuery(final String query) =>
+      addOption(LocationQueryOption(query));
+
+  /// Remove a location query
+  void removeLocationQuery(final String query) {
+    removeOptionWhere(
+      (final element) =>
+          element is LocationQueryOption && element.value == query,
+    );
+  }
+
+  /// Clear location  queries
+  void clearLocationQuery() => removeOptions<LocationQueryOption>();
 }
