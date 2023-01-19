@@ -7,7 +7,7 @@ import 'option.dart';
 
 abstract class StringOption extends Option<String> {
   StringOption(this.type, final String value)
-      : byteValue = Uint8Buffer()..addAll(value.codeUnits);
+      : byteValue = Uint8Buffer()..addAll(utf8.encode(value));
 
   StringOption.parse(this.type, final Uint8Buffer? bytes)
       : byteValue = Uint8Buffer()..addAll(bytes ?? []);
