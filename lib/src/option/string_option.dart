@@ -44,17 +44,24 @@ abstract class QueryOption extends StringOption {
   }
 }
 
-class LocationPathOption extends StringOption implements OscoreOptionClassE {
-  LocationPathOption(final String value)
-      : super(OptionType.locationPath, value) {
+abstract class PathOption extends StringOption {
+  PathOption(super.type, super.value) {
     if (value == '..' || value == '.') {
-      throw ArgumentError.value(
-        value,
-        'LocationPathOption'
-        'The value of a Location-Path Option must not be "." or ".."',
+      throw FormatException(
+        'The value of a $name Option must not be "." or ".."',
       );
     }
   }
+
+  PathOption.parse(super.type, Uint8Buffer super.bytes) : super.parse();
+
+  @internal
+  String get pathSegment => "/${value.replaceAll('/', '%2F')}";
+}
+
+class LocationPathOption extends PathOption implements OscoreOptionClassE {
+  LocationPathOption(final String value)
+      : super(OptionType.locationPath, value);
 
   LocationPathOption.parse(final Uint8Buffer bytes)
       : super.parse(OptionType.locationPath, bytes);
@@ -67,16 +74,8 @@ class UriHostOption extends StringOption implements OscoreOptionClassU {
       : super.parse(OptionType.uriHost, bytes);
 }
 
-class UriPathOption extends StringOption implements OscoreOptionClassE {
-  UriPathOption(final String value) : super(OptionType.uriPath, value) {
-    if (value == '.' || value == '..') {
-      throw ArgumentError.value(
-        value,
-        'UriPathOption',
-        'The value of a Uri-Path Option must not be "." or ".."',
-      );
-    }
-  }
+class UriPathOption extends PathOption implements OscoreOptionClassE {
+  UriPathOption(final String value) : super(OptionType.uriPath, value);
 
   UriPathOption.parse(final Uint8Buffer bytes)
       : super.parse(OptionType.uriPath, bytes);

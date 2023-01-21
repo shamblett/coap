@@ -328,8 +328,8 @@ void main() {
       ..addLocationPath('');
     expect(message.locationPaths.length, 1);
     expect(message.locationPath, '');
-    expect(() => message.locationPath = '..', throwsArgumentError);
-    expect(() => message.locationPath = '.', throwsArgumentError);
+    expect(() => message.locationPath = '..', throwsFormatException);
+    expect(() => message.locationPath = '.', throwsFormatException);
     message.addLocationPath('multiple/are/allowed');
     expect(message.locationPaths.length, 1);
     message.addLocationPath('double-slash//');
