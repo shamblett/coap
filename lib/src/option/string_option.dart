@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:meta/meta.dart';
 import 'package:typed_data/typed_data.dart';
 
 import 'coap_option_type.dart';
@@ -26,6 +27,21 @@ abstract class StringOption extends Option<String> {
 
   @override
   String get valueString => value;
+}
+
+abstract class QueryOption extends StringOption {
+  QueryOption(super.type, super.value);
+
+  QueryOption.parse(super.type, Uint8Buffer super.bytes) : super.parse();
+
+  @internal
+  MapEntry<String, String?> get queryParameter {
+    final parameter = this.value.split('=');
+    final key = parameter[0];
+    final value = parameter.length > 1 ? parameter.sublist(1).join('=') : null;
+
+    return MapEntry(key, value);
+  }
 }
 
 class LocationPathOption extends StringOption implements OscoreOptionClassE {
@@ -66,14 +82,14 @@ class UriPathOption extends StringOption implements OscoreOptionClassE {
       : super.parse(OptionType.uriPath, bytes);
 }
 
-class UriQueryOption extends StringOption implements OscoreOptionClassE {
+class UriQueryOption extends QueryOption implements OscoreOptionClassE {
   UriQueryOption(final String value) : super(OptionType.uriQuery, value);
 
   UriQueryOption.parse(final Uint8Buffer bytes)
       : super.parse(OptionType.uriQuery, bytes);
 }
 
-class LocationQueryOption extends StringOption implements OscoreOptionClassE {
+class LocationQueryOption extends QueryOption implements OscoreOptionClassE {
   LocationQueryOption(final String value)
       : super(OptionType.locationQuery, value);
 
