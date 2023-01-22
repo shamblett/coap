@@ -519,9 +519,9 @@ abstract class CoapMessage {
   }
 
   /// Size 1
-  int get size1 {
+  int? get size1 {
     final opt = getFirstOption<Size1Option>();
-    return opt?.value ?? 0;
+    return opt?.value;
   }
 
   set size1(final int? value) {
@@ -535,7 +535,7 @@ abstract class CoapMessage {
   /// Size 2
   int? get size2 {
     final opt = getFirstOption<Size2Option>();
-    return opt?.value ?? 0;
+    return opt?.value;
   }
 
   set size2(final int? value) {
