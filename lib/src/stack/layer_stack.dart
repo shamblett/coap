@@ -12,7 +12,6 @@ import '../coap_empty_message.dart';
 import '../coap_request.dart';
 import '../coap_response.dart';
 import '../net/exchange.dart';
-import 'base_layer.dart';
 import 'layers/blockwise.dart';
 import 'layers/bottom.dart';
 import 'layers/observe.dart';
