@@ -14,7 +14,6 @@ import 'package:meta/meta.dart';
 import 'package:typed_data/typed_data.dart';
 
 import 'coap_code.dart';
-import 'coap_constants.dart';
 import 'coap_media_type.dart';
 import 'coap_message_type.dart';
 import 'coap_request.dart';
