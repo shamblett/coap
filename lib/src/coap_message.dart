@@ -597,43 +597,34 @@ abstract class CoapMessage {
       'Options: ${_optionsToString()},\n'
       'Payload: $payloadString';
 
-  String _optionsToString() {
-    // TODO(JKRhb): Refactor
+  void _writeMessageSpecifcOptions(final StringBuffer stringBuffer) {
     final message = this;
-    Object? uriHost;
-    var uriPort = 0;
-    Object? locationPaths;
-    Object? uriPath;
-    Object? uriQueries;
-    Object? locationQueries;
-
     if (message is CoapRequest) {
-      uriHost = message.uriHost;
-      uriPort = message.uriPort;
-      uriPath = message.uriPath;
-      uriQueries = message.uriQueries;
+      final uriPort = message.uriPort;
+      stringBuffer
+        ..write(_optionString('Uri Host', message.uriHost))
+        ..write(_optionString('Uri Port', uriPort > 0 ? uriPort : null))
+        ..write(_optionString('Uri Paths', message.uriPath))
+        ..write(_optionString('Uri Queries', message.uriQueries));
     } else if (message is CoapResponse) {
-      locationPaths = message.locationPaths;
-      locationQueries = message.locationQueries;
+      stringBuffer
+        ..write(_optionString('Location Paths', message.locationPaths))
+        ..write(_optionString('Location Queries', message.locationQueries));
     }
+  }
 
-    final sb = StringBuffer()
-      ..writeln('[')
+  String _optionsToString() {
+    final sb = StringBuffer()..writeln('[');
+
+    _writeMessageSpecifcOptions(sb);
+
+    sb
       ..write(_optionString('If-Match', ifMatches))
-      ..write(_optionString('Uri Host', uriHost))
       ..write(_optionString('E-tags', etags))
       ..write(_optionString('If-None Match', ifNoneMatches))
-      ..write(_optionString('Uri Port', uriPort > 0 ? uriPort : null))
-      ..write(_optionString('Location Paths', locationPaths))
-      ..write(_optionString('Uri Paths', uriPath))
-      ..write(_optionString('Content-Type', contentType.toString()))
+      ..write(_optionString('Content-Type', contentType))
       ..write(_optionString('Max Age', maxAge))
-      ..write(_optionString('Uri Queries', uriQueries));
-    if (accept != null) {
-      sb.write(_optionString('Accept', accept.toString()));
-    }
-    sb
-      ..write(_optionString('Location Queries', locationQueries))
+      ..write(_optionString('Accept', accept))
       ..write(_optionString('Proxy Uri', proxyUri))
       ..write(_optionString('Proxy Scheme', proxyScheme))
       ..write(_optionString('Block 1', block1))
