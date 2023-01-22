@@ -15,6 +15,7 @@ import 'dart:typed_data';
 /// are known in advance.
 typedef PskCredentialsCallback = PskCredentials Function(
   Uint8List identityHint,
+  Uri uri,
 );
 
 /// Credentials used for PSK Cipher Suites consisting of an [identity]

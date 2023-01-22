@@ -19,11 +19,12 @@ FutureOr<void> main() async {
     scheme: 'coap',
     host: 'californium.eclipseprojects.io',
     port: conf.defaultPort,
+    path: 'obs',
   );
-  final client = CoapClient(uri, config: conf);
+  final client = CoapClient(config: conf);
 
   // Create the request for the get request
-  final reqObs = CoapRequest.newGet()..uriPath = 'obs';
+  final reqObs = CoapRequest.newGet(uri);
 
   try {
     print('Observing /obs on ${uri.host}');
@@ -32,8 +33,11 @@ FutureOr<void> main() async {
       print('/obs response: ${e.payloadString}');
     });
 
-    final reqObsNon = CoapRequest(RequestMethod.get, confirmable: false)
-      ..uriPath = 'obs-non';
+    final reqObsNon = CoapRequest(
+      RequestMethod.get,
+      uri.replace(path: 'obs-non'),
+      confirmable: false,
+    );
 
     print('Observing /obs-non on ${uri.host}');
     final obsNon = await client.observe(reqObsNon);
@@ -44,7 +48,7 @@ FutureOr<void> main() async {
     final futures = <Future<void>>[];
     print('Sending get /large to ${uri.host}');
     futures.add(
-      client.get('large').then(
+      client.get(uri.replace(path: 'large')).then(
             (final resp) => print('/large response: ${resp.payloadString}'),
           ),
     );
@@ -52,13 +56,13 @@ FutureOr<void> main() async {
     print('Sending get /test to ${uri.host}');
     futures.add(
       client
-          .get('test')
+          .get(uri.replace(path: 'test'))
           .then((final resp) => print('/test response: ${resp.payloadString}')),
     );
 
     print('Sending get /separate to ${uri.host}');
     futures.add(
-      client.get('separate').then(
+      client.get(uri.replace(path: 'separate')).then(
             (final resp) => print('/separate response: ${resp.payloadString}'),
           ),
     );
@@ -76,5 +80,5 @@ FutureOr<void> main() async {
     print('CoAP encountered an exception: $e');
   }
 
-  client.close();
+  await client.close();
 }

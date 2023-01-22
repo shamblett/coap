@@ -593,6 +593,12 @@ abstract class CoapMessage {
     timedOutHook = msg.timedOutHook;
   }
 
+  /// Callback for initializing the retransmission of this [CoapMessage].
+  ///
+  /// If the callback is [Null], this message is not intended to be
+  /// retransmitted.
+  void Function()? retransmissionCallback;
+
   String? get _formattedOptions {
     final options = getAllOptions();
 

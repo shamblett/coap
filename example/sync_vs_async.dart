@@ -19,12 +19,13 @@ FutureOr<void> main() async {
     scheme: 'coap',
     host: 'californium.eclipseprojects.io',
     port: conf.defaultPort,
+    path: 'test',
   );
-  final client = CoapClient(uri, config: conf);
+  final client = CoapClient(config: conf);
 
   try {
     // Warm up (create socket etc.)
-    await client.get('test');
+    await client.get(uri);
 
     final stopwatch = Stopwatch()..start();
 
@@ -32,7 +33,7 @@ FutureOr<void> main() async {
     final futures = <Future<void>>[];
     for (var i = 0; i < 10; i++) {
       futures.add(
-        client.get('test').then((final resp) {
+        client.get(uri).then((final resp) {
           if (resp.responseCode != ResponseCode.content) {
             print('Request failed!');
           }
@@ -49,7 +50,7 @@ FutureOr<void> main() async {
 
     print('Sending 10 sync requests...');
     for (var i = 0; i < 10; i++) {
-      final resp = await client.get('test');
+      final resp = await client.get(uri);
       if (resp.responseCode != ResponseCode.content) {
         print('Request failed!');
       }
@@ -60,5 +61,5 @@ FutureOr<void> main() async {
     print('CoAP encountered an exception: $e');
   }
 
-  client.close();
+  await client.close();
 }

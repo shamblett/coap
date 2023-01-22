@@ -149,13 +149,28 @@ enum CoapOrigin {
 /// Data received Event
 class CoapMessageReceivedEvent {
   /// Construction
-  CoapMessageReceivedEvent(this.coapMessage, this.address);
+  CoapMessageReceivedEvent(
+    this.coapMessage,
+    this.address,
+    this.port, {
+    required this.scheme,
+  });
 
   /// The data
   final CoapMessage? coapMessage;
 
-  /// The address
-  InternetAddress address;
+  /// The [InternetAddress] the [coapMessage] was received from.
+  final InternetAddress address;
+
+  /// The URI scheme associated with the [coapMessage] (e.g., `coap` for CoAP
+  /// over UDP).
+  final String scheme;
+
+  /// The port the [coapMessage] was received from.
+  final int port;
+
+  /// Generates a [Uri] pointing the peer the message was received from.
+  Uri get peerUri => Uri(host: address.host, scheme: scheme, port: port);
 
   @override
   String toString() => '$runtimeType:\n$coapMessage from ${address.address}';

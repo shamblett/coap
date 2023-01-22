@@ -19,17 +19,18 @@ FutureOr<void> main() async {
     scheme: 'coap',
     host: 'californium.eclipseprojects.io',
     port: conf.defaultPort,
+    path: 'test',
   );
-  final client = CoapClient(uri, config: conf);
+  final client = CoapClient(config: conf);
 
   try {
     print('Sending delete /test to ${uri.host}');
-    final response = await client.delete('test');
+    final response = await client.delete(uri);
 
     print('/test response status: ${response.statusCodeString}');
   } on Exception catch (e) {
     print('CoAP encountered an exception: $e');
   }
 
-  client.close();
+  await client.close();
 }

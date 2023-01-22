@@ -7,7 +7,8 @@
 
 import 'package:typed_data/typed_data.dart';
 
-import '../../coap.dart';
+import '../coap_media_type.dart';
+import '../option/coap_block_option.dart';
 
 /// Represents the status of a blockwise transfer of a request or a response.
 class BlockwiseStatus {

@@ -17,11 +17,13 @@ import 'dart:async';
 import 'package:coap/coap.dart';
 
 FutureOr<void> main() async {
-  final uri = Uri.parse('coap://${MulticastAddress.allNodesLinkLocalIPV6}');
-  final client = CoapClient(uri);
+  final uri = Uri.parse(
+    'coap://${MulticastAddress.allNodesLinkLocalIPV6}/.well-known/core',
+  );
+  final client = CoapClient();
 
   try {
-    final request = CoapRequest.newGet()..uriPath = '/.well-known/core';
+    final request = CoapRequest.newGet(uri);
 
     await for (final response in client.sendMulticast(request)) {
       print(response.payloadString);
@@ -31,5 +33,5 @@ FutureOr<void> main() async {
     print('CoAP encountered an exception: $e');
   }
 
-  client.close();
+  await client.close();
 }

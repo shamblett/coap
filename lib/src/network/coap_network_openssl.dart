@@ -10,13 +10,16 @@
 
 import 'dart:async';
 import 'dart:ffi';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dtls2/dtls2.dart';
 import 'package:typed_data/typed_buffers.dart';
 
+import '../coap_constants.dart';
 import '../coap_message.dart';
 import '../event/coap_event_bus.dart';
+import 'cache.dart';
 import 'coap_inetwork.dart';
 import 'coap_network_udp.dart';
 import 'credentials/psk_credentials.dart' as internal;
@@ -25,13 +28,14 @@ import 'credentials/psk_credentials.dart' as internal;
 /// libary.
 PskCredentialsCallback? _createOpenSslPskCallback(
   final internal.PskCredentialsCallback? coapPskCredentialsCallback,
+  final Uri uri,
 ) {
   if (coapPskCredentialsCallback == null) {
     return null;
   }
 
   return (final identityHint) {
-    final pskCredentials = coapPskCredentialsCallback(identityHint);
+    final pskCredentials = coapPskCredentialsCallback(identityHint, uri);
 
     return PskCredentials(
       identity: pskCredentials.identity,
@@ -42,7 +46,7 @@ PskCredentialsCallback? _createOpenSslPskCallback(
 
 /// DTLS network using OpenSSL
 class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
-  /// Initialize with an [address] and a [port].
+  /// Initializes a new [CoapNetworkUDPOpenSSL].
   ///
   /// This [CoapINetwork] can be configured to be used [withTrustedRoots] and
   /// to [verify] certificate chains. You can also indicate a list of [ciphers],
@@ -52,10 +56,7 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
   /// using DTLS in Pre-Shared Key mode.
   ///
   /// [OpenSSL documentation]: https://www.openssl.org/docs/man1.1.1/man1/ciphers.html
-  CoapNetworkUDPOpenSSL(
-    super.address,
-    super.port,
-    super.bindAddress, {
+  CoapNetworkUDPOpenSSL({
     required final bool verify,
     required final bool withTrustedRoots,
     required final List<Uint8List> rootCertificates,
@@ -64,124 +65,158 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
     final internal.PskCredentialsCallback? pskCredentialsCallback,
     final DynamicLibrary? libSsl,
     final DynamicLibrary? libCrypto,
-    final String? hostName,
-  })  : _ciphers = ciphers,
-        _verify = verify,
+  })  : _verify = verify,
         _withTrustedRoots = withTrustedRoots,
         _rootCertificates = rootCertificates,
+        _ciphers = ciphers,
+        _pskCredentialsCallback = pskCredentialsCallback,
         _libSsl = libSsl,
-        _libCrypto = libCrypto,
-        _hostname = hostName,
-        _openSslPskCallback = _createOpenSslPskCallback(pskCredentialsCallback);
-
-  DtlsClient? _dtlsClient;
-
-  DtlsConnection? _dtlsConnection;
-
-  final List<Uint8List> _rootCertificates;
+        _libCrypto = libCrypto;
 
   final bool _verify;
 
-  final String? _ciphers;
-
   final bool _withTrustedRoots;
 
-  final PskCredentialsCallback? _openSslPskCallback;
+  final List<Uint8List> _rootCertificates;
+
+  final String? _ciphers;
+
+  final internal.PskCredentialsCallback? _pskCredentialsCallback;
+
+  DtlsClient? _dtls4Client;
+
+  DtlsClient? _dtls6Client;
+
+  Future<DtlsClient> _createClient(final InternetAddress bindAddress) =>
+      DtlsClient.bind(bindAddress, 0, libSsl: _libSsl, libCrypto: _libCrypto);
+
+  Future<DtlsClient> _checkExistingClient(
+    final DtlsClient? existingClient,
+    final InternetAddress bindAddress,
+  ) async {
+    final DtlsClient newClient;
+
+    if (existingClient == null) {
+      eventBus.fire(CoapSocketInitEvent());
+      newClient = await _createClient(bindAddress);
+    } else {
+      return existingClient;
+    }
+
+    return newClient;
+  }
+
+  Future<DtlsClient> _obtainClient(final InternetAddress address) async {
+    final internetAddressType = address.type;
+
+    final DtlsClient client;
+    if (internetAddressType == InternetAddressType.IPv4) {
+      client =
+          await _checkExistingClient(_dtls4Client, InternetAddress.anyIPv4);
+      _dtls4Client = client;
+    } else {
+      client =
+          await _checkExistingClient(_dtls6Client, InternetAddress.anyIPv6);
+      _dtls6Client = client;
+    }
+
+    return client;
+  }
 
   final DynamicLibrary? _libSsl;
 
   final DynamicLibrary? _libCrypto;
 
-  final String? _hostname;
+  final Map<int, DtlsConnection> connections = {};
+
+  static int _connectionHashFunction(final Uri uri) {
+    const emptyPort = 0;
+    final uriPort = uri.port;
+
+    final hashPort =
+        uriPort != emptyPort ? uriPort : CoapConstants.defaultSecurePort;
+
+    return Object.hash(uri.scheme, uri.host, hashPort);
+  }
+
+  final _connections = Cache<Uri, DtlsConnection>(_connectionHashFunction);
+
+  DtlsClientContext _createContext(final Uri uri) => DtlsClientContext(
+        verify: _verify,
+        withTrustedRoots: _withTrustedRoots,
+        rootCertificates: _rootCertificates,
+        ciphers: _ciphers,
+        pskCredentialsCallback:
+            _createOpenSslPskCallback(_pskCredentialsCallback, uri),
+      );
+
+  Future<DtlsConnection> _obtainConnection(final Uri uri) async {
+    final cachedConnection = _connections.retrieve(uri);
+
+    if (cachedConnection != null && cachedConnection.connected) {
+      return cachedConnection;
+    }
+
+    final address = await lookupHost(uri);
+    final uriPort = uri.port;
+    final port = uriPort != 0 ? uriPort : CoapConstants.defaultSecurePort;
+
+    final client = await _obtainClient(address);
+    final context = _createContext(uri);
+    final newConnection = await client.connect(
+      address,
+      port,
+      context,
+      hostname: uri.host,
+      timeout: CoapINetwork.initTimeout,
+    );
+    _connections.save(uri, newConnection);
+    _receive(uri, newConnection);
+    return newConnection;
+  }
 
   @override
-  void send(final CoapMessage coapMessage) {
+  Future<void> sendMessage(final CoapMessage coapRequest, final Uri uri) async {
     if (isClosed) {
       return;
     }
 
-    final data = coapMessage.toUdpPayload();
+    final connection = await _obtainConnection(uri);
+    final data = coapRequest.toUdpPayload();
     final bytes = Uint8List.view(data.buffer, data.offsetInBytes, data.length);
-    _dtlsConnection?.send(bytes);
-  }
-
-  Future<void> _initializeClient() async {
-    eventBus.fire(CoapSocketInitEvent());
-
-    _dtlsClient = await DtlsClient.bind(
-      bindAddress,
-      0,
-      libSsl: _libSsl,
-      libCrypto: _libCrypto,
-    );
-  }
-
-  @override
-  Future<void> init() async {
-    if (!isClosed || !shouldReinitialize) {
-      return;
-    }
-
-    if (_dtlsClient == null) {
-      await _initializeClient();
-    }
-
-    final context = DtlsClientContext(
-      verify: _verify,
-      withTrustedRoots: _withTrustedRoots,
-      rootCertificates: _rootCertificates,
-      ciphers: _ciphers,
-      pskCredentialsCallback: _openSslPskCallback,
-    );
-
-    try {
-      _dtlsConnection = await _dtlsClient?.connect(
-        address,
-        port,
-        context,
-        hostname: _hostname,
-        timeout: CoapINetwork.initTimeout,
-      );
-    } on Exception {
-      await close();
-      rethrow;
-    }
-
-    _receive();
-
-    isClosed = false;
+    connection.send(bytes);
+    enableRetransmission(coapRequest);
   }
 
   @override
   Future<void> close() async {
+    if (!isClosed) {
+      await _dtls4Client?.close();
+      _dtls4Client = null;
+      await _dtls6Client?.close();
+      _dtls6Client = null;
+    }
     super.close();
-    await _dtlsClient?.close();
   }
 
-  void _receive() {
-    _dtlsConnection?.listen(
+  void _receive(final Uri uri, final DtlsConnection connection) {
+    connection.listen(
       (final datagram) {
         final message =
             CoapMessage.fromUdpPayload(Uint8Buffer()..addAll(datagram.data));
-        eventBus.fire(CoapMessageReceivedEvent(message, address));
+        eventBus.fire(
+          CoapMessageReceivedEvent(
+            message,
+            datagram.address,
+            datagram.port,
+            scheme: 'coaps',
+          ),
+        );
       },
       onError: (final Object e, final StackTrace s) =>
           eventBus.fire(CoapSocketErrorEvent(e, s)),
       onDone: () {
-        isClosed = true;
-
-        if (!shouldReinitialize) {
-          return;
-        }
-
-        Timer.periodic(CoapINetwork.reinitPeriod, (final timer) async {
-          try {
-            await init();
-            timer.cancel();
-          } on Exception catch (_) {
-            // Ignore errors, retry until successful
-          }
-        });
+        _connections.remove(uri);
       },
     );
   }

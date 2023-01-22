@@ -27,11 +27,13 @@ import 'option/string_option.dart';
 class CoapRequest extends CoapMessage {
   /// Initializes a request message.
   /// Defaults to confirmable
-  CoapRequest(this.method, {final bool confirmable = true})
+  CoapRequest(this.method, final Uri uri, {final bool confirmable = true})
       : super(
           method.coapCode,
           confirmable ? CoapMessageType.con : CoapMessageType.non,
-        );
+        ) {
+    this.uri = uri;
+  }
 
   /// The request method(code)
   final RequestMethod method;
@@ -48,7 +50,9 @@ class CoapRequest extends CoapMessage {
   /// Indicates whether this request is a multicast request or not.
   bool get isMulticast => destination?.isMulticast ?? false;
 
-  String? scheme = 'coap';
+  var _scheme = 'coap';
+
+  String get scheme => _scheme;
 
   /// Specifies the target resource of a request to a CoAP origin server.
   ///
@@ -97,7 +101,7 @@ class CoapRequest extends CoapMessage {
       uriHost = host;
     }
     if (port <= 0) {
-      if (value.scheme.isNotEmpty || value.scheme == CoapConstants.uriScheme) {
+      if (value.scheme == CoapConstants.uriScheme) {
         port = CoapConstants.defaultPort;
       } else if (value.scheme == CoapConstants.secureUriScheme) {
         port = CoapConstants.defaultSecurePort;
@@ -110,7 +114,10 @@ class CoapRequest extends CoapMessage {
     if (query.isNotEmpty) {
       uriQuery = value.query;
     }
-    scheme = value.scheme;
+    // TODO(JKRhb): Check for supported schemes
+    if (value.scheme.isNotEmpty) {
+      _scheme = value.scheme;
+    }
   }
 
   /// Uri's
@@ -205,7 +212,6 @@ class CoapRequest extends CoapMessage {
   @internal
   set endpoint(final Endpoint? endpoint) {
     super.id = endpoint!.nextMessageId;
-    super.destination = endpoint.destination;
     _endpoint = endpoint;
   }
 
@@ -213,32 +219,44 @@ class CoapRequest extends CoapMessage {
   String toString() => '\n<<< Request Message >>>${super.toString()}';
 
   /// Construct a GET request.
-  factory CoapRequest.newGet({final bool confirmable = true}) =>
-      CoapRequest(RequestMethod.get, confirmable: confirmable);
+  factory CoapRequest.newGet(final Uri uri, {final bool confirmable = true}) =>
+      CoapRequest(RequestMethod.get, uri, confirmable: confirmable);
 
   /// Construct a POST request.
-  factory CoapRequest.newPost({final bool confirmable = true}) =>
-      CoapRequest(RequestMethod.post, confirmable: confirmable);
+  factory CoapRequest.newPost(final Uri uri, {final bool confirmable = true}) =>
+      CoapRequest(RequestMethod.post, uri, confirmable: confirmable);
 
   /// Construct a PUT request.
-  factory CoapRequest.newPut({final bool confirmable = true}) =>
-      CoapRequest(RequestMethod.put, confirmable: confirmable);
+  factory CoapRequest.newPut(final Uri uri, {final bool confirmable = true}) =>
+      CoapRequest(RequestMethod.put, uri, confirmable: confirmable);
 
   /// Construct a DELETE request.
-  factory CoapRequest.newDelete({final bool confirmable = true}) =>
-      CoapRequest(RequestMethod.delete, confirmable: confirmable);
+  factory CoapRequest.newDelete(
+    final Uri uri, {
+    final bool confirmable = true,
+  }) =>
+      CoapRequest(RequestMethod.delete, uri, confirmable: confirmable);
 
   /// Construct a FETCH request.
-  factory CoapRequest.newFetch({final bool confirmable = true}) =>
-      CoapRequest(RequestMethod.fetch, confirmable: confirmable);
+  factory CoapRequest.newFetch(
+    final Uri uri, {
+    final bool confirmable = true,
+  }) =>
+      CoapRequest(RequestMethod.fetch, uri, confirmable: confirmable);
 
   /// Construct a PATCH request.
-  factory CoapRequest.newPatch({final bool confirmable = true}) =>
-      CoapRequest(RequestMethod.patch, confirmable: confirmable);
+  factory CoapRequest.newPatch(
+    final Uri uri, {
+    final bool confirmable = true,
+  }) =>
+      CoapRequest(RequestMethod.patch, uri, confirmable: confirmable);
 
   /// Construct a iPATCH request.
-  factory CoapRequest.newIPatch({final bool confirmable = true}) =>
-      CoapRequest(RequestMethod.ipatch, confirmable: confirmable);
+  factory CoapRequest.newIPatch(
+    final Uri uri, {
+    final bool confirmable = true,
+  }) =>
+      CoapRequest(RequestMethod.ipatch, uri, confirmable: confirmable);
 
   CoapRequest.fromParsed(
     this.method, {

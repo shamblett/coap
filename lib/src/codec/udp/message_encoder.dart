@@ -106,8 +106,7 @@ Uint8Buffer serializeUdpMessage(final CoapMessage message) {
 }
 
 bool _shouldBeSkipped(final Option<Object?> opt, final CoapMessage message) {
-  if (opt is UriHostOption &&
-      InternetAddress.tryParse(opt.value) == message.destination) {
+  if (opt is UriHostOption && InternetAddress.tryParse(opt.value) != null) {
     return true;
   }
 

@@ -7,12 +7,10 @@
 
 import 'dart:io';
 
-import '../coap_config.dart';
-import '../coap_constants.dart';
+import 'package:collection/collection.dart';
+
 import '../coap_message.dart';
-import 'coap_network_openssl.dart';
-import 'coap_network_udp.dart';
-import 'credentials/psk_credentials.dart';
+import 'cache.dart';
 
 /// This [Exception] is thrown when an unsupported URI scheme is encountered.
 class UnsupportedProtocolException implements Exception {
@@ -36,65 +34,56 @@ abstract class CoapINetwork {
   /// The reinit period for open connections
   static Duration reinitPeriod = initTimeout + const Duration(seconds: 2);
 
-  /// The local address
-  InternetAddress get bindAddress;
-
-  /// The remote address
-  InternetAddress get address;
-
-  /// The remote port
-  int get port;
-
   /// If the underlying socket is closed
   bool get isClosed;
 
-  /// Bind (UDP) or connect (TCP) to the network and listen
-  Future<void> init();
-
   /// Sends a [coapMessage] over the socket.
-  void send(final CoapMessage coapMessage);
+  void sendMessage(final CoapMessage coapMessage, final Uri uri);
 
   /// Close the socket
   void close();
+}
 
-  /// Creates a new CoapINetwork from a given URI
-  static CoapINetwork fromUri(
-    final Uri uri, {
-    required final InternetAddress address,
-    required final DefaultCoapConfig config,
-    final String namespace = '',
-    final InternetAddress? bindAddress,
-    final PskCredentialsCallback? pskCredentialsCallback,
-  }) {
-    final defaultBindAddress = address.type == InternetAddressType.IPv4
-        ? InternetAddress.anyIPv4
-        : InternetAddress.anyIPv6;
-    final port = uri.port > 0 ? uri.port : null;
-    switch (uri.scheme) {
-      case CoapConstants.uriScheme:
-        return CoapNetworkUDP(
-          address,
-          port ?? config.defaultPort,
-          bindAddress ?? defaultBindAddress,
-          namespace: namespace,
-        );
-      case CoapConstants.secureUriScheme:
-        return CoapNetworkUDPOpenSSL(
-          address,
-          port ?? config.defaultSecurePort,
-          bindAddress ?? defaultBindAddress,
-          namespace: namespace,
-          verify: config.dtlsVerify,
-          withTrustedRoots: config.dtlsWithTrustedRoots,
-          ciphers: config.dtlsCiphers,
-          rootCertificates: config.rootCertificates,
-          pskCredentialsCallback: pskCredentialsCallback,
-          libCrypto: config.libCryptoInstance,
-          libSsl: config.libSslInstance,
-          hostName: uri.host,
-        );
-      default:
-        throw UnsupportedProtocolException(uri.scheme);
-    }
+int _addressHashFunction(final Uri uri) => uri.host.hashCode;
+
+final _addressCache = Cache<Uri, InternetAddress>(_addressHashFunction);
+
+Future<InternetAddress?> _performLookup(final String host) async {
+  final parsedAddress = InternetAddress.tryParse(host);
+  if (parsedAddress != null) {
+    return parsedAddress;
   }
+
+  final foundAddresses = await InternetAddress.lookup(host);
+
+  const validAddressTypes = [
+    InternetAddressType.IPv4,
+    InternetAddressType.IPv6,
+  ];
+
+  return foundAddresses
+      .where((final address) => validAddressTypes.contains(address.type))
+      .firstOrNull;
+}
+
+Future<InternetAddress> lookupHost(final Uri uri) async {
+  final cachedAddress = _addressCache.retrieve(uri);
+
+  if (cachedAddress != null) {
+    return cachedAddress;
+  }
+
+  final lookupAddress = await _performLookup(uri.host);
+
+  if (lookupAddress != null) {
+    // TODO(JKRhb): Should a timeToLive be set here?
+    _addressCache.save(uri, lookupAddress);
+    return lookupAddress;
+  }
+
+  throw SocketException('Failed host lookup for $uri.');
+}
+
+void enableRetransmission(final CoapMessage coapMessage) {
+  coapMessage.retransmissionCallback?.call();
 }

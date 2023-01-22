@@ -6,10 +6,8 @@
  */
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:collection/collection.dart';
-import 'package:synchronized/synchronized.dart';
 import 'package:typed_data/typed_data.dart';
 
 import '../config/coap_config_default.dart';
@@ -28,7 +26,6 @@ import 'exceptions/coap_request_exception.dart';
 import 'link-format/coap_link_format.dart';
 import 'link-format/coap_web_link.dart';
 import 'net/endpoint.dart';
-import 'network/coap_inetwork.dart';
 import 'network/credentials/psk_credentials.dart';
 import 'option/coap_block_option.dart';
 import 'option/empty_option.dart';
@@ -90,26 +87,13 @@ class CoapClient {
   /// You can define a custom [config] for the creation of a [CoapClient].
   /// If no [config] is provided, then an instance of the [CoapConfigDefault]
   /// class will be used instead.
-  CoapClient(
-    this.uri, {
-    this.addressType = InternetAddressType.any,
-    this.bindAddress,
+  CoapClient({
     final PskCredentialsCallback? pskCredentialsCallback,
     final DefaultCoapConfig? config,
   })  : _config = config ?? CoapConfigDefault(),
         _pskCredentialsCallback = pskCredentialsCallback {
     _eventBus = CoapEventBus(namespace: hashCode.toString());
   }
-
-  /// Address type used for DNS lookups.
-  final InternetAddressType addressType;
-
-  /// The client's local socket bind address, if set explicitly
-  /// IPv4 default is 0.0.0.0, IPv6 default is 0:0:0:0:0:0:0:0
-  final InternetAddress? bindAddress;
-
-  /// The client endpoint URI
-  final Uri uri;
 
   late final CoapEventBus _eventBus;
 
@@ -118,25 +102,24 @@ class CoapClient {
 
   final DefaultCoapConfig _config;
   Endpoint? _endpoint;
-  final _lock = Lock();
 
   /// Callback for providing [PskCredentials] (combination of a Pre-shared Key
   /// and an Identity) for DTLS, optionally based on an Identity Hint.
   final PskCredentialsCallback? _pskCredentialsCallback;
 
   /// Performs a CoAP ping.
-  Future<bool> ping() async {
-    final request = CoapRequest(RequestMethod.empty)
+  Future<bool> ping(final Uri uri) async {
+    final request = CoapRequest(RequestMethod.empty, uri)
       ..token = CoapConstants.emptyToken;
     await _prepare(request);
-    _endpoint!.sendEpRequest(request);
+    await _endpoint!.sendEpRequest(request);
     await _waitForReject(request);
     return request.isRejected;
   }
 
   /// Sends a GET request.
   Future<CoapResponse> get(
-    final String path, {
+    final Uri uri, {
     final CoapMediaType? accept,
     final bool confirmable = true,
     final List<Option<Object?>>? options,
@@ -144,10 +127,10 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newGet(confirmable: confirmable);
+    final request = CoapRequest.newGet(uri, confirmable: confirmable);
     _build(
       request,
-      path,
+      uri,
       accept,
       options,
       earlyBlock2Negotiation,
@@ -158,7 +141,7 @@ class CoapClient {
 
   /// Sends a POST request.
   Future<CoapResponse> post(
-    final String path, {
+    final Uri uri, {
     required final String payload,
     final CoapMediaType? format,
     final CoapMediaType? accept,
@@ -168,11 +151,11 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPost(confirmable: confirmable)
+    final request = CoapRequest.newPost(uri, confirmable: confirmable)
       ..setPayloadMedia(payload, format);
     _build(
       request,
-      path,
+      uri,
       accept,
       options,
       earlyBlock2Negotiation,
@@ -183,7 +166,7 @@ class CoapClient {
 
   /// Sends a POST request with the specified byte payload.
   Future<CoapResponse> postBytes(
-    final String path, {
+    final Uri uri, {
     required final Uint8Buffer payload,
     final CoapMediaType? format,
     final CoapMediaType? accept,
@@ -193,11 +176,11 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPost(confirmable: confirmable)
+    final request = CoapRequest.newPost(uri, confirmable: confirmable)
       ..setPayloadMediaRaw(payload, format);
     _build(
       request,
-      path,
+      uri,
       accept,
       options,
       earlyBlock2Negotiation,
@@ -208,7 +191,7 @@ class CoapClient {
 
   /// Sends a PUT request.
   Future<CoapResponse> put(
-    final String path, {
+    final Uri uri, {
     required final String payload,
     final CoapMediaType? format,
     final CoapMediaType? accept,
@@ -220,11 +203,11 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPut(confirmable: confirmable)
+    final request = CoapRequest.newPut(uri, confirmable: confirmable)
       ..setPayloadMedia(payload, format);
     _build(
       request,
-      path,
+      uri,
       accept,
       options,
       earlyBlock2Negotiation,
@@ -237,7 +220,7 @@ class CoapClient {
 
   /// Sends a PUT request with the specified byte payload.
   Future<CoapResponse> putBytes(
-    final String path, {
+    final Uri uri, {
     required final Uint8Buffer payload,
     final CoapMediaType? format,
     final MatchEtags matchEtags = MatchEtags.onMatch,
@@ -249,11 +232,11 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPut(confirmable: confirmable)
+    final request = CoapRequest.newPut(uri, confirmable: confirmable)
       ..setPayloadMediaRaw(payload, format);
     _build(
       request,
-      path,
+      uri,
       accept,
       options,
       earlyBlock2Negotiation,
@@ -266,7 +249,7 @@ class CoapClient {
 
   /// Sends a DELETE request
   Future<CoapResponse> delete(
-    final String path, {
+    final Uri uri, {
     final CoapMediaType? accept,
     final bool confirmable = true,
     final List<Option<Object?>>? options,
@@ -274,10 +257,10 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newDelete(confirmable: confirmable);
+    final request = CoapRequest.newDelete(uri, confirmable: confirmable);
     _build(
       request,
-      path,
+      uri,
       accept,
       options,
       earlyBlock2Negotiation,
@@ -292,7 +275,7 @@ class CoapClient {
   ///
   /// [RFC 8132, section 2]: https://www.rfc-editor.org/rfc/rfc8132.html#section-2
   Future<CoapResponse> fetch(
-    final String path, {
+    final Uri uri, {
     final CoapMediaType? accept,
     final bool confirmable = true,
     final List<Option<Object?>>? options,
@@ -300,10 +283,10 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newFetch(confirmable: confirmable);
+    final request = CoapRequest.newFetch(uri, confirmable: confirmable);
     _build(
       request,
-      path,
+      uri,
       accept,
       options,
       earlyBlock2Negotiation,
@@ -318,7 +301,7 @@ class CoapClient {
   ///
   /// [RFC 8132, section 3]: https://www.rfc-editor.org/rfc/rfc8132.html#section-3
   Future<CoapResponse> patch(
-    final String path, {
+    final Uri uri, {
     required final String payload,
     final CoapMediaType? format,
     final CoapMediaType? accept,
@@ -330,11 +313,11 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPatch(confirmable: confirmable)
+    final request = CoapRequest.newPatch(uri, confirmable: confirmable)
       ..setPayloadMedia(payload, format);
     _build(
       request,
-      path,
+      uri,
       accept,
       options,
       earlyBlock2Negotiation,
@@ -351,7 +334,7 @@ class CoapClient {
   ///
   /// [RFC 8132, section 3]: https://www.rfc-editor.org/rfc/rfc8132.html#section-3
   Future<CoapResponse> patchBytes(
-    final String path, {
+    final Uri uri, {
     required final Uint8Buffer payload,
     final CoapMediaType? format,
     final MatchEtags matchEtags = MatchEtags.onMatch,
@@ -363,11 +346,11 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPatch(confirmable: confirmable)
+    final request = CoapRequest.newPatch(uri, confirmable: confirmable)
       ..setPayloadMediaRaw(payload, format);
     _build(
       request,
-      path,
+      uri,
       accept,
       options,
       earlyBlock2Negotiation,
@@ -384,7 +367,7 @@ class CoapClient {
   ///
   /// [RFC 8132, section 3]: https://www.rfc-editor.org/rfc/rfc8132.html#section-3
   Future<CoapResponse> iPatch(
-    final String path, {
+    final Uri uri, {
     required final String payload,
     final CoapMediaType? format,
     final CoapMediaType? accept,
@@ -396,11 +379,11 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newIPatch(confirmable: confirmable)
+    final request = CoapRequest.newIPatch(uri, confirmable: confirmable)
       ..setPayloadMedia(payload, format);
     _build(
       request,
-      path,
+      uri,
       accept,
       options,
       earlyBlock2Negotiation,
@@ -417,7 +400,7 @@ class CoapClient {
   ///
   /// [RFC 8132, section 3]: https://www.rfc-editor.org/rfc/rfc8132.html#section-3
   Future<CoapResponse> iPatchBytes(
-    final String path, {
+    final Uri uri, {
     required final Uint8Buffer payload,
     final CoapMediaType? format,
     final MatchEtags matchEtags = MatchEtags.onMatch,
@@ -429,11 +412,11 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newIPatch(confirmable: confirmable)
+    final request = CoapRequest.newIPatch(uri, confirmable: confirmable)
       ..setPayloadMediaRaw(payload, format);
     _build(
       request,
-      path,
+      uri,
       accept,
       options,
       earlyBlock2Negotiation,
@@ -462,11 +445,11 @@ class CoapClient {
   }
 
   /// Discovers remote resources.
-  Future<Iterable<CoapWebLink>?> discover({
+  Future<Iterable<CoapWebLink>?> discover(
+    final Uri uri, {
     final String query = '',
   }) async {
-    final discover = CoapRequest.newGet()
-      ..uriPath = CoapConstants.defaultWellKnownURI;
+    final discover = CoapRequest.newGet(uri);
     if (query.isNotEmpty) {
       discover.uriQuery = query;
     }
@@ -509,7 +492,7 @@ class CoapClient {
         .where((final response) => _matchResponse(response, request))
         .takeWhile((final _) => request.isActive);
 
-    _endpoint!.sendEpRequest(request);
+    await _endpoint!.sendEpRequest(request);
 
     yield* stream;
   }
@@ -548,13 +531,13 @@ class CoapClient {
   }
 
   /// Cancel all ongoing requests
-  void close() {
-    _endpoint?.stop();
+  Future<void> close() async {
+    await _endpoint?.stop();
   }
 
   void _build(
     final CoapRequest request,
-    final String path,
+    final Uri uri,
     final CoapMediaType? accept,
     final List<Option<Object?>>? options,
     final bool earlyBlock2Negotiation,
@@ -563,7 +546,7 @@ class CoapClient {
     final List<Uint8Buffer>? etags,
   }) {
     request
-      ..uriPath = path
+      ..uri = uri
       ..accept = accept
       ..maxRetransmit = maxRetransmit;
     if (options != null) {
@@ -589,46 +572,22 @@ class CoapClient {
 
   Future<void> _prepare(final CoapRequest request) async {
     request
-      ..uri = uri
       ..timestamp = DateTime.now()
       ..eventBus = _eventBus;
 
     await _lock.synchronized(() async {
       // Set endpoint if missing
       if (_endpoint == null) {
-        final destination = await _lookupHost(uri.host, addressType);
-        final socket = CoapINetwork.fromUri(
-          uri,
-          address: destination,
-          bindAddress: bindAddress,
-          config: _config,
+        _endpoint = Endpoint(
+          _config,
+          _pskCredentialsCallback,
           namespace: _eventBus.namespace,
-          pskCredentialsCallback: _pskCredentialsCallback,
         );
-        await socket.init();
-        _endpoint = Endpoint(socket, _config, namespace: _eventBus.namespace);
-        _endpoint!.start();
+        await _endpoint!.start();
       }
     });
 
     request.endpoint = _endpoint;
-  }
-
-  Future<InternetAddress> _lookupHost(
-    final String host,
-    final InternetAddressType addressType,
-  ) async {
-    final parsedAddress = InternetAddress.tryParse(host);
-    if (parsedAddress != null) {
-      return parsedAddress;
-    }
-
-    final addresses = await InternetAddress.lookup(host, type: addressType);
-    if (addresses.isNotEmpty) {
-      return addresses[0];
-    }
-
-    throw SocketException("Failed host lookup: '$host'");
   }
 
   /// Wait for a response.

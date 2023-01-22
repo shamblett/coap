@@ -128,7 +128,7 @@ class BlockwiseLayer extends BaseLayer {
           _earlyBlock2Negotiation(exchange, request);
 
           // Assemble and deliver
-          final assembled = CoapRequest(request.method);
+          final assembled = CoapRequest(request.method, request.uri);
           _assembleMessage(status, assembled, request);
 
           exchange.request = assembled;
@@ -326,7 +326,7 @@ class BlockwiseLayer extends BaseLayer {
           final m = block2.m;
 
           final nextBlock = Block2Option.fromParts(num, szx, m: m);
-          final block = CoapRequest(request.method)
+          final block = CoapRequest(request.method, request.uri)
             ..endpoint = request.endpoint
             // NON could make sense over SMS or similar transports
             ..setOptions(request.getAllOptions())
@@ -413,7 +413,7 @@ class BlockwiseLayer extends BaseLayer {
   ) {
     final num = status.currentNUM;
     final szx = status.currentSZX;
-    final block = CoapRequest(request.method)
+    final block = CoapRequest(request.method, request.uri)
       ..endpoint = request.endpoint
       ..setOptions(request.getAllOptions())
       ..destination = request.destination

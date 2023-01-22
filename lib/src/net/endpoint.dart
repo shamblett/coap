@@ -6,7 +6,6 @@
  */
 
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
 
 import '../coap_config.dart';
@@ -17,6 +16,9 @@ import '../coap_request.dart';
 import '../coap_response.dart';
 import '../event/coap_event_bus.dart';
 import '../network/coap_inetwork.dart';
+import '../network/coap_network_openssl.dart';
+import '../network/coap_network_udp.dart';
+import '../network/credentials/psk_credentials.dart';
 import '../stack/layer_stack.dart';
 import 'exchange.dart';
 import 'matcher.dart';
@@ -25,11 +27,23 @@ import 'matcher.dart';
 class Endpoint {
   /// Instantiates a new endpoint with the
   /// specified channel and configuration.
-  Endpoint(this._socket, this._config, {required final String namespace})
-      : _eventBus = CoapEventBus(namespace: namespace),
+  Endpoint(
+    this._config,
+    final PskCredentialsCallback? pskCredentialsCallback, {
+    required final String namespace,
+  })  : _eventBus = CoapEventBus(namespace: namespace),
         _matcher = CoapMatcher(_config, namespace: namespace),
         _coapStack = LayerStack(_config),
-        _currentId = _config.useRandomIDStart ? Random().nextInt(1 << 16) : 0 {
+        _currentId = _config.useRandomIDStart ? Random().nextInt(1 << 16) : 0,
+        _udpNetwork = CoapNetworkUDP(namespace: namespace),
+        _dtlsNetwork = CoapNetworkUDPOpenSSL(
+          ciphers: _config.dtlsCiphers,
+          verify: _config.dtlsVerify,
+          withTrustedRoots: _config.dtlsWithTrustedRoots,
+          rootCertificates: _config.rootCertificates,
+          pskCredentialsCallback: pskCredentialsCallback,
+          namespace: namespace,
+        ) {
     subscr = _eventBus.on<CoapMessageReceivedEvent>().listen(_receiveMessage);
   }
 
@@ -50,29 +64,30 @@ class Endpoint {
     return _currentId;
   }
 
-  InternetAddress? get destination => _socket.address;
+  final CoapNetworkUDP _udpNetwork;
+
+  final CoapNetworkUDPOpenSSL _dtlsNetwork;
 
   final LayerStack _coapStack;
   late final StreamSubscription<CoapMessageReceivedEvent> subscr;
 
   final CoapMatcher _matcher;
 
-  final CoapINetwork _socket;
-
-  void start() {
+  Future<void> start() async {
     try {
       subscr.resume();
       _matcher.start();
     } on Exception catch (_) {
-      stop();
+      await stop();
       rethrow;
     }
   }
 
-  void stop() {
+  Future<void> stop() async {
     _matcher.stop();
-    _socket.close();
-    subscr.cancel();
+    _udpNetwork.close();
+    await _dtlsNetwork.close();
+    await subscr.cancel();
     // Close event bus last to catch as many events as possible
     _eventBus.destroy();
   }
@@ -81,7 +96,7 @@ class Endpoint {
     _matcher.clear();
   }
 
-  void sendEpRequest(final CoapRequest request) {
+  Future<void> sendEpRequest(final CoapRequest request) async {
     _coapStack.sendRequest(request);
   }
 
@@ -101,13 +116,14 @@ class Endpoint {
 
   void _receiveMessage(final CoapMessageReceivedEvent event) {
     final message = event.coapMessage;
+    final uri = event.peerUri;
 
     if (message == null) {
       return;
     }
 
     if (message.needsRejection) {
-      _reject(message);
+      _reject(message, uri);
       return;
     }
 
@@ -126,14 +142,14 @@ class Endpoint {
       _eventBus.fire(CoapReceivingResponseEvent(response));
 
       if (response.hasUnknownCriticalOption) {
-        _reject(response);
+        _reject(response, uri);
       } else if (!response.isCancelled) {
         final exchange = _matcher.receiveResponse(response);
         if (exchange != null) {
           response.rtt = DateTime.now().difference(exchange.timestamp!);
           _coapStack.receiveResponse(exchange, response);
         } else if (response.type != CoapMessageType.ack) {
-          _reject(response);
+          _reject(response, uri);
         }
       }
     } else if (message is CoapEmptyMessage) {
@@ -143,7 +159,7 @@ class Endpoint {
         // CoAP Ping
         if (message.type == CoapMessageType.con ||
             message.type == CoapMessageType.non) {
-          _reject(message);
+          _reject(message, uri);
         } else {
           final exchange = _matcher.receiveEmptyMessage(message);
           if (exchange != null) {
@@ -154,43 +170,62 @@ class Endpoint {
     }
   }
 
-  void sendRequest(
+  Future<void> sendRequest(
     final CoapExchange exchange,
     final CoapRequest request,
-  ) {
+  ) async {
     _matcher.sendRequest(exchange, request);
     _eventBus.fire(CoapSendingRequestEvent(request));
 
-    _sendMessage(request);
+    await _sendMessage(request, request.uri);
   }
 
-  void sendResponse(final CoapExchange exchange, final CoapResponse response) {
+  Future<void> sendResponse(
+    final CoapExchange exchange,
+    final CoapResponse response,
+  ) async {
     _matcher.sendResponse(exchange, response);
     _eventBus.fire(CoapSendingResponseEvent(response));
 
-    _sendMessage(response);
+    final uri = exchange.request.uri;
+    await _sendMessage(response, uri);
   }
 
-  void sendEmptyMessage(
+  Future<void> sendEmptyMessage(
     final CoapExchange exchange,
     final CoapEmptyMessage message,
-  ) {
+  ) async {
     _matcher.sendEmptyMessage(exchange, message);
     _eventBus.fire(CoapSendingEmptyMessageEvent(message));
 
-    _sendMessage(message);
+    final uri = exchange.request.uri;
+    await _sendMessage(message, uri);
   }
 
-  void _reject(final CoapMessage message) {
+  void _reject(final CoapMessage message, final Uri uri) {
     final rst = CoapEmptyMessage.newRST(message);
     _eventBus.fire(CoapSendingEmptyMessageEvent(rst));
 
-    _sendMessage(rst);
+    _sendMessage(rst, uri);
   }
 
-  void _sendMessage(final CoapMessage message) {
+  Future<void> _sendMessage(
+    final CoapMessage message,
+    final Uri uri,
+  ) async {
     if (!message.isCancelled) {
-      _socket.send(message);
+      final CoapINetwork network;
+      switch (uri.scheme) {
+        case 'coap':
+          network = _udpNetwork;
+          break;
+        case 'coaps':
+          network = _dtlsNetwork;
+          break;
+        default:
+          throw Exception();
+      }
+      return network.sendMessage(message, uri);
     }
   }
 }

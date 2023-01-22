@@ -15,17 +15,22 @@ import 'config/coap_config.dart';
 
 FutureOr<void> main() async {
   final conf = CoapConfig();
-  final uri = Uri(scheme: 'coap', host: 'coap.me', port: conf.defaultPort);
-  final client = CoapClient(uri, config: conf);
+  final uri = Uri(
+    scheme: 'coap',
+    host: 'coap.me',
+    port: conf.defaultPort,
+    path: 'large',
+  );
+  final client = CoapClient(config: conf);
 
   try {
     print('Sending get /large to ${uri.host}');
-    final response = await client.get('large');
+    final response = await client.get(uri);
 
     print('/large response: ${response.payloadString}');
   } on Exception catch (e) {
     print('CoAP encountered an exception: $e');
   }
 
-  client.close();
+  await client.close();
 }

@@ -148,7 +148,8 @@ void main() {
     }
 
     void testMessage(final int testNo) {
-      final CoapMessage msg = CoapRequest(RequestMethod.get)
+      final emptyUri = Uri();
+      final CoapMessage msg = CoapRequest(RequestMethod.get, emptyUri)
         ..id = 12345
         ..setPayload('payload');
       final data = serializeUdpMessage(msg);
@@ -166,7 +167,8 @@ void main() {
     }
 
     void testMessageWithOptions(final int testNo) {
-      final CoapMessage msg = CoapRequest(RequestMethod.get)
+      final emptyUri = Uri();
+      final CoapMessage msg = CoapRequest(RequestMethod.get, emptyUri)
         ..id = 12345
         ..setPayload('payload')
         ..addOption(
@@ -202,7 +204,8 @@ void main() {
     }
 
     void testMessageWithExtendedOption(final int testNo) {
-      final CoapMessage msg = CoapRequest(RequestMethod.get)
+      final emptyUri = Uri();
+      final CoapMessage msg = CoapRequest(RequestMethod.get, emptyUri)
         ..id = 12345
         ..addOption(ContentFormatOption(0));
       expect(msg.getFirstOption<ContentFormatOption>()!.value, 0);
@@ -231,15 +234,17 @@ void main() {
     }
 
     void testRequestParsing(final int testNo) {
-      final request = CoapRequest(RequestMethod.post, confirmable: false)
-        ..id = 7
-        ..token = (typed.Uint8Buffer()..addAll(<int>[11, 82, 165, 77, 3]))
-        ..addIfMatchOpaque(typed.Uint8Buffer()..addAll(<int>[34, 239]))
-        ..addIfMatchOpaque(
-          typed.Uint8Buffer()..addAll(<int>[88, 12, 254, 157, 5]),
-        )
-        ..contentType = CoapMediaType.fromIntValue(40)
-        ..accept = CoapMediaType.fromIntValue(40);
+      final emptyUri = Uri();
+      final request =
+          CoapRequest(RequestMethod.post, emptyUri, confirmable: false)
+            ..id = 7
+            ..token = (typed.Uint8Buffer()..addAll(<int>[11, 82, 165, 77, 3]))
+            ..addIfMatchOpaque(typed.Uint8Buffer()..addAll(<int>[34, 239]))
+            ..addIfMatchOpaque(
+              typed.Uint8Buffer()..addAll(<int>[88, 12, 254, 157, 5]),
+            )
+            ..contentType = CoapMediaType.fromIntValue(40)
+            ..accept = CoapMediaType.fromIntValue(40);
 
       final bytes = serializeUdpMessage(request);
       checkData(bytes, testNo);

@@ -29,18 +29,17 @@ class CoapNetworkTCP implements CoapINetwork {
 
   final CoapEventBus eventBus;
 
-  @override
   final InternetAddress address;
 
-  @override
   final int port;
 
-  @override
   final InternetAddress bindAddress;
 
   bool _shouldReinitialize = true;
 
   final bool isTls;
+
+  String get _scheme => isTls ? 'coaps+tcp' : 'coap+tcp';
 
   final SecurityContext? _tlsContext;
 
@@ -50,11 +49,11 @@ class CoapNetworkTCP implements CoapINetwork {
   @override
   bool isClosed = true;
 
-  @override
   void send(
-    final CoapMessage message, [
-    final InternetAddress? _,
-  ]) {
+    final CoapMessage message,
+    final InternetAddress address,
+    final int port,
+  ) {
     if (isClosed) {
       return;
     }
@@ -62,7 +61,7 @@ class CoapNetworkTCP implements CoapINetwork {
     _socket?.add(message.toTcpPayload());
   }
 
-  @override
+  // TODO(JKRhb): Rework initialization
   Future<void> init() async {
     if (!isClosed || !_shouldReinitialize) {
       return;
@@ -101,7 +100,15 @@ class CoapNetworkTCP implements CoapINetwork {
     socket?.listen(
       (final data) {
         final message = CoapMessage.fromTcpPayload(Uint8Buffer()..addAll(data));
-        eventBus.fire(CoapMessageReceivedEvent(message, address));
+        // TODO(JKRhb): Update once actually implementing TCP
+        eventBus.fire(
+          CoapMessageReceivedEvent(
+            message,
+            address,
+            port,
+            scheme: _scheme,
+          ),
+        );
       },
       // ignore: avoid_types_on_closure_parameters
       onError: (final Object e, final StackTrace s) =>
@@ -119,5 +126,10 @@ class CoapNetworkTCP implements CoapINetwork {
         });
       },
     );
+  }
+
+  @override
+  void sendMessage(final CoapMessage coapRequest, final Uri uri) {
+    // TODO(JKRhb): implement sendRequest
   }
 }

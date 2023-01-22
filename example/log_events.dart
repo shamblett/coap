@@ -16,8 +16,13 @@ import 'utils.dart';
 
 FutureOr<void> main() async {
   final conf = CoapConfig();
-  final uri = Uri(scheme: 'coap', host: 'coap.me', port: conf.defaultPort);
-  final client = CoapClient(uri, config: conf);
+  final uri = Uri(
+    scheme: 'coap',
+    host: 'coap.me',
+    port: conf.defaultPort,
+    path: 'large-create',
+  );
+  final client = CoapClient(config: conf);
 
   final opt = UriQueryOption(
     '${LinkFormatParameter.title.short}=This is an SJH Post request',
@@ -31,10 +36,10 @@ FutureOr<void> main() async {
     client.events.on<Object>().listen(print);
 
     print('Sending post /large-create to ${uri.host}');
-    await client.post('large-create', payload: payload, options: [opt]);
+    await client.post(uri, payload: payload, options: [opt]);
   } on Exception catch (e) {
     print('CoAP encountered an exception: $e');
   }
 
-  client.close();
+  await client.close();
 }

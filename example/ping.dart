@@ -20,11 +20,11 @@ FutureOr<void> main() async {
     host: 'californium.eclipseprojects.io',
     port: conf.defaultPort,
   );
-  final client = CoapClient(uri, config: conf);
+  final client = CoapClient(config: conf);
 
   try {
     print('Pinging client on ${uri.host}');
-    final ok = await client.ping();
+    final ok = await client.ping(uri);
     if (ok) {
       print('Ping successful');
     } else {
@@ -34,5 +34,5 @@ FutureOr<void> main() async {
     print('CoAP encountered an exception: $e');
   }
 
-  client.close();
+  await client.close();
 }

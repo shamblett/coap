@@ -36,11 +36,13 @@ class ReliabilityLayer extends BaseLayer {
     final CoapRequest request,
   ) {
     if (request.type == CoapMessageType.con) {
-      _prepareRetransmission(
-        exchange,
-        request,
-        (final ctx) => sendRequest(exchange, request),
-      );
+      // Hack to get this to work with the network design
+      // Should be reworked in future versions.
+      request.retransmissionCallback = () => _prepareRetransmission(
+            exchange,
+            request,
+            (final ctx) => sendRequest(exchange, request),
+          );
     }
 
     super.sendRequest(exchange, request);
@@ -61,11 +63,13 @@ class ReliabilityLayer extends BaseLayer {
     }
 
     if (response.type == CoapMessageType.con) {
-      _prepareRetransmission(
-        exchange,
-        response,
-        (final ctx) => sendResponse(exchange, response),
-      );
+      // Hack to get this to work with the network design
+      // Should be reworked in future versions.
+      response.retransmissionCallback = () => _prepareRetransmission(
+            exchange,
+            response,
+            (final ctx) => sendResponse(exchange, response),
+          );
     }
 
     super.sendResponse(exchange, response);

@@ -49,7 +49,8 @@ void main() {
   });
 
   test('Options', () {
-    final message = CoapRequest(RequestMethod.get);
+    final emptyUri = Uri();
+    final message = CoapRequest(RequestMethod.get, emptyUri);
     final opt1 = UriQueryOption.parse(Uint8Buffer());
     expect(
       () => OptionType.fromTypeNumber(9000),
@@ -228,7 +229,8 @@ void main() {
   });
 
   test('Uri path', () {
-    final message = CoapRequest(RequestMethod.get)..isTimedOut = true;
+    final emptyUri = Uri();
+    final message = CoapRequest(RequestMethod.get, emptyUri)..isTimedOut = true;
     expect(message.uriPaths.length, 0);
     for (final path in ['', '/']) {
       message.uriPath = path;
@@ -278,7 +280,8 @@ void main() {
   });
 
   test('Uri query', () {
-    final message = CoapRequest(RequestMethod.get);
+    final emptyUri = Uri();
+    final message = CoapRequest(RequestMethod.get, emptyUri);
     expect(message.uriQueries.length, 0);
     message.uriQuery = 'a&uri=1&query=2';
     expect(message.uriQueries.length, 3);
@@ -405,19 +408,20 @@ void main() {
   ///
   /// [RFC 7252, Appendix B]: https://www.rfc-editor.org/rfc/rfc7252#appendix-B
   test('Multiple URI options', () {
-    final message1 = CoapRequest(RequestMethod.get)
+    final emptyUri = Uri();
+    final message1 = CoapRequest(RequestMethod.get, emptyUri)
       ..uriHost = '[2001:db8::2:1]'
       ..uriPort = 5683;
 
     expect(message1.uri.toString(), 'coap://[2001:db8::2:1]/');
 
-    final message2 = CoapRequest(RequestMethod.get)
+    final message2 = CoapRequest(RequestMethod.get, emptyUri)
       ..uriHost = 'example.net'
       ..uriPort = 5683;
 
     expect(message2.uri.toString(), 'coap://example.net/');
 
-    final message3 = CoapRequest(RequestMethod.get)
+    final message3 = CoapRequest(RequestMethod.get, emptyUri)
       ..uriHost = 'example.net'
       ..uriPort = 5683
       ..addUriPath('.well-known')
@@ -425,7 +429,7 @@ void main() {
 
     expect(message3.uri.toString(), 'coap://example.net/.well-known/core');
 
-    final message4 = CoapRequest(RequestMethod.get)
+    final message4 = CoapRequest(RequestMethod.get, emptyUri)
       ..uriHost = 'xn--18j4d.example'
       ..uriPort = 5683
       ..addUriPath(utf8.decode(hex.decode('E38193E38293E381ABE381A1E381AF')));
@@ -435,7 +439,7 @@ void main() {
       'coap://xn--18j4d.example/%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF',
     );
 
-    final message5 = CoapRequest(RequestMethod.get)
+    final message5 = CoapRequest(RequestMethod.get, emptyUri)
       ..destination = InternetAddress('198.51.100.1')
       ..uriPort = 61616
       ..addUriPath('')

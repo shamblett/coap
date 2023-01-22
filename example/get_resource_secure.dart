@@ -25,7 +25,10 @@ final preSharedKey = Uint8List.fromList(utf8.encode('secretPSK'));
 final pskCredentials =
     PskCredentials(identity: identity, preSharedKey: preSharedKey);
 
-PskCredentials pskCredentialsCallback(final Uint8List indentity) =>
+PskCredentials pskCredentialsCallback(
+  final Uint8List indentity,
+  final Uri uri,
+) =>
     pskCredentials;
 
 class DtlsConfig extends DefaultCoapConfig {
@@ -41,27 +44,28 @@ FutureOr<void> main() async {
     port: conf.defaultSecurePort,
   );
   final client = CoapClient(
-    uri,
     config: conf,
     pskCredentialsCallback: pskCredentialsCallback,
   );
 
   try {
     print('Sending get /test to ${uri.host}');
-    var response = await client.get('test');
+    var response = await client.get(uri.replace(path: 'test'));
     print('/test response: ${response.payloadString}');
 
     print('Sending get /multi-format (text) to ${uri.host}');
-    response = await client.get('multi-format');
+    response = await client.get(uri.replace(path: 'multi-format'));
     print('/multi-format (text) response: ${response.payloadString}');
 
     print('Sending get /multi-format (xml) to ${uri.host}');
-    response =
-        await client.get('multi-format', accept: CoapMediaType.applicationXml);
+    response = await client.get(
+      uri.replace(path: 'multi-format'),
+      accept: CoapMediaType.applicationXml,
+    );
     print('/multi-format (xml) response: ${response.payloadString}');
   } on Exception catch (e) {
     print('CoAP encountered an exception: $e');
   }
 
-  client.close();
+  await client.close();
 }
