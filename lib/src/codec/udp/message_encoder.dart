@@ -5,14 +5,20 @@
  * Copyright :  S.Hamblett
  */
 
+import 'dart:io';
+
 import 'package:collection/collection.dart';
 import 'package:typed_data/typed_data.dart';
 
 import '../../coap_code.dart';
+import '../../coap_constants.dart';
 import '../../coap_message.dart';
 import '../../coap_message_type.dart';
+import '../../coap_request.dart';
 import '../../option/coap_option_type.dart';
+import '../../option/integer_option.dart';
 import '../../option/option.dart';
+import '../../option/string_option.dart';
 import 'datagram_writer.dart';
 import 'message_format.dart' as message_format;
 
@@ -54,7 +60,7 @@ Uint8Buffer serializeUdpMessage(final CoapMessage message) {
   );
 
   for (final opt in options) {
-    if (opt.type == OptionType.uriHost || opt.type == OptionType.uriPort) {
+    if (_shouldBeSkipped(opt, message)) {
       continue;
     }
 
@@ -105,6 +111,24 @@ Uint8Buffer serializeUdpMessage(final CoapMessage message) {
 
   return writer.toByteArray();
 }
+
+bool _shouldBeSkipped(final Option<Object?> opt, final CoapMessage message) {
+  if (opt is UriHostOption &&
+      InternetAddress.tryParse(opt.value) == message.destination) {
+    return true;
+  }
+
+  if (opt is UriPortOption && message is CoapRequest) {
+    return _usesDefaultPort(message.scheme, opt.value);
+  }
+
+  return false;
+}
+
+bool _usesDefaultPort(final String? scheme, final int port) =>
+    scheme == CoapConstants.uriScheme && port == CoapConstants.defaultPort ||
+    scheme == CoapConstants.secureUriScheme &&
+        port == CoapConstants.defaultSecurePort;
 
 /// Determine the token length.
 ///
