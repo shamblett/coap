@@ -443,12 +443,18 @@ abstract class CoapMessage {
   set contentFormat(final CoapMediaType? value) => contentType = value;
 
   /// The max-age of this CoAP message.
-  int get maxAge {
+  int? get maxAge {
     final opt = getFirstOption<MaxAgeOption>();
-    return opt?.value ?? CoapConstants.defaultMaxAge;
+    return opt?.value;
   }
 
-  set maxAge(final int value) => setOption(MaxAgeOption(value));
+  set maxAge(final int? value) {
+    if (value == null) {
+      removeOptions<MaxAgeOption>();
+    } else {
+      setOption(MaxAgeOption(value));
+    }
+  }
 
   /// Accept
   CoapMediaType? get accept {
