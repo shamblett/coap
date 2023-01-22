@@ -5,6 +5,8 @@
  * Copyright :  S.Hamblett
  */
 
+import 'package:meta/meta.dart';
+
 import '../coap_config.dart';
 import '../coap_empty_message.dart';
 import '../coap_request.dart';
@@ -20,25 +22,19 @@ import 'layers/top.dart';
 
 /// Builds up the stack of CoAP layers
 /// that process the CoAP protocol.
+@immutable
 class LayerStack {
   /// Instantiates.
   LayerStack(final DefaultCoapConfig config) {
-    _addLayer(_topLayer);
-    _addLayer(ReliabilityLayer(config));
-    _addLayer(TokenLayer());
-    _addLayer(BlockwiseLayer(config));
-    _addLayer(ObserveLayer(config));
-    _addLayer(BottomLayer());
+    _topLayer
+      ..addLayer(ReliabilityLayer(config))
+      ..addLayer(TokenLayer())
+      ..addLayer(BlockwiseLayer(config))
+      ..addLayer(ObserveLayer(config))
+      ..addLayer(BottomLayer());
   }
-
-  BaseLayer? _lastLayer;
 
   final _topLayer = CoapStackTopLayer();
-
-  void _addLayer(final BaseLayer layer) {
-    _lastLayer?.nextLayer = layer;
-    _lastLayer = layer;
-  }
 
   /// Sends a request into the layer stack.
   void sendRequest(final CoapRequest request) {
