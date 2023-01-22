@@ -647,10 +647,21 @@ class CoapClient {
     final completer = Completer<CoapResponse>();
     responseStream.take(1).listen(
       (final response) {
+        if (completer.isCompleted) {
+          return;
+        }
+
         response.timestamp = DateTime.now();
         completer.complete(response);
       },
-      onError: completer.completeError,
+      // ignore: avoid_types_on_closure_parameters
+      onError: (final Object error) {
+        if (completer.isCompleted) {
+          return;
+        }
+
+        completer.completeError(error);
+      },
     );
     return completer.future;
   }
