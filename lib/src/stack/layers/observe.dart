@@ -8,6 +8,7 @@
 import 'dart:async';
 
 import '../../coap_config.dart';
+import '../../coap_constants.dart';
 import '../../coap_empty_message.dart';
 import '../../coap_message_type.dart';
 import '../../coap_request.dart';
@@ -194,7 +195,8 @@ class ObserveLayer extends BaseLayer {
     final CoapResponse response,
     final void Function(CoapRequest) reregister,
   ) {
-    final timeout = response.maxAge * 1000 + _backoff;
+    final timeout =
+        (response.maxAge ?? CoapConstants.defaultMaxAge) * 1000 + _backoff;
     exchange
         .getOrAdd<_ReregistrationContext>(
           reregistrationContextKey,

@@ -288,7 +288,7 @@ void main() {
       expect(
         leq.equals(
           response.locationPaths.toList(),
-          message.locationPaths.toList(),
+          (message as CoapResponse).locationPaths.toList(),
         ),
         isTrue,
       );
