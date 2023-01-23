@@ -29,7 +29,6 @@ import 'link-format/coap_link_format.dart';
 import 'link-format/coap_web_link.dart';
 import 'net/endpoint.dart';
 import 'network/coap_inetwork.dart';
-import 'network/credentials/ecdsa_keys.dart';
 import 'network/credentials/psk_credentials.dart';
 import 'option/coap_block_option.dart';
 import 'option/empty_option.dart';
@@ -95,11 +94,9 @@ class CoapClient {
     this.uri, {
     this.addressType = InternetAddressType.any,
     this.bindAddress,
-    final EcdsaKeys? ecdsaKeys,
     final PskCredentialsCallback? pskCredentialsCallback,
     final DefaultCoapConfig? config,
   })  : _config = config ?? CoapConfigDefault(),
-        _ecdsaKeys = ecdsaKeys,
         _pskCredentialsCallback = pskCredentialsCallback {
     _eventBus = CoapEventBus(namespace: hashCode.toString());
   }
@@ -122,9 +119,6 @@ class CoapClient {
   final DefaultCoapConfig _config;
   Endpoint? _endpoint;
   final _lock = Lock();
-
-  /// Raw Public Keys for CoAPS with tinyDtls.
-  final EcdsaKeys? _ecdsaKeys;
 
   /// Callback for providing [PskCredentials] (combination of a Pre-shared Key
   /// and an Identity) for DTLS, optionally based on an Identity Hint.
@@ -610,7 +604,6 @@ class CoapClient {
           config: _config,
           namespace: _eventBus.namespace,
           pskCredentialsCallback: _pskCredentialsCallback,
-          ecdsaKeys: _ecdsaKeys,
         );
         await socket.init();
         _endpoint = Endpoint(socket, _config, namespace: _eventBus.namespace);

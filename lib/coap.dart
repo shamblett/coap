@@ -7,13 +7,9 @@
 
 library coap;
 
-export 'package:dart_tinydtls/dart_tinydtls.dart' show TinyDTLS;
-
 /// Pre-defined configs
 export 'config/coap_config_all.dart';
 export 'config/coap_config_default.dart';
-export 'config/coap_config_openssl.dart';
-export 'config/coap_config_tinydtls.dart';
 
 /// The Coap package exported interface
 export 'src/coap_client.dart';
@@ -35,7 +31,6 @@ export 'src/link-format/coap_link_format.dart';
 export 'src/link-format/coap_web_link.dart';
 export 'src/link-format/resources/coap_resource.dart';
 export 'src/multicast_address.dart';
-export 'src/network/credentials/ecdsa_keys.dart';
 export 'src/network/credentials/psk_credentials.dart';
 export 'src/option/coap_block_option.dart';
 export 'src/option/empty_option.dart';

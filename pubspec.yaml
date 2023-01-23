@@ -14,8 +14,7 @@ dependencies:
   build: ^2.3.0
   collection: ^1.16.0
   convert: ^3.0.2
-  dart_tinydtls: ^3.1.0
-  dtls: ^0.1.0
+  dtls2: ^0.10.0
   event_bus: ^2.0.0
   meta: ^1.8.0
   path: ^1.8.2

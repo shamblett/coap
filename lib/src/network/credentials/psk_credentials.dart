@@ -19,9 +19,6 @@ typedef PskCredentialsCallback = PskCredentials Function(
 
 /// Credentials used for PSK Cipher Suites consisting of an [identity]
 /// and a [preSharedKey].
-///
-/// Currently, only the mandatory Cipher Suite `TLS_PSK_WITH_AES_128_CCM_8` is
-/// supported via tinydtls.
 class PskCredentials {
   Uint8List identity;
 

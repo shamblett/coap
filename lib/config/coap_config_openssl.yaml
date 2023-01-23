@@ -1,8 +1,0 @@
-# A test COAP config file with DTLS support.
-# Syntax is YAML
-
-# Protocol section
-
-deduplicator: "MarkAndSweep"
-dtls:
-  backend: OpenSsl

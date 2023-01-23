@@ -10,9 +10,7 @@ The CoAP library is an implementation in Dart providing a CoAP client, the code 
 * FETCH, PATCH, and iPATCH methods [RFC 8132](https://www.rfc-editor.org/rfc/rfc8132.html)
 * Extended Token Length [RFC 8974](https://tools.ietf.org/html/rfc8974)
 * Multicast over UDP (not DTLS)
-* **Experimental**: CoAP over DTLS (using FFI)
-  * [dtls](https://pub.dev/packages/dtls) for OpenSSL
-  * [tinydtls](https://github.com/eclipse/tinydtls) for Pre-Shared Keys and Raw Public Keys
+* **Experimental**: CoAP over DTLS, using FFI and the [dtls2](https://pub.dev/packages/dtls2) package for binding to OpenSSL
 * **Experimental**: Request proxying
 
 ### Roadmap
@@ -64,9 +62,11 @@ devDependencies:
 
 ### Binaries for DTLS
 
-You can provide `tinydtls` binaries via the plugin [dart_tinydtls_libs](https://pub.dev/packages/dart_tinydtls_libs). Alternatively, you can also download the binaries directly from the Plugin's [GitHub Repository](https://github.com/namib-project/dart_tinydtls_libs).
-
-Likewise, if you are planning to use DTLS with OpenSSL, note that not all platforms support OpenSSL natively (iOS and Windows for example), in which case you need to ship the required binaries with your app.
+If you are planning to use DTLS with OpenSSL, note that not all platforms
+support OpenSSL natively (iOS and Windows for example), in which case you need
+to ship the required binaries with your app.
+Also see the [dtls2](https://pub.dev/packages/dtls2) package's README for
+more information.
 
 ### Connectivity
 

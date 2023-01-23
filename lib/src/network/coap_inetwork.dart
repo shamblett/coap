@@ -11,9 +11,7 @@ import '../coap_config.dart';
 import '../coap_constants.dart';
 import '../coap_message.dart';
 import 'coap_network_openssl.dart';
-import 'coap_network_tinydtls.dart';
 import 'coap_network_udp.dart';
-import 'credentials/ecdsa_keys.dart';
 import 'credentials/psk_credentials.dart';
 
 /// This [Exception] is thrown when an unsupported URI scheme is encountered.
@@ -27,29 +25,6 @@ class UnsupportedProtocolException implements Exception {
   @override
   String toString() =>
       '$runtimeType: Unsupported URI scheme $uriScheme encountered.';
-}
-
-/// This [Exception] is thrown when Credentials for secure CoAP communication
-/// are missing.
-class CoapCredentialsException implements Exception {
-  final String _message;
-
-  /// Create a new [Exception] that prints out the given [_message].
-  CoapCredentialsException(this._message);
-
-  @override
-  String toString() => '$runtimeType: $_message';
-}
-
-/// This [Exception] is thrown when a DTLS related problem occurs.
-class CoapDtlsException implements Exception {
-  final String _message;
-
-  /// Create a new [Exception] that prints out the given [_message].
-  CoapDtlsException(this._message);
-
-  @override
-  String toString() => '$runtimeType: $_message';
 }
 
 /// Abstract networking class, allows different implementations for
@@ -90,7 +65,6 @@ abstract class CoapINetwork {
     final String namespace = '',
     final InternetAddress? bindAddress,
     final PskCredentialsCallback? pskCredentialsCallback,
-    final EcdsaKeys? ecdsaKeys,
   }) {
     final defaultBindAddress = address.type == InternetAddressType.IPv4
         ? InternetAddress.anyIPv4
@@ -105,40 +79,20 @@ abstract class CoapINetwork {
           namespace: namespace,
         );
       case CoapConstants.secureUriScheme:
-        switch (config.dtlsBackend) {
-          case DtlsBackend.TinyDtls:
-            if (pskCredentialsCallback == null && ecdsaKeys == null) {
-              throw CoapCredentialsException(
-                'A PSK credentials callback and/or ECDSA keys have been expected '
-                'to use CoAPS, but neither have been found!',
-              );
-            }
-            return CoapNetworkUDPTinyDtls(
-              address,
-              port ?? config.defaultSecurePort,
-              bindAddress ?? defaultBindAddress,
-              config.tinyDtlsInstance,
-              namespace: namespace,
-              pskCredentialsCallback: pskCredentialsCallback,
-              ecdsaKeys: ecdsaKeys,
-            );
-          case DtlsBackend.OpenSsl:
-            return CoapNetworkUDPOpenSSL(
-              address,
-              port ?? config.defaultSecurePort,
-              bindAddress ?? defaultBindAddress,
-              namespace: namespace,
-              verify: config.dtlsVerify,
-              withTrustedRoots: config.dtlsWithTrustedRoots,
-              ciphers: config.dtlsCiphers,
-              rootCertificates: config.rootCertificates,
-            );
-          case null:
-            throw CoapDtlsException(
-              'Encountered a coaps:// URI scheme but no DTLS backend has been '
-              'enabled in the config.',
-            );
-        }
+        return CoapNetworkUDPOpenSSL(
+          address,
+          port ?? config.defaultSecurePort,
+          bindAddress ?? defaultBindAddress,
+          namespace: namespace,
+          verify: config.dtlsVerify,
+          withTrustedRoots: config.dtlsWithTrustedRoots,
+          ciphers: config.dtlsCiphers,
+          rootCertificates: config.rootCertificates,
+          pskCredentialsCallback: pskCredentialsCallback,
+          libCrypto: config.libCryptoInstance,
+          libSsl: config.libSslInstance,
+          hostName: uri.host,
+        );
       default:
         throw UnsupportedProtocolException(uri.scheme);
     }
