@@ -5,8 +5,6 @@
  * Copyright :  S.Hamblett
  */
 
-import 'dart:typed_data';
-
 import 'package:typed_data/typed_data.dart';
 
 import '../../coap_code.dart';
@@ -100,11 +98,7 @@ CoapMessage? deserializeUdpMessage(final Uint8Buffer data) {
       // Read option
       try {
         final optionType = OptionType.fromTypeNumber(currentOption);
-        var optionBytes = reader.readBytes(optionLength);
-        if (Endian.host == Endian.little &&
-            optionType.optionFormat is OptionFormat<int>) {
-          optionBytes = Uint8Buffer()..addAll(optionBytes.reversed);
-        }
+        final optionBytes = reader.readBytes(optionLength);
         final option = optionType.parse(optionBytes);
         options.add(option);
       } on UnknownElectiveOptionException catch (_) {
