@@ -272,6 +272,15 @@ enum CoapMediaType {
   /// application/cbor@deflate
   applictionCborDeflate(11060, 'application', 'cbor', encoding: 'deflate'),
 
+  /// application/vnd.oma.lwm2m+tlv
+  applictionVndOmaLwm2m2Tlv(11542, 'application', 'vnd.oma.lwm2m+tlv'),
+
+  /// application/vnd.oma.lwm2m+json
+  applictionVndOmaLwm2m2Json(11543, 'application', 'vnd.oma.lwm2m+json'),
+
+  /// application/vnd.oma.lwm2m+cbor
+  applictionVndOmaLwm2m2Cbor(11544, 'application', 'vnd.oma.lwm2m+cbor'),
+
   /// application/textCss
   textCss(20000, 'text', 'css'),
 
