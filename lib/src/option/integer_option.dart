@@ -17,9 +17,23 @@ import 'option.dart';
 /// [RFC 1700]: https://www.rfc-editor.org/rfc/rfc1700
 const _networkByteOrder = Endian.big;
 
+/// Option format for non-negative integer values represented in network byte
+/// order.
+///
+/// See [RFC 7252, section 3.2] for more information.
+///
+/// [RFC 7252, section 3.2]: https://www.rfc-editor.org/rfc/rfc7252#section-3.2
 abstract class IntegerOption extends Option<int> {
+  /// Create an [IntegerOption] of a specified [type], encoding the given
+  /// [value].
+  ///
+  /// The [value] will be encoded using network byte order.
   IntegerOption(this.type, this.value) : byteValue = _bytesFromValue(value);
 
+  /// Create an [IntegerOption] of a specified [type], parsing the given
+  /// encoded [byteValue].
+  ///
+  /// The [byteValue] needs to be encoded in network byte order.
   IntegerOption.parse(this.type, this.byteValue)
       : value = _valueFromBytes(byteValue);
 
