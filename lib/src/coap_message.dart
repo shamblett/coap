@@ -16,7 +16,6 @@ import 'package:typed_data/typed_data.dart';
 import 'coap_code.dart';
 import 'coap_media_type.dart';
 import 'coap_message_type.dart';
-import 'coap_request.dart';
 import 'coap_response.dart';
 import 'codec/udp/message_decoder.dart';
 import 'codec/udp/message_encoder.dart';
@@ -595,64 +594,34 @@ abstract class CoapMessage {
     timedOutHook = msg.timedOutHook;
   }
 
-  @override
-  String toString() => '\nType: ${type.toString()}, Code: $codeString, '
-      'Id: ${id.toString()}, '
-      "Token: '$tokenString',\n"
-      'Options: ${_optionsToString()},\n'
-      'Payload: $payloadString';
+  String get _formattedOptions {
+    final options = getAllOptions();
 
-  void _writeMessageSpecifcOptions(final StringBuffer stringBuffer) {
-    final message = this;
-    if (message is CoapRequest) {
-      final uriPort = message.uriPort;
-      stringBuffer
-        ..write(_optionString('Uri Host', message.uriHost))
-        ..write(_optionString('Uri Port', uriPort > 0 ? uriPort : null))
-        ..write(_optionString('Uri Paths', message.uriPath))
-        ..write(_optionString('Uri Queries', message.uriQueries));
-    } else if (message is CoapResponse) {
-      stringBuffer
-        ..write(_optionString('Location Paths', message.locationPaths))
-        ..write(_optionString('Location Queries', message.locationQueries));
-    }
-  }
-
-  String _optionsToString() {
-    final sb = StringBuffer()..writeln('[');
-
-    _writeMessageSpecifcOptions(sb);
-
-    sb
-      ..write(_optionString('If-Match', ifMatches))
-      ..write(_optionString('E-tags', etags))
-      ..write(_optionString('If-None Match', ifNoneMatches))
-      ..write(_optionString('Content-Type', contentType))
-      ..write(_optionString('Max Age', maxAge))
-      ..write(_optionString('Accept', accept))
-      ..write(_optionString('Proxy Uri', proxyUri))
-      ..write(_optionString('Proxy Scheme', proxyScheme))
-      ..write(_optionString('Block 1', block1))
-      ..write(_optionString('Block 2', block2))
-      ..write(_optionString('Observe', observe))
-      ..write(_optionString('Size 1', size1))
-      ..write(_optionString('Size 2', size2))
-      ..write(']');
-    return sb.toString();
-  }
-
-  String _optionString(final String name, final Object? value) {
-    if (value == null) {
+    if (options.isEmpty) {
       return '';
     }
-    var str = '';
-    if (value is Iterable) {
-      str = value.join(',');
-    } else {
-      str = value.toString();
-    }
-    return str != '' ? '  $name: $str,\n' : '';
+
+    const optionDelimiter = ',\n  ';
+
+    final formattedOptions = options
+        .groupListsBy((final option) => option.type)
+        .values
+        .map(
+          (final optionList) => optionList
+              .map((final option) => option.toString())
+              .join(optionDelimiter),
+        )
+        .join(optionDelimiter);
+
+    return 'Options: [\n    $formattedOptions\n],\n';
   }
+
+  @override
+  String toString() => '\nType: $type, Code: $codeString, '
+      'Id: $id, '
+      "Token: '$tokenString',\n"
+      '$_formattedOptions'
+      'Payload: $payloadString';
 
   /// Serializes this CoAP message from the UDP message format.
   ///
