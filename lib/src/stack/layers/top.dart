@@ -14,23 +14,27 @@ class CoapStackTopLayer extends BaseLayer {
     final CoapExchange? initialExchange,
     final CoapRequest request,
   ) {
-    var exchange = initialExchange;
+    final CoapExchange exchange;
 
-    if (exchange == null) {
+    if (initialExchange == null) {
+      final endpoint = request.endpoint!;
       if (request.isMulticast) {
         exchange = CoapMulticastExchange(
           request,
           CoapOrigin.local,
+          endpoint,
           namespace: request.eventBus!.namespace,
         );
       } else {
         exchange = CoapExchange(
           request,
           CoapOrigin.local,
+          endpoint,
           namespace: request.eventBus!.namespace,
         );
       }
-      exchange.endpoint = request.endpoint;
+    } else {
+      exchange = initialExchange;
     }
     exchange.request = request;
     super.sendRequest(exchange, request);

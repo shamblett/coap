@@ -24,7 +24,13 @@ import 'outbox.dart';
 /// i.e., has reached the retransmission limit without being acknowledged.
 class CoapExchange {
   /// Construction
-  CoapExchange(this.request, this._origin, {required this.namespace}) {
+  CoapExchange(
+    this.request,
+    this._origin,
+    this.endpoint, {
+    required this.namespace,
+    this.originalMulticastRequest,
+  }) {
     _eventBus = CoapEventBus(namespace: namespace);
     _timestamp = DateTime.now();
   }
@@ -43,7 +49,7 @@ class CoapExchange {
   CoapRequest request;
 
   /// The request
-  CoapRequest? originalMulticastRequest;
+  final CoapRequest? originalMulticastRequest;
 
   /// The current request
   CoapRequest? currentRequest;
@@ -55,7 +61,7 @@ class CoapExchange {
   CoapResponse? currentResponse;
 
   /// The endpoint which has created and processed this exchange.
-  Endpoint? endpoint;
+  final Endpoint endpoint;
 
   DateTime? _timestamp;
 
@@ -105,7 +111,7 @@ class CoapExchange {
   Outbox? _outbox;
 
   /// Outbox
-  Outbox? get outbox => _outbox ?? endpoint?.outbox;
+  Outbox? get outbox => _outbox ?? endpoint.outbox;
 
   set outbox(final Outbox? value) => _outbox = value;
 
@@ -115,7 +121,7 @@ class CoapExchange {
     assert(_origin == CoapOrigin.remote, 'Origin must be remote');
     request.isRejected = true;
     final rst = CoapEmptyMessage.newRST(request);
-    endpoint!.sendEpEmptyMessage(this, rst);
+    endpoint.sendEpEmptyMessage(this, rst);
   }
 
   /// Accept this exchange and therefore the request. Only if the request's
@@ -126,7 +132,7 @@ class CoapExchange {
     if (request.type == CoapMessageType.con && !request.isAcknowledged) {
       request.isAcknowledged = true;
       final ack = CoapEmptyMessage.newACK(request);
-      endpoint!.sendEpEmptyMessage(this, ack);
+      endpoint.sendEpEmptyMessage(this, ack);
     }
   }
 
@@ -135,7 +141,7 @@ class CoapExchange {
   void sendResponse(final CoapResponse resp) {
     resp.destination = request.source;
     response = resp;
-    endpoint!.sendEpResponse(this, resp);
+    endpoint.sendEpResponse(this, resp);
   }
 
   /// Fire the reregistering event

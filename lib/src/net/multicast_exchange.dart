@@ -5,14 +5,14 @@
  * Copyright :  Jan Romann
  */
 
-import '../coap_request.dart';
 import '../coap_response.dart';
 import 'exchange.dart';
 
 class CoapMulticastExchange extends CoapExchange {
   CoapMulticastExchange(
-    CoapRequest super.request,
-    super.origin, {
+    super.request,
+    super.origin,
+    super.endpoint, {
     required super.namespace,
   });
 

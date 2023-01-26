@@ -237,10 +237,13 @@ class BlockwiseLayer extends BaseLayer {
   ) {
     final endpoint = exchange.endpoint;
     final originalRequest = exchange.request;
-    final newExchange =
-        CoapExchange(block, exchange.origin, namespace: exchange.namespace)
-          ..originalMulticastRequest = originalRequest
-          ..endpoint = endpoint;
+    final newExchange = CoapExchange(
+      block,
+      exchange.origin,
+      endpoint,
+      namespace: exchange.namespace,
+      originalMulticastRequest: originalRequest,
+    );
     return newExchange;
   }
 

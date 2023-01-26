@@ -147,8 +147,12 @@ class CoapMatcher {
 
     if (!request.hasOption<Block1Option>() &&
         !request.hasOption<Block2Option>()) {
-      final exchange =
-          CoapExchange(request, CoapOrigin.remote, namespace: namespace);
+      final exchange = CoapExchange(
+        request,
+        CoapOrigin.remote,
+        request.endpoint!,
+        namespace: namespace,
+      );
       final previous = _deduplicator.findPrevious(request.id, exchange);
       if (previous == null) {
         return exchange;
@@ -180,8 +184,12 @@ class CoapMatcher {
         // hash map 'ongoing' and the deduplicator. They must agree on
         // which exchange they store!
 
-        final exchange =
-            CoapExchange(request, CoapOrigin.remote, namespace: namespace);
+        final exchange = CoapExchange(
+          request,
+          CoapOrigin.remote,
+          request.endpoint!,
+          namespace: namespace,
+        );
         final previous = _deduplicator.findPrevious(request.id, exchange);
         if (previous == null) {
           _ongoingExchanges[request.tokenString] = exchange;

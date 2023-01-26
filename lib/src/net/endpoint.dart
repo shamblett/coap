@@ -121,7 +121,7 @@ class Endpoint implements Outbox {
       _eventBus.fire(CoapReceivingRequestEvent(request));
 
       if (!request.isCancelled) {
-        final exchange = _matcher.receiveRequest(request)..endpoint = this;
+        final exchange = _matcher.receiveRequest(request);
         _coapStack.receiveRequest(exchange, request);
       }
     } else if (message is CoapResponse) {
@@ -134,7 +134,6 @@ class Endpoint implements Outbox {
         final exchange = _matcher.receiveResponse(response);
         if (exchange != null) {
           response.rtt = DateTime.now().difference(exchange.timestamp!);
-          exchange.endpoint = this;
           _coapStack.receiveResponse(exchange, response);
         } else if (response.type != CoapMessageType.ack) {
           _reject(response);
@@ -151,7 +150,6 @@ class Endpoint implements Outbox {
         } else {
           final exchange = _matcher.receiveEmptyMessage(message);
           if (exchange != null) {
-            exchange.endpoint = this;
             _coapStack.receiveEmptyMessage(exchange, message);
           }
         }
