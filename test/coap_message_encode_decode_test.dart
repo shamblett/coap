@@ -150,7 +150,7 @@ void main() {
     void testMessage(final int testNo) {
       final CoapMessage msg = CoapRequest(RequestMethod.get)
         ..id = 12345
-        ..payload = (typed.Uint8Buffer()..addAll('payload'.codeUnits));
+        ..setPayload('payload');
       final data = serializeUdpMessage(msg);
       checkData(data, testNo);
       final convMsg = deserializeUdpMessage(data);
@@ -159,7 +159,7 @@ void main() {
       expect(msg.id, convMsg.id);
       expect(msg.getAllOptions().length, convMsg.getAllOptions().length);
       expect(
-        leq.equals(msg.payload!.toList(), convMsg.payload!.toList()),
+        leq.equals(msg.payload.toList(), convMsg.payload.toList()),
         isTrue,
       );
       expect(msg.payloadString, convMsg.payloadString);
@@ -168,7 +168,7 @@ void main() {
     void testMessageWithOptions(final int testNo) {
       final CoapMessage msg = CoapRequest(RequestMethod.get)
         ..id = 12345
-        ..payload = (typed.Uint8Buffer()..addAll('payload'.codeUnits))
+        ..setPayload('payload')
         ..addOption(
           ContentFormatOption(CoapMediaType.textPlain.numericValue),
         )
@@ -196,7 +196,7 @@ void main() {
       );
       expect(convMsg.getFirstOption<MaxAgeOption>()!.value, 30);
       expect(
-        leq.equals(msg.payload!.toList(), convMsg.payload!.toList()),
+        leq.equals(msg.payload.toList(), convMsg.payload.toList()),
         isTrue,
       );
     }
@@ -206,7 +206,7 @@ void main() {
         ..id = 12345
         ..addOption(ContentFormatOption(0));
       expect(msg.getFirstOption<ContentFormatOption>()!.value, 0);
-      msg.payload = typed.Uint8Buffer()..addAll('payload'.codeUnits);
+      msg.setPayload('payload');
 
       final data = serializeUdpMessage(msg);
       checkData(data, testNo);
@@ -225,7 +225,7 @@ void main() {
       );
       expect(convMsg.getFirstOption<ContentFormatOption>()!.value, 0);
       expect(
-        leq.equals(msg.payload!.toList(), convMsg.payload!.toList()),
+        leq.equals(msg.payload.toList(), convMsg.payload.toList()),
         isTrue,
       );
     }

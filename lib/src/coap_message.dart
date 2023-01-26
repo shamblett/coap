@@ -45,12 +45,13 @@ abstract class CoapMessage {
     required final int id,
     required final Uint8Buffer token,
     required final List<Option<Object?>> options,
+    required final Uint8Buffer? payload,
     required this.hasUnknownCriticalOption,
     required this.hasFormatError,
-    this.payload,
   }) {
     this.id = id;
     this.token = token;
+    this.payload = payload ?? [];
     setOptions(options);
   }
 
@@ -296,22 +297,24 @@ abstract class CoapMessage {
   /// The default value is 0.
   int ackTimeout = 0;
 
-  /// UTF8 decoder and encoder helpers
-  final Utf8Decoder _utfDecoder = const Utf8Decoder();
-  final Utf8Encoder _utfEncoder = const Utf8Encoder();
+  final Uint8Buffer _payload = Uint8Buffer();
 
   /// The payload of this CoAP message.
-  Uint8Buffer? payload;
+  Uint8Buffer get payload => _payload;
+
+  set payload(final Iterable<int> payload) => _payload
+    ..clear()
+    ..addAll(payload);
 
   /// The size of the payload of this CoAP message.
-  int get payloadSize => payload?.length ?? 0;
+  int get payloadSize => payload.length;
 
   /// The payload of this CoAP message in string representation.
   String get payloadString {
     final payload = this.payload;
-    if (payload != null && payload.isNotEmpty) {
+    if (payload.isNotEmpty) {
       try {
-        final ret = _utfDecoder.convert(payload);
+        final ret = utf8.decode(payload);
         return ret;
       } on FormatException catch (_) {
         // The payload may be incomplete, if so and the conversion
@@ -327,15 +330,11 @@ abstract class CoapMessage {
       setPayloadMedia(value, CoapMediaType.textPlain);
 
   /// Sets the payload.
-  void setPayload(final String payload) {
-    this.payload ??= Uint8Buffer();
-    this.payload!.addAll(_utfEncoder.convert(payload));
-  }
+  void setPayload(final String payload) => this.payload = utf8.encode(payload);
 
   /// Sets the payload and media type of this CoAP message.
   void setPayloadMedia(final String payload, [final CoapMediaType? mediaType]) {
-    final payloadBuffer = Uint8Buffer()..addAll(_utfEncoder.convert(payload));
-    this.payload = payloadBuffer;
+    setPayload(payload);
     contentType = mediaType;
   }
 

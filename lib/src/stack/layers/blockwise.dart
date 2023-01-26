@@ -422,9 +422,7 @@ class BlockwiseLayer extends BaseLayer {
     final currentSize = szx.decodedValue;
     final from = num * currentSize;
     final to = min((num + 1) * currentSize, request.payloadSize);
-    final length = to - from;
-    block.payload = Uint8Buffer()
-      ..addAll(request.payload!.getRange(from, from + length));
+    block.payload = request.payload.getRange(from, to);
 
     final m = to < request.payloadSize;
     block.addOption(Block1Option.fromParts(num, szx, m: m));
@@ -512,16 +510,11 @@ class BlockwiseLayer extends BaseLayer {
     final from = num * currentSize;
     if (payloadSize > 0 && payloadSize > from) {
       final to = min((num + 1) * currentSize, response.payloadSize);
-      final length = to - from;
-      final blockPayload = Uint8Buffer();
       final m = to < response.payloadSize;
-      block.setBlock2(szx, num, m: m);
-
-      // Crop payload -- do after calculation of m in case block==response
-      blockPayload.addAll(response.payload!.getRange(from, from + length));
-
       block
-        ..payload = blockPayload
+        ..setBlock2(szx, num, m: m)
+        // Crop payload -- do after calculation of m in case block==response
+        ..payload = response.payload.getRange(from, to)
         // Do not complete notifications
         ..last = !m && !response.hasOption<ObserveOption>();
 
