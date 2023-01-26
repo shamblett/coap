@@ -124,8 +124,7 @@ class ReliabilityLayer extends BaseLayer {
       ctx.cancel();
     }
 
-    if (response.type == CoapMessageType.con &&
-        !exchange.request!.isCancelled) {
+    if (response.type == CoapMessageType.con && !exchange.request.isCancelled) {
       final ack = CoapEmptyMessage.newACK(response);
       sendEmptyMessage(exchange, ack);
     }

@@ -40,7 +40,7 @@ class CoapExchange {
   CoapOrigin get origin => _origin;
 
   /// The request
-  CoapRequest? request;
+  CoapRequest request;
 
   /// The request
   CoapRequest? originalMulticastRequest;
@@ -113,8 +113,8 @@ class CoapExchange {
   /// Sends an RST back to the client.
   void sendReject() {
     assert(_origin == CoapOrigin.remote, 'Origin must be remote');
-    request!.isRejected = true;
-    final rst = CoapEmptyMessage.newRST(request!);
+    request.isRejected = true;
+    final rst = CoapEmptyMessage.newRST(request);
     endpoint!.sendEpEmptyMessage(this, rst);
   }
 
@@ -123,9 +123,9 @@ class CoapExchange {
   /// yet, it sends an ACK to the client.
   void sendAccept() {
     assert(_origin == CoapOrigin.remote, 'Origin must be remote');
-    if (request!.type == CoapMessageType.con && !request!.isAcknowledged) {
-      request!.isAcknowledged = true;
-      final ack = CoapEmptyMessage.newACK(request!);
+    if (request.type == CoapMessageType.con && !request.isAcknowledged) {
+      request.isAcknowledged = true;
+      final ack = CoapEmptyMessage.newACK(request);
       endpoint!.sendEpEmptyMessage(this, ack);
     }
   }
@@ -133,7 +133,7 @@ class CoapExchange {
   /// Sends the specified response over the same endpoint
   /// as the request has arrived.
   void sendResponse(final CoapResponse resp) {
-    resp.destination = request!.source;
+    resp.destination = request.source;
     response = resp;
     endpoint!.sendEpResponse(this, resp);
   }

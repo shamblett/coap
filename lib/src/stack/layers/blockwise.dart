@@ -198,7 +198,7 @@ class BlockwiseLayer extends BaseLayer {
         // In case we still have to ack the last block1
         block.setOption(block1);
       }
-      block.token ??= exchange.request!.token;
+      block.token ??= exchange.request.token;
 
       if (status.complete) {
         // Clean up blockwise status
@@ -252,7 +252,7 @@ class BlockwiseLayer extends BaseLayer {
     var exchange = initialExchange;
 
     // Do not continue fetching blocks if canceled
-    if (exchange.request!.isCancelled) {
+    if (exchange.request.isCancelled) {
       // Reject (in particular for Block+Observe)
       if (response.type != CoapMessageType.ack) {
         final rst = CoapEmptyMessage.newRST(response);
@@ -278,7 +278,7 @@ class BlockwiseLayer extends BaseLayer {
         status
           ..currentNUM = status.currentNUM + 1
           ..currentSZX = block1.szx;
-        final nextBlock = _getNextRequestBlock(exchange.request!, status);
+        final nextBlock = _getNextRequestBlock(exchange.request, status);
         if (exchange is CoapMulticastExchange) {
           exchange = _convertMutlicastToUnicastExchange(exchange, nextBlock);
         } else {
@@ -317,7 +317,7 @@ class BlockwiseLayer extends BaseLayer {
           _clearBlockCleanup(exchange);
           super.receiveResponse(exchange, response);
         } else if (block2.m) {
-          final request = exchange.request!;
+          final request = exchange.request;
           final num = block2.num + 1;
           final szx = block2.szx;
           final m = block2.m;
@@ -376,7 +376,7 @@ class BlockwiseLayer extends BaseLayer {
           final rst = CoapEmptyMessage.newRST(response);
           super.sendEmptyMessage(exchange, rst);
         }
-        exchange.request!.isCancelled = true;
+        exchange.request.isCancelled = true;
       }
     }
   }

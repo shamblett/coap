@@ -40,8 +40,8 @@ class ObserveLayer extends BaseLayer {
 
     final relation = exchange.relation;
     if (relation != null && relation.established) {
-      if (exchange.request!.isAcknowledged ||
-          exchange.request!.type == CoapMessageType.non) {
+      if (exchange.request.isAcknowledged ||
+          exchange.request.type == CoapMessageType.non) {
         // Transmit errors as CON
         if (!response.isSuccess) {
           response.type = CoapMessageType.con;
@@ -101,7 +101,7 @@ class ObserveLayer extends BaseLayer {
     final exchange = initialExchange;
 
     if (response.hasOption<ObserveOption>()) {
-      if (exchange.request!.isCancelled) {
+      if (exchange.request.isCancelled) {
         // The request was canceled and we no longer want notifications
         final rst = CoapEmptyMessage.newRST(response);
         // Matcher sets exchange as complete when RST is sent
@@ -233,7 +233,7 @@ class _ReregistrationContext {
   }
 
   void _timerElapsed() {
-    final request = _exchange.request!;
+    final request = _exchange.request;
     if (!request.isCancelled) {
       final refresh = CoapRequest.newGet()
         ..setOptions(request.getAllOptions())
