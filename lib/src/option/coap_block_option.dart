@@ -135,7 +135,7 @@ abstract class CoapBlockOption extends IntegerOption
 
   @override
   String toString() =>
-      'Raw value: $value, num: $num, szx: ${szx.numericValue}, more: $m';
+      '$name: Raw value: $value, num: $num, szx: ${szx.numericValue}, more: $m';
 
   static int _encode(final int num, final BlockSize szx, final bool m) {
     var value = 0;
