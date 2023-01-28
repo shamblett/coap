@@ -156,8 +156,7 @@ class OscoreOptionValue {
   final Uint8Buffer? kidContext;
 }
 
-class OscoreOption extends Option<OscoreOptionValue>
-    implements OscoreOptionClassU {
+class OscoreOption extends Option<OscoreOptionValue> with OscoreOptionClassU {
   OscoreOption(this.value);
 
   OscoreOption.parse(final Uint8Buffer bytes)

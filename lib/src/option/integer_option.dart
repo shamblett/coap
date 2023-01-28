@@ -111,7 +111,7 @@ abstract class IntegerOption extends Option<int> {
   bool get isDefault => value == type.defaultValue;
 }
 
-class ContentFormatOption extends IntegerOption implements OscoreOptionClassE {
+class ContentFormatOption extends IntegerOption with OscoreOptionClassE {
   ContentFormatOption(final int value) : super(OptionType.contentFormat, value);
 
   ContentFormatOption.parse(final Uint8Buffer bytes)
@@ -152,7 +152,7 @@ enum ObserveRegistration {
 ///
 /// [RFC 7641, section 2]: https://www.rfc-editor.org/rfc/rfc7641#section-2
 class ObserveOption extends IntegerOption
-    implements OscoreOptionClassE, OscoreOptionClassU {
+    with OscoreOptionClassE, OscoreOptionClassU {
   ObserveOption(final int value) : super(OptionType.observe, value);
 
   ObserveOption.parse(final Uint8Buffer bytes)
@@ -172,7 +172,7 @@ class ObserveOption extends IntegerOption
       ObserveRegistration.parse(value);
 }
 
-class UriPortOption extends IntegerOption implements OscoreOptionClassU {
+class UriPortOption extends IntegerOption with OscoreOptionClassU {
   UriPortOption(final int value) : super(OptionType.uriPort, value);
 
   UriPortOption.parse(final Uint8Buffer bytes)
@@ -180,21 +180,21 @@ class UriPortOption extends IntegerOption implements OscoreOptionClassU {
 }
 
 class MaxAgeOption extends IntegerOption
-    implements OscoreOptionClassE, OscoreOptionClassU {
+    with OscoreOptionClassE, OscoreOptionClassU {
   MaxAgeOption(final int value) : super(OptionType.maxAge, value);
 
   MaxAgeOption.parse(final Uint8Buffer bytes)
       : super.parse(OptionType.maxAge, bytes);
 }
 
-class HopLimitOption extends IntegerOption implements OscoreOptionClassE {
+class HopLimitOption extends IntegerOption with OscoreOptionClassE {
   HopLimitOption(final int value) : super(OptionType.hopLimit, value);
 
   HopLimitOption.parse(final Uint8Buffer bytes)
       : super.parse(OptionType.hopLimit, bytes);
 }
 
-class AcceptOption extends IntegerOption implements OscoreOptionClassE {
+class AcceptOption extends IntegerOption with OscoreOptionClassE {
   AcceptOption(final int value) : super(OptionType.accept, value);
 
   AcceptOption.parse(final Uint8Buffer bytes)
@@ -202,7 +202,7 @@ class AcceptOption extends IntegerOption implements OscoreOptionClassE {
 }
 
 class Size2Option extends IntegerOption
-    implements OscoreOptionClassE, OscoreOptionClassU {
+    with OscoreOptionClassE, OscoreOptionClassU {
   Size2Option(final int value) : super(OptionType.size2, value);
 
   Size2Option.parse(final Uint8Buffer bytes)
@@ -210,7 +210,7 @@ class Size2Option extends IntegerOption
 }
 
 class Size1Option extends IntegerOption
-    implements OscoreOptionClassE, OscoreOptionClassU {
+    with OscoreOptionClassE, OscoreOptionClassU {
   Size1Option(final int value) : super(OptionType.size1, value);
 
   Size1Option.parse(final Uint8Buffer bytes)
@@ -225,7 +225,7 @@ class NoResponseOption extends IntegerOption {
 }
 
 class OcfAcceptContentFormatVersion extends IntegerOption
-    implements OscoreOptionClassE {
+    with OscoreOptionClassE {
   OcfAcceptContentFormatVersion(final int value)
       : super(OptionType.ocfAcceptContentFormatVersion, value);
 
@@ -233,8 +233,7 @@ class OcfAcceptContentFormatVersion extends IntegerOption
       : super.parse(OptionType.ocfAcceptContentFormatVersion, bytes);
 }
 
-class OcfContentFormatVersion extends IntegerOption
-    implements OscoreOptionClassE {
+class OcfContentFormatVersion extends IntegerOption with OscoreOptionClassE {
   OcfContentFormatVersion(final int value)
       : super(OptionType.ocfContentFormatVersion, value);
 

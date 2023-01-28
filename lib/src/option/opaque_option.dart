@@ -23,11 +23,11 @@ abstract class OpaqueOption extends Option<Uint8Buffer> {
   String get valueString => hex.encode(byteValue.toList());
 }
 
-class IfMatchOption extends OpaqueOption implements OscoreOptionClassE {
+class IfMatchOption extends OpaqueOption with OscoreOptionClassE {
   IfMatchOption(final Uint8Buffer value) : super(OptionType.ifMatch, value);
 }
 
-class ETagOption extends OpaqueOption implements OscoreOptionClassE {
+class ETagOption extends OpaqueOption with OscoreOptionClassE {
   ETagOption(final Uint8Buffer value) : super(OptionType.eTag, value);
 }
 
@@ -38,7 +38,7 @@ class ETagOption extends OpaqueOption implements OscoreOptionClassE {
 ///
 /// [RFC 9175, section 2.2.1]: https://datatracker.ietf.org/doc/html/rfc9175#section-2.2.1
 class EchoOption extends OpaqueOption
-    implements OscoreOptionClassE, OscoreOptionClassU {
+    with OscoreOptionClassE, OscoreOptionClassU {
   EchoOption(final Uint8Buffer value) : super(OptionType.echo, value);
 }
 
@@ -50,7 +50,7 @@ class EchoOption extends OpaqueOption
 ///
 /// [RFC 9175, section 3.2.1]: https://datatracker.ietf.org/doc/html/rfc9175#section-3.2.1
 class RequestTagOption extends OpaqueOption
-    implements OscoreOptionClassE, OscoreOptionClassU {
+    with OscoreOptionClassE, OscoreOptionClassU {
   RequestTagOption(final Uint8Buffer value)
       : super(OptionType.requestTag, value);
 }
