@@ -11,7 +11,7 @@ class BottomLayer extends BaseLayer {
     final CoapExchange? initialExchange,
     final CoapRequest request,
   ) {
-    initialExchange?.outbox!.sendRequest(initialExchange, request);
+    initialExchange?.endpoint.sendRequest(initialExchange, request);
   }
 
   @override
@@ -19,7 +19,7 @@ class BottomLayer extends BaseLayer {
     final CoapExchange initialExchange,
     final CoapResponse response,
   ) {
-    initialExchange.outbox!.sendResponse(initialExchange, response);
+    initialExchange.endpoint.sendResponse(initialExchange, response);
   }
 
   @override
@@ -27,6 +27,6 @@ class BottomLayer extends BaseLayer {
     final CoapExchange initialExchange,
     final CoapEmptyMessage message,
   ) {
-    initialExchange.outbox!.sendEmptyMessage(initialExchange, message);
+    initialExchange.endpoint.sendEmptyMessage(initialExchange, message);
   }
 }
