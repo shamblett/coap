@@ -594,14 +594,15 @@ abstract class CoapMessage {
     timedOutHook = msg.timedOutHook;
   }
 
-  String get _formattedOptions {
+  String? get _formattedOptions {
     final options = getAllOptions();
 
     if (options.isEmpty) {
-      return '';
+      return null;
     }
 
-    const optionDelimiter = ',\n  ';
+    const indent = '\n  ';
+    const optionDelimiter = ',$indent';
 
     final formattedOptions = options
         .groupListsBy((final option) => option.type)
@@ -613,15 +614,28 @@ abstract class CoapMessage {
         )
         .join(optionDelimiter);
 
-    return 'Options: [\n    $formattedOptions\n],\n';
+    return 'Options: [$indent$formattedOptions\n]';
   }
 
   @override
-  String toString() => '\nType: $type, Code: $codeString, '
-      'Id: $id, '
-      "Token: '$tokenString',\n"
-      '$_formattedOptions'
-      'Payload: $payloadString';
+  String toString() {
+    final elements = ['Type: $type', 'Id: $id'];
+
+    if (token != null) {
+      elements.add('Token: $tokenString');
+    }
+
+    final formattedOptions = _formattedOptions;
+    if (formattedOptions != null) {
+      elements.add(formattedOptions);
+    }
+
+    if (payload != null) {
+      elements.add('Payload: $payloadString');
+    }
+
+    return '\n${elements.join(',\n')}\n';
+  }
 
   /// Serializes this CoAP message from the UDP message format.
   ///
