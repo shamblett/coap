@@ -93,7 +93,7 @@ Uint8Buffer serializeUdpMessage(final CoapMessage message) {
     lastOptionNumber = optNum;
   }
 
-  if (message.payload != null && message.payload!.isNotEmpty) {
+  if (message.payload.isNotEmpty) {
     // If payload is present and of non-zero length, it is prefixed by
     // an one-byte Payload Marker (0xFF) which indicates the end of
     // options and the start of the payload

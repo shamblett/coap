@@ -57,7 +57,7 @@ class ReliabilityLayer extends BaseLayer {
   ) {
     final mt = response!.type;
     if (mt == CoapMessageType.ack || mt == CoapMessageType.rst) {
-      response.id = exchange.currentRequest!.id;
+      response.id = exchange.currentRequest.id;
     }
 
     if (response.type == CoapMessageType.con) {
@@ -83,29 +83,38 @@ class ReliabilityLayer extends BaseLayer {
     final CoapExchange exchange,
     final CoapRequest request,
   ) {
-    if (request.duplicate) {
-      // Request is a duplicate, so resend ACK, RST or response
-      if (exchange.currentResponse != null) {
-        super.sendResponse(exchange, exchange.currentResponse!);
-      } else if (exchange.currentRequest != null) {
-        if (exchange.currentRequest!.isAcknowledged) {
-          final ack = CoapEmptyMessage.newACK(request);
-          sendEmptyMessage(exchange, ack);
-        } else if (exchange.currentRequest!.isRejected) {
-          final rst = CoapEmptyMessage.newRST(request);
-          sendEmptyMessage(exchange, rst);
-        } else {
-          // The server has not yet decided, whether to acknowledge or
-          // reject the request. We know for sure that the server has
-          // received the request though and can drop this duplicate here.
-        }
-      } else {
-        // Lost the current request. The server has not yet decided what to do.
-      }
-    } else {
-      // Request is not a duplicate
+    if (!request.duplicate) {
       exchange.currentRequest = request;
       super.receiveRequest(exchange, request);
+      return;
+    }
+
+    _resendServerMessages(exchange, request);
+  }
+
+  /// Resends ACK, RST or response messages for duplicated requests.
+  ///
+  /// If the server has not yet decided whether to acknowledge or
+  /// reject the request, it will simply drop the duplicated request.
+  void _resendServerMessages(
+    final CoapExchange exchange,
+    final CoapRequest request,
+  ) {
+    if (exchange.currentResponse != null) {
+      super.sendResponse(exchange, exchange.currentResponse!);
+      return;
+    }
+
+    final currentRequest = exchange.currentRequest;
+    if (currentRequest.isAcknowledged) {
+      final ack = CoapEmptyMessage.newACK(request);
+      sendEmptyMessage(exchange, ack);
+      return;
+    }
+
+    if (currentRequest.isRejected) {
+      final rst = CoapEmptyMessage.newRST(request);
+      sendEmptyMessage(exchange, rst);
     }
   }
 
@@ -120,12 +129,11 @@ class ReliabilityLayer extends BaseLayer {
     final ctx =
         exchange.remove(transmissionContextKey) as _TransmissionContext?;
     if (ctx != null) {
-      exchange.currentRequest!.isAcknowledged = true;
+      exchange.currentRequest.isAcknowledged = true;
       ctx.cancel();
     }
 
-    if (response.type == CoapMessageType.con &&
-        !exchange.request!.isCancelled) {
+    if (response.type == CoapMessageType.con && !exchange.request.isCancelled) {
       final ack = CoapEmptyMessage.newACK(response);
       sendEmptyMessage(exchange, ack);
     }
@@ -145,14 +153,14 @@ class ReliabilityLayer extends BaseLayer {
     switch (message.type) {
       case CoapMessageType.ack:
         if (exchange.origin == CoapOrigin.local) {
-          exchange.currentRequest!.isAcknowledged = true;
+          exchange.currentRequest.isAcknowledged = true;
         } else {
           exchange.currentResponse!.isAcknowledged = true;
         }
         break;
       case CoapMessageType.rst:
         if (exchange.origin == CoapOrigin.local) {
-          exchange.currentRequest!.isRejected = true;
+          exchange.currentRequest.isRejected = true;
         } else {
           exchange.currentResponse!.isRejected = true;
         }

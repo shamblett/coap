@@ -56,8 +56,8 @@ abstract class CoapExchangeEvent {
 
   @override
   String toString() =>
-      '$runtimeType:\nExchange for request ${exchange.request?.id} '
-      "(token '${exchange.request?.tokenString}')";
+      '$runtimeType:\nExchange for request ${exchange.request.id} '
+      "(token '${exchange.request.tokenString}')";
 }
 
 /// Acknowledged event

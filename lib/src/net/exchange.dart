@@ -24,7 +24,13 @@ import 'outbox.dart';
 /// i.e., has reached the retransmission limit without being acknowledged.
 class CoapExchange {
   /// Construction
-  CoapExchange(this.request, this._origin, {required this.namespace}) {
+  CoapExchange(
+    this.request,
+    this._origin,
+    this.endpoint, {
+    required this.namespace,
+    this.originalMulticastRequest,
+  }) : currentRequest = request {
     _eventBus = CoapEventBus(namespace: namespace);
     _timestamp = DateTime.now();
   }
@@ -40,13 +46,13 @@ class CoapExchange {
   CoapOrigin get origin => _origin;
 
   /// The request
-  CoapRequest? request;
+  CoapRequest request;
 
   /// The request
-  CoapRequest? originalMulticastRequest;
+  final CoapRequest? originalMulticastRequest;
 
   /// The current request
-  CoapRequest? currentRequest;
+  CoapRequest currentRequest;
 
   /// The response
   CoapResponse? response;
@@ -55,7 +61,7 @@ class CoapExchange {
   CoapResponse? currentResponse;
 
   /// The endpoint which has created and processed this exchange.
-  Endpoint? endpoint;
+  final Endpoint endpoint;
 
   DateTime? _timestamp;
 
@@ -105,7 +111,7 @@ class CoapExchange {
   Outbox? _outbox;
 
   /// Outbox
-  Outbox? get outbox => _outbox ?? endpoint?.outbox;
+  Outbox? get outbox => _outbox ?? endpoint.outbox;
 
   set outbox(final Outbox? value) => _outbox = value;
 
@@ -113,9 +119,9 @@ class CoapExchange {
   /// Sends an RST back to the client.
   void sendReject() {
     assert(_origin == CoapOrigin.remote, 'Origin must be remote');
-    request!.isRejected = true;
-    final rst = CoapEmptyMessage.newRST(request!);
-    endpoint!.sendEpEmptyMessage(this, rst);
+    request.isRejected = true;
+    final rst = CoapEmptyMessage.newRST(request);
+    endpoint.sendEpEmptyMessage(this, rst);
   }
 
   /// Accept this exchange and therefore the request. Only if the request's
@@ -123,19 +129,19 @@ class CoapExchange {
   /// yet, it sends an ACK to the client.
   void sendAccept() {
     assert(_origin == CoapOrigin.remote, 'Origin must be remote');
-    if (request!.type == CoapMessageType.con && !request!.isAcknowledged) {
-      request!.isAcknowledged = true;
-      final ack = CoapEmptyMessage.newACK(request!);
-      endpoint!.sendEpEmptyMessage(this, ack);
+    if (request.type == CoapMessageType.con && !request.isAcknowledged) {
+      request.isAcknowledged = true;
+      final ack = CoapEmptyMessage.newACK(request);
+      endpoint.sendEpEmptyMessage(this, ack);
     }
   }
 
   /// Sends the specified response over the same endpoint
   /// as the request has arrived.
   void sendResponse(final CoapResponse resp) {
-    resp.destination = request!.source;
+    resp.destination = request.source;
     response = resp;
-    endpoint!.sendEpResponse(this, resp);
+    endpoint.sendEpResponse(this, resp);
   }
 
   /// Fire the reregistering event

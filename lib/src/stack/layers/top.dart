@@ -14,23 +14,27 @@ class CoapStackTopLayer extends BaseLayer {
     final CoapExchange? initialExchange,
     final CoapRequest request,
   ) {
-    var exchange = initialExchange;
+    final CoapExchange exchange;
 
-    if (exchange == null) {
+    if (initialExchange == null) {
+      final endpoint = request.endpoint!;
       if (request.isMulticast) {
         exchange = CoapMulticastExchange(
           request,
           CoapOrigin.local,
+          endpoint,
           namespace: request.eventBus!.namespace,
         );
       } else {
         exchange = CoapExchange(
           request,
           CoapOrigin.local,
+          endpoint,
           namespace: request.eventBus!.namespace,
         );
       }
-      exchange.endpoint = request.endpoint;
+    } else {
+      exchange = initialExchange;
     }
     exchange.request = request;
     super.sendRequest(exchange, request);
@@ -51,7 +55,7 @@ class CoapStackTopLayer extends BaseLayer {
     final CoapRequest request,
   ) {
     // If there is no BlockwiseLayer we still have to set it
-    initialExchange.request ??= request;
+    initialExchange.request = request;
   }
 
   @override
@@ -61,8 +65,6 @@ class CoapStackTopLayer extends BaseLayer {
   ) {
     if (response.hasOption<Block2Option>() ||
         response.hasOption<Block1Option>()) {
-      initialExchange.request!.token ??= response.token;
-
       super.receiveResponse(initialExchange, response);
       return;
     }
@@ -72,13 +74,11 @@ class CoapStackTopLayer extends BaseLayer {
       initialExchange.complete = true;
     }
 
-    if (initialExchange.originalMulticastRequest != null) {
+    final originalMulticastRequest = initialExchange.originalMulticastRequest;
+    if (originalMulticastRequest != null) {
       // Track block2 responses across exchanges
-      response.multicastToken = initialExchange.originalMulticastRequest!.token;
+      response.multicastToken = originalMulticastRequest.token;
     }
-
-    // block2 requests only have token set on their blocks
-    initialExchange.request!.token ??= response.token;
 
     initialExchange.fireRespond(response);
     super.receiveResponse(initialExchange, response);

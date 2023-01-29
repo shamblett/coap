@@ -43,7 +43,7 @@ void main() {
     expect(message.timestamp, isNull);
     expect(message.maxRetransmit, 0);
     expect(message.ackTimeout, 0);
-    expect(message.payload, isNull);
+    expect(message.payload, isEmpty);
     expect(message.payloadSize, 0);
     expect(message.payloadString, '');
   });

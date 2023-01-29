@@ -39,7 +39,7 @@ class CoapObservingEndpoint {
   /// Finds the observe relation by token.
   CoapObserveRelation? getObserveRelation(final Uint8Buffer token) =>
       _relations.firstWhereOrNull(
-        (final relation) => token.equals(relation.exchange.request!.token!),
+        (final relation) => token.equals(relation.exchange.request.token!),
       );
 
   /// Cancels all observe relations that this endpoint has established with

@@ -55,7 +55,7 @@ class CoapObserveRelation {
   CoapResponse? nextControlNotification;
 
   /// Key
-  String get key => '$source#${_exchange.request?.tokenString}';
+  String get key => '$source#${_exchange.request.tokenString}';
 
   /// A value indicating if this relation has been established
   bool established;
