@@ -22,10 +22,10 @@ abstract class EmptyOption extends Option<void> {
   void get value => {};
 }
 
-class IfNoneMatchOption extends EmptyOption implements OscoreOptionClassE {
+class IfNoneMatchOption extends EmptyOption with OscoreOptionClassE {
   IfNoneMatchOption() : super(OptionType.ifNoneMatch);
 }
 
-class EdhocOption extends EmptyOption implements OscoreOptionClassU {
+class EdhocOption extends EmptyOption with OscoreOptionClassU {
   EdhocOption() : super(OptionType.edhoc);
 }

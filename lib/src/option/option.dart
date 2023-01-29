@@ -87,7 +87,7 @@ abstract class Option<T> {
   bool get valid => length >= type.minLength && length <= type.maxLength;
 }
 
-/// Interface for an Oscore class E option (encrypted and integrity protected).
+/// Mixin for an Oscore class E option (encrypted and integrity protected).
 /// See [RFC 8613, section 4.1.1].
 ///
 /// Also applies to all options that are unknown or or for which OSCORE
@@ -96,9 +96,7 @@ abstract class Option<T> {
 /// [RFC 8613, section 4.1.1]: https://www.rfc-editor.org/rfc/rfc8613.html#section-4.1.1
 /// [RFC 8613, section 4.1]: https://www.rfc-editor.org/rfc/rfc8613.html#section-4.1
 /// https://www.rfc-editor.org/rfc/rfc8613.html#section-4.1
-abstract class OscoreOptionClassE {
-  OscoreOptionClassE._();
-}
+mixin OscoreOptionClassE {}
 
 /// Interface for an Oscore class I option (integrity protected only). See
 /// [RFC 8613, section 4.1.2].
@@ -107,17 +105,13 @@ abstract class OscoreOptionClassE {
 /// operations.
 ///
 /// [RFC 8613, section 4.1.2]: https://www.rfc-editor.org/rfc/rfc8613.html#section-4.1.2
-abstract class OscoreOptionClassI {
-  OscoreOptionClassI._();
-}
+mixin OscoreOptionClassI {}
 
-/// Interface for an Oscore class U option (unprotected). See
+/// Mixin for an Oscore class U option (unprotected). See
 /// [RFC 8613, section 4.1.2].
 ///
 /// Outer option message fields (Class U or I) are used to support proxy
 /// operations.
 ///
 /// [RFC 8613, section 4.1.2]: https://www.rfc-editor.org/rfc/rfc8613.html#section-4.1.2
-abstract class OscoreOptionClassU {
-  OscoreOptionClassU._();
-}
+mixin OscoreOptionClassU {}

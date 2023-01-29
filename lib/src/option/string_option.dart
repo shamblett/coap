@@ -59,7 +59,7 @@ abstract class PathOption extends StringOption {
   String get pathSegment => "/${value.replaceAll('/', '%2F')}";
 }
 
-class LocationPathOption extends PathOption implements OscoreOptionClassE {
+class LocationPathOption extends PathOption with OscoreOptionClassE {
   LocationPathOption(final String value)
       : super(OptionType.locationPath, value);
 
@@ -67,28 +67,28 @@ class LocationPathOption extends PathOption implements OscoreOptionClassE {
       : super.parse(OptionType.locationPath, bytes);
 }
 
-class UriHostOption extends StringOption implements OscoreOptionClassU {
+class UriHostOption extends StringOption with OscoreOptionClassU {
   UriHostOption(final String value) : super(OptionType.uriHost, value);
 
   UriHostOption.parse(final Uint8Buffer bytes)
       : super.parse(OptionType.uriHost, bytes);
 }
 
-class UriPathOption extends PathOption implements OscoreOptionClassE {
+class UriPathOption extends PathOption with OscoreOptionClassE {
   UriPathOption(final String value) : super(OptionType.uriPath, value);
 
   UriPathOption.parse(final Uint8Buffer bytes)
       : super.parse(OptionType.uriPath, bytes);
 }
 
-class UriQueryOption extends QueryOption implements OscoreOptionClassE {
+class UriQueryOption extends QueryOption with OscoreOptionClassE {
   UriQueryOption(final String value) : super(OptionType.uriQuery, value);
 
   UriQueryOption.parse(final Uint8Buffer bytes)
       : super.parse(OptionType.uriQuery, bytes);
 }
 
-class LocationQueryOption extends QueryOption implements OscoreOptionClassE {
+class LocationQueryOption extends QueryOption with OscoreOptionClassE {
   LocationQueryOption(final String value)
       : super(OptionType.locationQuery, value);
 
@@ -96,14 +96,14 @@ class LocationQueryOption extends QueryOption implements OscoreOptionClassE {
       : super.parse(OptionType.locationQuery, bytes);
 }
 
-class ProxyUriOption extends StringOption implements OscoreOptionClassU {
+class ProxyUriOption extends StringOption with OscoreOptionClassU {
   ProxyUriOption(final String value) : super(OptionType.proxyUri, value);
 
   ProxyUriOption.parse(final Uint8Buffer bytes)
       : super.parse(OptionType.proxyUri, bytes);
 }
 
-class ProxySchemeOption extends StringOption implements OscoreOptionClassU {
+class ProxySchemeOption extends StringOption with OscoreOptionClassU {
   ProxySchemeOption(final String value) : super(OptionType.proxyUri, value);
 
   ProxySchemeOption.parse(final Uint8Buffer bytes)
