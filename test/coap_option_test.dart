@@ -141,18 +141,9 @@ void main() {
       expect(toBytes(BlockSize.blockSize16, 0, m: false), <int>[]);
       expect(toBytes(BlockSize.blockSize16, 1, m: false), [0x10]);
       expect(toBytes(BlockSize.blockSize16, 15, m: false), [0xf0]);
-      expect(
-        toBytes(BlockSize.blockSize16, 16, m: false),
-        [0x01, 0x00].reversed,
-      );
-      expect(
-        toBytes(BlockSize.blockSize16, 79, m: false),
-        [0x04, 0xf0].reversed,
-      );
-      expect(
-        toBytes(BlockSize.blockSize16, 113, m: false),
-        [0x07, 0x10].reversed,
-      );
+      expect(toBytes(BlockSize.blockSize16, 16, m: false), [0x01, 0x00]);
+      expect(toBytes(BlockSize.blockSize16, 79, m: false), [0x04, 0xf0]);
+      expect(toBytes(BlockSize.blockSize16, 113, m: false), [0x07, 0x10]);
 
       expect(
         () => toBytes(BlockSize.blockSize16, 26387, m: false),

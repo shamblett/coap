@@ -15,7 +15,6 @@ import '../../coap_constants.dart';
 import '../../coap_message.dart';
 import '../../coap_message_type.dart';
 import '../../coap_request.dart';
-import '../../option/coap_option_type.dart';
 import '../../option/integer_option.dart';
 import '../../option/option.dart';
 import '../../option/string_option.dart';
@@ -89,13 +88,7 @@ Uint8Buffer serializeUdpMessage(final CoapMessage message) {
       writer.write(optionLength - 269, 16);
     }
 
-    // Write option value, reverse byte order for numeric options
-    if (opt.type.optionFormat == OptionFormat.integer) {
-      final reversedBuffer = Uint8Buffer()..addAll(opt.byteValue.reversed);
-      writer.writeBytes(reversedBuffer);
-    } else {
-      writer.writeBytes(opt.byteValue);
-    }
+    writer.writeBytes(opt.byteValue);
 
     lastOptionNumber = optNum;
   }

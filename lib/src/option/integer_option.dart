@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_redundant_argument_values
+
 import 'dart:typed_data';
 
 import 'package:typed_data/typed_data.dart';
@@ -6,9 +8,32 @@ import '../coap_media_type.dart';
 import 'coap_option_type.dart';
 import 'option.dart';
 
+/// The byte order used when converting to and from binary integer option
+/// values.
+///
+/// As originally specified in [RFC 1700], a big-endian order is used for the
+/// Internet protocol suite.
+///
+/// [RFC 1700]: https://www.rfc-editor.org/rfc/rfc1700
+const _networkByteOrder = Endian.big;
+
+/// Option format for non-negative integer values represented in network byte
+/// order.
+///
+/// See [RFC 7252, section 3.2] for more information.
+///
+/// [RFC 7252, section 3.2]: https://www.rfc-editor.org/rfc/rfc7252#section-3.2
 abstract class IntegerOption extends Option<int> {
+  /// Create an [IntegerOption] of a specified [type], encoding the given
+  /// [value].
+  ///
+  /// The [value] will be encoded using network byte order.
   IntegerOption(this.type, this.value) : byteValue = _bytesFromValue(value);
 
+  /// Create an [IntegerOption] of a specified [type], parsing the given
+  /// encoded [byteValue].
+  ///
+  /// The [byteValue] needs to be encoded in network byte order.
   IntegerOption.parse(this.type, this.byteValue)
       : value = _valueFromBytes(byteValue);
 
@@ -24,35 +49,35 @@ abstract class IntegerOption extends Option<int> {
   final int value;
 
   static int _valueFromBytes(final Uint8Buffer byteValue) {
-    // TODO(JKRhb): The handling of endianness should be revisited here.
     switch (byteValue.length) {
       case 0:
         return 0;
       case 1:
         return byteValue[0];
       case 2:
-        return ByteData.view(byteValue.buffer).getUint16(0, Endian.host);
+        return ByteData.view(byteValue.buffer).getUint16(0, _networkByteOrder);
       case 3:
       case 4:
         final paddedBytes = Uint8List(4)..setAll(0, byteValue);
-        return ByteData.view(paddedBytes.buffer).getUint32(0, Endian.host);
+        return ByteData.view(paddedBytes.buffer)
+            .getUint32(0, _networkByteOrder);
       default:
         final paddedBytes = Uint8List(8)..setAll(0, byteValue);
-        return ByteData.view(paddedBytes.buffer).getUint64(0, Endian.host);
+        return ByteData.view(paddedBytes.buffer)
+            .getUint64(0, _networkByteOrder);
     }
   }
 
   static Uint8Buffer _bytesFromValue(final int value) {
-    // TODO(JKRhb): The handling of endianness should be revisited here.
-    ByteData data;
+    final ByteData data;
     if (value < 0 || value >= (1 << 32)) {
-      data = ByteData(8)..setUint64(0, value);
+      data = ByteData(8)..setUint64(0, value, _networkByteOrder);
     } else if (value < (1 << 8)) {
       data = ByteData(1)..setUint8(0, value);
     } else if (value < (1 << 16)) {
-      data = ByteData(2)..setUint16(0, value, Endian.host);
+      data = ByteData(2)..setUint16(0, value, _networkByteOrder);
     } else {
-      data = ByteData(4)..setUint32(0, value, Endian.host);
+      data = ByteData(4)..setUint32(0, value, _networkByteOrder);
     }
 
     return _trimData(data);
