@@ -14,7 +14,6 @@ import '../observe/coap_observe_relation.dart';
 import '../option/coap_block_option.dart';
 import '../stack/blockwise_status.dart';
 import 'endpoint.dart';
-import 'outbox.dart';
 
 /// Represents the complete state of an exchange of one request
 /// and one or more responses. The lifecycle of an exchange ends
@@ -107,13 +106,6 @@ class CoapExchange {
       _eventBus.fire(CoapCompletedEvent(this));
     }
   }
-
-  Outbox? _outbox;
-
-  /// Outbox
-  Outbox? get outbox => _outbox ?? endpoint.outbox;
-
-  set outbox(final Outbox? value) => _outbox = value;
 
   /// Reject this exchange and therefore the request.
   /// Sends an RST back to the client.
