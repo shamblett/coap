@@ -629,9 +629,7 @@ abstract class CoapMessage {
       elements.add(formattedOptions);
     }
 
-    if (payload != null) {
-      elements.add('Payload: $payloadString');
-    }
+    elements.add('Payload: $payloadString');
 
     return '\n${elements.join(',\n')}\n';
   }

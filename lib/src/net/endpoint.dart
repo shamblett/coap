@@ -20,10 +20,9 @@ import '../network/coap_inetwork.dart';
 import '../stack/layer_stack.dart';
 import 'exchange.dart';
 import 'matcher.dart';
-import 'outbox.dart';
 
 /// EndPoint encapsulates the stack that executes the CoAP protocol.
-class Endpoint implements Outbox {
+class Endpoint {
   /// Instantiates a new endpoint with the
   /// specified channel and configuration.
   Endpoint(this._socket, this._config, {required final String namespace})
@@ -59,8 +58,6 @@ class Endpoint implements Outbox {
   final CoapMatcher _matcher;
 
   final CoapINetwork _socket;
-
-  Outbox get outbox => this;
 
   void start() {
     try {
@@ -157,7 +154,6 @@ class Endpoint implements Outbox {
     }
   }
 
-  @override
   void sendRequest(
     final CoapExchange exchange,
     final CoapRequest request,
@@ -168,7 +164,6 @@ class Endpoint implements Outbox {
     _sendMessage(request);
   }
 
-  @override
   void sendResponse(final CoapExchange exchange, final CoapResponse response) {
     _matcher.sendResponse(exchange, response);
     _eventBus.fire(CoapSendingResponseEvent(response));
@@ -176,7 +171,6 @@ class Endpoint implements Outbox {
     _sendMessage(response);
   }
 
-  @override
   void sendEmptyMessage(
     final CoapExchange exchange,
     final CoapEmptyMessage message,
