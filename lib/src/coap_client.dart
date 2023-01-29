@@ -570,24 +570,31 @@ class CoapClient {
     }
   }
 
+  Future<Endpoint> _initializeEndpoint() async {
+    final endpoint = _endpoint;
+    if (endpoint != null) {
+      return endpoint;
+    }
+
+    final initializedEndpoint = Endpoint(
+      _config,
+      _pskCredentialsCallback,
+      namespace: _eventBus.namespace,
+    );
+    await initializedEndpoint.start();
+
+    _endpoint = initializedEndpoint;
+    return initializedEndpoint;
+  }
+
   Future<void> _prepare(final CoapRequest request) async {
     request
       ..timestamp = DateTime.now()
       ..eventBus = _eventBus;
 
-    await _lock.synchronized(() async {
-      // Set endpoint if missing
-      if (_endpoint == null) {
-        _endpoint = Endpoint(
-          _config,
-          _pskCredentialsCallback,
-          namespace: _eventBus.namespace,
-        );
-        await _endpoint!.start();
-      }
-    });
+    final endpoint = await _initializeEndpoint();
 
-    request.endpoint = _endpoint;
+    request.endpoint = endpoint;
   }
 
   /// Wait for a response.
