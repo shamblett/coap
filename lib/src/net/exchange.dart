@@ -30,7 +30,7 @@ class CoapExchange {
     this.endpoint, {
     required this.namespace,
     this.originalMulticastRequest,
-  }) {
+  }) : currentRequest = request {
     _eventBus = CoapEventBus(namespace: namespace);
     _timestamp = DateTime.now();
   }
@@ -52,7 +52,7 @@ class CoapExchange {
   final CoapRequest? originalMulticastRequest;
 
   /// The current request
-  CoapRequest? currentRequest;
+  CoapRequest currentRequest;
 
   /// The response
   CoapResponse? response;

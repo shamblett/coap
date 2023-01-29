@@ -57,7 +57,7 @@ class ReliabilityLayer extends BaseLayer {
   ) {
     final mt = response!.type;
     if (mt == CoapMessageType.ack || mt == CoapMessageType.rst) {
-      response.id = exchange.currentRequest!.id;
+      response.id = exchange.currentRequest.id;
     }
 
     if (response.type == CoapMessageType.con) {
@@ -87,11 +87,11 @@ class ReliabilityLayer extends BaseLayer {
       // Request is a duplicate, so resend ACK, RST or response
       if (exchange.currentResponse != null) {
         super.sendResponse(exchange, exchange.currentResponse!);
-      } else if (exchange.currentRequest != null) {
-        if (exchange.currentRequest!.isAcknowledged) {
+      } else {
+        if (exchange.currentRequest.isAcknowledged) {
           final ack = CoapEmptyMessage.newACK(request);
           sendEmptyMessage(exchange, ack);
-        } else if (exchange.currentRequest!.isRejected) {
+        } else if (exchange.currentRequest.isRejected) {
           final rst = CoapEmptyMessage.newRST(request);
           sendEmptyMessage(exchange, rst);
         } else {
@@ -99,8 +99,6 @@ class ReliabilityLayer extends BaseLayer {
           // reject the request. We know for sure that the server has
           // received the request though and can drop this duplicate here.
         }
-      } else {
-        // Lost the current request. The server has not yet decided what to do.
       }
     } else {
       // Request is not a duplicate
@@ -120,7 +118,7 @@ class ReliabilityLayer extends BaseLayer {
     final ctx =
         exchange.remove(transmissionContextKey) as _TransmissionContext?;
     if (ctx != null) {
-      exchange.currentRequest!.isAcknowledged = true;
+      exchange.currentRequest.isAcknowledged = true;
       ctx.cancel();
     }
 
@@ -144,14 +142,14 @@ class ReliabilityLayer extends BaseLayer {
     switch (message.type) {
       case CoapMessageType.ack:
         if (exchange.origin == CoapOrigin.local) {
-          exchange.currentRequest!.isAcknowledged = true;
+          exchange.currentRequest.isAcknowledged = true;
         } else {
           exchange.currentResponse!.isAcknowledged = true;
         }
         break;
       case CoapMessageType.rst:
         if (exchange.origin == CoapOrigin.local) {
-          exchange.currentRequest!.isRejected = true;
+          exchange.currentRequest.isRejected = true;
         } else {
           exchange.currentResponse!.isRejected = true;
         }

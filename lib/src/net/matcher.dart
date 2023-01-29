@@ -93,7 +93,7 @@ class CoapMatcher {
 
     // Blockwise transfers are identified by token
     if (response.hasOption<Block2Option>()) {
-      final request = exchange.currentRequest!;
+      final request = exchange.currentRequest;
       // Observe notifications only send the first block,
       // hence do not store them as ongoing.
       if (exchange.responseBlockStatus != null &&
@@ -223,7 +223,7 @@ class CoapMatcher {
       if (prev != null) {
         response.duplicate = true;
       } else {
-        _exchangesById.remove(exchange.currentRequest!.id);
+        _exchangesById.remove(exchange.currentRequest.id);
       }
 
       return exchange;
@@ -258,9 +258,9 @@ class CoapMatcher {
 
     if (exchange.origin == CoapOrigin.local) {
       // This endpoint created the Exchange by issuing a request
-      _exchangesByToken.remove(exchange.currentRequest!.tokenString);
+      _exchangesByToken.remove(exchange.currentRequest.tokenString);
       // In case an empty ACK was lost
-      _exchangesById.remove(exchange.currentRequest!.id);
+      _exchangesById.remove(exchange.currentRequest.id);
     } else // Origin.Remote
     {
       // This endpoint created the Exchange to respond a request
@@ -271,9 +271,8 @@ class CoapMatcher {
       }
 
       final request = exchange.currentRequest;
-      if (request != null &&
-          (request.hasOption<Block1Option>() ||
-              (response != null && response.hasOption<Block2Option>()))) {
+      if (request.hasOption<Block1Option>() ||
+          (response != null && response.hasOption<Block2Option>())) {
         _ongoingExchanges.remove(request.tokenString);
       }
 

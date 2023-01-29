@@ -36,7 +36,7 @@ class TokenLayer extends BaseLayer {
   ) {
     // A response must have the same token as the request it belongs to. If
     // the token is empty, we must use a byte array of length 0.
-    response.token ??= initialExchange.currentRequest!.token;
+    response.token ??= initialExchange.currentRequest.token;
     super.sendResponse(initialExchange, response);
   }
 
@@ -45,7 +45,7 @@ class TokenLayer extends BaseLayer {
     final CoapExchange initialExchange,
     final CoapRequest request,
   ) {
-    if (initialExchange.currentRequest!.token == null) {
+    if (initialExchange.currentRequest.token == null) {
       throw StateError(
         "Received requests's token cannot be null, use "
         'byte[0] for empty tokens',
