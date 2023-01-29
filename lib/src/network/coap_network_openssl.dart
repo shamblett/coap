@@ -142,7 +142,7 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
         hostname: _hostname,
         timeout: CoapINetwork.initTimeout,
       );
-    } on TimeoutException {
+    } on Exception {
       await close();
       rethrow;
     }
