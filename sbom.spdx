@@ -1,148 +1,138 @@
-SPDXVersion: SPDX-2.2DataLicense: CC0-1.0SPDXID: SPDXRef-DOCUMENTDocumentName: coapDocumentNamespace: https://pub.dev/packages/coapLicenseListVersion: 3.8Creator: Tool: https://pub.dev/packages/sbomCreated: 2022-12-24T09:50:26Z
+SPDXVersion: SPDX-2.2DataLicense: CC0-1.0SPDXID: SPDXRef-DOCUMENTDocumentName: coapDocumentNamespace: https://pub.dev/packages/coapLicenseListVersion: 3.8Creator: Tool: https://pub.dev/packages/sbomCreated: 2023-01-29T09:43:11Z
 
-PackageName: coapSPDXID: SPDXRef-Package-coapPackageVersion: 7.0.0PackageFileName: coapPackageSupplier: NOASSERTIONPackageOriginator: NOASSERTIONPackageDownloadLocation: https://pub.dev/packages/coapFilesAnalyzed: truePackageVerificationCode: 73ca6aa69d3f318698c6ec0866b72ab3a82feddcPackageHomePage: https://pub.dev/packages/coapPackageLicenseConcluded: MITPackageLicenseInfoFromFiles: NOASSERTIONPackageLicenseDeclared: NOASSERTIONPackageCopyrightText: NOASSERTIONPackageSummary: <text>A CoAP library for Dart. A full implementation of an IPV4/6 CoAP client</text>
+PackageName: coapSPDXID: SPDXRef-Package-coapPackageVersion: 8.0.0PackageFileName: coapPackageSupplier: NOASSERTIONPackageOriginator: NOASSERTIONPackageDownloadLocation: https://pub.dev/packages/coapFilesAnalyzed: truePackageVerificationCode: 6475034abbb0a53dd80b5e6fb1fe2bb61048d3afPackageHomePage: https://pub.dev/packages/coapPackageLicenseConcluded: MITPackageLicenseInfoFromFiles: NOASSERTIONPackageLicenseDeclared: NOASSERTIONPackageCopyrightText: NOASSERTIONPackageSummary: <text>A CoAP library for Dart. A full implementation of an IPV4/6 CoAP client</text>
 
-FileName: /lib/builder.dartSPDXID: SPDXRef-builder-0FileType: SOURCEFileChecksum: SHA1: 402b005402faaa897099277b617463e7917516b1LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/builder.dartSPDXID: SPDXRef-builder-0FileType: SOURCEFileChecksum: SHA1: 816aa6904c0da36ccd152e731009a58b63fbb5dbLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/coap.dartSPDXID: SPDXRef-coap-1FileType: SOURCEFileChecksum: SHA1: 6c03330aa7a0716283ea4113336db9b2b6644e07LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/coap.dartSPDXID: SPDXRef-coap-1FileType: SOURCEFileChecksum: SHA1: 402b005402faaa897099277b617463e7917516b1LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/config/coap_config_all.dartSPDXID: SPDXRef-coap-config-all-2FileType: SOURCEFileChecksum: SHA1: d29e154ce8b794a12be7865ec7ad9fdc1765d2f5LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/config/coap_config_all.dartSPDXID: SPDXRef-coap-config-all-2FileType: SOURCEFileChecksum: SHA1: 6c03330aa7a0716283ea4113336db9b2b6644e07LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/config/coap_config_default.dartSPDXID: SPDXRef-coap-config-default-3FileType: SOURCEFileChecksum: SHA1: 14f6951c0ae1eb631fefb8888367be0d35cd1a92LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/config/coap_config_default.dartSPDXID: SPDXRef-coap-config-default-3FileType: SOURCEFileChecksum: SHA1: d477aaa787b60f7d50226ffb71716ee59c1faa4dLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/config/coap_config_openssl.dartSPDXID: SPDXRef-coap-config-openssl-4FileType: SOURCEFileChecksum: SHA1: 7df4619793f9b2619264eeea73689e98db1d5748LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/coap_client.dartSPDXID: SPDXRef-coap-client-4FileType: SOURCEFileChecksum: SHA1: c88efb3050fb7abd2b26d3c77775dde0b0549a99LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/config/coap_config_tinydtls.dartSPDXID: SPDXRef-coap-config-tinydtls-5FileType: SOURCEFileChecksum: SHA1: 02b28dde7da6d8c1262697c16129ecd5d6c641dfLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/coap_code.dartSPDXID: SPDXRef-coap-code-5FileType: SOURCEFileChecksum: SHA1: fb0da9f20fb96acc36d933c8d11e20b50b699d1fLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/coap_client.dartSPDXID: SPDXRef-coap-client-6FileType: SOURCEFileChecksum: SHA1: 8100b19d5baf3e35df3a2200636af6863371be71LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/coap_config.dartSPDXID: SPDXRef-coap-config-6FileType: SOURCEFileChecksum: SHA1: 2f1417eb82a3400f75225cf8dcbe0ffc8fe2b302LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/coap_code.dartSPDXID: SPDXRef-coap-code-7FileType: SOURCEFileChecksum: SHA1: b0ca61a3e824f18f23524ec9292a55d09ba55a89LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/coap_constants.dartSPDXID: SPDXRef-coap-constants-7FileType: SOURCEFileChecksum: SHA1: f806889b203ad26342391405cea51978309ddd0eLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/coap_config.dartSPDXID: SPDXRef-coap-config-8FileType: SOURCEFileChecksum: SHA1: abedcb728f8e2ff9c8bd051a2edc2551f70b33beLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/coap_empty_message.dartSPDXID: SPDXRef-coap-empty-message-8FileType: SOURCEFileChecksum: SHA1: db7756b6779c8a803a6162eee7bf4eb7caaf3589LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/coap_constants.dartSPDXID: SPDXRef-coap-constants-9FileType: SOURCEFileChecksum: SHA1: 74cb8d1a33c8210627c2a3096b6c04493d6dccccLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/coap_media_type.dartSPDXID: SPDXRef-coap-media-type-9FileType: SOURCEFileChecksum: SHA1: e48a78bf68bca93d471bf13be19538b2fe262422LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/coap_empty_message.dartSPDXID: SPDXRef-coap-empty-message-10FileType: SOURCEFileChecksum: SHA1: 08395630d8fc9b83959824438cc434c7b7bf89edLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/coap_message.dartSPDXID: SPDXRef-coap-message-10FileType: SOURCEFileChecksum: SHA1: fa4acfd65498ded3d4966fb0cc5323d3cbeafe04LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/coap_media_type.dartSPDXID: SPDXRef-coap-media-type-11FileType: SOURCEFileChecksum: SHA1: 736867bb0acac8fb2052be65ff1705517786d0beLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/coap_message_type.dartSPDXID: SPDXRef-coap-message-type-11FileType: SOURCEFileChecksum: SHA1: 911c516a4679957afc246108ef41978c28f27a4eLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/coap_message.dartSPDXID: SPDXRef-coap-message-12FileType: SOURCEFileChecksum: SHA1: 634a8610b7ef68b7a42ce46bea892c429d7e4dbaLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/coap_observe_client_relation.dartSPDXID: SPDXRef-coap-observe-client-relation-12FileType: SOURCEFileChecksum: SHA1: 0792dfcbd33a38440c1f14916b554cca1dc58da0LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/coap_message_type.dartSPDXID: SPDXRef-coap-message-type-13FileType: SOURCEFileChecksum: SHA1: 842641625ba849fb259be6e2e8499fa6d723be6cLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/coap_request.dartSPDXID: SPDXRef-coap-request-13FileType: SOURCEFileChecksum: SHA1: 74d2c2fe92f7d61e1156481b9645574343885097LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/coap_observe_client_relation.dartSPDXID: SPDXRef-coap-observe-client-relation-14FileType: SOURCEFileChecksum: SHA1: badf69aa56176609c8df34da04383f3c3d588731LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/coap_response.dartSPDXID: SPDXRef-coap-response-14FileType: SOURCEFileChecksum: SHA1: 5da8c0394c5819ec1800591a5c8096a2c3159b0eLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/coap_request.dartSPDXID: SPDXRef-coap-request-15FileType: SOURCEFileChecksum: SHA1: ea9db657a7aac920af1075346b1ff43e0fc3e328LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/codec/udp/datagram_reader.dartSPDXID: SPDXRef-datagram-reader-15FileType: SOURCEFileChecksum: SHA1: a70e02f3f8376dc74cb9b7c979602a72af0d89ceLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/coap_response.dartSPDXID: SPDXRef-coap-response-16FileType: SOURCEFileChecksum: SHA1: 1201830bdda727f609f2972da9a29edbe3a1411dLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/codec/udp/datagram_writer.dartSPDXID: SPDXRef-datagram-writer-16FileType: SOURCEFileChecksum: SHA1: b92dbe2066e3f3c67fcffbaf6b56c4e0400bf545LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/codec/udp/datagram_reader.dartSPDXID: SPDXRef-datagram-reader-17FileType: SOURCEFileChecksum: SHA1: 3acaf2317f8f38a0d3f07cf9f68a23a40f421376LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/codec/udp/message_decoder.dartSPDXID: SPDXRef-message-decoder-17FileType: SOURCEFileChecksum: SHA1: fdded9896d9530a9364c4e0ff8c73dd5e83bab3dLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/codec/udp/datagram_writer.dartSPDXID: SPDXRef-datagram-writer-18FileType: SOURCEFileChecksum: SHA1: 8b9b4b70f45f5bc39839f49183a017fa58b02932LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/codec/udp/message_encoder.dartSPDXID: SPDXRef-message-encoder-18FileType: SOURCEFileChecksum: SHA1: c205d79de11bd1c159fcf3598791f5565b0be0f6LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/codec/udp/message_decoder.dartSPDXID: SPDXRef-message-decoder-19FileType: SOURCEFileChecksum: SHA1: af8cbaf599887940347ab7dec772e00a48bb7909LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/codec/udp/message_format.dartSPDXID: SPDXRef-message-format-19FileType: SOURCEFileChecksum: SHA1: 1201830bdda727f609f2972da9a29edbe3a1411dLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/codec/udp/message_encoder.dartSPDXID: SPDXRef-message-encoder-20FileType: SOURCEFileChecksum: SHA1: 76fbb6b9a3c386f30e6d8b92bb791e81194b0146LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/deduplication/crop_rotation_deduplicator.dartSPDXID: SPDXRef-crop-rotation-deduplicator-20FileType: SOURCEFileChecksum: SHA1: 3acaf2317f8f38a0d3f07cf9f68a23a40f421376LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/codec/udp/message_format.dartSPDXID: SPDXRef-message-format-21FileType: SOURCEFileChecksum: SHA1: 0c885de575a485f7deed4ee76ddbadaea1e94da3LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/deduplication/deduplicator.dartSPDXID: SPDXRef-deduplicator-21FileType: SOURCEFileChecksum: SHA1: ce3ad024ff781988a1d1fd8b7633312277465ef1LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/deduplication/crop_rotation_deduplicator.dartSPDXID: SPDXRef-crop-rotation-deduplicator-22FileType: SOURCEFileChecksum: SHA1: 3df908900369cb1b27bbeeb0638fdde1506b0215LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/deduplication/deduplicator_factory.dartSPDXID: SPDXRef-deduplicator-factory-22FileType: SOURCEFileChecksum: SHA1: 8b9b4b70f45f5bc39839f49183a017fa58b02932LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/deduplication/deduplicator.dartSPDXID: SPDXRef-deduplicator-23FileType: SOURCEFileChecksum: SHA1: ce3ad024ff781988a1d1fd8b7633312277465ef1LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/deduplication/noop_deduplicator.dartSPDXID: SPDXRef-noop-deduplicator-23FileType: SOURCEFileChecksum: SHA1: 76fbb6b9a3c386f30e6d8b92bb791e81194b0146LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/deduplication/deduplicator_factory.dartSPDXID: SPDXRef-deduplicator-factory-24FileType: SOURCEFileChecksum: SHA1: 74d2c2fe92f7d61e1156481b9645574343885097LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/deduplication/sweep_deduplicator.dartSPDXID: SPDXRef-sweep-deduplicator-24FileType: SOURCEFileChecksum: SHA1: 3df908900369cb1b27bbeeb0638fdde1506b0215LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/deduplication/noop_deduplicator.dartSPDXID: SPDXRef-noop-deduplicator-25FileType: SOURCEFileChecksum: SHA1: 5da8c0394c5819ec1800591a5c8096a2c3159b0eLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/event/coap_event_bus.dartSPDXID: SPDXRef-coap-event-bus-25FileType: SOURCEFileChecksum: SHA1: 0c885de575a485f7deed4ee76ddbadaea1e94da3LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/deduplication/sweep_deduplicator.dartSPDXID: SPDXRef-sweep-deduplicator-26FileType: SOURCEFileChecksum: SHA1: a70e02f3f8376dc74cb9b7c979602a72af0d89ceLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/exceptions/coap_request_exception.dartSPDXID: SPDXRef-coap-request-exception-26FileType: SOURCEFileChecksum: SHA1: f5c59e497d3a9ce673b45b81c329290f1b2e9355LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/event/coap_event_bus.dartSPDXID: SPDXRef-coap-event-bus-27FileType: SOURCEFileChecksum: SHA1: b92dbe2066e3f3c67fcffbaf6b56c4e0400bf545LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/link-format/coap_link_attribute.dartSPDXID: SPDXRef-coap-link-attribute-27FileType: SOURCEFileChecksum: SHA1: 8992d704f77d7faec3c2afb43458e568817db6d1LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/exceptions/coap_request_exception.dartSPDXID: SPDXRef-coap-request-exception-28FileType: SOURCEFileChecksum: SHA1: fdded9896d9530a9364c4e0ff8c73dd5e83bab3dLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/link-format/coap_link_format.dartSPDXID: SPDXRef-coap-link-format-28FileType: SOURCEFileChecksum: SHA1: fadcd5017734de262c719a96d9579dfcac1fdf9fLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/link-format/coap_link_attribute.dartSPDXID: SPDXRef-coap-link-attribute-29FileType: SOURCEFileChecksum: SHA1: 7502af4434886f8725f59dbdc7459b7242899259LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/link-format/coap_web_link.dartSPDXID: SPDXRef-coap-web-link-29FileType: SOURCEFileChecksum: SHA1: 697339b0f2f37903b3a2d80a0137800abfd75fefLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/link-format/coap_link_format.dartSPDXID: SPDXRef-coap-link-format-30FileType: SOURCEFileChecksum: SHA1: cf4251dc79fbeb91916be58d8ccd6a0d229dd71cLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/link-format/resources/coap_endpoint_resource.dartSPDXID: SPDXRef-coap-endpoint-resource-30FileType: SOURCEFileChecksum: SHA1: f50793a9bbc3d1e9873cd600ab01e8ad281d1459LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/link-format/coap_web_link.dartSPDXID: SPDXRef-coap-web-link-31FileType: SOURCEFileChecksum: SHA1: 3d10096eae302e2a4a658673d33df2d5d91df67aLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/link-format/resources/coap_remote_resource.dartSPDXID: SPDXRef-coap-remote-resource-31FileType: SOURCEFileChecksum: SHA1: 3aa5258abadb2763cb71b6c3c86fe3f39a6346e4LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/link-format/resources/coap_endpoint_resource.dartSPDXID: SPDXRef-coap-endpoint-resource-32FileType: SOURCEFileChecksum: SHA1: 605f908df228d02a1bee9cb15848f65485c9e06bLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/link-format/resources/coap_resource.dartSPDXID: SPDXRef-coap-resource-32FileType: SOURCEFileChecksum: SHA1: 736867bb0acac8fb2052be65ff1705517786d0beLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/link-format/resources/coap_remote_resource.dartSPDXID: SPDXRef-coap-remote-resource-33FileType: SOURCEFileChecksum: SHA1: 8774aadf28de101d3671487766826679839e672fLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/link-format/resources/coap_resource_attributes.dartSPDXID: SPDXRef-coap-resource-attributes-33FileType: SOURCEFileChecksum: SHA1: 842641625ba849fb259be6e2e8499fa6d723be6cLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/link-format/resources/coap_resource.dartSPDXID: SPDXRef-coap-resource-34FileType: SOURCEFileChecksum: SHA1: 0d43d54d79f981ee11ee6b4dae22076ea8c6fc49LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/multicast_address.dartSPDXID: SPDXRef-multicast-address-34FileType: SOURCEFileChecksum: SHA1: f6eda86197b3d1231f37fbc8628a9b77459aecafLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/link-format/resources/coap_resource_attributes.dartSPDXID: SPDXRef-coap-resource-attributes-35FileType: SOURCEFileChecksum: SHA1: 4581229f4a3546dd92b4ebc074716361bfd0c7aaLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/net/endpoint.dartSPDXID: SPDXRef-endpoint-35FileType: SOURCEFileChecksum: SHA1: c699678b7659d332c8c82319b35cc0d5472ec1eaLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/multicast_address.dartSPDXID: SPDXRef-multicast-address-36FileType: SOURCEFileChecksum: SHA1: 12bf004baf137d6404f30cbabe0ba6c5b387f4b6LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/net/exchange.dartSPDXID: SPDXRef-exchange-36FileType: SOURCEFileChecksum: SHA1: be98f6ca1b40b77eb286d010e249b39877e5ee4fLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/net/endpoint.dartSPDXID: SPDXRef-endpoint-37FileType: SOURCEFileChecksum: SHA1: a2ea67f1ad923744d80b6eb890b61a0b6a20b085LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/net/matcher.dartSPDXID: SPDXRef-matcher-37FileType: SOURCEFileChecksum: SHA1: 47d89e2c0de0c21575883b22ddeaab08e6ac09b0LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/net/exchange.dartSPDXID: SPDXRef-exchange-38FileType: SOURCEFileChecksum: SHA1: 3ac78ca60fa508ee7ee66190bfb6a8bf82b76741LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/net/multicast_exchange.dartSPDXID: SPDXRef-multicast-exchange-38FileType: SOURCEFileChecksum: SHA1: dc29f84438cf324e78ae3cc74b25edff02baee62LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/net/matcher.dartSPDXID: SPDXRef-matcher-39FileType: SOURCEFileChecksum: SHA1: 8ad2c1bd16908a44c4f6bf592dabf1dc999a05c5LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/network/coap_inetwork.dartSPDXID: SPDXRef-coap-inetwork-39FileType: SOURCEFileChecksum: SHA1: d41a818550a1c305a442dc5c716c9befffae7175LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/net/multicast_exchange.dartSPDXID: SPDXRef-multicast-exchange-40FileType: SOURCEFileChecksum: SHA1: b0de082997ea593ca444b034949840b9de075209LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/network/coap_network_openssl.dartSPDXID: SPDXRef-coap-network-openssl-40FileType: SOURCEFileChecksum: SHA1: c47f809410b6680053fc676cfdab253d00dbada8LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/net/outbox.dartSPDXID: SPDXRef-outbox-41FileType: SOURCEFileChecksum: SHA1: c3cb5da473d48d14bab41c30e4ead9613aa5e3d8LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/network/coap_network_tcp.dartSPDXID: SPDXRef-coap-network-tcp-41FileType: SOURCEFileChecksum: SHA1: 16fd3dd499bf0cf6672c81f598c88634dfe4429dLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/network/coap_inetwork.dartSPDXID: SPDXRef-coap-inetwork-42FileType: SOURCEFileChecksum: SHA1: 57541285a7f8d473f4dda30d60649d5a04643efaLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/network/coap_network_udp.dartSPDXID: SPDXRef-coap-network-udp-42FileType: SOURCEFileChecksum: SHA1: 2d1f6ae4e72fd13cb9f1283c356f5dae45599b28LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/network/coap_network_openssl.dartSPDXID: SPDXRef-coap-network-openssl-43FileType: SOURCEFileChecksum: SHA1: 2f1417eb82a3400f75225cf8dcbe0ffc8fe2b302LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/network/credentials/psk_credentials.dartSPDXID: SPDXRef-psk-credentials-43FileType: SOURCEFileChecksum: SHA1: dbc49b00566b3fbe7047741720d68333dbbe38f4LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/network/coap_network_tcp.dartSPDXID: SPDXRef-coap-network-tcp-44FileType: SOURCEFileChecksum: SHA1: db7756b6779c8a803a6162eee7bf4eb7caaf3589LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/observe/coap_observe_relation.dartSPDXID: SPDXRef-coap-observe-relation-44FileType: SOURCEFileChecksum: SHA1: e2f726b8c2c7a653f5ee2fdc5a957fa37ea36d15LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/network/coap_network_tinydtls.dartSPDXID: SPDXRef-coap-network-tinydtls-45FileType: SOURCEFileChecksum: SHA1: e48a78bf68bca93d471bf13be19538b2fe262422LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/observe/coap_observing_endpoint.dartSPDXID: SPDXRef-coap-observing-endpoint-45FileType: SOURCEFileChecksum: SHA1: 8f5e48ed8c1c770c68f99a5a2ad5a14b4e4a7b82LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/network/coap_network_udp.dartSPDXID: SPDXRef-coap-network-udp-46FileType: SOURCEFileChecksum: SHA1: fa4acfd65498ded3d4966fb0cc5323d3cbeafe04LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/option/coap_block_option.dartSPDXID: SPDXRef-coap-block-option-46FileType: SOURCEFileChecksum: SHA1: 19e3051d93bf24b66b35c2e6d1d0ae382b8ef6e4LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/network/credentials/ecdsa_keys.dartSPDXID: SPDXRef-ecdsa-keys-47FileType: SOURCEFileChecksum: SHA1: 965161598eba37fc4afe6a516123656fcbede5b8LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/option/coap_option_type.dartSPDXID: SPDXRef-coap-option-type-47FileType: SOURCEFileChecksum: SHA1: 57541285a7f8d473f4dda30d60649d5a04643efaLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/network/credentials/psk_credentials.dartSPDXID: SPDXRef-psk-credentials-48FileType: SOURCEFileChecksum: SHA1: 35a263350e1b3e84fe57e9ae26ef2d36a82832a3LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/option/empty_option.dartSPDXID: SPDXRef-empty-option-48FileType: SOURCEFileChecksum: SHA1: 3f34eb1eeb1cfa1901d052bae1a6f178a86838c8LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/observe/coap_observe_relation.dartSPDXID: SPDXRef-coap-observe-relation-49FileType: SOURCEFileChecksum: SHA1: f806889b203ad26342391405cea51978309ddd0eLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/option/integer_option.dartSPDXID: SPDXRef-integer-option-49FileType: SOURCEFileChecksum: SHA1: 55fbe193cf54bdbb81e20c9ef0fd7c9712f924aaLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/observe/coap_observing_endpoint.dartSPDXID: SPDXRef-coap-observing-endpoint-50FileType: SOURCEFileChecksum: SHA1: ce36df30ae7a481ea5a5ac0f1dcceaa364ab449bLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/option/opaque_option.dartSPDXID: SPDXRef-opaque-option-50FileType: SOURCEFileChecksum: SHA1: 5dd677aee8caacce01282d23e24f1c4a46584beeLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/option/coap_block_option.dartSPDXID: SPDXRef-coap-block-option-51FileType: SOURCEFileChecksum: SHA1: d41a818550a1c305a442dc5c716c9befffae7175LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/option/option.dartSPDXID: SPDXRef-option-51FileType: SOURCEFileChecksum: SHA1: 782aa5c69f39ed8c9e7d35c0ba4a276d7cf657c4LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/option/coap_option_type.dartSPDXID: SPDXRef-coap-option-type-52FileType: SOURCEFileChecksum: SHA1: 43ec8fd41d98e63d45a668ad5a5dea33a3193b40LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/option/oscore_option.dartSPDXID: SPDXRef-oscore-option-52FileType: SOURCEFileChecksum: SHA1: 1afd04bfe993bdeccb7ff89679944955c9596ad6LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/option/empty_option.dartSPDXID: SPDXRef-empty-option-53FileType: SOURCEFileChecksum: SHA1: 0a32944572e296252085d211d5f499abb0154a5dLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/option/string_option.dartSPDXID: SPDXRef-string-option-53FileType: SOURCEFileChecksum: SHA1: 2711e2816a8a1a213417b4c9e65993d6e163cb2bLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/option/integer_option.dartSPDXID: SPDXRef-integer-option-54FileType: SOURCEFileChecksum: SHA1: 8cfd8442110929498346268ae688f2e863139e59LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/stack/base_layer.dartSPDXID: SPDXRef-base-layer-54FileType: SOURCEFileChecksum: SHA1: eb5b3a10a8764f59e16cb06275248856049448c5LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/option/opaque_option.dartSPDXID: SPDXRef-opaque-option-55FileType: SOURCEFileChecksum: SHA1: 206999426952c8372804f8e6b6e834995c44072fLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/stack/blockwise_status.dartSPDXID: SPDXRef-blockwise-status-55FileType: SOURCEFileChecksum: SHA1: 97b7fc1fb030bd0f39a94ac3eb0d16b50798c98aLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/option/option.dartSPDXID: SPDXRef-option-56FileType: SOURCEFileChecksum: SHA1: b90477005bf14499d3fa2b217ef7f736ad0b7987LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/stack/layer_stack.dartSPDXID: SPDXRef-layer-stack-56FileType: SOURCEFileChecksum: SHA1: b0ca61a3e824f18f23524ec9292a55d09ba55a89LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/option/oscore_option.dartSPDXID: SPDXRef-oscore-option-57FileType: SOURCEFileChecksum: SHA1: 7c3a9343d087fbf1c3848c25cb2e77f5e0e10b3cLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/stack/layers/blockwise.dartSPDXID: SPDXRef-blockwise-57FileType: SOURCEFileChecksum: SHA1: abedcb728f8e2ff9c8bd051a2edc2551f70b33beLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/option/string_option.dartSPDXID: SPDXRef-string-option-58FileType: SOURCEFileChecksum: SHA1: c88efb3050fb7abd2b26d3c77775dde0b0549a99LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/stack/layers/bottom.dartSPDXID: SPDXRef-bottom-58FileType: SOURCEFileChecksum: SHA1: fe1b3d49ff916f7e5200840e32033d75e3c0b54cLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/stack/base_layer.dartSPDXID: SPDXRef-base-layer-59FileType: SOURCEFileChecksum: SHA1: 8992d704f77d7faec3c2afb43458e568817db6d1LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/stack/layers/observe.dartSPDXID: SPDXRef-observe-59FileType: SOURCEFileChecksum: SHA1: 03d26ab4589caccbf891cacecb611ffe63f9948aLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/stack/blockwise_status.dartSPDXID: SPDXRef-blockwise-status-60FileType: SOURCEFileChecksum: SHA1: 2c4f372615cd7099083028fb4ac1c5b342ee2ac9LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/stack/layers/reliability.dartSPDXID: SPDXRef-reliability-60FileType: SOURCEFileChecksum: SHA1: fe6b59b5d94e50cefbf47f44771f85a046471e2cLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/stack/layer_stack.dartSPDXID: SPDXRef-layer-stack-61FileType: SOURCEFileChecksum: SHA1: d477aaa787b60f7d50226ffb71716ee59c1faa4dLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/stack/layers/token.dartSPDXID: SPDXRef-token-61FileType: SOURCEFileChecksum: SHA1: d4cfb5537f84af3e8398c460c31faabb70b3e466LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/stack/layers/blockwise.dartSPDXID: SPDXRef-blockwise-62FileType: SOURCEFileChecksum: SHA1: fb0da9f20fb96acc36d933c8d11e20b50b699d1fLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/stack/layers/top.dartSPDXID: SPDXRef-top-62FileType: SOURCEFileChecksum: SHA1: c85f078aa2c53568c2c59eba1dbfee2a8c08547cLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/stack/layers/bottom.dartSPDXID: SPDXRef-bottom-63FileType: SOURCEFileChecksum: SHA1: ba8d6b4c9c28a25f1222ca4ec9259ba5bccb26feLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/util/coap_byte_array_util.dartSPDXID: SPDXRef-coap-byte-array-util-63FileType: SOURCEFileChecksum: SHA1: 5b3be80fd453e19183a9d8e42c15c5f91d037088LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/stack/layers/observe.dartSPDXID: SPDXRef-observe-64FileType: SOURCEFileChecksum: SHA1: 7e3a11ae561a3882e723955985a1ce79f8f8656aLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/util/coap_scanner.dartSPDXID: SPDXRef-coap-scanner-64FileType: SOURCEFileChecksum: SHA1: cf740c9413ea4d322589781dfae39bb493d94c45LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/stack/layers/reliability.dartSPDXID: SPDXRef-reliability-65FileType: SOURCEFileChecksum: SHA1: 23eac0d8c88d4f0b65ad53804d90ac044fc8f02aLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /pubspec.yamlSPDXID: SPDXRef-pubspec-65FileType: TEXTFileChecksum: SHA1: ea0deca5c14038178ef9eab5dee8428aabf9135cLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/stack/layers/token.dartSPDXID: SPDXRef-token-66FileType: SOURCEFileChecksum: SHA1: 375f2716c52146bf7af9aef02f59f4fe640234efLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
-
-FileName: /lib/src/stack/layers/top.dartSPDXID: SPDXRef-top-67FileType: SOURCEFileChecksum: SHA1: 0774782fb5927d1624287844df697cd62391ba28LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
-
-FileName: /lib/src/util/coap_byte_array_util.dartSPDXID: SPDXRef-coap-byte-array-util-68FileType: SOURCEFileChecksum: SHA1: 816aa6904c0da36ccd152e731009a58b63fbb5dbLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
-
-FileName: /lib/src/util/coap_scanner.dartSPDXID: SPDXRef-coap-scanner-69FileType: SOURCEFileChecksum: SHA1: 12135675e8fba2fd53f36ed81f873e47f1ea73edLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
-
-FileName: /pubspec.yamlSPDXID: SPDXRef-pubspec-70FileType: TEXTFileChecksum: SHA1: f0308a8aae5c58e8948ca2d1b6aab56708f1aca6LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
-
-Relationship: SPDXRef-pubspec-70 DEPENDENCY_MANIFEST_OF SPDXRef-Package-coap
+Relationship: SPDXRef-pubspec-65 DEPENDENCY_MANIFEST_OF SPDXRef-Package-coap
 
