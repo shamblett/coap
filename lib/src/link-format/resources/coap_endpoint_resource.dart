@@ -236,6 +236,7 @@ abstract class CoapEndpointResource {
   /// Resources
   CoapEndpointResource? getResource(final String? path, {final bool? last}) {
     if (path == null || path.isEmpty) {
+      // ignore: avoid_returning_this
       return this;
     }
     // find root for absolute path
