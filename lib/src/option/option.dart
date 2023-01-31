@@ -3,6 +3,8 @@ import 'package:meta/meta.dart';
 import 'package:typed_data/typed_data.dart';
 
 import 'coap_option_type.dart';
+import 'integer_option.dart';
+import 'string_option.dart';
 
 /// This class describes the options of the CoAP messages.
 @immutable
@@ -85,6 +87,15 @@ abstract class Option<T> {
   String toString() => '$name: $valueString';
 
   bool get valid => length >= type.minLength && length <= type.maxLength;
+
+  bool get isUriOption =>
+      this is UriHostOption ||
+      this is UriPathOption ||
+      this is UriPortOption ||
+      this is UriQueryOption;
+
+  bool get isLocationOption =>
+      this is LocationPathOption || this is LocationQueryOption;
 }
 
 /// Mixin for an Oscore class E option (encrypted and integrity protected).

@@ -18,7 +18,7 @@ FutureOr<void> main() async {
   final uri = Uri(scheme: 'coap', host: 'coap.me', port: conf.defaultPort);
   final client = CoapClient(uri, config: conf);
 
-  final cancelThisReq = CoapRequest.newGet()..uriPath = 'doesNotExist';
+  final cancelThisReq = CoapRequest.newGet(uri.replace(path: 'doesNotExist'));
 
   try {
     // Ensure this request is not also cancelled

@@ -5,6 +5,8 @@
  * Copyright :  S.Hamblett
  */
 
+import 'dart:io';
+
 import 'package:typed_data/typed_data.dart';
 
 import '../../coap_code.dart';
@@ -15,6 +17,7 @@ import '../../coap_request.dart';
 import '../../coap_response.dart';
 import '../../option/coap_option_type.dart';
 import '../../option/option.dart';
+import '../../option/uri_converters.dart';
 import 'datagram_reader.dart';
 import 'message_format.dart' as message_format;
 
@@ -23,7 +26,11 @@ import 'message_format.dart' as message_format;
 /// Returns the deserialized message, or `null` if the message can not be
 /// decoded, i.e. the bytes do not represent a [CoapRequest], a [CoapResponse]
 /// or a [CoapEmptyMessage].
-CoapMessage? deserializeUdpMessage(final Uint8Buffer data) {
+CoapMessage? deserializeUdpMessage(
+  final Uint8Buffer data,
+  final String scheme, {
+  final InternetAddress? destinationAddress,
+}) {
   final reader = DatagramReader(data);
   var hasFormatError = false;
 
@@ -54,7 +61,11 @@ CoapMessage? deserializeUdpMessage(final Uint8Buffer data) {
 
   Uint8Buffer? payload;
   var hasUnknownCriticalOption = false;
-  final options = <Option<Object?>>[];
+
+  final uriOptions = <Option<Object?>>[];
+  final locationOptions = <Option<Object?>>[];
+  final otherOptions = <Option<Object?>>[];
+
   // Read options
   var currentOption = 0;
   while (reader.bytesAvailable) {
@@ -100,7 +111,15 @@ CoapMessage? deserializeUdpMessage(final Uint8Buffer data) {
         final optionType = OptionType.fromTypeNumber(currentOption);
         final optionBytes = reader.readBytes(optionLength);
         final option = optionType.parse(optionBytes);
-        options.add(option);
+
+        // TODO(JKRhb): Refactor
+        if (option.isUriOption) {
+          uriOptions.add(option);
+        } else if (option.isLocationOption) {
+          locationOptions.add(option);
+        } else {
+          otherOptions.add(option);
+        }
       } on UnknownElectiveOptionException catch (_) {
         // Unknown elective options must be silently ignored
         continue;
@@ -118,12 +137,19 @@ CoapMessage? deserializeUdpMessage(final Uint8Buffer data) {
       return null;
     }
 
+    final uri = optionsToUri(
+      uriOptions,
+      scheme: scheme,
+      destinationAddress: destinationAddress,
+    );
+
     return CoapRequest.fromParsed(
+      uri,
       method,
       id: id,
       type: type,
       token: token,
-      options: options,
+      options: otherOptions,
       payload: payload,
       hasUnknownCriticalOption: hasUnknownCriticalOption,
       hasFormatError: hasFormatError,
@@ -134,13 +160,16 @@ CoapMessage? deserializeUdpMessage(final Uint8Buffer data) {
       return null;
     }
 
+    final location = optionsToUri(locationOptions);
+
     return CoapResponse.fromParsed(
       responseCode,
       id: id,
       type: type,
       token: token,
-      options: options,
+      options: otherOptions,
       payload: payload,
+      location: location,
       hasUnknownCriticalOption: hasUnknownCriticalOption,
       hasFormatError: hasFormatError,
     );
@@ -149,7 +178,7 @@ CoapMessage? deserializeUdpMessage(final Uint8Buffer data) {
       id: id,
       type: type,
       token: token,
-      options: options,
+      options: otherOptions,
       payload: payload,
       hasUnknownCriticalOption: hasUnknownCriticalOption,
       hasFormatError: hasFormatError,
