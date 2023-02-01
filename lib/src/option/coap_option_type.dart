@@ -336,6 +336,19 @@ enum OptionType implements Comparable<OptionType> {
   /// Checks whether an option is safe.
   bool get isSafe => !isUnsafe;
 
+  /// Checks whether this option is *not* part of the cache key.
+  ///
+  /// See [Section 5.4.2] and [Section 5.4.6] of RFC 7252 for more information.
+  ///
+  /// [Section 5.4.2]: https://www.rfc-editor.org/rfc/rfc7252#section-5.4.2
+  /// [Section 5.4.6]: https://www.rfc-editor.org/rfc/rfc7252#section-5.4.6
+  bool get isNoCacheKey => (optionNumber & 0x1e) == 0x1c;
+
+  /// Checks whether this option is part of the cache key.
+  ///
+  /// See the [isNoCacheKey] getter for more information.
+  bool get isCacheKey => !isNoCacheKey;
+
   Option<Object?> parse(final Uint8Buffer bytes) {
     switch (this) {
       case OptionType.ifMatch:
