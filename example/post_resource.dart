@@ -30,10 +30,12 @@ FutureOr<void> main() async {
       payload: 'SJHTestPost',
     );
     print('/large-create response status: ${response.statusCodeString}');
+    final resourceLocationPath = response.location.path;
+    print('Resource created under $resourceLocationPath');
 
-    print('Sending get /large-create to ${uri.host}');
-    response = await client.get('large-create');
-    print('/large-create response: ${response.payloadString}');
+    print('Sending get $resourceLocationPath to ${uri.host}');
+    response = await client.get(resourceLocationPath);
+    print('$resourceLocationPath response: ${response.payloadString}');
     print('E-Tags : ${response.etags.join(',')}');
   } on Exception catch (e) {
     print('CoAP encountered an exception: $e');
