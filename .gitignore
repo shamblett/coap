@@ -17,3 +17,6 @@ doc/api/
 .idea/
 .DS_Store
 .directory
+
+# Generated coverage reports
+coverage/
