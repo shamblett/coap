@@ -1,3 +1,4 @@
+[![pub package](https://img.shields.io/pub/v/coap.svg)](https://pub.dev/packages/coap)
 [![Build Status](https://github.com/shamblett/coap/actions/workflows/ci.yml/badge.svg)](https://github.com/shamblett/coap/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/shamblett/coap/branch/main/graph/badge.svg)](https://codecov.io/gh/shamblett/coap)
 
