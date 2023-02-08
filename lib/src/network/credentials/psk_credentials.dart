@@ -14,15 +14,15 @@ import 'dart:typed_data';
 /// can probably be ignored in most cases, when both the identity and the key
 /// are known in advance.
 typedef PskCredentialsCallback = PskCredentials Function(
-  Uint8List identityHint,
+  String? identityHint,
 );
 
 /// Credentials used for PSK Cipher Suites consisting of an [identity]
 /// and a [preSharedKey].
 class PskCredentials {
-  Uint8List identity;
+  Iterable<int> identity;
 
-  Uint8List preSharedKey;
+  Iterable<int> preSharedKey;
 
   PskCredentials({required this.identity, required this.preSharedKey});
 }
