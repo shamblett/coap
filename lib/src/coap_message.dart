@@ -634,11 +634,23 @@ abstract class CoapMessage {
     return '\n${elements.join(',\n')}\n';
   }
 
-  /// Serializes this CoAP message from the UDP message format.
+  /// Generates a new CoAP message from [data] in the UDP message format.
   ///
-  /// Is also used for DTLS.
-  static CoapMessage? fromUdpPayload(final Uint8Buffer data) =>
-      deserializeUdpMessage(data);
+  /// The [scheme] can contain the value `coap` or `coaps` and will be used
+  /// in the `uri` field of CoAP request objects.
+  ///
+  /// The [destinationAddress] might be used when setting the URI for an
+  /// incoming CoAP request that does not contain an Uri-Host option.
+  static CoapMessage? fromUdpPayload(
+    final Uint8Buffer data,
+    final String scheme, {
+    final InternetAddress? destinationAddress,
+  }) =>
+      deserializeUdpMessage(
+        data,
+        scheme,
+        destinationAddress: destinationAddress,
+      );
 
   /// Serializes this CoAP message into the UDP message format.
   ///

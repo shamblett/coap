@@ -126,7 +126,7 @@ class CoapClient {
 
   /// Performs a CoAP ping.
   Future<bool> ping() async {
-    final request = CoapRequest(RequestMethod.empty)
+    final request = CoapRequest(uri, RequestMethod.empty)
       ..token = CoapConstants.emptyToken;
     await _prepare(request);
     _endpoint!.sendEpRequest(request);
@@ -144,7 +144,8 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newGet(confirmable: confirmable);
+    final request =
+        CoapRequest.newGet(uri.replace(path: path), confirmable: confirmable);
     _build(
       request,
       path,
@@ -168,8 +169,9 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPost(confirmable: confirmable)
-      ..setPayloadMedia(payload, format);
+    final request =
+        CoapRequest.newPost(uri.replace(path: path), confirmable: confirmable)
+          ..setPayloadMedia(payload, format);
     _build(
       request,
       path,
@@ -193,8 +195,9 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPost(confirmable: confirmable)
-      ..setPayloadMediaRaw(payload, format);
+    final request =
+        CoapRequest.newPost(uri.replace(path: path), confirmable: confirmable)
+          ..setPayloadMediaRaw(payload, format);
     _build(
       request,
       path,
@@ -220,8 +223,9 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPut(confirmable: confirmable)
-      ..setPayloadMedia(payload, format);
+    final request =
+        CoapRequest.newPut(uri.replace(path: path), confirmable: confirmable)
+          ..setPayloadMedia(payload, format);
     _build(
       request,
       path,
@@ -249,8 +253,9 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPut(confirmable: confirmable)
-      ..setPayloadMediaRaw(payload, format);
+    final request =
+        CoapRequest.newPut(uri.replace(path: path), confirmable: confirmable)
+          ..setPayloadMediaRaw(payload, format);
     _build(
       request,
       path,
@@ -274,7 +279,10 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newDelete(confirmable: confirmable);
+    final request = CoapRequest.newDelete(
+      uri.replace(path: path),
+      confirmable: confirmable,
+    );
     _build(
       request,
       path,
@@ -300,7 +308,8 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newFetch(confirmable: confirmable);
+    final request =
+        CoapRequest.newFetch(uri.replace(path: path), confirmable: confirmable);
     _build(
       request,
       path,
@@ -330,8 +339,9 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPatch(confirmable: confirmable)
-      ..setPayloadMedia(payload, format);
+    final request =
+        CoapRequest.newPatch(uri.replace(path: path), confirmable: confirmable)
+          ..setPayloadMedia(payload, format);
     _build(
       request,
       path,
@@ -363,8 +373,9 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPatch(confirmable: confirmable)
-      ..setPayloadMediaRaw(payload, format);
+    final request =
+        CoapRequest.newPatch(uri.replace(path: path), confirmable: confirmable)
+          ..setPayloadMediaRaw(payload, format);
     _build(
       request,
       path,
@@ -396,8 +407,9 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newIPatch(confirmable: confirmable)
-      ..setPayloadMedia(payload, format);
+    final request =
+        CoapRequest.newIPatch(uri.replace(path: path), confirmable: confirmable)
+          ..setPayloadMedia(payload, format);
     _build(
       request,
       path,
@@ -429,8 +441,9 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newIPatch(confirmable: confirmable)
-      ..setPayloadMediaRaw(payload, format);
+    final request =
+        CoapRequest.newIPatch(uri.replace(path: path), confirmable: confirmable)
+          ..setPayloadMediaRaw(payload, format);
     _build(
       request,
       path,
@@ -465,11 +478,12 @@ class CoapClient {
   Future<Iterable<CoapWebLink>?> discover({
     final String query = '',
   }) async {
-    final discover = CoapRequest.newGet()
-      ..uriPath = CoapConstants.defaultWellKnownURI;
-    if (query.isNotEmpty) {
-      discover.uriQuery = query;
-    }
+    final discover = CoapRequest.newGet(
+      uri.replace(
+        path: CoapConstants.defaultWellKnownURI,
+        query: query,
+      ),
+    );
     final links = await send(discover);
     if (links.contentFormat != CoapMediaType.applicationLinkFormat) {
       return <CoapWebLink>[CoapWebLink('')];
@@ -563,7 +577,6 @@ class CoapClient {
     final List<Uint8Buffer>? etags,
   }) {
     request
-      ..uriPath = path
       ..accept = accept
       ..maxRetransmit = maxRetransmit;
     if (options != null) {
@@ -589,7 +602,6 @@ class CoapClient {
 
   Future<void> _prepare(final CoapRequest request) async {
     request
-      ..uri = uri
       ..timestamp = DateTime.now()
       ..eventBus = _eventBus;
 

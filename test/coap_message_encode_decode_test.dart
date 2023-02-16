@@ -20,14 +20,79 @@ void main() {
   final DefaultCoapConfig conf = CoapConfigDefault();
   group('COAP All', () {
     final check = [
-      <int>[64, 1, 48, 57, 255, 112, 97, 121, 108, 111, 97, 100],
-      <int>[64, 1, 48, 57, 192, 33, 30, 255, 112, 97, 121, 108, 111, 97, 100],
       <int>[
         64,
         1,
         48,
         57,
-        192,
+        59,
+        101,
+        120,
+        97,
+        109,
+        112,
+        108,
+        101,
+        46,
+        111,
+        114,
+        103,
+        255,
+        112,
+        97,
+        121,
+        108,
+        111,
+        97,
+        100,
+      ],
+      <int>[
+        64,
+        1,
+        48,
+        57,
+        59,
+        101,
+        120,
+        97,
+        109,
+        112,
+        108,
+        101,
+        46,
+        111,
+        114,
+        103,
+        144,
+        33,
+        30,
+        255,
+        112,
+        97,
+        121,
+        108,
+        111,
+        97,
+        100,
+      ],
+      <int>[
+        64,
+        1,
+        48,
+        57,
+        59,
+        101,
+        120,
+        97,
+        109,
+        112,
+        108,
+        101,
+        46,
+        111,
+        114,
+        103,
+        144,
         255,
         112,
         97,
@@ -56,10 +121,22 @@ void main() {
         254,
         157,
         5,
-        177,
+        43,
+        101,
+        120,
+        97,
+        109,
+        112,
+        108,
+        101,
+        46,
+        111,
+        114,
+        103,
+        145,
         40,
         81,
-        40
+        40,
       ],
       <int>[
         86,
@@ -148,12 +225,13 @@ void main() {
     }
 
     void testMessage(final int testNo) {
-      final CoapMessage msg = CoapRequest(RequestMethod.get)
-        ..id = 12345
-        ..setPayload('payload');
+      final msg =
+          CoapRequest(Uri.parse('coap://example.org'), RequestMethod.get)
+            ..id = 12345
+            ..setPayload('payload');
       final data = serializeUdpMessage(msg);
       checkData(data, testNo);
-      final convMsg = deserializeUdpMessage(data);
+      final convMsg = deserializeUdpMessage(data, 'coap');
       expect(msg.code, convMsg!.code);
       expect(msg.type, convMsg.type);
       expect(msg.id, convMsg.id);
@@ -166,18 +244,19 @@ void main() {
     }
 
     void testMessageWithOptions(final int testNo) {
-      final CoapMessage msg = CoapRequest(RequestMethod.get)
-        ..id = 12345
-        ..setPayload('payload')
-        ..addOption(
-          ContentFormatOption(CoapMediaType.textPlain.numericValue),
-        )
-        ..addOption(MaxAgeOption(30));
+      final CoapMessage msg =
+          CoapRequest(Uri.parse('coap://example.org'), RequestMethod.get)
+            ..id = 12345
+            ..setPayload('payload')
+            ..addOption(
+              ContentFormatOption(CoapMediaType.textPlain.numericValue),
+            )
+            ..addOption(MaxAgeOption(30));
       expect(msg.getFirstOption<ContentFormatOption>()!.value, 0);
       expect(msg.getFirstOption<MaxAgeOption>()!.value, 30);
       final data = serializeUdpMessage(msg);
       checkData(data, testNo);
-      final convMsg = deserializeUdpMessage(data);
+      final convMsg = deserializeUdpMessage(data, 'coap');
 
       expect(msg.code, convMsg!.code);
       expect(msg.type, convMsg.type);
@@ -202,15 +281,16 @@ void main() {
     }
 
     void testMessageWithExtendedOption(final int testNo) {
-      final CoapMessage msg = CoapRequest(RequestMethod.get)
-        ..id = 12345
-        ..addOption(ContentFormatOption(0));
+      final CoapMessage msg =
+          CoapRequest(Uri.parse('coap://example.org'), RequestMethod.get)
+            ..id = 12345
+            ..addOption(ContentFormatOption(0));
       expect(msg.getFirstOption<ContentFormatOption>()!.value, 0);
       msg.setPayload('payload');
 
       final data = serializeUdpMessage(msg);
       checkData(data, testNo);
-      final convMsg = deserializeUdpMessage(data);
+      final convMsg = deserializeUdpMessage(data, 'coap');
 
       expect(msg.code, convMsg!.code);
       expect(msg.type, convMsg.type);
@@ -231,7 +311,11 @@ void main() {
     }
 
     void testRequestParsing(final int testNo) {
-      final request = CoapRequest(RequestMethod.post, confirmable: false)
+      final request = CoapRequest(
+        Uri.parse('coap://example.org'),
+        RequestMethod.post,
+        confirmable: false,
+      )
         ..id = 7
         ..token = (typed.Uint8Buffer()..addAll(<int>[11, 82, 165, 77, 3]))
         ..addIfMatchOpaque(typed.Uint8Buffer()..addAll(<int>[34, 239]))
@@ -243,7 +327,7 @@ void main() {
 
       final bytes = serializeUdpMessage(request);
       checkData(bytes, testNo);
-      final result = deserializeUdpMessage(bytes);
+      final result = deserializeUdpMessage(bytes, 'coap');
       expect(result!.isRequest, isTrue);
 
       expect(request.id, result.id);
@@ -264,16 +348,17 @@ void main() {
       final response = CoapResponse(
         ResponseCode.content,
         CoapMessageType.non,
+        location:
+            Uri(path: '/one/two/three/four/five/six/seven/eight/nine/ten'),
       )
         ..id = 9
         ..token = (typed.Uint8Buffer()..addAll(<int>[22, 255, 0, 78, 100, 22]))
-        ..addETagOpaque(typed.Uint8Buffer()..addAll(<int>[1, 0, 0, 0, 0, 1]))
-        ..locationPath = '/one/two/three/four/five/six/seven/eight/nine/ten';
+        ..addETagOpaque(typed.Uint8Buffer()..addAll(<int>[1, 0, 0, 0, 0, 1]));
 
       final bytes = serializeUdpMessage(response);
       checkData(bytes, testNo);
 
-      final message = deserializeUdpMessage(bytes);
+      final message = deserializeUdpMessage(bytes, 'coap');
       expect(message!.isResponse, isTrue);
 
       expect(response.id, message.id);
@@ -285,10 +370,11 @@ void main() {
         response.etags.toList().toString(),
         message.etags.toList().toString(),
       );
+      expect(response.location, (message as CoapResponse).location);
       expect(
         leq.equals(
-          response.locationPaths.toList(),
-          (message as CoapResponse).locationPaths.toList(),
+          response.location.pathSegments,
+          message.location.pathSegments,
         ),
         isTrue,
       );

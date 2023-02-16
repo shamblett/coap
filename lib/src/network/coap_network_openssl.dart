@@ -161,8 +161,10 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
   void _receive() {
     _dtlsConnection?.listen(
       (final datagram) {
-        final message =
-            CoapMessage.fromUdpPayload(Uint8Buffer()..addAll(datagram.data));
+        final message = CoapMessage.fromUdpPayload(
+          Uint8Buffer()..addAll(datagram.data),
+          'coaps',
+        );
         eventBus.fire(CoapMessageReceivedEvent(message, address));
       },
       onError: (final Object e, final StackTrace s) =>

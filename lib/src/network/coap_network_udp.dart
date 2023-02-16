@@ -92,8 +92,10 @@ class CoapNetworkUDP implements CoapINetwork {
               return;
             }
             // d.address can differ from address with multicast
-            final message =
-                CoapMessage.fromUdpPayload(Uint8Buffer()..addAll(d.data));
+            final message = CoapMessage.fromUdpPayload(
+              Uint8Buffer()..addAll(d.data),
+              'coap',
+            );
             eventBus.fire(CoapMessageReceivedEvent(message, d.address));
             break;
           // When we manually closed the socket (no need to do anything)

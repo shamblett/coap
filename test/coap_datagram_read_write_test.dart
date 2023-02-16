@@ -235,14 +235,15 @@ void main() {
         ..addAll(
           List<int>.generate(tokenLength, ((final index) => index % 256)),
         ));
-      final request = CoapRequest(RequestMethod.get)
-        ..id = 5
-        ..token = token;
+      final request =
+          CoapRequest(Uri.parse('coap://example.org'), RequestMethod.get)
+            ..id = 5
+            ..token = token;
 
       final payload = request.toUdpPayload();
       expect(
         leq.equals(
-          CoapMessage.fromUdpPayload(payload)?.token?.toList(),
+          CoapMessage.fromUdpPayload(payload, 'coap')?.token?.toList(),
           token,
         ),
         isTrue,

@@ -21,7 +21,7 @@ FutureOr<void> main() async {
   final client = CoapClient(uri);
 
   try {
-    final request = CoapRequest.newGet()..uriPath = '/.well-known/core';
+    final request = CoapRequest.newGet(uri.replace(path: '/.well-known/core'));
 
     await for (final response in client.sendMulticast(request)) {
       print(response.payloadString);

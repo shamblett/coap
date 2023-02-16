@@ -106,13 +106,14 @@ Uint8Buffer serializeUdpMessage(final CoapMessage message) {
 }
 
 bool _shouldBeSkipped(final Option<Object?> opt, final CoapMessage message) {
-  if (opt is UriHostOption &&
-      InternetAddress.tryParse(opt.value) == message.destination) {
-    return true;
+  if (opt is UriHostOption) {
+    final hostAddress = InternetAddress.tryParse(opt.value);
+
+    return hostAddress != null && hostAddress == message.destination;
   }
 
   if (opt is UriPortOption && message is CoapRequest) {
-    return _usesDefaultPort(message.scheme, opt.value);
+    return _usesDefaultPort(message.uri.scheme, opt.value);
   }
 
   return false;
