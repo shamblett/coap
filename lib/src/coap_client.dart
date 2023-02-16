@@ -198,7 +198,7 @@ class CoapClient {
   /// Sends a POST request with the specified byte payload.
   Future<CoapResponse> postBytes(
     final String path, {
-    required final Uint8Buffer payload,
+    required final Iterable<int> payload,
     final String? query,
     final CoapMediaType? format,
     final CoapMediaType? accept,
@@ -266,7 +266,7 @@ class CoapClient {
   /// Sends a PUT request with the specified byte payload.
   Future<CoapResponse> putBytes(
     final String path, {
-    required final Uint8Buffer payload,
+    required final Iterable<int> payload,
     final String? query,
     final CoapMediaType? format,
     final MatchEtags matchEtags = MatchEtags.onMatch,
@@ -370,7 +370,7 @@ class CoapClient {
   /// [RFC 8132, section 2]: https://www.rfc-editor.org/rfc/rfc8132.html#section-2
   Future<CoapResponse> fetchBytes(
     final String path, {
-    required final Uint8Buffer payload,
+    required final Iterable<int> payload,
     final String? query,
     final CoapMediaType? accept,
     final CoapMediaType? format,
@@ -446,7 +446,7 @@ class CoapClient {
   /// [RFC 8132, section 3]: https://www.rfc-editor.org/rfc/rfc8132.html#section-3
   Future<CoapResponse> patchBytes(
     final String path, {
-    required final Uint8Buffer payload,
+    required final Iterable<int> payload,
     final String? query,
     final CoapMediaType? format,
     final MatchEtags matchEtags = MatchEtags.onMatch,
@@ -526,7 +526,7 @@ class CoapClient {
   /// [RFC 8132, section 3]: https://www.rfc-editor.org/rfc/rfc8132.html#section-3
   Future<CoapResponse> iPatchBytes(
     final String path, {
-    required final Uint8Buffer payload,
+    required final Iterable<int> payload,
     final String? query,
     final CoapMediaType? format,
     final MatchEtags matchEtags = MatchEtags.onMatch,
