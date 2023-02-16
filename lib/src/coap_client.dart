@@ -363,6 +363,42 @@ class CoapClient {
     return send(request, onMulticastResponse: onMulticastResponse);
   }
 
+  /// Sends a FETCH request with the specified byte payload.
+  ///
+  /// See [RFC 8132, section 2].
+  ///
+  /// [RFC 8132, section 2]: https://www.rfc-editor.org/rfc/rfc8132.html#section-2
+  Future<CoapResponse> fetchBytes(
+    final String path, {
+    required final Uint8Buffer payload,
+    final String? query,
+    final CoapMediaType? accept,
+    final CoapMediaType? format,
+    final bool confirmable = true,
+    final List<Option<Object?>>? options,
+    final bool earlyBlock2Negotiation = false,
+    final int maxRetransmit = 0,
+    final CoapMulticastResponseHandler? onMulticastResponse,
+  }) {
+    final request = CoapRequest.newFetch(
+      uri.replace(
+        path: path,
+        query: query,
+      ),
+      confirmable: confirmable,
+      accept: accept,
+      contentFormat: format,
+      payload: payload,
+    );
+    _build(
+      request,
+      options,
+      earlyBlock2Negotiation,
+      maxRetransmit,
+    );
+    return send(request, onMulticastResponse: onMulticastResponse);
+  }
+
   /// Sends a PATCH request.
   ///
   /// See [RFC 8132, section 3].
