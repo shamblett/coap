@@ -23,8 +23,12 @@ import 'option/uri_converters.dart';
 class CoapRequest extends CoapMessage {
   /// Initializes a request message.
   /// Defaults to confirmable
-  CoapRequest(this.uri, this.method, {final bool confirmable = true})
-      : super(
+  CoapRequest(
+    this.uri,
+    this.method, {
+    final bool confirmable = true,
+    super.payload,
+  }) : super(
           method.coapCode,
           confirmable ? CoapMessageType.con : CoapMessageType.non,
         );
@@ -73,44 +77,95 @@ class CoapRequest extends CoapMessage {
   String toString() => '\n<<< Request Message >>>${super.toString()}';
 
   /// Construct a GET request.
-  factory CoapRequest.newGet(final Uri uri, {final bool confirmable = true}) =>
-      CoapRequest(uri, RequestMethod.get, confirmable: confirmable);
+  factory CoapRequest.newGet(
+    final Uri uri, {
+    final bool confirmable = true,
+    final Iterable<int>? payload,
+  }) =>
+      CoapRequest(
+        uri,
+        RequestMethod.get,
+        confirmable: confirmable,
+        payload: payload,
+      );
 
   /// Construct a POST request.
-  factory CoapRequest.newPost(final Uri uri, {final bool confirmable = true}) =>
-      CoapRequest(uri, RequestMethod.post, confirmable: confirmable);
+  factory CoapRequest.newPost(
+    final Uri uri, {
+    final bool confirmable = true,
+    final Iterable<int>? payload,
+  }) =>
+      CoapRequest(
+        uri,
+        RequestMethod.post,
+        confirmable: confirmable,
+        payload: payload,
+      );
 
   /// Construct a PUT request.
-  factory CoapRequest.newPut(final Uri uri, {final bool confirmable = true}) =>
-      CoapRequest(uri, RequestMethod.put, confirmable: confirmable);
+  factory CoapRequest.newPut(
+    final Uri uri, {
+    final bool confirmable = true,
+    final Iterable<int>? payload,
+  }) =>
+      CoapRequest(
+        uri,
+        RequestMethod.put,
+        confirmable: confirmable,
+        payload: payload,
+      );
 
   /// Construct a DELETE request.
   factory CoapRequest.newDelete(
     final Uri uri, {
     final bool confirmable = true,
+    final Iterable<int>? payload,
   }) =>
-      CoapRequest(uri, RequestMethod.delete, confirmable: confirmable);
+      CoapRequest(
+        uri,
+        RequestMethod.delete,
+        confirmable: confirmable,
+        payload: payload,
+      );
 
   /// Construct a FETCH request.
   factory CoapRequest.newFetch(
     final Uri uri, {
     final bool confirmable = true,
+    final Iterable<int>? payload,
   }) =>
-      CoapRequest(uri, RequestMethod.fetch, confirmable: confirmable);
+      CoapRequest(
+        uri,
+        RequestMethod.fetch,
+        confirmable: confirmable,
+        payload: payload,
+      );
 
   /// Construct a PATCH request.
   factory CoapRequest.newPatch(
     final Uri uri, {
     final bool confirmable = true,
+    final Iterable<int>? payload,
   }) =>
-      CoapRequest(uri, RequestMethod.patch, confirmable: confirmable);
+      CoapRequest(
+        uri,
+        RequestMethod.patch,
+        confirmable: confirmable,
+        payload: payload,
+      );
 
   /// Construct a iPATCH request.
   factory CoapRequest.newIPatch(
     final Uri uri, {
     final bool confirmable = true,
+    final Iterable<int>? payload,
   }) =>
-      CoapRequest(uri, RequestMethod.ipatch, confirmable: confirmable);
+      CoapRequest(
+        uri,
+        RequestMethod.ipatch,
+        confirmable: confirmable,
+        payload: payload,
+      );
 
   CoapRequest.fromParsed(
     this.uri,

@@ -36,7 +36,13 @@ typedef HookFunction = void Function();
 /// each of which has a MessageType, a message identifier,
 /// a token (0-8 bytes), a collection of Options and a payload.
 abstract class CoapMessage {
-  CoapMessage(this.code, this._type);
+  CoapMessage(
+    this.code,
+    this._type, {
+    final Iterable<int>? payload,
+  }) {
+    this.payload = Uint8Buffer()..addAll(payload ?? []);
+  }
 
   CoapMessage.fromParsed(
     this.code,
