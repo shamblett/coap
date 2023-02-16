@@ -329,7 +329,11 @@ class BlockwiseLayer extends BaseLayer {
           final block = CoapRequest(request.uri, request.method)
             ..endpoint = request.endpoint
             // NON could make sense over SMS or similar transports
-            ..setOptions(request.getAllOptions())
+            ..setOptions(
+              request
+                  .getAllOptions()
+                  .where((final option) => !option.isUriOption),
+            )
             ..setOption(nextBlock)
             ..destination = response.source;
           if (exchange is CoapMulticastExchange) {
@@ -414,7 +418,9 @@ class BlockwiseLayer extends BaseLayer {
     final szx = status.currentSZX;
     final block = CoapRequest(request.uri, request.method)
       ..endpoint = request.endpoint
-      ..setOptions(request.getAllOptions())
+      ..setOptions(
+        request.getAllOptions().where((final option) => !option.isUriOption),
+      )
       ..destination = request.destination
       ..token = request.token;
 
@@ -457,7 +463,9 @@ class BlockwiseLayer extends BaseLayer {
       ..id = last.id
       ..source = last.source
       ..token = last.token
-      ..setOptions(last.getAllOptions());
+      ..setOptions(
+        last.getAllOptions().where((final option) => !option.isUriOption),
+      );
 
     final payload = Uint8Buffer();
     status.blocks.forEach(payload.addAll);
