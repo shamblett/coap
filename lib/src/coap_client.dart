@@ -334,6 +334,7 @@ class CoapClient {
   /// [RFC 8132, section 2]: https://www.rfc-editor.org/rfc/rfc8132.html#section-2
   Future<CoapResponse> fetch(
     final String path, {
+    required final String payload,
     final String? query,
     final CoapMediaType? accept,
     final CoapMediaType? format,
@@ -350,6 +351,8 @@ class CoapClient {
       ),
       confirmable: confirmable,
       accept: accept,
+      contentFormat: format,
+      payload: utf8.encode(payload),
     );
     _build(
       request,
