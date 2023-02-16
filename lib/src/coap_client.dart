@@ -183,7 +183,9 @@ class CoapClient {
       ),
       confirmable: confirmable,
       accept: accept,
-    )..setPayloadMedia(payload, format);
+      contentFormat: format,
+      payload: utf8.encode(payload),
+    );
     _build(
       request,
       options,
@@ -213,7 +215,9 @@ class CoapClient {
       ),
       confirmable: confirmable,
       accept: accept,
-    )..setPayloadMediaRaw(payload, format);
+      contentFormat: format,
+      payload: payload,
+    );
     _build(
       request,
       options,
@@ -245,7 +249,9 @@ class CoapClient {
       ),
       confirmable: confirmable,
       accept: accept,
-    )..setPayloadMedia(payload, format);
+      contentFormat: format,
+      payload: utf8.encode(payload),
+    );
     _build(
       request,
       options,
@@ -279,7 +285,9 @@ class CoapClient {
       ),
       confirmable: confirmable,
       accept: accept,
-    )..setPayloadMediaRaw(payload, format);
+      contentFormat: format,
+      payload: payload,
+    );
     _build(
       request,
       options,
@@ -379,6 +387,7 @@ class CoapClient {
       confirmable: confirmable,
       payload: utf8.encode(payload),
       accept: accept,
+      contentFormat: format,
     );
     _build(
       request,
@@ -417,7 +426,9 @@ class CoapClient {
       ),
       confirmable: confirmable,
       accept: accept,
-    )..setPayloadMediaRaw(payload, format);
+      payload: payload,
+      contentFormat: format,
+    );
     _build(
       request,
       options,
@@ -455,7 +466,9 @@ class CoapClient {
       ),
       confirmable: confirmable,
       accept: accept,
-    )..setPayloadMedia(payload, format);
+      payload: utf8.encode(payload),
+      contentFormat: format,
+    );
     _build(
       request,
       options,
@@ -493,7 +506,9 @@ class CoapClient {
       ),
       confirmable: confirmable,
       accept: accept,
-    )..setPayloadMediaRaw(payload, format);
+      payload: payload,
+      contentFormat: format,
+    );
     _build(
       request,
       options,
