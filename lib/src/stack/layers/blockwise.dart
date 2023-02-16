@@ -6,6 +6,7 @@
  */
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:typed_data/typed_data.dart';
@@ -95,11 +96,10 @@ class BlockwiseLayer extends BaseLayer {
             request,
             ResponseCode.requestEntityIncomplete,
             CoapMessageType.con,
-          )
-            ..addOption(
+            payload: utf8.encode('Changed Content-Format'),
+          )..addOption(
               Block1Option.fromParts(block1.num, block1.szx, m: block1.m),
-            )
-            ..setPayload('Changed Content-Format');
+            );
 
           exchange.currentResponse = error;
           super.sendResponse(exchange, error);
@@ -140,11 +140,10 @@ class BlockwiseLayer extends BaseLayer {
           request,
           ResponseCode.requestEntityIncomplete,
           CoapMessageType.con,
-        )
-          ..addOption(
+          payload: utf8.encode('Wrong block number'),
+        )..addOption(
             Block1Option.fromParts(block1.num, block1.szx, m: block1.m),
-          )
-          ..setPayload('Wrong block number');
+          );
         exchange.currentResponse = error;
         super.sendResponse(exchange, error);
       }
@@ -416,18 +415,19 @@ class BlockwiseLayer extends BaseLayer {
   ) {
     final num = status.currentNUM;
     final szx = status.currentSZX;
-    final block = CoapRequest(request.uri, request.method)
+
+    final currentSize = szx.decodedValue;
+    final from = num * currentSize;
+    final to = min((num + 1) * currentSize, request.payloadSize);
+    final payload = request.payload.getRange(from, to);
+
+    final block = CoapRequest(request.uri, request.method, payload: payload)
       ..endpoint = request.endpoint
       ..setOptions(
         request.getAllOptions().where((final option) => !option.isUriOption),
       )
       ..destination = request.destination
       ..token = request.token;
-
-    final currentSize = szx.decodedValue;
-    final from = num * currentSize;
-    final to = min((num + 1) * currentSize, request.payloadSize);
-    block.payload = request.payload.getRange(from, to);
 
     final m = to < request.payloadSize;
     block.addOption(Block1Option.fromParts(num, szx, m: m));
@@ -469,7 +469,9 @@ class BlockwiseLayer extends BaseLayer {
 
     final payload = Uint8Buffer();
     status.blocks.forEach(payload.addAll);
-    message.payload = payload;
+    message.payload
+      ..clear()
+      ..addAll(payload);
   }
 
   BlockwiseStatus _findResponseBlockStatus(
@@ -521,7 +523,8 @@ class BlockwiseLayer extends BaseLayer {
       block
         ..setBlock2(szx, num, m: m)
         // Crop payload -- do after calculation of m in case block==response
-        ..payload = response.payload.getRange(from, to)
+        ..payload.clear()
+        ..payload.addAll(response.payload.getRange(from, to))
         // Do not complete notifications
         ..last = !m && !response.hasOption<ObserveOption>();
 

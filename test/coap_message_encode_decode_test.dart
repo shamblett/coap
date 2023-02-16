@@ -6,6 +6,8 @@
  * Date   : 13/04/2017
  * Copyright :  S.Hamblett
  */
+import 'dart:convert';
+
 import 'package:coap/coap.dart';
 import 'package:coap/src/coap_message.dart';
 import 'package:coap/src/codec/udp/message_decoder.dart';
@@ -225,10 +227,11 @@ void main() {
     }
 
     void testMessage(final int testNo) {
-      final msg =
-          CoapRequest(Uri.parse('coap://example.org'), RequestMethod.get)
-            ..id = 12345
-            ..setPayload('payload');
+      final msg = CoapRequest(
+        Uri.parse('coap://example.org'),
+        RequestMethod.get,
+        payload: utf8.encode('payload'),
+      )..id = 12345;
       final data = serializeUdpMessage(msg);
       checkData(data, testNo);
       final convMsg = deserializeUdpMessage(data, 'coap');
@@ -244,14 +247,16 @@ void main() {
     }
 
     void testMessageWithOptions(final int testNo) {
-      final CoapMessage msg =
-          CoapRequest(Uri.parse('coap://example.org'), RequestMethod.get)
-            ..id = 12345
-            ..setPayload('payload')
-            ..addOption(
-              ContentFormatOption(CoapMediaType.textPlain.numericValue),
-            )
-            ..addOption(MaxAgeOption(30));
+      final CoapMessage msg = CoapRequest(
+        Uri.parse('coap://example.org'),
+        RequestMethod.get,
+        payload: utf8.encode('payload'),
+      )
+        ..id = 12345
+        ..addOption(
+          ContentFormatOption(CoapMediaType.textPlain.numericValue),
+        )
+        ..addOption(MaxAgeOption(30));
       expect(msg.getFirstOption<ContentFormatOption>()!.value, 0);
       expect(msg.getFirstOption<MaxAgeOption>()!.value, 30);
       final data = serializeUdpMessage(msg);
@@ -281,12 +286,14 @@ void main() {
     }
 
     void testMessageWithExtendedOption(final int testNo) {
-      final CoapMessage msg =
-          CoapRequest(Uri.parse('coap://example.org'), RequestMethod.get)
-            ..id = 12345
-            ..addOption(ContentFormatOption(0));
+      final CoapMessage msg = CoapRequest(
+        Uri.parse('coap://example.org'),
+        RequestMethod.get,
+        payload: utf8.encode('payload'),
+      )
+        ..id = 12345
+        ..addOption(ContentFormatOption(0));
       expect(msg.getFirstOption<ContentFormatOption>()!.value, 0);
-      msg.setPayload('payload');
 
       final data = serializeUdpMessage(msg);
       checkData(data, testNo);
