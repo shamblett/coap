@@ -137,6 +137,7 @@ class CoapClient {
   /// Sends a GET request.
   Future<CoapResponse> get(
     final String path, {
+    final String? query,
     final CoapMediaType? accept,
     final bool confirmable = true,
     final List<Option<Object?>>? options,
@@ -144,8 +145,13 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request =
-        CoapRequest.newGet(uri.replace(path: path), confirmable: confirmable);
+    final request = CoapRequest.newGet(
+      uri.replace(
+        path: path,
+        query: query,
+      ),
+      confirmable: confirmable,
+    );
     _build(
       request,
       accept,
@@ -160,6 +166,7 @@ class CoapClient {
   Future<CoapResponse> post(
     final String path, {
     required final String payload,
+    final String? query,
     final CoapMediaType? format,
     final CoapMediaType? accept,
     final bool confirmable = true,
@@ -168,9 +175,13 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request =
-        CoapRequest.newPost(uri.replace(path: path), confirmable: confirmable)
-          ..setPayloadMedia(payload, format);
+    final request = CoapRequest.newPost(
+      uri.replace(
+        path: path,
+        query: query,
+      ),
+      confirmable: confirmable,
+    )..setPayloadMedia(payload, format);
     _build(
       request,
       accept,
@@ -185,6 +196,7 @@ class CoapClient {
   Future<CoapResponse> postBytes(
     final String path, {
     required final Uint8Buffer payload,
+    final String? query,
     final CoapMediaType? format,
     final CoapMediaType? accept,
     final bool confirmable = true,
@@ -193,9 +205,13 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request =
-        CoapRequest.newPost(uri.replace(path: path), confirmable: confirmable)
-          ..setPayloadMediaRaw(payload, format);
+    final request = CoapRequest.newPost(
+      uri.replace(
+        path: path,
+        query: query,
+      ),
+      confirmable: confirmable,
+    )..setPayloadMediaRaw(payload, format);
     _build(
       request,
       accept,
@@ -210,6 +226,7 @@ class CoapClient {
   Future<CoapResponse> put(
     final String path, {
     required final String payload,
+    final String? query,
     final CoapMediaType? format,
     final CoapMediaType? accept,
     final bool confirmable = true,
@@ -220,9 +237,13 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request =
-        CoapRequest.newPut(uri.replace(path: path), confirmable: confirmable)
-          ..setPayloadMedia(payload, format);
+    final request = CoapRequest.newPut(
+      uri.replace(
+        path: path,
+        query: query,
+      ),
+      confirmable: confirmable,
+    )..setPayloadMedia(payload, format);
     _build(
       request,
       accept,
@@ -239,6 +260,7 @@ class CoapClient {
   Future<CoapResponse> putBytes(
     final String path, {
     required final Uint8Buffer payload,
+    final String? query,
     final CoapMediaType? format,
     final MatchEtags matchEtags = MatchEtags.onMatch,
     final List<Uint8Buffer>? etags,
@@ -249,9 +271,13 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request =
-        CoapRequest.newPut(uri.replace(path: path), confirmable: confirmable)
-          ..setPayloadMediaRaw(payload, format);
+    final request = CoapRequest.newPut(
+      uri.replace(
+        path: path,
+        query: query,
+      ),
+      confirmable: confirmable,
+    )..setPayloadMediaRaw(payload, format);
     _build(
       request,
       accept,
@@ -267,6 +293,7 @@ class CoapClient {
   /// Sends a DELETE request
   Future<CoapResponse> delete(
     final String path, {
+    final String? query,
     final CoapMediaType? accept,
     final bool confirmable = true,
     final List<Option<Object?>>? options,
@@ -275,7 +302,10 @@ class CoapClient {
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
     final request = CoapRequest.newDelete(
-      uri.replace(path: path),
+      uri.replace(
+        path: path,
+        query: query,
+      ),
       confirmable: confirmable,
     );
     _build(
@@ -295,6 +325,7 @@ class CoapClient {
   /// [RFC 8132, section 2]: https://www.rfc-editor.org/rfc/rfc8132.html#section-2
   Future<CoapResponse> fetch(
     final String path, {
+    final String? query,
     final CoapMediaType? accept,
     final bool confirmable = true,
     final List<Option<Object?>>? options,
@@ -302,8 +333,13 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request =
-        CoapRequest.newFetch(uri.replace(path: path), confirmable: confirmable);
+    final request = CoapRequest.newFetch(
+      uri.replace(
+        path: path,
+        query: query,
+      ),
+      confirmable: confirmable,
+    );
     _build(
       request,
       accept,
@@ -322,6 +358,7 @@ class CoapClient {
   Future<CoapResponse> patch(
     final String path, {
     required final String payload,
+    final String? query,
     final CoapMediaType? format,
     final CoapMediaType? accept,
     final bool confirmable = true,
@@ -332,9 +369,13 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request =
-        CoapRequest.newPatch(uri.replace(path: path), confirmable: confirmable)
-          ..setPayloadMedia(payload, format);
+    final request = CoapRequest.newPatch(
+      uri.replace(
+        path: path,
+        query: query,
+      ),
+      confirmable: confirmable,
+    )..setPayloadMedia(payload, format);
     _build(
       request,
       accept,
@@ -355,6 +396,7 @@ class CoapClient {
   Future<CoapResponse> patchBytes(
     final String path, {
     required final Uint8Buffer payload,
+    final String? query,
     final CoapMediaType? format,
     final MatchEtags matchEtags = MatchEtags.onMatch,
     final List<Uint8Buffer>? etags,
@@ -365,9 +407,13 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request =
-        CoapRequest.newPatch(uri.replace(path: path), confirmable: confirmable)
-          ..setPayloadMediaRaw(payload, format);
+    final request = CoapRequest.newPatch(
+      uri.replace(
+        path: path,
+        query: query,
+      ),
+      confirmable: confirmable,
+    )..setPayloadMediaRaw(payload, format);
     _build(
       request,
       accept,
@@ -388,6 +434,7 @@ class CoapClient {
   Future<CoapResponse> iPatch(
     final String path, {
     required final String payload,
+    final String? query,
     final CoapMediaType? format,
     final CoapMediaType? accept,
     final bool confirmable = true,
@@ -398,9 +445,13 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request =
-        CoapRequest.newIPatch(uri.replace(path: path), confirmable: confirmable)
-          ..setPayloadMedia(payload, format);
+    final request = CoapRequest.newIPatch(
+      uri.replace(
+        path: path,
+        query: query,
+      ),
+      confirmable: confirmable,
+    )..setPayloadMedia(payload, format);
     _build(
       request,
       accept,
@@ -421,6 +472,7 @@ class CoapClient {
   Future<CoapResponse> iPatchBytes(
     final String path, {
     required final Uint8Buffer payload,
+    final String? query,
     final CoapMediaType? format,
     final MatchEtags matchEtags = MatchEtags.onMatch,
     final List<Uint8Buffer>? etags,
@@ -431,9 +483,13 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request =
-        CoapRequest.newIPatch(uri.replace(path: path), confirmable: confirmable)
-          ..setPayloadMediaRaw(payload, format);
+    final request = CoapRequest.newIPatch(
+      uri.replace(
+        path: path,
+        query: query,
+      ),
+      confirmable: confirmable,
+    )..setPayloadMediaRaw(payload, format);
     _build(
       request,
       accept,
