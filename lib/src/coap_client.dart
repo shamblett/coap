@@ -521,11 +521,12 @@ class CoapClient {
 
   /// Discovers remote resources.
   Future<Iterable<CoapWebLink>?> discover({
-    final String query = '',
+    final String path = CoapConstants.defaultWellKnownURI,
+    final String? query,
   }) async {
     final discover = CoapRequest.newGet(
       uri.replace(
-        path: CoapConstants.defaultWellKnownURI,
+        path: path,
         query: query,
       ),
     );
