@@ -148,7 +148,6 @@ class CoapClient {
         CoapRequest.newGet(uri.replace(path: path), confirmable: confirmable);
     _build(
       request,
-      path,
       accept,
       options,
       earlyBlock2Negotiation,
@@ -174,7 +173,6 @@ class CoapClient {
           ..setPayloadMedia(payload, format);
     _build(
       request,
-      path,
       accept,
       options,
       earlyBlock2Negotiation,
@@ -200,7 +198,6 @@ class CoapClient {
           ..setPayloadMediaRaw(payload, format);
     _build(
       request,
-      path,
       accept,
       options,
       earlyBlock2Negotiation,
@@ -228,7 +225,6 @@ class CoapClient {
           ..setPayloadMedia(payload, format);
     _build(
       request,
-      path,
       accept,
       options,
       earlyBlock2Negotiation,
@@ -258,7 +254,6 @@ class CoapClient {
           ..setPayloadMediaRaw(payload, format);
     _build(
       request,
-      path,
       accept,
       options,
       earlyBlock2Negotiation,
@@ -285,7 +280,6 @@ class CoapClient {
     );
     _build(
       request,
-      path,
       accept,
       options,
       earlyBlock2Negotiation,
@@ -312,7 +306,6 @@ class CoapClient {
         CoapRequest.newFetch(uri.replace(path: path), confirmable: confirmable);
     _build(
       request,
-      path,
       accept,
       options,
       earlyBlock2Negotiation,
@@ -344,7 +337,6 @@ class CoapClient {
           ..setPayloadMedia(payload, format);
     _build(
       request,
-      path,
       accept,
       options,
       earlyBlock2Negotiation,
@@ -378,7 +370,6 @@ class CoapClient {
           ..setPayloadMediaRaw(payload, format);
     _build(
       request,
-      path,
       accept,
       options,
       earlyBlock2Negotiation,
@@ -412,7 +403,6 @@ class CoapClient {
           ..setPayloadMedia(payload, format);
     _build(
       request,
-      path,
       accept,
       options,
       earlyBlock2Negotiation,
@@ -446,7 +436,6 @@ class CoapClient {
           ..setPayloadMediaRaw(payload, format);
     _build(
       request,
-      path,
       accept,
       options,
       earlyBlock2Negotiation,
@@ -568,7 +557,6 @@ class CoapClient {
 
   void _build(
     final CoapRequest request,
-    final String path,
     final CoapMediaType? accept,
     final List<Option<Object?>>? options,
     final bool earlyBlock2Negotiation,
