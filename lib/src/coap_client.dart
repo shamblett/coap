@@ -6,6 +6,7 @@
  */
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
@@ -151,10 +152,10 @@ class CoapClient {
         query: query,
       ),
       confirmable: confirmable,
+      accept: accept,
     );
     _build(
       request,
-      accept,
       options,
       earlyBlock2Negotiation,
       maxRetransmit,
@@ -181,10 +182,10 @@ class CoapClient {
         query: query,
       ),
       confirmable: confirmable,
+      accept: accept,
     )..setPayloadMedia(payload, format);
     _build(
       request,
-      accept,
       options,
       earlyBlock2Negotiation,
       maxRetransmit,
@@ -211,10 +212,10 @@ class CoapClient {
         query: query,
       ),
       confirmable: confirmable,
+      accept: accept,
     )..setPayloadMediaRaw(payload, format);
     _build(
       request,
-      accept,
       options,
       earlyBlock2Negotiation,
       maxRetransmit,
@@ -243,10 +244,10 @@ class CoapClient {
         query: query,
       ),
       confirmable: confirmable,
+      accept: accept,
     )..setPayloadMedia(payload, format);
     _build(
       request,
-      accept,
       options,
       earlyBlock2Negotiation,
       maxRetransmit,
@@ -277,10 +278,10 @@ class CoapClient {
         query: query,
       ),
       confirmable: confirmable,
+      accept: accept,
     )..setPayloadMediaRaw(payload, format);
     _build(
       request,
-      accept,
       options,
       earlyBlock2Negotiation,
       maxRetransmit,
@@ -307,10 +308,10 @@ class CoapClient {
         query: query,
       ),
       confirmable: confirmable,
+      accept: accept,
     );
     _build(
       request,
-      accept,
       options,
       earlyBlock2Negotiation,
       maxRetransmit,
@@ -327,6 +328,7 @@ class CoapClient {
     final String path, {
     final String? query,
     final CoapMediaType? accept,
+    final CoapMediaType? format,
     final bool confirmable = true,
     final List<Option<Object?>>? options,
     final bool earlyBlock2Negotiation = false,
@@ -339,10 +341,10 @@ class CoapClient {
         query: query,
       ),
       confirmable: confirmable,
+      accept: accept,
     );
     _build(
       request,
-      accept,
       options,
       earlyBlock2Negotiation,
       maxRetransmit,
@@ -375,10 +377,11 @@ class CoapClient {
         query: query,
       ),
       confirmable: confirmable,
-    )..setPayloadMedia(payload, format);
+      payload: utf8.encode(payload),
+      accept: accept,
+    );
     _build(
       request,
-      accept,
       options,
       earlyBlock2Negotiation,
       maxRetransmit,
@@ -413,10 +416,10 @@ class CoapClient {
         query: query,
       ),
       confirmable: confirmable,
+      accept: accept,
     )..setPayloadMediaRaw(payload, format);
     _build(
       request,
-      accept,
       options,
       earlyBlock2Negotiation,
       maxRetransmit,
@@ -451,10 +454,10 @@ class CoapClient {
         query: query,
       ),
       confirmable: confirmable,
+      accept: accept,
     )..setPayloadMedia(payload, format);
     _build(
       request,
-      accept,
       options,
       earlyBlock2Negotiation,
       maxRetransmit,
@@ -489,10 +492,10 @@ class CoapClient {
         query: query,
       ),
       confirmable: confirmable,
+      accept: accept,
     )..setPayloadMediaRaw(payload, format);
     _build(
       request,
-      accept,
       options,
       earlyBlock2Negotiation,
       maxRetransmit,
@@ -614,16 +617,13 @@ class CoapClient {
 
   void _build(
     final CoapRequest request,
-    final CoapMediaType? accept,
     final List<Option<Object?>>? options,
     final bool earlyBlock2Negotiation,
     final int maxRetransmit, {
     final MatchEtags matchEtags = MatchEtags.onMatch,
     final List<Uint8Buffer>? etags,
   }) {
-    request
-      ..accept = accept
-      ..maxRetransmit = maxRetransmit;
+    request.maxRetransmit = maxRetransmit;
     if (options != null) {
       request.addOptions(options);
     }

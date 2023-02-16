@@ -40,8 +40,10 @@ abstract class CoapMessage {
     this.code,
     this._type, {
     final Iterable<int>? payload,
+    final CoapMediaType? contentFormat,
   }) {
     this.payload = Uint8Buffer()..addAll(payload ?? []);
+    contentType = contentFormat;
   }
 
   CoapMessage.fromParsed(

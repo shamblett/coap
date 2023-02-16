@@ -9,6 +9,7 @@ import 'package:meta/meta.dart';
 import 'package:typed_data/typed_buffers.dart';
 
 import 'coap_code.dart';
+import 'coap_media_type.dart';
 import 'coap_message.dart';
 import 'coap_message_type.dart';
 import 'net/endpoint.dart';
@@ -28,10 +29,14 @@ class CoapRequest extends CoapMessage {
     this.method, {
     final bool confirmable = true,
     super.payload,
+    final CoapMediaType? accept,
+    super.contentFormat,
   }) : super(
           method.coapCode,
           confirmable ? CoapMessageType.con : CoapMessageType.non,
-        );
+        ) {
+    super.accept = accept;
+  }
 
   /// The request method(code)
   final RequestMethod method;
@@ -81,12 +86,14 @@ class CoapRequest extends CoapMessage {
     final Uri uri, {
     final bool confirmable = true,
     final Iterable<int>? payload,
+    final CoapMediaType? accept,
   }) =>
       CoapRequest(
         uri,
         RequestMethod.get,
         confirmable: confirmable,
         payload: payload,
+        accept: accept,
       );
 
   /// Construct a POST request.
@@ -94,12 +101,16 @@ class CoapRequest extends CoapMessage {
     final Uri uri, {
     final bool confirmable = true,
     final Iterable<int>? payload,
+    final CoapMediaType? contentFormat,
+    final CoapMediaType? accept,
   }) =>
       CoapRequest(
         uri,
         RequestMethod.post,
         confirmable: confirmable,
         payload: payload,
+        contentFormat: contentFormat,
+        accept: accept,
       );
 
   /// Construct a PUT request.
@@ -107,12 +118,16 @@ class CoapRequest extends CoapMessage {
     final Uri uri, {
     final bool confirmable = true,
     final Iterable<int>? payload,
+    final CoapMediaType? contentFormat,
+    final CoapMediaType? accept,
   }) =>
       CoapRequest(
         uri,
         RequestMethod.put,
         confirmable: confirmable,
         payload: payload,
+        contentFormat: contentFormat,
+        accept: accept,
       );
 
   /// Construct a DELETE request.
@@ -120,12 +135,14 @@ class CoapRequest extends CoapMessage {
     final Uri uri, {
     final bool confirmable = true,
     final Iterable<int>? payload,
+    final CoapMediaType? accept,
   }) =>
       CoapRequest(
         uri,
         RequestMethod.delete,
         confirmable: confirmable,
         payload: payload,
+        accept: accept,
       );
 
   /// Construct a FETCH request.
@@ -133,12 +150,16 @@ class CoapRequest extends CoapMessage {
     final Uri uri, {
     final bool confirmable = true,
     final Iterable<int>? payload,
+    final CoapMediaType? contentFormat,
+    final CoapMediaType? accept,
   }) =>
       CoapRequest(
         uri,
         RequestMethod.fetch,
         confirmable: confirmable,
         payload: payload,
+        contentFormat: contentFormat,
+        accept: accept,
       );
 
   /// Construct a PATCH request.
@@ -146,12 +167,16 @@ class CoapRequest extends CoapMessage {
     final Uri uri, {
     final bool confirmable = true,
     final Iterable<int>? payload,
+    final CoapMediaType? contentFormat,
+    final CoapMediaType? accept,
   }) =>
       CoapRequest(
         uri,
         RequestMethod.patch,
         confirmable: confirmable,
         payload: payload,
+        contentFormat: contentFormat,
+        accept: accept,
       );
 
   /// Construct a iPATCH request.
@@ -159,12 +184,16 @@ class CoapRequest extends CoapMessage {
     final Uri uri, {
     final bool confirmable = true,
     final Iterable<int>? payload,
+    final CoapMediaType? contentFormat,
+    final CoapMediaType? accept,
   }) =>
       CoapRequest(
         uri,
         RequestMethod.ipatch,
         confirmable: confirmable,
         payload: payload,
+        contentFormat: contentFormat,
+        accept: accept,
       );
 
   CoapRequest.fromParsed(
