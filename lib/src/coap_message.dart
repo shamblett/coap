@@ -17,6 +17,7 @@ import 'coap_code.dart';
 import 'coap_media_type.dart';
 import 'coap_message_type.dart';
 import 'coap_response.dart';
+import 'codec/tcp/message_encoder.dart';
 import 'codec/udp/message_decoder.dart';
 import 'codec/udp/message_encoder.dart';
 import 'event/coap_event_bus.dart';
@@ -635,18 +636,8 @@ abstract class CoapMessage {
   /// Is also used for DTLS.
   Uint8Buffer toUdpPayload() => serializeUdpMessage(this);
 
-  /// Serializes this CoAP message from the TCP message format.
-  ///
-  /// Is also used for TLS.
-  static CoapMessage? fromTcpPayload(final Uint8Buffer data) =>
-      throw UnimplementedError(
-        'TCP segment deserialization is not implemented yet.',
-      );
-
   /// Serializes this CoAP message into the TCP message format.
   ///
   /// Is also used for TLS.
-  Uint8Buffer toTcpPayload() => throw UnimplementedError(
-        'TCP segment serialization is not implemented yet.',
-      );
+  Uint8Buffer toTcpPayload() => serializeTcpMessage(this);
 }
