@@ -6,7 +6,7 @@ import 'dart:io';
 
 import 'package:coap/coap.dart';
 
-Future<ServerSocket> startServer() async {
+Future<void> startServer() async {
   final server = await ServerSocket.bind(InternetAddress.anyIPv4, 5683);
   server.listen((final connection) async {
     await connection.forEach((final frame) async {
@@ -15,7 +15,7 @@ Future<ServerSocket> startServer() async {
       const responseCode = (2 << 5) + 5;
 
       const tokenLength = 8;
-      const tokenOffset = 2;
+      const tokenOffset = 3;
       final token = frame.sublist(tokenOffset, tokenOffset + tokenLength);
       final payload = utf8.encode('Hello');
 
@@ -29,27 +29,28 @@ Future<ServerSocket> startServer() async {
 
       connection.add(response);
       await connection.close();
+      await server.close();
     });
   });
-
-  return server;
 }
 
 /// Tests the basic functionality of the TCP network.
 /// Will be replaced with a "real" example later.
 Future<void> main() async {
-  final server = await startServer();
+  await startServer();
   await connect();
-
-  await server.close();
 }
 
 Future<void> connect() async {
   final coapClient = CoapClient(Uri.parse('coap+tcp://127.0.0.1'));
 
-  final response = await coapClient.get(
+  final response = await coapClient.post(
     'test',
-    options: [ContentFormatOption(40)],
+    options: [
+      ContentFormatOption(50),
+      AcceptOption(60),
+    ],
+    payload: 'Hello?',
   );
   print(response);
 
