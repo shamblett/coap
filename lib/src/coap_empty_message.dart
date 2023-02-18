@@ -44,13 +44,13 @@ class CoapEmptyMessage extends CoapMessage {
         ..destination = message.source;
 
   CoapEmptyMessage.fromParsed({
-    required final CoapMessageType type,
-    required final int id,
     required final Uint8Buffer token,
     required final List<Option<Object?>> options,
     required final Uint8Buffer? payload,
     required final bool hasUnknownCriticalOption,
     required final bool hasFormatError,
+    final int? id,
+    final CoapMessageType? type,
   }) : super.fromParsed(
           RequestMethod.empty.coapCode,
           type,

@@ -42,7 +42,7 @@ class CoapRequest extends CoapMessage {
   final RequestMethod method;
 
   @override
-  CoapMessageType get type {
+  CoapMessageType? get type {
     if (super.type == CoapMessageType.con && isMulticast) {
       return CoapMessageType.non;
     }
@@ -73,8 +73,10 @@ class CoapRequest extends CoapMessage {
   Endpoint? get endpoint => _endpoint;
   @internal
   set endpoint(final Endpoint? endpoint) {
-    super.id = endpoint!.nextMessageId;
-    super.destination = endpoint.destination;
+    if (['coap', 'coaps'].contains(uri.scheme)) {
+      super.id = endpoint!.nextMessageId;
+    }
+    super.destination = endpoint!.destination;
     _endpoint = endpoint;
   }
 
@@ -199,13 +201,13 @@ class CoapRequest extends CoapMessage {
   CoapRequest.fromParsed(
     this.uri,
     this.method, {
-    required final CoapMessageType type,
-    required final int id,
     required final Uint8Buffer token,
     required final List<Option<Object?>> options,
     required final Uint8Buffer? payload,
     required final bool hasUnknownCriticalOption,
     required final bool hasFormatError,
+    final CoapMessageType? type,
+    final int? id,
   }) : super.fromParsed(
           method.coapCode,
           type,

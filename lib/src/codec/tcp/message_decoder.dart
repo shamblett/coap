@@ -11,7 +11,6 @@ import 'package:typed_data/typed_data.dart';
 import '../../coap_code.dart';
 import '../../coap_empty_message.dart';
 import '../../coap_message.dart';
-import '../../coap_message_type.dart';
 import '../../coap_request.dart';
 import '../../coap_response.dart';
 import '../../option/coap_option_type.dart';
@@ -265,9 +264,6 @@ final deserializeTcpMessage = StreamTransformer<RawCoapTcpMessage, CoapMessage>(
             coapMessage = CoapRequest.fromParsed(
               uri,
               method,
-              // id and type are not defined for CoAP over TCP
-              id: 0,
-              type: CoapMessageType.ack,
               token: tokenBuffer,
               options: options,
               payload: payload,
@@ -286,8 +282,6 @@ final deserializeTcpMessage = StreamTransformer<RawCoapTcpMessage, CoapMessage>(
 
             coapMessage = CoapResponse.fromParsed(
               responseCode,
-              id: 0,
-              type: CoapMessageType.ack,
               token: tokenBuffer,
               options: options,
               payload: payload,
@@ -297,8 +291,6 @@ final deserializeTcpMessage = StreamTransformer<RawCoapTcpMessage, CoapMessage>(
             );
           } else if (code.isEmpty) {
             coapMessage = CoapEmptyMessage.fromParsed(
-              id: 0,
-              type: CoapMessageType.ack,
               token: tokenBuffer,
               options: options,
               payload: payload,

@@ -48,8 +48,7 @@ abstract class CoapMessage {
 
   CoapMessage.fromParsed(
     this.code,
-    this._type, {
-    required final int id,
+    this.type, {
     required final Uint8Buffer token,
     required final List<Option<Object?>> options,
     required final Uint8Buffer? payload,
@@ -65,13 +64,8 @@ abstract class CoapMessage {
 
   bool hasFormatError = false;
 
-  CoapMessageType _type;
-
-  @internal
-  set type(final CoapMessageType type) => _type = type;
-
   /// The type of this CoAP message.
-  CoapMessageType get type => _type;
+  CoapMessageType? type;
 
   /// The code of this CoAP message.
   final CoapCode code;
@@ -79,12 +73,8 @@ abstract class CoapMessage {
   /// The codestring
   String get codeString => code.toString();
 
-  int? _id;
-
   /// The ID of this CoAP message.
-  int? get id => _id;
-  @internal
-  set id(final int? val) => _id = val;
+  int? id;
 
   final List<Option<Object?>> _options = [];
 

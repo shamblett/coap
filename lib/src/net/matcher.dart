@@ -35,6 +35,7 @@ class CoapMatcher {
   late StreamSubscription<CoapCompletedEvent> subscr;
 
   /// For all
+  // TODO(JKRhb): Check if this really works with TCP exchanges
   final Map<int?, CoapExchange> _exchangesById = <int?, CoapExchange>{};
 
   /// For outgoing
@@ -68,7 +69,9 @@ class CoapMatcher {
     // If this request goes lost, we do not get anything back.
 
     // The MID is from the local namespace -- use blank address
-    _exchangesById[request.id] = exchange;
+    if (_isUdp(exchange.request)) {
+      _exchangesById[request.id] = exchange;
+    }
     _exchangesByToken[request.tokenString] = exchange;
   }
 
@@ -81,10 +84,14 @@ class CoapMatcher {
     // CON/NON request with same MID again. We then find the corresponding
     // exchange and the ReliabilityLayer resends this response.
 
+    final isUdp = _isUdp(exchange.request);
+
+    final isConNotification = response.type == CoapMessageType.con ||
+        response.type == CoapMessageType.ack;
+
     // If this is a CON notification we now can forget all previous
     // NON notifications.
-    if (response.type == CoapMessageType.con ||
-        response.type == CoapMessageType.ack) {
+    if (isUdp && isConNotification) {
       final relation = exchange.relation;
       if (relation != null) {
         _removeNotificatoinsOf(relation);
@@ -107,8 +114,7 @@ class CoapMatcher {
 
     // Insert CON and NON to match ACKs and RSTs to the exchange
     // Do not insert ACKs and RSTs.
-    if (response.type == CoapMessageType.con ||
-        response.type == CoapMessageType.non) {
+    if (isUdp && isConNotification) {
       _exchangesById[response.id] = exchange;
     }
 
@@ -222,7 +228,7 @@ class CoapMatcher {
       final prev = _deduplicator.findPrevious(response.id, exchange);
       if (prev != null) {
         response.duplicate = true;
-      } else {
+      } else if (_isUdp(exchange.request)) {
         _exchangesById.remove(exchange.currentRequest.id);
       }
 
@@ -292,3 +298,6 @@ class CoapMatcher {
     }
   }
 }
+
+bool _isUdp(final CoapRequest request) =>
+    ['coap', 'coaps'].contains(request.uri.scheme);

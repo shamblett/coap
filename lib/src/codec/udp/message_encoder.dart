@@ -29,11 +29,16 @@ Uint8Buffer serializeUdpMessage(final CoapMessage message) {
 
   const version = message_format.Version.version1;
   const versionLength = message_format.Version.bitLength;
+  final type = message.type;
+
+  if (type == null) {
+    throw FormatException('No type defind for CoAP Message:\n$message');
+  }
 
   // Write fixed-size CoAP headers
   writer
     ..write(version.numericValue, versionLength)
-    ..write(message.type.code, CoapMessageType.bitLength);
+    ..write(type.code, CoapMessageType.bitLength);
 
   final token = message.token;
   final tokenLength = _getTokenLength(token);
