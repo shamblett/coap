@@ -5,8 +5,6 @@
  * Copyright :  Jan Romann
  */
 
-import 'dart:typed_data';
-
 /// Function signature for a callback function for retrieving/generating
 /// [PskCredentials].
 ///
