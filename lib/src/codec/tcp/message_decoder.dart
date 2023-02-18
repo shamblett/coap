@@ -342,6 +342,7 @@ List<Option<Object?>> readOptions(final DatagramReader reader) {
         // The presence of a marker followed by a zero-length payload
         // must be processed as a message format error
       }
+      break;
     } else {
       // The first 4 bits of the byte represent the option delta
       final optionDeltaNibble = (0xF0 & nextByte) >> 4;

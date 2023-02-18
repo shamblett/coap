@@ -99,12 +99,14 @@ abstract class CoapINetwork {
           address,
           port ?? config.defaultPort,
           bindAddress ?? defaultBindAddress,
+          namespace: namespace,
         );
       case 'coaps+tcp':
         return CoapNetworkTCP(
           address,
           port ?? config.defaultSecurePort,
           bindAddress ?? defaultBindAddress,
+          namespace: namespace,
           isTls: true,
         );
       default:
