@@ -218,110 +218,115 @@ int determineExtendedLength(final int length) {
 /// Returns the deserialized message, or `null` if the message can not be
 /// decoded, i.e. the bytes do not represent a [CoapRequest], a [CoapResponse]
 /// or a [CoapEmptyMessage].
-final deserializeTcpMessage = StreamTransformer<RawCoapTcpMessage, CoapMessage>(
-    (final input, final cancelOnError) {
-  final controller = StreamController<CoapMessage>();
+StreamTransformer<RawCoapTcpMessage, CoapMessage> deserializeTcpMessage(
+  final String uriScheme,
+  final InternetAddress destinationAddress,
+) =>
+    StreamTransformer<RawCoapTcpMessage, CoapMessage>(
+        (final input, final cancelOnError) {
+      final controller = StreamController<CoapMessage>();
 
-  controller.onListen = () {
-    final subscription = input.listen(
-      (final coapTcpMessage) {
-        final code = CoapCode.decode(coapTcpMessage.code);
+      controller.onListen = () {
+        final subscription = input.listen(
+          (final coapTcpMessage) {
+            final code = CoapCode.decode(coapTcpMessage.code);
 
-        if (code == null) {
-          throw const FormatException('Encountered unknown CoapCode');
-        }
+            if (code == null) {
+              throw const FormatException('Encountered unknown CoapCode');
+            }
 
-        final token = coapTcpMessage.token;
+            final token = coapTcpMessage.token;
 
-        final reader = DatagramReader(
-          Uint8Buffer()..addAll(coapTcpMessage.optionsAndPayload),
+            final reader = DatagramReader(
+              Uint8Buffer()..addAll(coapTcpMessage.optionsAndPayload),
+            );
+
+            try {
+              final options = readOptions(reader);
+              final payload = reader.readBytesLeft();
+              final tokenBuffer = Uint8Buffer()..addAll(token);
+              final CoapMessage coapMessage;
+
+              // TODO(JKRhb): Probably not really needed for TCP, since
+              //              connections are simply closed on error
+              const hasUnknownCriticalOption = false;
+              const hasFormatError = false;
+
+              if (code.isRequest) {
+                final method = RequestMethod.fromCoapCode(code);
+                if (method == null) {
+                  return;
+                }
+
+                final uri = optionsToUri(
+                  options.where((final option) => option.isUriOption).toList(),
+                  scheme: uriScheme,
+                  destinationAddress: destinationAddress,
+                );
+
+                coapMessage = CoapRequest.fromParsed(
+                  uri,
+                  method,
+                  token: tokenBuffer,
+                  options: options,
+                  payload: payload,
+                  hasUnknownCriticalOption: hasUnknownCriticalOption,
+                  hasFormatError: hasFormatError,
+                );
+              } else if (code.isResponse) {
+                final responseCode = ResponseCode.fromCoapCode(code);
+                if (responseCode == null) {
+                  return;
+                }
+
+                final location = optionsToUri(
+                  options
+                      .where((final option) => option.isLocationOption)
+                      .toList(),
+                );
+
+                coapMessage = CoapResponse.fromParsed(
+                  responseCode,
+                  token: tokenBuffer,
+                  options: options,
+                  payload: payload,
+                  location: location,
+                  hasUnknownCriticalOption: hasUnknownCriticalOption,
+                  hasFormatError: hasFormatError,
+                );
+              } else if (code.isEmpty) {
+                coapMessage = CoapEmptyMessage.fromParsed(
+                  token: tokenBuffer,
+                  options: options,
+                  payload: payload,
+                  hasUnknownCriticalOption: hasUnknownCriticalOption,
+                  hasFormatError: hasFormatError,
+                );
+              } else {
+                return;
+              }
+
+              controller.add(coapMessage);
+            } on UnknownCriticalOptionException {
+              // Should something be done here?
+              return;
+            } on FormatException {
+              // Should something be done here?
+              return;
+            }
+          },
+          onDone: controller.close,
+          onError: controller.addError,
+          cancelOnError: cancelOnError,
         );
+        controller
+          ..onPause = subscription.pause
+          ..onResume = subscription.resume
+          ..onCancel = subscription.cancel;
+      };
 
-        try {
-          final options = readOptions(reader);
-          final payload = reader.readBytesLeft();
-          final tokenBuffer = Uint8Buffer()..addAll(token);
-          final CoapMessage coapMessage;
-
-          // TODO(JKRhb): Probably not really needed for TCP, since connections
-          //              are simply closed on error
-          const hasUnknownCriticalOption = false;
-          const hasFormatError = false;
-
-          if (code.isRequest) {
-            final method = RequestMethod.fromCoapCode(code);
-            if (method == null) {
-              return;
-            }
-
-            final uri = optionsToUri(
-              options.where((final option) => option.isUriOption).toList(),
-              scheme: 'coap+tcp', // TODO(JKRhb): Replace
-              destinationAddress:
-                  InternetAddress('127.0.0.1'), // TODO(JKRhb): Replace
-            );
-
-            coapMessage = CoapRequest.fromParsed(
-              uri,
-              method,
-              token: tokenBuffer,
-              options: options,
-              payload: payload,
-              hasUnknownCriticalOption: hasUnknownCriticalOption,
-              hasFormatError: hasFormatError,
-            );
-          } else if (code.isResponse) {
-            final responseCode = ResponseCode.fromCoapCode(code);
-            if (responseCode == null) {
-              return;
-            }
-
-            final location = optionsToUri(
-              options.where((final option) => option.isLocationOption).toList(),
-            );
-
-            coapMessage = CoapResponse.fromParsed(
-              responseCode,
-              token: tokenBuffer,
-              options: options,
-              payload: payload,
-              location: location,
-              hasUnknownCriticalOption: hasUnknownCriticalOption,
-              hasFormatError: hasFormatError,
-            );
-          } else if (code.isEmpty) {
-            coapMessage = CoapEmptyMessage.fromParsed(
-              token: tokenBuffer,
-              options: options,
-              payload: payload,
-              hasUnknownCriticalOption: hasUnknownCriticalOption,
-              hasFormatError: hasFormatError,
-            );
-          } else {
-            return;
-          }
-
-          controller.add(coapMessage);
-        } on UnknownCriticalOptionException {
-          // Should something be done here?
-          return;
-        } on FormatException {
-          // Should something be done here?
-          return;
-        }
-      },
-      onDone: controller.close,
-      onError: controller.addError,
-      cancelOnError: cancelOnError,
-    );
-    controller
-      ..onPause = subscription.pause
-      ..onResume = subscription.resume
-      ..onCancel = subscription.cancel;
-  };
-
-  return controller.stream.listen(null);
-});
+      return controller.stream.listen(null);
+    });
 
 List<Option<Object?>> readOptions(final DatagramReader reader) {
   final options = <Option<Object?>>[];

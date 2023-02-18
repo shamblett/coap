@@ -2,18 +2,27 @@
 
 // SPDX-License-Identifier: MIT
 
+import 'dart:io';
+
 import 'package:typed_data/typed_data.dart';
 
 import '../../coap_code.dart';
 import '../../coap_message.dart';
+import '../../coap_request.dart';
 import '../../option/coap_option_type.dart';
+import '../../option/integer_option.dart';
+import '../../option/option.dart';
+import '../../option/string_option.dart';
 import '../udp/datagram_writer.dart';
 import '../udp/message_format.dart' as message_format;
 
 /// Encodes a CoAP TCP or WebSockets message into a bytes array.
 /// Returns the encoded bytes, or null if the message can not be encoded,
 /// i.e. the message is not a Request, a Response or an EmptyMessage.
-Uint8Buffer serializeTcpMessage(final CoapMessage message) {
+Uint8Buffer serializeTcpMessage(
+  final CoapMessage message, {
+  final bool isWebSockets = false,
+}) {
   final writer = DatagramWriter();
 
   final token = message.token;
@@ -27,8 +36,14 @@ Uint8Buffer serializeTcpMessage(final CoapMessage message) {
 
   final messageLength = options.lengthInBytes + payloadLength;
 
-  // TODO(JKRhb): Refactor
-  final lengthField = _getOptionNibble(messageLength);
+  final int lengthField;
+
+  if (isWebSockets) {
+    lengthField = 0;
+  } else {
+    // TODO(JKRhb): Refactor
+    lengthField = _getOptionNibble(messageLength);
+  }
 
   writer
     ..write(lengthField, 4)
@@ -71,7 +86,7 @@ Uint8Buffer _serializeOptions(final CoapMessage message) {
   final options = message.getAllOptions()..sort();
 
   for (final opt in options) {
-    if (opt.type == OptionType.uriHost || opt.type == OptionType.uriPort) {
+    if (_shouldBeSkipped(opt, message)) {
       continue;
     }
 
@@ -180,4 +195,20 @@ int _getOptionNibble(final int optionValue) {
   } else {
     throw FormatException('Unsupported option delta $optionValue');
   }
+}
+
+// TODO(JKRhb): Refactor
+bool _shouldBeSkipped(final Option<Object?> opt, final CoapMessage message) {
+  if (opt is UriHostOption) {
+    final hostAddress = InternetAddress.tryParse(opt.value);
+
+    return hostAddress != null && hostAddress == message.destination;
+  }
+
+  // TODO(JKRhb): Revisit port option
+  if (opt is UriPortOption && message is CoapRequest) {
+    return true;
+  }
+
+  return false;
 }

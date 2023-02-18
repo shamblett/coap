@@ -41,6 +41,8 @@ class CoapNetworkTCP implements CoapINetwork {
 
   final bool isTls;
 
+  String get _scheme => isTls ? 'coap+tcp' : 'coaps+tcp';
+
   final SecurityContext? _tlsContext;
 
   Socket? _socket;
@@ -100,7 +102,7 @@ class CoapNetworkTCP implements CoapINetwork {
     socket
         ?.transform(toByteStream)
         .transform(toRawCoapTcpStream)
-        .transform(deserializeTcpMessage)
+        .transform(deserializeTcpMessage(_scheme, address))
         .listen(
           (final message) {
             eventBus.fire(CoapMessageReceivedEvent(message, address));
