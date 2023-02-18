@@ -249,19 +249,94 @@ class NoResponseOption extends IntegerOption {
       : super.parse(OptionType.noResponse, bytes);
 }
 
-class OcfAcceptContentFormatVersion extends IntegerOption
-    with OscoreOptionClassE {
+/// Base class for the OCF options [OcfAcceptContentFormatVersion] and
+/// [OcfContentFormatVersion].
+abstract class OcfVersionOption extends IntegerOption with OscoreOptionClassE {
+  OcfVersionOption(super.type, super.value);
+
+  OcfVersionOption.parse(super.type, super.bytes) : super.parse();
+
+  /// Creates a new OCF version option of a specified [type] composed of a
+  /// [majorVersion], a [minorVersion], and a [subVersion].
+  OcfVersionOption.fromVersion(
+    final OptionType type,
+    final int majorVersion,
+    final int minorVersion,
+    final int subVersion,
+  ) : super(type, _versionToValue(majorVersion, minorVersion, subVersion));
+
+  static int _versionToValue(
+    final int majorVersion,
+    final int minorVersion,
+    final int subVersion,
+  ) =>
+      (majorVersion << _majorBitShift) +
+      (minorVersion << _minorBitShift) +
+      subVersion;
+
+  static int _maskBits(final int maskLength) => (1 << maskLength) - 1;
+
+  static const _majorBitShift = 11;
+
+  static const _minorBitShift = 6;
+
+  /// The major version represented by the option [value].
+  ///
+  /// Represented by the five most significant bits.
+  int get majorVersion => (value >> _majorBitShift) & _maskBits(5);
+
+  /// The minor version represented by the option [value].
+  ///
+  /// Represented by bits 6 to 10.
+  int get minorVersion => (value >> _minorBitShift) & _maskBits(5);
+
+  /// The sub version represented by the option [value].
+  ///
+  /// Represented by the six least significant bits.
+  int get subVersion => value & _maskBits(6);
+
+  @override
+  String get valueString => '$majorVersion.$minorVersion.$subVersion';
+}
+
+class OcfAcceptContentFormatVersion extends OcfVersionOption {
   OcfAcceptContentFormatVersion(final int value)
       : super(OptionType.ocfAcceptContentFormatVersion, value);
 
   OcfAcceptContentFormatVersion.parse(final Uint8Buffer bytes)
       : super.parse(OptionType.ocfAcceptContentFormatVersion, bytes);
+
+  /// Creates a new [OcfAcceptContentFormatVersion] composed of a
+  /// [majorVersion], a [minorVersion], and a [subVersion].
+  OcfAcceptContentFormatVersion.fromVersion(
+    final int majorVersion,
+    final int minorVersion,
+    final int subVersion,
+  ) : super.fromVersion(
+          OptionType.ocfAcceptContentFormatVersion,
+          majorVersion,
+          minorVersion,
+          subVersion,
+        );
 }
 
-class OcfContentFormatVersion extends IntegerOption with OscoreOptionClassE {
+class OcfContentFormatVersion extends OcfVersionOption {
   OcfContentFormatVersion(final int value)
       : super(OptionType.ocfContentFormatVersion, value);
 
   OcfContentFormatVersion.parse(final Uint8Buffer bytes)
       : super.parse(OptionType.ocfContentFormatVersion, bytes);
+
+  /// Creates a new [OcfContentFormatVersion] composed of a [majorVersion], a
+  /// [minorVersion], and a [subVersion].
+  OcfContentFormatVersion.fromVersion(
+    final int majorVersion,
+    final int minorVersion,
+    final int subVersion,
+  ) : super.fromVersion(
+          OptionType.ocfContentFormatVersion,
+          majorVersion,
+          minorVersion,
+          subVersion,
+        );
 }

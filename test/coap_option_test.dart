@@ -122,6 +122,22 @@ void main() {
       expect(OptionType.uriHost.isSafe, false);
       expect(OptionType.ifMatch.isSafe, true);
     });
+
+    test('OCF Options', () {
+      final ocfContentFormatVersion =
+          OcfContentFormatVersion.fromVersion(10, 13, 2);
+      expect(ocfContentFormatVersion.valueString, '10.13.2');
+
+      final ocfAcceptContentFormatVersion =
+          OcfAcceptContentFormatVersion.fromVersion(1, 0, 0);
+      expect(ocfAcceptContentFormatVersion.valueString, '1.0.0');
+
+      expect(
+        // Option only has one byte but two bytes are required.
+        () => OcfAcceptContentFormatVersion.fromVersion(0, 0, 1),
+        throwsA(const TypeMatcher<UnknownCriticalOptionException>()),
+      );
+    });
   });
 
   group('Block Option', () {

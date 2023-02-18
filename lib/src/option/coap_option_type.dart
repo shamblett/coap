@@ -29,7 +29,7 @@ abstract class UnknownOptionException implements Exception {
   UnknownOptionException(this.optionNumber, this.errorMessage);
 
   @override
-  String toString() => '$runtimeType:  $errorMessage $optionNumber';
+  String toString() => '$runtimeType:  $errorMessage';
 }
 
 /// [Exception] that is thrown when an unknown elective CoapOption number is
@@ -302,7 +302,7 @@ enum OptionType implements Comparable<OptionType> {
       return optionType;
     }
 
-    const errorMessage = 'Uncountered an unknown option number';
+    final errorMessage = 'Uncountered an unknown option number $type';
 
     if (type.isOdd) {
       throw UnknownCriticalOptionException(type, errorMessage);
