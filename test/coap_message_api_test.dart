@@ -166,7 +166,7 @@ void main() {
 
   test('Payload', () {
     final message = CoapRequest(
-      Uri.parse("coap://coap.me"),
+      Uri.parse('coap://coap.me'),
       RequestMethod.get,
       payload: utf8.encode('This is the payload'),
     )..isTimedOut = true;
