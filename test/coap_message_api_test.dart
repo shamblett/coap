@@ -165,9 +165,11 @@ void main() {
   });
 
   test('Payload', () {
-    final message = CoapEmptyMessage(CoapMessageType.rst)
-      ..isTimedOut = true
-      ..setPayload('This is the payload');
+    final message = CoapRequest(
+      Uri.parse("coap://coap.me"),
+      RequestMethod.get,
+      payload: utf8.encode('This is the payload'),
+    )..isTimedOut = true;
     expect(message.payload, isNotNull);
     expect(message.payloadString, 'This is the payload');
     expect(message.payloadSize, 19);

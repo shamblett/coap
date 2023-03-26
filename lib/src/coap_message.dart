@@ -36,7 +36,14 @@ typedef HookFunction = void Function();
 /// each of which has a MessageType, a message identifier,
 /// a token (0-8 bytes), a collection of Options and a payload.
 abstract class CoapMessage {
-  CoapMessage(this.code, this._type);
+  CoapMessage(
+    this.code,
+    this._type, {
+    final Iterable<int>? payload,
+    final CoapMediaType? contentFormat,
+  }) : payload = Uint8Buffer()..addAll(payload ?? []) {
+    contentType = contentFormat;
+  }
 
   CoapMessage.fromParsed(
     this.code,
@@ -47,10 +54,9 @@ abstract class CoapMessage {
     required final Uint8Buffer? payload,
     required this.hasUnknownCriticalOption,
     required this.hasFormatError,
-  }) {
+  }) : payload = payload ?? Uint8Buffer() {
     this.id = id;
     this.token = token;
-    this.payload = payload ?? [];
     setOptions(options);
   }
 
@@ -296,14 +302,8 @@ abstract class CoapMessage {
   /// The default value is 0.
   int ackTimeout = 0;
 
-  final Uint8Buffer _payload = Uint8Buffer();
-
   /// The payload of this CoAP message.
-  Uint8Buffer get payload => _payload;
-
-  set payload(final Iterable<int> payload) => _payload
-    ..clear()
-    ..addAll(payload);
+  final Uint8Buffer payload;
 
   /// The size of the payload of this CoAP message.
   int get payloadSize => payload.length;
@@ -322,28 +322,6 @@ abstract class CoapMessage {
       }
     }
     return '';
-  }
-
-  /// Sets the payload from a string with a default media type
-  set payloadString(final String value) =>
-      setPayloadMedia(value, CoapMediaType.textPlain);
-
-  /// Sets the payload.
-  void setPayload(final String payload) => this.payload = utf8.encode(payload);
-
-  /// Sets the payload and media type of this CoAP message.
-  void setPayloadMedia(final String payload, [final CoapMediaType? mediaType]) {
-    setPayload(payload);
-    contentType = mediaType;
-  }
-
-  /// Sets the payload of this CoAP message.
-  void setPayloadMediaRaw(
-    final Uint8Buffer payload, [
-    final CoapMediaType? mediaType,
-  ]) {
-    this.payload = payload;
-    contentType = mediaType;
   }
 
   /// If-Matches.

@@ -24,6 +24,7 @@ class CoapResponse extends CoapMessage {
     this.responseCode,
     final CoapMessageType type, {
     final Uri? location,
+    super.payload,
   })  : location = location ?? Uri(path: '/'),
         super(responseCode.coapCode, type);
 
@@ -86,8 +87,14 @@ class CoapResponse extends CoapMessage {
     final ResponseCode statusCode,
     final CoapMessageType type, {
     final Uri? location,
+    final Iterable<int>? payload,
   }) =>
-      CoapResponse(statusCode, type, location: location)
+      CoapResponse(
+        statusCode,
+        type,
+        location: location,
+        payload: payload,
+      )
         ..destination = request.source
         ..token = request.token;
 
