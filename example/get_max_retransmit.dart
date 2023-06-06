@@ -15,12 +15,13 @@ import './config/coap_config.dart';
 
 FutureOr<void> main() async {
   final conf = CoapConfig();
-  final uri = Uri(scheme: 'coap', host: 'google.com', port: conf.defaultPort);
-  final client = CoapClient(uri, config: conf);
+  final baseUri =
+      Uri(scheme: 'coap', host: 'google.com', port: conf.defaultPort);
+  final client = CoapClient(baseUri, config: conf);
 
   print('maxRetransmit config: ${conf.maxRetransmit}');
 
-  final request = CoapRequest.newGet(uri.replace(path: 'doesNotExist'));
+  final request = CoapRequest.get(Uri(path: 'doesNotExist'));
   print('maxRetransmit request: ${request.maxRetransmit} (0=config default)');
 
   try {
@@ -28,7 +29,7 @@ FutureOr<void> main() async {
     request.maxRetransmit = 2;
     print('maxRetransmit altered request: ${request.maxRetransmit}');
 
-    print('Sending get /doesNotExist to ${uri.host}');
+    print('Sending get /doesNotExist to ${baseUri.host}');
     print('Waiting for timeout, this might take a while...');
     final resp = await client.send(request);
 

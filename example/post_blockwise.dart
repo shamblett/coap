@@ -16,8 +16,8 @@ import 'utils.dart';
 
 FutureOr<void> main() async {
   final conf = CoapConfig();
-  final uri = Uri(scheme: 'coap', host: 'coap.me', port: conf.defaultPort);
-  final client = CoapClient(uri, config: conf);
+  final baseUri = Uri(scheme: 'coap', host: 'coap.me', port: conf.defaultPort);
+  final client = CoapClient(baseUri, config: conf);
 
   final opt = UriQueryOption(
     '${LinkFormatParameter.title.short}=This is an SJH Post request',
@@ -27,13 +27,13 @@ FutureOr<void> main() async {
   final payload = getRandomString(length: 2000);
 
   try {
-    print('Sending post /large-create to ${uri.host}');
-    var response =
-        await client.post('large-create', payload: payload, options: [opt]);
+    print('Sending post /large-create to ${baseUri.host}');
+    var response = await client
+        .post(Uri(path: 'large-create'), payload: payload, options: [opt]);
     print('/large-create response status: ${response.statusCodeString}');
 
-    print('Sending get /large-create to ${uri.host}');
-    response = await client.get('large-create');
+    print('Sending get /large-create to ${baseUri.host}');
+    response = await client.get(Uri(path: 'large-create'));
     print('/large-create response:\n${response.payloadString}');
     print('E-Tags : ${response.etags.join(',')}');
   } on Exception catch (e) {

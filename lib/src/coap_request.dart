@@ -60,7 +60,7 @@ class CoapRequest extends CoapMessage {
   /// See [RFC 7252, Section 5.10.1] for more information.
   ///
   /// [RFC 7252, Section 5.10.1]: https://www.rfc-editor.org/rfc/rfc7252#section-5.10.1
-  final Uri uri;
+  Uri uri;
 
   @override
   List<Option<Object?>> getAllOptions() =>
@@ -82,7 +82,7 @@ class CoapRequest extends CoapMessage {
   String toString() => '\n<<< Request Message >>>${super.toString()}';
 
   /// Construct a GET request.
-  factory CoapRequest.newGet(
+  factory CoapRequest.get(
     final Uri uri, {
     final bool confirmable = true,
     final Iterable<int>? payload,
@@ -97,7 +97,7 @@ class CoapRequest extends CoapMessage {
       );
 
   /// Construct a POST request.
-  factory CoapRequest.newPost(
+  factory CoapRequest.post(
     final Uri uri, {
     final bool confirmable = true,
     final Iterable<int>? payload,
@@ -114,7 +114,7 @@ class CoapRequest extends CoapMessage {
       );
 
   /// Construct a PUT request.
-  factory CoapRequest.newPut(
+  factory CoapRequest.put(
     final Uri uri, {
     final bool confirmable = true,
     final Iterable<int>? payload,
@@ -131,7 +131,7 @@ class CoapRequest extends CoapMessage {
       );
 
   /// Construct a DELETE request.
-  factory CoapRequest.newDelete(
+  factory CoapRequest.delete(
     final Uri uri, {
     final bool confirmable = true,
     final Iterable<int>? payload,
@@ -146,7 +146,7 @@ class CoapRequest extends CoapMessage {
       );
 
   /// Construct a FETCH request.
-  factory CoapRequest.newFetch(
+  factory CoapRequest.fetch(
     final Uri uri, {
     final bool confirmable = true,
     final Iterable<int>? payload,
@@ -163,7 +163,7 @@ class CoapRequest extends CoapMessage {
       );
 
   /// Construct a PATCH request.
-  factory CoapRequest.newPatch(
+  factory CoapRequest.patch(
     final Uri uri, {
     final bool confirmable = true,
     final Iterable<int>? payload,
@@ -180,7 +180,7 @@ class CoapRequest extends CoapMessage {
       );
 
   /// Construct a iPATCH request.
-  factory CoapRequest.newIPatch(
+  factory CoapRequest.iPatch(
     final Uri uri, {
     final bool confirmable = true,
     final Iterable<int>? payload,

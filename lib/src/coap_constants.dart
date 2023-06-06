@@ -56,7 +56,7 @@ class CoapConstants {
   ///
   /// Default URI for well known resource
   ///
-  static const String defaultWellKnownURI = '/.well-known/core';
+  static final Uri defaultWellKnownURI = Uri(path: '/.well-known/core');
 
   ///
   /// Token length
@@ -71,5 +71,5 @@ class CoapConstants {
   ///
   /// Empty token
   ///
-  static Uint8Buffer emptyToken = Uint8Buffer();
+  static final Uint8Buffer emptyToken = Uint8Buffer();
 }

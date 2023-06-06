@@ -24,8 +24,8 @@ The CoAP library is an implementation in Dart providing a CoAP client, the code 
 ```dart
 FutureOr<void> main() async {
   final conf = CoapConfig();
-  final uri = Uri(scheme: 'coap', host: 'coap.me', port: conf.defaultPort);
-  final client = CoapClient(uri, conf);
+  final baseUri = Uri(scheme: 'coap', host: 'coap.me', port: conf.defaultPort);
+  final client = CoapClient(baseUri, conf);
 
   try {
     final response =

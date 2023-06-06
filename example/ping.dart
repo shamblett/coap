@@ -15,15 +15,15 @@ import 'config/coap_config.dart';
 
 FutureOr<void> main() async {
   final conf = CoapConfig();
-  final uri = Uri(
+  final baseUri = Uri(
     scheme: 'coap',
     host: 'californium.eclipseprojects.io',
     port: conf.defaultPort,
   );
-  final client = CoapClient(uri, config: conf);
+  final client = CoapClient(baseUri, config: conf);
 
   try {
-    print('Pinging client on ${uri.host}');
+    print('Pinging client on ${baseUri.host}');
     final ok = await client.ping();
     if (ok) {
       print('Ping successful');
