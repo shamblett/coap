@@ -67,7 +67,7 @@ class CoapObserveClientRelation extends Stream<CoapResponse> {
 
   /// Create a cancellation request
   @internal
-  CoapRequest newCancel() => CoapRequest.newGet(_request.uri)
+  CoapRequest cancellation() => CoapRequest.get(_request.uri)
     // Copy options, but set Observe to cancel
     ..setOptions(_request.getAllOptions())
     ..observe = ObserveRegistration.deregister.value

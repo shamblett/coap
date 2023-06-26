@@ -15,16 +15,16 @@ import 'config/coap_config.dart';
 
 FutureOr<void> main() async {
   final conf = CoapConfig();
-  final uri = Uri(
+  final baseUri = Uri(
     scheme: 'coap',
     host: 'californium.eclipseprojects.io',
     port: conf.defaultPort,
   );
-  final client = CoapClient(uri, config: conf);
+  final client = CoapClient(baseUri, config: conf);
 
   try {
     // Warm up (create socket etc.)
-    await client.get('test');
+    await client.get(Uri(path: 'test'));
 
     final stopwatch = Stopwatch()..start();
 
@@ -32,7 +32,7 @@ FutureOr<void> main() async {
     final futures = <Future<void>>[];
     for (var i = 0; i < 10; i++) {
       futures.add(
-        client.get('test').then((final resp) {
+        client.get(Uri(path: 'test')).then((final resp) {
           if (resp.responseCode != ResponseCode.content) {
             print('Request failed!');
           }
@@ -49,7 +49,7 @@ FutureOr<void> main() async {
 
     print('Sending 10 sync requests...');
     for (var i = 0; i < 10; i++) {
-      final resp = await client.get('test');
+      final resp = await client.get(Uri(path: 'test'));
       if (resp.responseCode != ResponseCode.content) {
         print('Request failed!');
       }

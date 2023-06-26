@@ -15,17 +15,17 @@ import 'config/coap_config.dart';
 
 FutureOr<void> main() async {
   final conf = CoapConfig();
-  final uri = Uri(scheme: 'coap', host: 'coap.me', port: conf.defaultPort);
-  final client = CoapClient(uri, config: conf);
+  final baseUri = Uri(scheme: 'coap', host: 'coap.me', port: conf.defaultPort);
+  final client = CoapClient(baseUri, config: conf);
 
-  final cancelThisReq = CoapRequest.newGet(uri.replace(path: 'doesNotExist'));
+  final cancelThisReq = CoapRequest.get(Uri(path: 'doesNotExist'));
 
   try {
     // Ensure this request is not also cancelled
-    print('Sending async get /hello to ${uri.host}');
-    final helloRespFuture = client.get('hello');
+    print('Sending async get /hello to ${baseUri.host}');
+    final helloRespFuture = client.get(Uri(path: 'hello'));
 
-    print('Sending async get /doesNotExist to ${uri.host}');
+    print('Sending async get /doesNotExist to ${baseUri.host}');
     final ignoreThisFuture = client.send(cancelThisReq);
 
     print('Cancelling get /doesNotExist retries');

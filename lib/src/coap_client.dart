@@ -92,7 +92,7 @@ class CoapClient {
   /// If no [config] is provided, then an instance of the [CoapConfigDefault]
   /// class will be used instead.
   CoapClient(
-    this.uri, {
+    this.baseUri, {
     this.addressType = InternetAddressType.any,
     this.bindAddress,
     final PskCredentialsCallback? pskCredentialsCallback,
@@ -110,7 +110,7 @@ class CoapClient {
   final InternetAddress? bindAddress;
 
   /// The client endpoint URI
-  final Uri uri;
+  final Uri baseUri;
 
   late final CoapEventBus _eventBus;
 
@@ -127,7 +127,7 @@ class CoapClient {
 
   /// Performs a CoAP ping.
   Future<bool> ping() async {
-    final request = CoapRequest(uri, RequestMethod.empty)
+    final request = CoapRequest(baseUri, RequestMethod.empty)
       ..token = CoapConstants.emptyToken;
     await _prepare(request);
     _endpoint!.sendEpRequest(request);
@@ -137,8 +137,7 @@ class CoapClient {
 
   /// Sends a GET request.
   Future<CoapResponse> get(
-    final String path, {
-    final String? query,
+    final Uri uri, {
     final CoapMediaType? accept,
     final bool confirmable = true,
     final List<Option<Object?>>? options,
@@ -146,14 +145,8 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newGet(
-      uri.replace(
-        path: path,
-        query: query,
-      ),
-      confirmable: confirmable,
-      accept: accept,
-    );
+    final request =
+        CoapRequest.get(uri, confirmable: confirmable, accept: accept);
     _build(
       request,
       options,
@@ -165,9 +158,8 @@ class CoapClient {
 
   /// Sends a POST request.
   Future<CoapResponse> post(
-    final String path, {
+    final Uri uri, {
     required final String payload,
-    final String? query,
     final CoapMediaType? format,
     final CoapMediaType? accept,
     final bool confirmable = true,
@@ -176,11 +168,8 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPost(
-      uri.replace(
-        path: path,
-        query: query,
-      ),
+    final request = CoapRequest.post(
+      uri,
       confirmable: confirmable,
       accept: accept,
       contentFormat: format,
@@ -197,9 +186,8 @@ class CoapClient {
 
   /// Sends a POST request with the specified byte payload.
   Future<CoapResponse> postBytes(
-    final String path, {
+    final Uri uri, {
     required final Iterable<int> payload,
-    final String? query,
     final CoapMediaType? format,
     final CoapMediaType? accept,
     final bool confirmable = true,
@@ -208,11 +196,8 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPost(
-      uri.replace(
-        path: path,
-        query: query,
-      ),
+    final request = CoapRequest.post(
+      uri,
       confirmable: confirmable,
       accept: accept,
       contentFormat: format,
@@ -229,9 +214,8 @@ class CoapClient {
 
   /// Sends a PUT request.
   Future<CoapResponse> put(
-    final String path, {
+    final Uri uri, {
     required final String payload,
-    final String? query,
     final CoapMediaType? format,
     final CoapMediaType? accept,
     final bool confirmable = true,
@@ -242,11 +226,8 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPut(
-      uri.replace(
-        path: path,
-        query: query,
-      ),
+    final request = CoapRequest.post(
+      uri,
       confirmable: confirmable,
       accept: accept,
       contentFormat: format,
@@ -265,9 +246,8 @@ class CoapClient {
 
   /// Sends a PUT request with the specified byte payload.
   Future<CoapResponse> putBytes(
-    final String path, {
+    final Uri uri, {
     required final Iterable<int> payload,
-    final String? query,
     final CoapMediaType? format,
     final MatchEtags matchEtags = MatchEtags.onMatch,
     final List<Uint8Buffer>? etags,
@@ -278,11 +258,8 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPut(
-      uri.replace(
-        path: path,
-        query: query,
-      ),
+    final request = CoapRequest.put(
+      uri,
       confirmable: confirmable,
       accept: accept,
       contentFormat: format,
@@ -301,8 +278,7 @@ class CoapClient {
 
   /// Sends a DELETE request
   Future<CoapResponse> delete(
-    final String path, {
-    final String? query,
+    final Uri uri, {
     final CoapMediaType? accept,
     final bool confirmable = true,
     final List<Option<Object?>>? options,
@@ -310,11 +286,8 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newDelete(
-      uri.replace(
-        path: path,
-        query: query,
-      ),
+    final request = CoapRequest.delete(
+      uri,
       confirmable: confirmable,
       accept: accept,
     );
@@ -333,9 +306,8 @@ class CoapClient {
   ///
   /// [RFC 8132, section 2]: https://www.rfc-editor.org/rfc/rfc8132.html#section-2
   Future<CoapResponse> fetch(
-    final String path, {
+    final Uri uri, {
     required final String payload,
-    final String? query,
     final CoapMediaType? accept,
     final CoapMediaType? format,
     final bool confirmable = true,
@@ -344,11 +316,8 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newFetch(
-      uri.replace(
-        path: path,
-        query: query,
-      ),
+    final request = CoapRequest.fetch(
+      uri,
       confirmable: confirmable,
       accept: accept,
       contentFormat: format,
@@ -369,9 +338,8 @@ class CoapClient {
   ///
   /// [RFC 8132, section 2]: https://www.rfc-editor.org/rfc/rfc8132.html#section-2
   Future<CoapResponse> fetchBytes(
-    final String path, {
+    final Uri uri, {
     required final Iterable<int> payload,
-    final String? query,
     final CoapMediaType? accept,
     final CoapMediaType? format,
     final bool confirmable = true,
@@ -380,11 +348,8 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newFetch(
-      uri.replace(
-        path: path,
-        query: query,
-      ),
+    final request = CoapRequest.fetch(
+      uri,
       confirmable: confirmable,
       accept: accept,
       contentFormat: format,
@@ -405,9 +370,8 @@ class CoapClient {
   ///
   /// [RFC 8132, section 3]: https://www.rfc-editor.org/rfc/rfc8132.html#section-3
   Future<CoapResponse> patch(
-    final String path, {
+    final Uri uri, {
     required final String payload,
-    final String? query,
     final CoapMediaType? format,
     final CoapMediaType? accept,
     final bool confirmable = true,
@@ -418,11 +382,8 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPatch(
-      uri.replace(
-        path: path,
-        query: query,
-      ),
+    final request = CoapRequest.patch(
+      uri,
       confirmable: confirmable,
       payload: utf8.encode(payload),
       accept: accept,
@@ -445,9 +406,8 @@ class CoapClient {
   ///
   /// [RFC 8132, section 3]: https://www.rfc-editor.org/rfc/rfc8132.html#section-3
   Future<CoapResponse> patchBytes(
-    final String path, {
+    final Uri uri, {
     required final Iterable<int> payload,
-    final String? query,
     final CoapMediaType? format,
     final MatchEtags matchEtags = MatchEtags.onMatch,
     final List<Uint8Buffer>? etags,
@@ -458,11 +418,8 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newPatch(
-      uri.replace(
-        path: path,
-        query: query,
-      ),
+    final request = CoapRequest.patch(
+      uri,
       confirmable: confirmable,
       accept: accept,
       payload: payload,
@@ -485,9 +442,8 @@ class CoapClient {
   ///
   /// [RFC 8132, section 3]: https://www.rfc-editor.org/rfc/rfc8132.html#section-3
   Future<CoapResponse> iPatch(
-    final String path, {
+    final Uri uri, {
     required final String payload,
-    final String? query,
     final CoapMediaType? format,
     final CoapMediaType? accept,
     final bool confirmable = true,
@@ -498,11 +454,8 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newIPatch(
-      uri.replace(
-        path: path,
-        query: query,
-      ),
+    final request = CoapRequest.iPatch(
+      uri,
       confirmable: confirmable,
       accept: accept,
       payload: utf8.encode(payload),
@@ -525,9 +478,8 @@ class CoapClient {
   ///
   /// [RFC 8132, section 3]: https://www.rfc-editor.org/rfc/rfc8132.html#section-3
   Future<CoapResponse> iPatchBytes(
-    final String path, {
+    final Uri uri, {
     required final Iterable<int> payload,
-    final String? query,
     final CoapMediaType? format,
     final MatchEtags matchEtags = MatchEtags.onMatch,
     final List<Uint8Buffer>? etags,
@@ -538,11 +490,8 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.newIPatch(
-      uri.replace(
-        path: path,
-        query: query,
-      ),
+    final request = CoapRequest.iPatch(
+      uri,
       confirmable: confirmable,
       accept: accept,
       payload: payload,
@@ -578,15 +527,9 @@ class CoapClient {
 
   /// Discovers remote resources.
   Future<Iterable<CoapWebLink>?> discover({
-    final String path = CoapConstants.defaultWellKnownURI,
-    final String? query,
+    final Uri? uri,
   }) async {
-    final discover = CoapRequest.newGet(
-      uri.replace(
-        path: path,
-        query: query,
-      ),
-    );
+    final discover = CoapRequest.get(uri ?? CoapConstants.defaultWellKnownURI);
     final links = await send(discover);
     if (links.contentFormat != CoapMediaType.applicationLinkFormat) {
       return <CoapWebLink>[CoapWebLink('')];
@@ -645,8 +588,7 @@ class CoapClient {
   Future<void> cancelObserveProactive(
     final CoapObserveClientRelation relation,
   ) async {
-    final cancel = relation.newCancel();
-    await send(cancel);
+    await send(relation.cancellation());
     relation.isCancelled = true;
   }
 
@@ -702,14 +644,15 @@ class CoapClient {
   Future<void> _prepare(final CoapRequest request) async {
     request
       ..timestamp = DateTime.now()
+      ..uri = _buildUri(request.uri)
       ..eventBus = _eventBus;
 
     await _lock.synchronized(() async {
       // Set endpoint if missing
       if (_endpoint == null) {
-        final destination = await _lookupHost(uri.host, addressType);
+        final destination = await _lookupHost(baseUri.host, addressType);
         final socket = CoapINetwork.fromUri(
-          uri,
+          baseUri,
           address: destination,
           bindAddress: bindAddress,
           config: _config,
@@ -724,6 +667,18 @@ class CoapClient {
 
     request.endpoint = _endpoint;
   }
+
+  Uri _buildUri(final Uri uri) => baseUri.replace(
+        scheme: uri.scheme.isEmpty ? null : uri.scheme,
+        userInfo: uri.userInfo.isEmpty ? null : uri.userInfo,
+        host: uri.host.isEmpty ? null : uri.host,
+        port: uri.port == 0 ? null : uri.port,
+        // pathSegments included in path
+        path: uri.path.isEmpty ? null : uri.path,
+        // queryParameters included in query
+        query: uri.query.isEmpty ? null : uri.query,
+        fragment: uri.fragment.isEmpty ? null : uri.fragment,
+      );
 
   Future<InternetAddress> _lookupHost(
     final String host,

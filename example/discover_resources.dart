@@ -15,11 +15,11 @@ import 'config/coap_config.dart';
 
 FutureOr<void> main() async {
   final conf = CoapConfig();
-  final uri = Uri(scheme: 'coap', host: 'coap.me', port: conf.defaultPort);
-  final client = CoapClient(uri, config: conf);
+  final baseUri = Uri(scheme: 'coap', host: 'coap.me', port: conf.defaultPort);
+  final client = CoapClient(baseUri, config: conf);
 
   try {
-    print('Sending get /discover/.well-known/core to ${uri.host}');
+    print('Sending get /discover/.well-known/core to ${baseUri.host}');
     final links = await client.discover();
 
     print('Discovered resources:');

@@ -235,7 +235,7 @@ class _ReregistrationContext {
   void _timerElapsed() {
     final request = _exchange.request;
     if (!request.isCancelled) {
-      final refresh = CoapRequest.newGet(request.uri)
+      final refresh = CoapRequest.get(request.uri)
         ..setOptions(request.getAllOptions())
         // Make sure Observe is set and zero
         ..observe = ObserveRegistration.register.value

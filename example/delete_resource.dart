@@ -15,16 +15,16 @@ import 'config/coap_config.dart';
 
 FutureOr<void> main() async {
   final conf = CoapConfig();
-  final uri = Uri(
+  final baseUri = Uri(
     scheme: 'coap',
     host: 'californium.eclipseprojects.io',
     port: conf.defaultPort,
   );
-  final client = CoapClient(uri, config: conf);
+  final client = CoapClient(baseUri, config: conf);
 
   try {
-    print('Sending delete /test to ${uri.host}');
-    final response = await client.delete('test');
+    print('Sending delete /test to ${baseUri.host}');
+    final response = await client.delete(Uri(path: 'test'));
 
     print('/test response status: ${response.statusCodeString}');
   } on Exception catch (e) {
