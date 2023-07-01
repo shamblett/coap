@@ -45,11 +45,11 @@ Future<void> connect() async {
   final coapClient =
       CoapClient(Uri.parse('coap+tcp://californium.eclipseprojects.io:5683'));
 
-  final response = await coapClient.post(
+  final response = await coapClient.get(
     Uri(path: 'test'),
-    format: CoapMediaType.applicationJson,
+    // format: CoapMediaType.applicationJson,
     accept: CoapMediaType.applicationCbor,
-    payload: 'Hello?',
+    // payload: 'Hello?',
   );
   print(response);
 

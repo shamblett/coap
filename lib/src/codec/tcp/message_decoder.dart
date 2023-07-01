@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:convert/convert.dart';
 import 'package:typed_data/typed_data.dart';
 
 import '../../coap_code.dart';
@@ -34,7 +35,9 @@ final toByteStream =
 
   controller.onListen = () {
     final subscription = input.listen(
-      (final bytes) => bytes.forEach(controller.add),
+      (final bytes) {
+        bytes.forEach(controller.add);
+      },
       onDone: controller.close,
       onError: controller.addError,
       cancelOnError: cancelOnError,
@@ -91,6 +94,7 @@ final toRawCoapTcpStream = StreamTransformer<int, RawCoapTcpMessage>(
             extendedLengthBuffer.clear();
             optionsAndPayload.clear();
             extendedTokenLengthBuffer.clear();
+            print(hex.encode([byte]));
 
             // TODO(JKRhb): Handle WebSockets case with length = 0
             length = (byte >> 4) & 15;
@@ -105,8 +109,9 @@ final toRawCoapTcpStream = StreamTransformer<int, RawCoapTcpMessage>(
             state = TcpState.code;
             break;
           case TcpState.extendedLength:
+            print(hex.encode([byte]));
             extendedLengthBuffer.add(byte);
-            if (extendedLengthBytes-- <= 0) {
+            if (--extendedLengthBytes <= 0) {
               length = _readExtendedMessageLength(
                 length,
                 DatagramReader(extendedLengthBuffer),
@@ -168,8 +173,8 @@ final toRawCoapTcpStream = StreamTransformer<int, RawCoapTcpMessage>(
 
             break;
           case TcpState.optionsAndPayload:
-            optionsAndPayload.add(byte);
             length--;
+            optionsAndPayload.add(byte);
 
             if (length < 1) {
               state = TcpState.initialState;

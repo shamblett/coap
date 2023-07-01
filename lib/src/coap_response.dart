@@ -43,8 +43,10 @@ class CoapResponse extends CoapMessage {
   final Uri location;
 
   @override
-  List<Option<Object?>> getAllOptions() =>
-      locationToOptions(location)..addAll(super.getAllOptions());
+  List<Option<Object?>> getAllOptions() => locationToOptions(location)
+    ..addAll(
+      super.getAllOptions().where((element) => !element.isLocationOption),
+    );
 
   /// Status code as a string
   String get statusCodeString => code.toString();
