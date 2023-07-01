@@ -39,7 +39,7 @@ typedef HookFunction = void Function();
 abstract class CoapMessage {
   CoapMessage(
     this.code,
-    this._type, {
+    this.type, {
     final Iterable<int>? payload,
     final CoapMediaType? contentFormat,
   }) : payload = Uint8Buffer()..addAll(payload ?? []) {
@@ -54,8 +54,8 @@ abstract class CoapMessage {
     required final Uint8Buffer? payload,
     required this.hasUnknownCriticalOption,
     required this.hasFormatError,
+    this.id,
   }) : payload = payload ?? Uint8Buffer() {
-    this.id = id;
     this.token = token;
     setOptions(options);
   }
