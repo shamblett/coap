@@ -6,7 +6,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:convert/convert.dart';
 import 'package:typed_data/typed_data.dart';
 
 import '../../coap_code.dart';
@@ -35,9 +34,7 @@ final toByteStream =
 
   controller.onListen = () {
     final subscription = input.listen(
-      (final bytes) {
-        bytes.forEach(controller.add);
-      },
+      (final bytes) => bytes.forEach(controller.add),
       onDone: controller.close,
       onError: controller.addError,
       cancelOnError: cancelOnError,
@@ -69,141 +66,149 @@ class RawCoapTcpMessage {
       'Code: $code\nToken:$token\nOptions and Payload:$optionsAndPayload';
 }
 
-final toRawCoapTcpStream = StreamTransformer<int, RawCoapTcpMessage>(
-    (final input, final cancelOnError) {
-  // TODO(JKRhb): Connections must be aborted on error
-  final controller = StreamController<RawCoapTcpMessage>();
+StreamTransformer<int, RawCoapTcpMessage> toRawCoapTcpStream({
+  final bool usesWebSockets = false,
+}) =>
+    StreamTransformer<int, RawCoapTcpMessage>(
+        (final input, final cancelOnError) {
+      // TODO(JKRhb): Connections must be aborted on error
+      final controller = StreamController<RawCoapTcpMessage>();
 
-  var state = TcpState.initialState;
-  var length = 0;
-  var extendedLengthBytes = 0;
-  final extendedLengthBuffer = Uint8Buffer();
-  var tokenLength = 0;
-  final token = Uint8Buffer();
-  var extendedTokenLengthBytes = 0;
-  final extendedTokenLengthBuffer = Uint8Buffer();
-  var code = 0;
-  final optionsAndPayload = Uint8Buffer();
+      var state = TcpState.initialState;
+      var length = 0;
+      var extendedLengthBytes = 0;
+      final extendedLengthBuffer = Uint8Buffer();
+      var tokenLength = 0;
+      final token = Uint8Buffer();
+      var extendedTokenLengthBytes = 0;
+      final extendedTokenLengthBuffer = Uint8Buffer();
+      var code = 0;
+      final optionsAndPayload = Uint8Buffer();
 
-  controller.onListen = () {
-    final subscription = input.listen(
-      (final byte) async {
-        switch (state) {
-          case TcpState.initialState:
-            token.clear();
-            extendedLengthBuffer.clear();
-            optionsAndPayload.clear();
-            extendedTokenLengthBuffer.clear();
-            print(hex.encode([byte]));
+      controller.onListen = () {
+        final subscription = input.listen(
+          (final byte) async {
+            switch (state) {
+              case TcpState.initialState:
+                token.clear();
+                extendedLengthBuffer.clear();
+                optionsAndPayload.clear();
+                extendedTokenLengthBuffer.clear();
 
-            // TODO(JKRhb): Handle WebSockets case with length = 0
-            length = (byte >> 4) & 15;
-            tokenLength = byte & 15;
+                length = (byte >> 4) & 15;
 
-            if (const [13, 14, 15].contains(length)) {
-              state = TcpState.extendedLength;
-              extendedLengthBytes = determineExtendedLength(length);
-              break;
+                if (usesWebSockets && length != 0) {
+                  // TODO(JKRhb): Properly support WebSockets
+                  controller.addError(const FormatException());
+                  return;
+                }
+
+                tokenLength = byte & 15;
+
+                if (const [13, 14, 15].contains(length)) {
+                  state = TcpState.extendedLength;
+                  extendedLengthBytes = determineExtendedLength(length);
+                  break;
+                }
+
+                state = TcpState.code;
+                break;
+              case TcpState.extendedLength:
+                extendedLengthBuffer.add(byte);
+                if (--extendedLengthBytes <= 0) {
+                  length = _readExtendedMessageLength(
+                    length,
+                    DatagramReader(extendedLengthBuffer),
+                  );
+                  state = TcpState.code;
+                  break;
+                }
+
+                break;
+              case TcpState.code:
+                code = byte;
+                if (const [13, 14].contains(tokenLength)) {
+                  state = TcpState.extendedTokenLength;
+                  extendedTokenLengthBytes = determineExtendedLength(length);
+                  break;
+                } else if (tokenLength == 15) {
+                  controller.addError(const FormatException());
+                  return;
+                }
+                state = TcpState.token;
+                break;
+              case TcpState.extendedTokenLength:
+                extendedTokenLengthBuffer.add(byte);
+                extendedTokenLengthBytes--;
+
+                if (extendedTokenLengthBytes < 1) {
+                  length = _readExtendedMessageLength(
+                    length,
+                    DatagramReader(extendedLengthBuffer),
+                  );
+
+                  state = TcpState.code;
+                  break;
+                }
+
+                break;
+              case TcpState.token:
+                token.add(byte);
+                tokenLength--;
+
+                if (tokenLength >= 1) {
+                  break;
+                }
+
+                // TODO(JKRhb): Refactor
+                if (length < 1) {
+                  state = TcpState.initialState;
+                  controller.add(
+                    RawCoapTcpMessage(
+                      code: code,
+                      token: Uint8List.fromList(token.toList(growable: false)),
+                      optionsAndPayload: Uint8List.fromList(
+                        optionsAndPayload.toList(growable: false),
+                      ),
+                    ),
+                  );
+                } else {
+                  state = TcpState.optionsAndPayload;
+                }
+
+                break;
+              case TcpState.optionsAndPayload:
+                length--;
+                optionsAndPayload.add(byte);
+
+                if (length < 1) {
+                  state = TcpState.initialState;
+                  controller.add(
+                    RawCoapTcpMessage(
+                      code: code,
+                      token: Uint8List.fromList(token.toList(growable: false)),
+                      optionsAndPayload: Uint8List.fromList(
+                        optionsAndPayload.toList(growable: false),
+                      ),
+                    ),
+                  );
+                }
+
+                break;
             }
+          },
+          onDone: controller.close,
+          onError: controller.addError,
+          cancelOnError: cancelOnError,
+        );
+        controller
+          ..onPause = subscription.pause
+          ..onResume = subscription.resume
+          ..onCancel = subscription.cancel;
+      };
 
-            state = TcpState.code;
-            break;
-          case TcpState.extendedLength:
-            print(hex.encode([byte]));
-            extendedLengthBuffer.add(byte);
-            if (--extendedLengthBytes <= 0) {
-              length = _readExtendedMessageLength(
-                length,
-                DatagramReader(extendedLengthBuffer),
-              );
-              state = TcpState.code;
-              break;
-            }
-
-            break;
-          case TcpState.code:
-            code = byte;
-            if (const [13, 14].contains(tokenLength)) {
-              state = TcpState.extendedTokenLength;
-              extendedTokenLengthBytes = determineExtendedLength(length);
-              break;
-            } else if (tokenLength == 15) {
-              throw const FormatException();
-            }
-            state = TcpState.token;
-            break;
-          case TcpState.extendedTokenLength:
-            extendedTokenLengthBuffer.add(byte);
-            extendedTokenLengthBytes--;
-
-            if (extendedTokenLengthBytes < 1) {
-              length = _readExtendedMessageLength(
-                length,
-                DatagramReader(extendedLengthBuffer),
-              );
-
-              state = TcpState.code;
-              break;
-            }
-
-            break;
-          case TcpState.token:
-            token.add(byte);
-            tokenLength--;
-
-            if (tokenLength >= 1) {
-              break;
-            }
-
-            // TODO(JKRhb): Refactor
-            if (length < 1) {
-              state = TcpState.initialState;
-              controller.add(
-                RawCoapTcpMessage(
-                  code: code,
-                  token: Uint8List.fromList(token.toList(growable: false)),
-                  optionsAndPayload: Uint8List.fromList(
-                    optionsAndPayload.toList(growable: false),
-                  ),
-                ),
-              );
-            } else {
-              state = TcpState.optionsAndPayload;
-            }
-
-            break;
-          case TcpState.optionsAndPayload:
-            length--;
-            optionsAndPayload.add(byte);
-
-            if (length < 1) {
-              state = TcpState.initialState;
-              controller.add(
-                RawCoapTcpMessage(
-                  code: code,
-                  token: Uint8List.fromList(token.toList(growable: false)),
-                  optionsAndPayload: Uint8List.fromList(
-                    optionsAndPayload.toList(growable: false),
-                  ),
-                ),
-              );
-            }
-
-            break;
-        }
-      },
-      onDone: controller.close,
-      onError: controller.addError,
-      cancelOnError: cancelOnError,
-    );
-    controller
-      ..onPause = subscription.pause
-      ..onResume = subscription.resume
-      ..onCancel = subscription.cancel;
-  };
-
-  return controller.stream.listen(null);
-});
+      return controller.stream.listen(null);
+    });
 
 int determineExtendedLength(final int length) {
   switch (length) {

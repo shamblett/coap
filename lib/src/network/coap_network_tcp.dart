@@ -101,7 +101,7 @@ class CoapNetworkTCP implements CoapINetwork {
   void _receive() {
     socket
         ?.transform(toByteStream)
-        .transform(toRawCoapTcpStream)
+        .transform(toRawCoapTcpStream())
         .transform(deserializeTcpMessage(_scheme, address))
         .listen(
           (final message) {

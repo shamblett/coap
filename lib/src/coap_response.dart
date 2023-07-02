@@ -45,7 +45,7 @@ class CoapResponse extends CoapMessage {
   @override
   List<Option<Object?>> getAllOptions() => locationToOptions(location)
     ..addAll(
-      super.getAllOptions().where((element) => !element.isLocationOption),
+      super.getAllOptions().where((final element) => !element.isLocationOption),
     );
 
   /// Status code as a string

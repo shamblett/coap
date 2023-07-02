@@ -43,7 +43,7 @@ Future<void> main() async {
 
 Future<void> connect() async {
   final coapClient =
-      CoapClient(Uri.parse('coap+tcp://californium.eclipseprojects.io:5683'));
+      CoapClient(Uri.parse('coap+tcp://californium.eclipseprojects.io'));
 
   final response = await coapClient.get(
     Uri(path: 'test'),
