@@ -136,7 +136,7 @@ List<Option<Object?>> uriToOptions(
   }
 
   final host = uri.host;
-  if (host != destinationAddress?.address) {
+  if (host != destinationAddress?.address && host.isNotEmpty) {
     options.add(UriHostOption(host));
   }
 
