@@ -13,11 +13,11 @@ import 'dart:typed_data';
 
 import 'package:typed_data/typed_data.dart';
 
-import '../coap.dart';
 import '../config/coap_config_default.dart';
 import 'coap_code.dart';
 import 'coap_config.dart';
 import 'coap_empty_message.dart';
+import 'coap_media_type.dart';
 import 'coap_message.dart';
 import 'coap_message_type.dart';
 import 'coap_request.dart';
@@ -102,6 +102,7 @@ abstract class CoapServer extends Stream<CoapRequest> {
 }
 
 class _CoapUdpServer extends CoapServer {
+  // ignore: unused_field
   final DefaultCoapConfig _config;
 
   final streamController = StreamController<CoapRequest>();
@@ -125,7 +126,7 @@ class _CoapUdpServer extends CoapServer {
         return;
       }
       final data = Uint8Buffer()..addAll(datagram.data);
-      final message = CoapMessage.fromUdpPayload(data);
+      final message = CoapMessage.fromUdpPayload(data, uriScheme);
       if (message is CoapRequest && !message.hasFormatError) {
         if (message.hasUnknownCriticalOption) {
           _rejectRequest(message, datagram.address, datagram.port);
@@ -133,7 +134,7 @@ class _CoapUdpServer extends CoapServer {
         }
         message
           ..source = datagram.address
-          ..uriPort = datagram.port;
+          ..sourcePort = datagram.port;
         streamController.sink.add(message);
       }
     });
@@ -200,19 +201,16 @@ class _CoapUdpServer extends CoapServer {
       request,
       ResponseCode.content,
       CoapMessageType.ack,
+      payload: payload,
     )
       ..id = request.id
       ..contentFormat = contentFormat;
 
-    if (payload != null) {
-      response.payload = Uint8Buffer()..addAll(payload);
-    }
-
-    _send(response, request.source!, request.uriPort);
+    _send(response, request.source!, request.sourcePort!);
   }
 
   @override
   void reject(final CoapRequest request) {
-    _rejectRequest(request, request.source!, request.uriPort);
+    _rejectRequest(request, request.source!, request.sourcePort!);
   }
 }
