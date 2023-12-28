@@ -9,7 +9,7 @@ Builder configBuilder(final BuilderOptions options) => _ConfigBuilder();
 class _ConfigBuilder extends Builder {
   @override
   Map<String, List<String>> get buildExtensions => <String, List<String>>{
-        '.yaml': <String>['.dart']
+        '.yaml': <String>['.dart'],
       };
 
   static const String _defaultConfigFileName = 'coap_config';
