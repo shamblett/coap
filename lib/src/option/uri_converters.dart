@@ -156,8 +156,8 @@ List<Option<Object?>> uriToOptions(
 /// Converts a relative [location] URI into a list of [Option]s.
 List<Option<Object?>> locationToOptions(final Uri location) => [
       ..._uriPathsToOptions<LocationPathOption>(location),
-      ..._uriQueriesToOptions<LocationQueryOption>(location)
-    ,];
+      ..._uriQueriesToOptions<LocationQueryOption>(location),
+    ];
 
 /// Converts a [uri]'s path components into a list of [PathOption]s as specified
 /// in [RFC 7252, section 6.4].
@@ -172,10 +172,10 @@ List<Option<Object?>> _uriPathsToOptions<T extends PathOption>(final Uri uri) {
 
     for (final optionValue in optionValues.skip(1)) {
       switch (T) {
-        case UriPathOption:
+        case const(UriPathOption) :
           options.add(UriPathOption(optionValue));
           continue;
-        case LocationPathOption:
+        case const(LocationPathOption) :
           options.add(LocationPathOption(optionValue));
           continue;
       }
@@ -207,10 +207,10 @@ List<Option<Object?>> _uriQueriesToOptions<T extends QueryOption>(
     final optionValue = components.map(Uri.decodeFull).join('=');
 
     switch (T) {
-      case UriQueryOption:
+      case const(UriQueryOption) :
         options.add(UriQueryOption(optionValue));
         continue;
-      case LocationQueryOption:
+      case const(LocationQueryOption) :
         options.add(LocationQueryOption(optionValue));
         continue;
     }
