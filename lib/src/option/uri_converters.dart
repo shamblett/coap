@@ -157,7 +157,7 @@ List<Option<Object?>> uriToOptions(
 List<Option<Object?>> locationToOptions(final Uri location) => [
       ..._uriPathsToOptions<LocationPathOption>(location),
       ..._uriQueriesToOptions<LocationQueryOption>(location)
-    ];
+    ,];
 
 /// Converts a [uri]'s path components into a list of [PathOption]s as specified
 /// in [RFC 7252, section 6.4].
