@@ -172,10 +172,10 @@ List<Option<Object?>> _uriPathsToOptions<T extends PathOption>(final Uri uri) {
 
     for (final optionValue in optionValues.skip(1)) {
       switch (T) {
-        case const(UriPathOption) :
+        case const (UriPathOption):
           options.add(UriPathOption(optionValue));
           continue;
-        case const(LocationPathOption) :
+        case const (LocationPathOption):
           options.add(LocationPathOption(optionValue));
           continue;
       }
@@ -207,10 +207,10 @@ List<Option<Object?>> _uriQueriesToOptions<T extends QueryOption>(
     final optionValue = components.map(Uri.decodeFull).join('=');
 
     switch (T) {
-      case const(UriQueryOption) :
+      case const (UriQueryOption):
         options.add(UriQueryOption(optionValue));
         continue;
-      case const(LocationQueryOption) :
+      case const (LocationQueryOption):
         options.add(LocationQueryOption(optionValue));
         continue;
     }
