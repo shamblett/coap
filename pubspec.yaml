@@ -35,5 +35,5 @@ topics:
   - data
 
 screenshots:
-  - description: 'CoAP'
+  - description: 'CoAP image '
     path: example/screenshots/coap.png
