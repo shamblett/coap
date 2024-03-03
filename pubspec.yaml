@@ -35,5 +35,5 @@ topics:
   - data
 
 screenshots:
-  - description: 'CoAP image '
+  - description: 'CoAP for IoT systems'
     path: example/screenshots/coap.png
