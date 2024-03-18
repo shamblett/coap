@@ -12,7 +12,7 @@ abstract class CoapRequestException implements Exception {
   CoapRequestException();
 
   @override
-  String toString() => '$runtimeType: $failReason';
+  String toString() => 'CoapRequestException: $failReason';
 }
 
 /// This [Exception] is thrown when a CoAP request has timed out.

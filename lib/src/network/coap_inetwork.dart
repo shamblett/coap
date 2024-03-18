@@ -23,8 +23,8 @@ class UnsupportedProtocolException implements Exception {
   UnsupportedProtocolException(this.uriScheme);
 
   @override
-  String toString() =>
-      '$runtimeType: Unsupported URI scheme $uriScheme encountered.';
+  String toString() => 'UnsupportedProtocolException: '
+      'Unsupported URI scheme $uriScheme encountered.';
 }
 
 /// Abstract networking class, allows different implementations for

@@ -25,7 +25,7 @@ abstract class CoapMessageEvent {
   CoapMessage msg;
 
   @override
-  String toString() => '$runtimeType: $msg';
+  String toString() => 'CoapMessageEvent: $msg';
 }
 
 abstract class CoapRequestEvent {
@@ -35,7 +35,7 @@ abstract class CoapRequestEvent {
   CoapRequest req;
 
   @override
-  String toString() => '$runtimeType: $req';
+  String toString() => 'CoapRequestEvent: $req';
 }
 
 abstract class CoapResponseEvent {
@@ -45,7 +45,7 @@ abstract class CoapResponseEvent {
   CoapResponse resp;
 
   @override
-  String toString() => '$runtimeType: $resp';
+  String toString() => 'CoapResponseEvent: $resp';
 }
 
 abstract class CoapExchangeEvent {
@@ -56,7 +56,7 @@ abstract class CoapExchangeEvent {
 
   @override
   String toString() =>
-      '$runtimeType:\nExchange for request ${exchange.request.id} '
+      'CoapExchangeEvent:\nExchange for request ${exchange.request.id} '
       "(token '${exchange.request.tokenString}')";
 }
 
@@ -158,7 +158,8 @@ class CoapMessageReceivedEvent {
   InternetAddress address;
 
   @override
-  String toString() => '$runtimeType:\n$coapMessage from ${address.address}';
+  String toString() =>
+      'CoapMessageReceivedEvent:\n$coapMessage from ${address.address}';
 }
 
 class CoapSocketInitEvent {
@@ -166,7 +167,7 @@ class CoapSocketInitEvent {
   CoapSocketInitEvent();
 
   @override
-  String toString() => '$runtimeType:\nSocket attempting to initialize';
+  String toString() => 'CoapSocketInitEvent:\nSocket attempting to initialize';
 }
 
 class CoapSocketErrorEvent {
@@ -180,7 +181,7 @@ class CoapSocketErrorEvent {
   StackTrace stackTrace;
 
   @override
-  String toString() => '$runtimeType:\n$error\n$stackTrace';
+  String toString() => 'CoapSocketErrorEvent:\n$error\n$stackTrace';
 }
 
 /// Event bus class
