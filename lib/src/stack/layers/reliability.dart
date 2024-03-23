@@ -248,8 +248,7 @@ class _TransmissionContext {
     // Do not retransmit a message if it has been acknowledged,
     // rejected, canceled or already been retransmitted for the maximum
     // number of times.
-    if (!_message.isRejected &&
-        _message.isActive &&
+    if (_message.isActive &&
         failedTransmissionCount <=
             (_message.maxRetransmit != 0
                 ? _message.maxRetransmit

@@ -87,7 +87,7 @@ enum BlockOptionType {
 abstract class CoapBlockOption extends IntegerOption
     with OscoreOptionClassE, OscoreOptionClassU {
   String get _szxErrorMessage =>
-      'Encountered reserved SZX value 7 in $runtimeType.';
+      'Encountered reserved SZX value 7 in CoapBlockOption.';
 
   /// Base construction
   CoapBlockOption(

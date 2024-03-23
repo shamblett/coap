@@ -29,7 +29,7 @@ abstract class UnknownOptionException implements Exception {
   UnknownOptionException(this.optionNumber, this.errorMessage);
 
   @override
-  String toString() => '$runtimeType:  $errorMessage';
+  String toString() => 'UnknownOptionException: $errorMessage';
 }
 
 /// [Exception] that is thrown when an unknown elective CoapOption number is
