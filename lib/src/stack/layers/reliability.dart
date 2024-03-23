@@ -35,7 +35,9 @@ class ReliabilityLayer extends BaseLayer {
     final CoapExchange exchange,
     final CoapRequest request,
   ) {
-    if (request.type == CoapMessageType.con) {
+    // TODO(JKRhb): Refactor
+    if ((['coap', 'coaps'].contains(request.uri.scheme)) &&
+        request.type == CoapMessageType.con) {
       _prepareRetransmission(
         exchange,
         request,
