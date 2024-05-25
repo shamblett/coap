@@ -14,7 +14,7 @@ dependencies:
   build: ^2.4.1
   collection: ^1.18.0
   convert: ^3.1.1
-  dtls2: ^0.16.0
+  dtls2: ^0.17.0
   event_bus: ^2.0.0
   meta: ^1.12.0
   path: ^1.9.0
