@@ -511,8 +511,8 @@ class CoapClient {
   /// Observe
   Future<CoapObserveClientRelation> observe(
     final CoapRequest request, {
-    final int maxRetransmit = 0,
-  }) async {
+      final int maxRetransmit = 0,
+    }) async {
     var isObserving = false;
     request
       ..observe = ObserveRegistration.register.value
@@ -525,10 +525,7 @@ class CoapClient {
       },
     );
     final relation = CoapObserveClientRelation(request, responseStream);
-    final resp = await _waitForResponse(request, responseStream);
-    if (!resp.hasOption<ObserveOption>()) {
-      relation.isCancelled = true;
-    }
+    relation.checkObserve();
     isObserving = true;
     return relation;
   }
