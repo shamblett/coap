@@ -56,7 +56,7 @@ class CoapObserveClientRelation extends Stream<CoapResponse> {
   }
 
   void checkObserve() {
-    _filteredStream.first.then((resp) {
+    _filteredStream.first.then((final resp) {
       if (!resp.hasOption<ObserveOption>()) {
         isCancelled = true;
       }

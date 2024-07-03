@@ -524,8 +524,8 @@ class CoapClient {
         }
       },
     );
-    final relation = CoapObserveClientRelation(request, responseStream);
-    relation.checkObserve();
+    final relation = CoapObserveClientRelation(request, responseStream)
+      ..checkObserve();
     isObserving = true;
     return relation;
   }
