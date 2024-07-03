@@ -11,11 +11,24 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+        # TODO: Revert once https://github.com/dart-lang/sdk/issues/55745
+        #       has been resolved
+
+        sdk: [stable, 3.3.0]
+        exclude:
+          - os: macos-latest
+            sdk: 3.3.0
+          - os: ubuntu-latest
+            sdk: 3.3.0
+          - os: windows-latest
+            sdk: stable
     runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v2
       - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ${{ matrix.sdk }}
 
       - name: Install dependencies
         run: dart pub get
