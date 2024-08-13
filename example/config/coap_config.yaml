@@ -2,23 +2,70 @@
 # Syntax is YAML
 
 # Protocol section
+
+# The default CoAP port for normal CoAP communication (not secure).
 defaultPort: 5683
+
+# The default CoAP port for secure CoAP communication (coaps).
 defaultSecurePort: 5684
+
+# The default CoAP port for HTTP.(Not currently supported)
 httpPort: 8080
-ackTimeout: 3000 # ms
+
+# The initial time (ms) for a CoAP message.
+ackTimeout: 3000
+
+# The initial timeout time is multiplied by this random number.
 ackRandomFactor: 1.5
+
+# The retransmission timeout is multiplied by this factor.
 ackTimeoutScale: 2.0
+
+# The maximum times that a message would be retransmitted.
 maxRetransmit: 8
+
+# Maximum size of a block-wise message.
 maxMessageSize: 1024
+
+# Default block size used for block-wise transfers.
 preferredBlockSize: 512
-blockwiseStatusLifetime: 60000 # ms
+
+# Timeout(ms) for block-wise transfers.
+blockwiseStatusLifetime: 60000
+
+# Randomises endpoint id generation if true, starts from 0 if false.
 useRandomIDStart: true
+
+# Notification parameters used in observability processing.
 notificationMaxAge: 128000 # ms
 notificationCheckIntervalTime: 86400000 # ms
 notificationCheckIntervalCount: 100 # ms
 notificationReregistrationBackoff: 2000 # ms
-cropRotationPeriod: 2000 # ms
-exchangeLifetime: 1247000 # ms
-markAndSweepInterval: 10000 # ms
+
+# The deduplication algorithm to use.
+# MarkAndSweep for a Mark and Sweep deduplication.
+# CropRotation for a Crop Rotation deduplication.
+# Noop for no deduplication(not recommended, use only if you are sure).
+deduplicator: "MarkAndSweep"
+
+# Crop rotation period(ms) for Crop Rotation deduplication.
+cropRotationPeriod: 2000
+
+# Lifetime(ms) of messages before Mark and Sweep deduplication removes them.
+exchangeLifetime: 1247000 # 20.783 minutes.
+
+# Interval(ms) between successive Mark and Sweep deduplication runs.
+markAndSweepInterval: 10000
+
+# Maximum packet size for a receive channel(not currently used).
 channelReceivePacketSize: 2048
-deduplicator: "MarkAndSweep" # CropRotation or Noop
+
+# DTLS section
+
+dtls:
+  backend: null # Not used
+  verify: false # Verify certificate chains
+  withTrustedRoots: false # Use trusted roots
+  ciphers: null # A list of ciphers, see the [OpenSSL documentation] for more information on this.
+
+
