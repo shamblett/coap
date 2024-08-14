@@ -14,14 +14,14 @@ jobs:
         # TODO: Revert once https://github.com/dart-lang/sdk/issues/55745
         #       has been resolved
 
-        sdk: [stable, 3.3.0]
-        exclude:
-          - os: macos-latest
-            sdk: 3.3.0
-          - os: ubuntu-latest
-            sdk: 3.3.0
-          - os: windows-latest
-            sdk: stable
+        # sdk: [stable, 3.3.0]
+        # exclude:
+          # - os: macos-latest
+            # sdk: 3.3.0
+          # - os: ubuntu-latest
+            # sdk: 3.3.0
+          # - os: windows-latest
+            # sdk: stable
     runs-on: ${{ matrix.os }}
 
     steps:
