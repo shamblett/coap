@@ -17,6 +17,7 @@ import 'coap_code.dart';
 import 'coap_media_type.dart';
 import 'coap_message_type.dart';
 import 'coap_response.dart';
+import 'codec/tcp/message_encoder.dart';
 import 'codec/udp/message_decoder.dart';
 import 'codec/udp/message_encoder.dart';
 import 'event/coap_event_bus.dart';
@@ -38,7 +39,7 @@ typedef HookFunction = void Function();
 abstract class CoapMessage {
   CoapMessage(
     this.code,
-    this._type, {
+    this.type, {
     final Iterable<int>? payload,
     final CoapMediaType? contentFormat,
   }) : payload = Uint8Buffer()..addAll(payload ?? []) {
@@ -47,15 +48,14 @@ abstract class CoapMessage {
 
   CoapMessage.fromParsed(
     this.code,
-    this._type, {
-    required final int id,
+    this.type, {
     required final Uint8Buffer token,
     required final List<Option<Object?>> options,
     required final Uint8Buffer? payload,
     required this.hasUnknownCriticalOption,
     required this.hasFormatError,
+    this.id,
   }) : payload = payload ?? Uint8Buffer() {
-    this.id = id;
     this.token = token;
     setOptions(options);
   }
@@ -64,13 +64,8 @@ abstract class CoapMessage {
 
   bool hasFormatError = false;
 
-  CoapMessageType _type;
-
-  @internal
-  set type(final CoapMessageType type) => _type = type;
-
   /// The type of this CoAP message.
-  CoapMessageType get type => _type;
+  CoapMessageType? type;
 
   /// The code of this CoAP message.
   final CoapCode code;
@@ -78,12 +73,8 @@ abstract class CoapMessage {
   /// The codestring
   String get codeString => code.toString();
 
-  int? _id;
-
   /// The ID of this CoAP message.
-  int? get id => _id;
-  @internal
-  set id(final int? val) => _id = val;
+  int? id;
 
   final List<Option<Object?>> _options = [];
 
@@ -635,18 +626,8 @@ abstract class CoapMessage {
   /// Is also used for DTLS.
   Uint8Buffer toUdpPayload() => serializeUdpMessage(this);
 
-  /// Serializes this CoAP message from the TCP message format.
-  ///
-  /// Is also used for TLS.
-  static CoapMessage? fromTcpPayload(final Uint8Buffer data) =>
-      throw UnimplementedError(
-        'TCP segment deserialization is not implemented yet.',
-      );
-
   /// Serializes this CoAP message into the TCP message format.
   ///
   /// Is also used for TLS.
-  Uint8Buffer toTcpPayload() => throw UnimplementedError(
-        'TCP segment serialization is not implemented yet.',
-      );
+  Uint8Buffer toTcpPayload() => serializeTcpMessage(this);
 }

@@ -8,7 +8,7 @@ import 'string_option.dart';
 
 /// This class describes the options of the CoAP messages.
 @immutable
-abstract class Option<T> {
+abstract class Option<T> implements Comparable<Option<Object?>> {
   Option() {
     _validate();
   }
@@ -96,6 +96,10 @@ abstract class Option<T> {
 
   bool get isLocationOption =>
       this is LocationPathOption || this is LocationQueryOption;
+
+  @override
+  int compareTo(final Option<Object?> other) =>
+      this.optionNumber - other.optionNumber;
 }
 
 /// Mixin for an Oscore class E option (encrypted and integrity protected).
