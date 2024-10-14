@@ -1,6 +1,6 @@
-SPDXVersion: SPDX-2.2DataLicense: CC0-1.0SPDXID: SPDXRef-DOCUMENTDocumentName: coapDocumentNamespace: https://pub.dev/packages/coapLicenseListVersion: 3.8Creator: Tool: https://pub.dev/packages/sbomCreated: 2024-08-13T11:14:06Z
+SPDXVersion: SPDX-2.2DataLicense: CC0-1.0SPDXID: SPDXRef-DOCUMENTDocumentName: coapDocumentNamespace: https://pub.dev/packages/coapLicenseListVersion: 3.8Creator: Tool: https://pub.dev/packages/sbomCreated: 2024-10-14T10:15:01Z
 
-PackageName: coapSPDXID: SPDXRef-Package-coapPackageVersion: 9.0.6PackageFileName: coapPackageSupplier: NOASSERTIONPackageOriginator: NOASSERTIONPackageDownloadLocation: https://pub.dev/packages/coapFilesAnalyzed: truePackageVerificationCode: 027471d5bfe4134eaa3b10796bbe244f3add2456PackageHomePage: https://pub.dev/packages/coapPackageLicenseConcluded: MITPackageLicenseInfoFromFiles: NOASSERTIONPackageLicenseDeclared: NOASSERTIONPackageCopyrightText: NOASSERTIONPackageSummary: <text>A CoAP library for Dart. A full implementation of an IPV4/6 CoAP client</text>
+PackageName: coapSPDXID: SPDXRef-Package-coapPackageVersion: 9.0.7PackageFileName: coapPackageSupplier: NOASSERTIONPackageOriginator: NOASSERTIONPackageDownloadLocation: https://pub.dev/packages/coapFilesAnalyzed: truePackageVerificationCode: 337b2e28392eb37aa3d268a7ddc7a3cd114f118fPackageHomePage: https://pub.dev/packages/coapPackageLicenseConcluded: MITPackageLicenseInfoFromFiles: NOASSERTIONPackageLicenseDeclared: NOASSERTIONPackageCopyrightText: NOASSERTIONPackageSummary: <text>A CoAP library for Dart. A full implementation of an IPV4/6 CoAP client</text>
 
 FileName: /lib/builder.dartSPDXID: SPDXRef-builder-0FileType: SOURCEFileChecksum: SHA1: 402b005402faaa897099277b617463e7917516b1LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
@@ -126,15 +126,15 @@ FileName: /lib/src/stack/layers/observe.dartSPDXID: SPDXRef-observe-60FileType
 
 FileName: /lib/src/stack/layers/reliability.dartSPDXID: SPDXRef-reliability-61FileType: SOURCEFileChecksum: SHA1: 223263831703a833c84a3f377da32208e334e707LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/stack/layers/token.dartSPDXID: SPDXRef-token-62FileType: SOURCEFileChecksum: SHA1: 7d8ac524a2ed8d73c5f764ffbfaeb2337f58197cLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/stack/layers/token.dartSPDXID: SPDXRef-token-62FileType: SOURCEFileChecksum: SHA1: f769088895877e3146f16965143d4f281207e36bLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /lib/src/stack/layers/top.dartSPDXID: SPDXRef-top-63FileType: SOURCEFileChecksum: SHA1: f769088895877e3146f16965143d4f281207e36bLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /lib/src/stack/layers/top.dartSPDXID: SPDXRef-top-63FileType: SOURCEFileChecksum: SHA1: 813682cf219d39465980c1fc8b130d41ba39b01dLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
 FileName: /lib/src/util/coap_byte_array_util.dartSPDXID: SPDXRef-coap-byte-array-util-64FileType: SOURCEFileChecksum: SHA1: cf740c9413ea4d322589781dfae39bb493d94c45LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
 FileName: /lib/src/util/coap_scanner.dartSPDXID: SPDXRef-coap-scanner-65FileType: SOURCEFileChecksum: SHA1: 1bae34b7de33715ab7971f06d56ee1e8dfafbe2bLicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
-FileName: /pubspec.yamlSPDXID: SPDXRef-pubspec-66FileType: TEXTFileChecksum: SHA1: 6f05a935b9b184f757d422715f04f4d3a2922c47LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
+FileName: /pubspec.yamlSPDXID: SPDXRef-pubspec-66FileType: TEXTFileChecksum: SHA1: adf58b7b9d886f0b489628c01a24d948fc515ac9LicenseConcluded: NOASSERTIONLicenseInfoInFile: NOASSERTIONFileCopyrightText: NOASSERTION
 
 Relationship: SPDXRef-pubspec-66 DEPENDENCY_MANIFEST_OF SPDXRef-Package-coap
 
