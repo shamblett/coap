@@ -226,7 +226,7 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request = CoapRequest.post(
+    final request = CoapRequest.put(
       uri,
       confirmable: confirmable,
       accept: accept,
