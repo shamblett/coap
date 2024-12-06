@@ -7,6 +7,7 @@
 
 import 'dart:typed_data';
 import 'dart:ffi';
+import 'package:dtls2/dtls2.dart';
 
 import 'coap_constants.dart';
 import 'deduplication/deduplicator_factory.dart';
@@ -79,7 +80,7 @@ abstract class DefaultCoapConfig {
   bool get dtlsWithTrustedRoots => true;
 
   /// List of custom root certificates to use with OpenSSL.
-  List<Uint8List> get rootCertificates => const [];
+  List<Certificate> get rootCertificates => const [];
 
   /// Can be used to specify the Ciphers that should be used by OpenSSL.
   String? get dtlsCiphers => null;

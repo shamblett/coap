@@ -58,7 +58,7 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
     super.bindAddress, {
     required final bool verify,
     required final bool withTrustedRoots,
-    required final List<Uint8List> rootCertificates,
+    required final List<Certificate> rootCertificates,
     super.namespace,
     final String? ciphers,
     final internal.PskCredentialsCallback? pskCredentialsCallback,
@@ -78,7 +78,7 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
 
   DtlsConnection? _dtlsConnection;
 
-  final List<Uint8List> _rootCertificates;
+  final List<Certificate> _rootCertificates;
 
   final bool _verify;
 
