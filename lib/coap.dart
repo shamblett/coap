@@ -7,6 +7,9 @@
 
 library coap;
 
+export 'package:dtls2/dtls2.dart'
+    show Certificate, PemCertificate, DerCertificate;
+
 /// Pre-defined configs
 export 'config/coap_config_all.dart';
 export 'config/coap_config_default.dart';
