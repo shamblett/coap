@@ -5,7 +5,6 @@
  * Copyright :  S.Hamblett
  */
 
-import 'dart:typed_data';
 import 'dart:ffi';
 import 'package:dtls2/dtls2.dart';
 
