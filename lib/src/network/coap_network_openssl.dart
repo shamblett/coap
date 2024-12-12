@@ -65,6 +65,7 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
     final DynamicLibrary? libSsl,
     final DynamicLibrary? libCrypto,
     final String? hostName,
+    final int? securityLevel,
   })  : _ciphers = ciphers,
         _verify = verify,
         _withTrustedRoots = withTrustedRoots,
@@ -72,6 +73,7 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
         _libSsl = libSsl,
         _libCrypto = libCrypto,
         _hostname = hostName,
+        _securityLevel = securityLevel,
         _openSslPskCallback = _createOpenSslPskCallback(pskCredentialsCallback);
 
   DtlsClient? _dtlsClient;
@@ -93,6 +95,8 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
   final DynamicLibrary? _libCrypto;
 
   final String? _hostname;
+
+  final int? _securityLevel;
 
   @override
   void send(final CoapMessage coapMessage) {
@@ -132,6 +136,7 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
       rootCertificates: _rootCertificates,
       ciphers: _ciphers,
       pskCredentialsCallback: _openSslPskCallback,
+      securityLevel: _securityLevel,
     );
 
     try {
