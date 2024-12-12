@@ -8,9 +8,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:typed_data/typed_data.dart';
-
 import '../coap_message.dart';
+import '../codec/tcp/message_decoder.dart';
 import '../event/coap_event_bus.dart';
 import 'coap_inetwork.dart';
 
@@ -41,6 +40,8 @@ class CoapNetworkTCP implements CoapINetwork {
   bool _shouldReinitialize = true;
 
   final bool isTls;
+
+  String get _scheme => isTls ? 'coap+tcp' : 'coaps+tcp';
 
   final SecurityContext? _tlsContext;
 
@@ -98,26 +99,29 @@ class CoapNetworkTCP implements CoapINetwork {
   }
 
   void _receive() {
-    socket?.listen(
-      (final data) {
-        final message = CoapMessage.fromTcpPayload(Uint8Buffer()..addAll(data));
-        eventBus.fire(CoapMessageReceivedEvent(message, address));
-      },
-      // ignore: avoid_types_on_closure_parameters
-      onError: (final Object e, final StackTrace s) =>
-          eventBus.fire(CoapSocketErrorEvent(e, s)),
-      // Socket stream is done and can no longer be listened to
-      onDone: () {
-        isClosed = true;
-        Timer.periodic(CoapINetwork.reinitPeriod, (final timer) async {
-          try {
-            await init();
-            timer.cancel();
-          } on Exception catch (_) {
-            // Ignore errors, retry until successful
-          }
-        });
-      },
-    );
+    socket
+        ?.transform(toByteStream)
+        .transform(toRawCoapTcpStream())
+        .transform(deserializeTcpMessage(_scheme, address))
+        .listen(
+          (final message) {
+            eventBus.fire(CoapMessageReceivedEvent(message, address));
+          },
+          // ignore: avoid_types_on_closure_parameters
+          onError: (final Object e, final StackTrace s) =>
+              eventBus.fire(CoapSocketErrorEvent(e, s)),
+          // Socket stream is done and can no longer be listened to
+          onDone: () {
+            isClosed = true;
+            Timer.periodic(CoapINetwork.reinitPeriod, (final timer) async {
+              try {
+                await init();
+                timer.cancel();
+              } on Exception catch (_) {
+                // Ignore errors, retry until successful
+              }
+            });
+          },
+        );
   }
 }

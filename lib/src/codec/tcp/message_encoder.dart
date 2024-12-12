@@ -1,52 +1,61 @@
-/*
- * Package : Coap
- * Author : S. Hamblett <steve.hamblett@linux.com>
- * Date   : 14/05/2018
- * Copyright :  S.Hamblett
- */
+// SPDX-FileCopyrightText: © 2023 Jan Romann <jan.romann@uni-bremen.de>
+
+// SPDX-License-Identifier: MIT
 
 import 'dart:io';
 
-import 'package:collection/collection.dart';
 import 'package:typed_data/typed_data.dart';
 
 import '../../coap_code.dart';
-import '../../coap_constants.dart';
 import '../../coap_message.dart';
-import '../../coap_message_type.dart';
 import '../../coap_request.dart';
+import '../../option/coap_option_type.dart';
 import '../../option/integer_option.dart';
 import '../../option/option.dart';
 import '../../option/string_option.dart';
-import 'datagram_writer.dart';
-import 'message_format.dart' as message_format;
+import '../udp/datagram_writer.dart';
+import '../udp/message_format.dart' as message_format;
 
-/// Encodes a CoAP UDP or DTLS message into a bytes array.
+/// Encodes a CoAP TCP or WebSockets message into a bytes array.
 /// Returns the encoded bytes, or null if the message can not be encoded,
 /// i.e. the message is not a Request, a Response or an EmptyMessage.
-Uint8Buffer serializeUdpMessage(final CoapMessage message) {
+Uint8Buffer serializeTcpMessage(
+  final CoapMessage message, {
+  final bool isWebSockets = false,
+}) {
   final writer = DatagramWriter();
-
-  const version = message_format.Version.version1;
-  const versionLength = message_format.Version.bitLength;
-  final type = message.type;
-
-  if (type == null) {
-    throw FormatException('No type defind for CoAP Message:\n$message');
-  }
-
-  // Write fixed-size CoAP headers
-  writer
-    ..write(version.numericValue, versionLength)
-    ..write(type.code, CoapMessageType.bitLength);
 
   final token = message.token;
   final tokenLength = _getTokenLength(token);
+  final options = _serializeOptions(message);
+
+  final payload = message.payload;
+  const payloadMarkerLength = 1;
+  final payloadLength =
+      payload.isNotEmpty ? payload.length + payloadMarkerLength : 0;
+
+  final messageLength = options.lengthInBytes + payloadLength;
+
+  final int lengthField;
+
+  if (isWebSockets) {
+    lengthField = 0;
+  } else {
+    // TODO(JKRhb): Refactor
+    lengthField = _getOptionNibble(messageLength);
+  }
 
   writer
-    ..write(tokenLength, message_format.tokenLengthBits)
-    ..write(message.code.code, CoapCode.bitLength)
-    ..write(message.id, message_format.idBits);
+    ..write(lengthField, 4)
+    ..write(tokenLength, message_format.tokenLengthBits);
+
+  if (lengthField == 13) {
+    writer.write(messageLength - 13, 8);
+  } else if (lengthField == 14) {
+    writer.write(messageLength - 269, 16);
+  }
+
+  writer.write(message.code.code, CoapCode.bitLength);
 
   if (token != null) {
     _writeExtendedTokenLength(writer, tokenLength, token);
@@ -54,14 +63,27 @@ Uint8Buffer serializeUdpMessage(final CoapMessage message) {
 
   // Write token, which may be 0 to 8 bytes or have an extended token length,
   // given by token length and the extended token length field.
-  writer.writeBytes(token);
+  writer
+    ..writeBytes(token)
+    ..writeBytes(options);
+
+  if (payload.isNotEmpty) {
+    // If payload is present and of non-zero length, it is prefixed by
+    // an one-byte Payload Marker (0xFF) which indicates the end of
+    // options and the start of the payload
+    writer.writeByte(message_format.payloadMarker);
+  }
+  // Write payload
+  writer.writeBytes(payload);
+
+  return writer.toByteArray();
+}
+
+Uint8Buffer _serializeOptions(final CoapMessage message) {
+  final writer = DatagramWriter();
 
   var lastOptionNumber = 0;
-  final options = message.getAllOptions();
-  insertionSort<Option<Object?>>(
-    options,
-    compare: (final a, final b) => a.type.compareTo(b.type),
-  );
+  final options = message.getAllOptions()..sort();
 
   for (final opt in options) {
     if (_shouldBeSkipped(opt, message)) {
@@ -93,41 +115,19 @@ Uint8Buffer serializeUdpMessage(final CoapMessage message) {
       writer.write(optionLength - 269, 16);
     }
 
-    writer.writeBytes(opt.byteValue);
+    // Write option value, reverse byte order for numeric options
+    if (opt.type.optionFormat == OptionFormat.integer) {
+      final reversedBuffer = Uint8Buffer()..addAll(opt.byteValue.reversed);
+      writer.writeBytes(reversedBuffer);
+    } else {
+      writer.writeBytes(opt.byteValue);
+    }
 
     lastOptionNumber = optNum;
   }
 
-  if (message.payload.isNotEmpty) {
-    // If payload is present and of non-zero length, it is prefixed by
-    // an one-byte Payload Marker (0xFF) which indicates the end of
-    // options and the start of the payload
-    writer.writeByte(message_format.payloadMarker);
-  }
-  // Write payload
-  writer.writeBytes(message.payload);
-
   return writer.toByteArray();
 }
-
-bool _shouldBeSkipped(final Option<Object?> opt, final CoapMessage message) {
-  if (opt is UriHostOption) {
-    final hostAddress = InternetAddress.tryParse(opt.value);
-
-    return hostAddress != null && hostAddress == message.destination;
-  }
-
-  if (opt is UriPortOption && message is CoapRequest) {
-    return _usesDefaultPort(message.uri.scheme, opt.value);
-  }
-
-  return false;
-}
-
-bool _usesDefaultPort(final String? scheme, final int port) =>
-    scheme == CoapConstants.uriScheme && port == CoapConstants.defaultPort ||
-    scheme == CoapConstants.secureUriScheme &&
-        port == CoapConstants.defaultSecurePort;
 
 /// Determine the token length.
 ///
@@ -195,4 +195,20 @@ int _getOptionNibble(final int optionValue) {
   } else {
     throw FormatException('Unsupported option delta $optionValue');
   }
+}
+
+// TODO(JKRhb): Refactor
+bool _shouldBeSkipped(final Option<Object?> opt, final CoapMessage message) {
+  if (opt is UriHostOption) {
+    final hostAddress = InternetAddress.tryParse(opt.value);
+
+    return hostAddress != null && hostAddress == message.destination;
+  }
+
+  // TODO(JKRhb): Revisit port option
+  if (opt is UriPortOption && message is CoapRequest) {
+    return true;
+  }
+
+  return false;
 }
