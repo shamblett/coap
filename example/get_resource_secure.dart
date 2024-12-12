@@ -30,6 +30,14 @@ PskCredentials pskCredentialsCallback(final String? identityHint) =>
 class DtlsConfig extends DefaultCoapConfig {
   @override
   String? get dtlsCiphers => 'PSK-AES128-CCM8';
+
+  @override
+  // Since TLS_PSK_WITH_AES_128_CCM_8 (also known as PSK-AES128-CCM8 in OpenSSL)
+  // is considered insecure in more recent versions of OpenSSL, we reduce the
+  // security level here, as TLS_PSK_WITH_AES_128_CCM_8 is the mandatory cipher
+  // suite that CoAP implementations must support when using DTLS in PSK mode
+  // (see section 9.1.3.1 of RFC 7252).
+  int? get openSslSecurityLevel => 0;
 }
 
 FutureOr<void> main() async {
