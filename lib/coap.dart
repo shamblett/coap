@@ -5,7 +5,7 @@
  * Copyright :  S.Hamblett
  */
 
-library coap;
+library;
 
 export 'package:dtls2/dtls2.dart'
     show Certificate, PemCertificate, DerCertificate;
