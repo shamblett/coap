@@ -92,6 +92,7 @@ abstract class CoapINetwork {
           libCrypto: config.libCryptoInstance,
           libSsl: config.libSslInstance,
           hostName: uri.host,
+          securityLevel: config.openSslSecurityLevel,
         );
       default:
         throw UnsupportedProtocolException(uri.scheme);

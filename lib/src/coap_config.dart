@@ -91,4 +91,13 @@ abstract class DefaultCoapConfig {
   /// Custom libcrypto instance that can be registered if OpenSSL
   /// should not be available at the default locations.
   DynamicLibrary? get libCryptoInstance => null;
+
+  /// Adjusts the security level that is used by OpenSSL for DTLS.
+  ///
+  /// The possible security levels range from 0 to 5.
+  /// See the [OpenSSL Documentation] for more information on the meaning of
+  /// each level.
+  ///
+  /// [OpenSSL Documentation]: https://docs.openssl.org/master/man3/SSL_CTX_set_security_level/#default-callback-behaviour
+  int? get openSslSecurityLevel => null;
 }
