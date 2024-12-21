@@ -208,6 +208,9 @@ abstract class CoapMessage {
   @internal
   InternetAddress? source;
 
+  @internal
+  int? sourcePort;
+
   /// Acknowledged hook for attaching a callback if needed
   HookFunction? acknowledgedHook;
 
