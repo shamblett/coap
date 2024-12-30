@@ -22,7 +22,7 @@ class CoapResponse extends CoapMessage {
   /// Initializes a response message.
   CoapResponse(
     this.responseCode,
-    final CoapMessageType type, {
+    final CoapMessageType? type, {
     final Uri? location,
     super.payload,
   })  : location = location ?? Uri(path: '/'),
@@ -43,8 +43,10 @@ class CoapResponse extends CoapMessage {
   final Uri location;
 
   @override
-  List<Option<Object?>> getAllOptions() =>
-      locationToOptions(location)..addAll(super.getAllOptions());
+  List<Option<Object?>> getAllOptions() => locationToOptions(location)
+    ..addAll(
+      super.getAllOptions().where((final element) => !element.isLocationOption),
+    );
 
   /// Status code as a string
   String get statusCodeString => code.toString();
@@ -100,14 +102,14 @@ class CoapResponse extends CoapMessage {
 
   CoapResponse.fromParsed(
     this.responseCode, {
-    required final CoapMessageType type,
-    required final int id,
     required final Uint8Buffer token,
     required final List<Option<Object?>> options,
     required final Uint8Buffer? payload,
     required final bool hasUnknownCriticalOption,
     required final bool hasFormatError,
     final Uri? location,
+    final int? id,
+    final CoapMessageType? type,
   })  : location = location ?? Uri(path: '/'),
         super.fromParsed(
           responseCode.coapCode,

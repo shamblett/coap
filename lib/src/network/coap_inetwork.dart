@@ -11,6 +11,7 @@ import '../coap_config.dart';
 import '../coap_constants.dart';
 import '../coap_message.dart';
 import 'coap_network_openssl.dart';
+import 'coap_network_tcp.dart';
 import 'coap_network_udp.dart';
 import 'credentials/psk_credentials.dart';
 
@@ -93,6 +94,21 @@ abstract class CoapINetwork {
           libSsl: config.libSslInstance,
           hostName: uri.host,
           securityLevel: config.openSslSecurityLevel,
+        );
+      case 'coap+tcp':
+        return CoapNetworkTCP(
+          address,
+          port ?? config.defaultPort,
+          bindAddress ?? defaultBindAddress,
+          namespace: namespace,
+        );
+      case 'coaps+tcp':
+        return CoapNetworkTCP(
+          address,
+          port ?? config.defaultSecurePort,
+          bindAddress ?? defaultBindAddress,
+          namespace: namespace,
+          isTls: true,
         );
       default:
         throw UnsupportedProtocolException(uri.scheme);
