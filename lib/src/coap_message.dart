@@ -541,9 +541,7 @@ abstract class CoapMessage {
 
   /// Block 1
   void setBlock1(final BlockSize szx, final int num, {required final bool m}) {
-    setOption(
-      Block1Option.fromParts(num, szx, m: m),
-    );
+    setOption(Block1Option.fromParts(num, szx, m: m));
   }
 
   /// Block 2
@@ -559,9 +557,7 @@ abstract class CoapMessage {
 
   /// Block 2
   void setBlock2(final BlockSize szx, final int num, {required final bool m}) {
-    setOption(
-      Block2Option.fromParts(num, szx, m: m),
-    );
+    setOption(Block2Option.fromParts(num, szx, m: m));
   }
 
   /// Copy an event handler
@@ -623,12 +619,11 @@ abstract class CoapMessage {
     final Uint8Buffer data,
     final String scheme, {
     final InternetAddress? destinationAddress,
-  }) =>
-      deserializeUdpMessage(
-        data,
-        scheme,
-        destinationAddress: destinationAddress,
-      );
+  }) => deserializeUdpMessage(
+    data,
+    scheme,
+    destinationAddress: destinationAddress,
+  );
 
   /// Serializes this CoAP message into the UDP message format.
   ///
@@ -646,7 +641,8 @@ abstract class CoapMessage {
   /// Serializes this CoAP message into the TCP message format.
   ///
   /// Is also used for TLS.
-  Uint8Buffer toTcpPayload() => throw UnimplementedError(
+  Uint8Buffer toTcpPayload() =>
+      throw UnimplementedError(
         'TCP segment serialization is not implemented yet.',
       );
 }

@@ -22,7 +22,7 @@ enum LinkFormatParameterType {
   // TODO(JKRhb): Revisit typing
   bool,
   string,
-  uint;
+  uint,
 }
 
 enum LinkFormatParameter {
@@ -205,11 +205,15 @@ class CoapLinkFormat {
 
           // Condition the string before splitting
           if (attributeString.endsWith(delimiter)) {
-            attributeString =
-                attributeString.substring(0, attributeString.length - 1);
+            attributeString = attributeString.substring(
+              0,
+              attributeString.length - 1,
+            );
           } else {
-            attributeString =
-                attributeString.substring(0, attributeString.length);
+            attributeString = attributeString.substring(
+              0,
+              attributeString.length,
+            );
           }
           // Split on delimiter
           final attrs = attributeString.split(separator);
@@ -240,10 +244,9 @@ class CoapLinkFormat {
       sb.write(',');
     }
     // sort by resource name
-    final children = resource.children! as List<CoapResource>
-      ..sort(
-        (final r1, final r2) => r1.name!.compareTo(r2.name!),
-      );
+    final children =
+        resource.children! as List<CoapResource>
+          ..sort((final r1, final r2) => r1.name!.compareTo(r2.name!));
     for (final child in children) {
       _serializeTree(child, queries, sb);
     }
@@ -397,8 +400,9 @@ class CoapLinkFormat {
         var expected = s.substring(delim + 1);
         if (attrName == CoapLinkFormat.link) {
           if (expected.endsWith('*')) {
-            return resource.path
-                .startsWith(expected.substring(0, expected.length - 1));
+            return resource.path.startsWith(
+              expected.substring(0, expected.length - 1),
+            );
           } else {
             return resource.path == expected;
           }

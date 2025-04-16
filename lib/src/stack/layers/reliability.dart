@@ -31,10 +31,7 @@ class ReliabilityLayer extends BaseLayer {
 
   /// Schedules a retransmission for confirmable messages.
   @override
-  void sendRequest(
-    final CoapExchange exchange,
-    final CoapRequest request,
-  ) {
+  void sendRequest(final CoapExchange exchange, final CoapRequest request) {
     if (request.type == CoapMessageType.con) {
       _prepareRetransmission(
         exchange,
@@ -51,10 +48,7 @@ class ReliabilityLayer extends BaseLayer {
   /// with a piggy-backed response or, if an empty ACK has already be sent, a
   /// CON or NON with a separate response.
   @override
-  void sendResponse(
-    final CoapExchange exchange,
-    final CoapResponse? response,
-  ) {
+  void sendResponse(final CoapExchange exchange, final CoapResponse? response) {
     final mt = response!.type;
     if (mt == CoapMessageType.ack || mt == CoapMessageType.rst) {
       response.id = exchange.currentRequest.id;
@@ -79,10 +73,7 @@ class ReliabilityLayer extends BaseLayer {
   /// server has not yet decided what to do with the request and we cannot do
   /// anything.
   @override
-  void receiveRequest(
-    final CoapExchange exchange,
-    final CoapRequest request,
-  ) {
+  void receiveRequest(final CoapExchange exchange, final CoapRequest request) {
     if (!request.duplicate) {
       exchange.currentRequest = request;
       super.receiveRequest(exchange, request);
@@ -192,8 +183,10 @@ class ReliabilityLayer extends BaseLayer {
       ctx.currentTimeout =
           (ctx.currentTimeout * _config.ackTimeoutScale).toInt();
     } else if (ctx?.currentTimeout == 0) {
-      ctx?.currentTimeout =
-          _initialTimeout(_config.ackTimeout, _config.ackRandomFactor);
+      ctx?.currentTimeout = _initialTimeout(
+        _config.ackTimeout,
+        _config.ackRandomFactor,
+      );
     }
     ctx?.failedTransmissionCount++;
 
@@ -259,9 +252,10 @@ class _TransmissionContext {
       _exchange.timedOut = true;
       _message.isTimedOut = true;
       _exchange.remove(ReliabilityLayer.transmissionContextKey);
-      final message = CoapEmptyMessage(CoapMessageType.rst)
-        ..id = _message.id
-        ..token = _message.token;
+      final message =
+          CoapEmptyMessage(CoapMessageType.rst)
+            ..id = _message.id
+            ..token = _message.token;
       _exchange.fireCancel(message);
       cancel();
     }

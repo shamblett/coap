@@ -51,9 +51,10 @@ class BlockwiseLayer extends BaseLayer {
       // Note: We do not regard it as random access when the block num is
       // 0. This is because the user might just want to do early block
       // size negotiation but actually wants to receive all blocks.
-      final status = BlockwiseStatus(request.contentFormat, request.block2!.szx)
-        ..currentNUM = request.block2!.num
-        ..randomAccess = true;
+      final status =
+          BlockwiseStatus(request.contentFormat, request.block2!.szx)
+            ..currentNUM = request.block2!.num
+            ..randomAccess = true;
       exchange.responseBlockStatus = status;
       super.sendRequest(exchange, request);
     } else if (_requiresBlockwise(request)) {
@@ -98,8 +99,8 @@ class BlockwiseLayer extends BaseLayer {
             CoapMessageType.con,
             payload: utf8.encode('Changed Content-Format'),
           )..addOption(
-              Block1Option.fromParts(block1.num, block1.szx, m: block1.m),
-            );
+            Block1Option.fromParts(block1.num, block1.szx, m: block1.m),
+          );
 
           exchange.currentResponse = error;
           super.sendResponse(exchange, error);
@@ -108,13 +109,16 @@ class BlockwiseLayer extends BaseLayer {
 
         status.currentNUM++;
         if (block1.m) {
-          final piggybacked = CoapResponse.createResponse(
-            request,
-            ResponseCode.continues,
-            CoapMessageType.ack,
-          )
-            ..addOption(Block1Option.fromParts(block1.num, block1.szx, m: true))
-            ..last = false;
+          final piggybacked =
+              CoapResponse.createResponse(
+                  request,
+                  ResponseCode.continues,
+                  CoapMessageType.ack,
+                )
+                ..addOption(
+                  Block1Option.fromParts(block1.num, block1.szx, m: true),
+                )
+                ..last = false;
 
           exchange.currentResponse = piggybacked;
           super.sendResponse(exchange, piggybacked);
@@ -142,8 +146,8 @@ class BlockwiseLayer extends BaseLayer {
           CoapMessageType.con,
           payload: utf8.encode('Wrong block number'),
         )..addOption(
-            Block1Option.fromParts(block1.num, block1.szx, m: block1.m),
-          );
+          Block1Option.fromParts(block1.num, block1.szx, m: block1.m),
+        );
         exchange.currentResponse = error;
         super.sendResponse(exchange, error);
       }
@@ -152,13 +156,15 @@ class BlockwiseLayer extends BaseLayer {
       // the next block of it
       final block2 = request.block2!;
       final response = exchange.response!;
-      final status = _findResponseBlockStatus(exchange, response)
-        ..currentNUM = block2.num
-        ..currentSZX = block2.szx;
+      final status =
+          _findResponseBlockStatus(exchange, response)
+            ..currentNUM = block2.num
+            ..currentSZX = block2.szx;
 
-      final block = _getNextResponseBlock(response, status)
-        ..token = request.token
-        ..removeOptions<ObserveOption>();
+      final block =
+          _getNextResponseBlock(response, status)
+            ..token = request.token
+            ..removeOptions<ObserveOption>();
 
       if (status.complete) {
         // Clean up blockwise status
@@ -325,16 +331,17 @@ class BlockwiseLayer extends BaseLayer {
           final m = block2.m;
 
           final nextBlock = Block2Option.fromParts(num, szx, m: m);
-          final block = CoapRequest(request.uri, request.method)
-            ..endpoint = request.endpoint
-            // NON could make sense over SMS or similar transports
-            ..setOptions(
-              request
-                  .getAllOptions()
-                  .where((final option) => !option.isUriOption),
-            )
-            ..setOption(nextBlock)
-            ..destination = response.source;
+          final block =
+              CoapRequest(request.uri, request.method)
+                ..endpoint = request.endpoint
+                // NON could make sense over SMS or similar transports
+                ..setOptions(
+                  request.getAllOptions().where(
+                    (final option) => !option.isUriOption,
+                  ),
+                )
+                ..setOption(nextBlock)
+                ..destination = response.source;
           if (exchange is CoapMulticastExchange) {
             status = _copyBlockStatus(
               exchange.responseBlockStatus,
@@ -421,13 +428,16 @@ class BlockwiseLayer extends BaseLayer {
     final to = min((num + 1) * currentSize, request.payloadSize);
     final payload = request.payload.getRange(from, to);
 
-    final block = CoapRequest(request.uri, request.method, payload: payload)
-      ..endpoint = request.endpoint
-      ..setOptions(
-        request.getAllOptions().where((final option) => !option.isUriOption),
-      )
-      ..destination = request.destination
-      ..token = request.token;
+    final block =
+        CoapRequest(request.uri, request.method, payload: payload)
+          ..endpoint = request.endpoint
+          ..setOptions(
+            request.getAllOptions().where(
+              (final option) => !option.isUriOption,
+            ),
+          )
+          ..destination = request.destination
+          ..token = request.token;
 
     final m = to < request.payloadSize;
     block.addOption(Block1Option.fromParts(num, szx, m: m));
@@ -481,12 +491,13 @@ class BlockwiseLayer extends BaseLayer {
     var status = exchange.responseBlockStatus;
     if (status == null || exchange is CoapMulticastExchange) {
       final blockOptions = response!.getOptions<Block2Option>();
-      status = BlockwiseStatus(
-        response.contentType,
-        BlockSize.fromDecodedValue(_preferredBlockSize),
-      )
-        ..currentNUM = blockOptions.toList()[0].value
-        ..complete = false;
+      status =
+          BlockwiseStatus(
+              response.contentType,
+              BlockSize.fromDecodedValue(_preferredBlockSize),
+            )
+            ..currentNUM = blockOptions.toList()[0].value
+            ..complete = false;
       exchange.responseBlockStatus = status;
     }
 
@@ -507,11 +518,12 @@ class BlockwiseLayer extends BaseLayer {
       // A blockwise notification transmits the first block only
       block = response;
     } else {
-      block = CoapResponse(response.responseCode, response.type)
-        ..destination = response.destination
-        ..token = response.token
-        ..setOptions(response.getAllOptions())
-        ..isTimedOut = true;
+      block =
+          CoapResponse(response.responseCode, response.type)
+            ..destination = response.destination
+            ..token = response.token
+            ..setOptions(response.getAllOptions())
+            ..isTimedOut = true;
     }
 
     final payloadSize = response.payloadSize;

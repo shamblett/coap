@@ -52,5 +52,5 @@ class EchoOption extends OpaqueOption
 class RequestTagOption extends OpaqueOption
     with OscoreOptionClassE, OscoreOptionClassU {
   RequestTagOption(final Uint8Buffer value)
-      : super(OptionType.requestTag, value);
+    : super(OptionType.requestTag, value);
 }

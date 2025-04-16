@@ -14,9 +14,9 @@ import 'package:typed_data/typed_data.dart';
 class DatagramWriter {
   /// Initializes a new DatagramWriter object
   DatagramWriter()
-      : _buffer = Uint8Buffer(),
-        _currentByte = ByteData(1)..setUint8(0, 0),
-        _currentBitIndex = 7;
+    : _buffer = Uint8Buffer(),
+      _currentByte = ByteData(1)..setUint8(0, 0),
+      _currentBitIndex = 7;
 
   final Uint8Buffer _buffer;
   final ByteData _currentByte;

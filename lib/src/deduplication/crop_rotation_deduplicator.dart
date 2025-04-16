@@ -15,7 +15,7 @@ import 'deduplicator.dart';
 class CropRotationDeduplicator implements Deduplicator {
   /// Construction
   CropRotationDeduplicator(this._config)
-      : _maps = List<Map<int?, CoapExchange>>.filled(3, <int?, CoapExchange>{});
+    : _maps = List<Map<int?, CoapExchange>>.filled(3, <int?, CoapExchange>{});
 
   final List<Map<int?, CoapExchange>> _maps;
   int _first = 0;

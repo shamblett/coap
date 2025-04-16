@@ -18,7 +18,7 @@ import 'option/option.dart';
 class CoapEmptyMessage extends CoapMessage {
   /// Instantiates a new empty message.
   CoapEmptyMessage(final CoapMessageType type)
-      : super(RequestMethod.empty.coapCode, type);
+    : super(RequestMethod.empty.coapCode, type);
 
   /// Create a new acknowledgment for the specified message.
   /// Returns the acknowledgment.
@@ -52,13 +52,13 @@ class CoapEmptyMessage extends CoapMessage {
     required final bool hasUnknownCriticalOption,
     required final bool hasFormatError,
   }) : super.fromParsed(
-          RequestMethod.empty.coapCode,
-          type,
-          id: id,
-          token: token,
-          options: options,
-          hasUnknownCriticalOption: hasUnknownCriticalOption,
-          hasFormatError: hasFormatError,
-          payload: payload,
-        );
+         RequestMethod.empty.coapCode,
+         type,
+         id: id,
+         token: token,
+         options: options,
+         hasUnknownCriticalOption: hasUnknownCriticalOption,
+         hasFormatError: hasFormatError,
+         payload: payload,
+       );
 }

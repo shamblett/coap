@@ -66,15 +66,15 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
     final DynamicLibrary? libCrypto,
     final String? hostName,
     final int? securityLevel,
-  })  : _ciphers = ciphers,
-        _verify = verify,
-        _withTrustedRoots = withTrustedRoots,
-        _rootCertificates = rootCertificates,
-        _libSsl = libSsl,
-        _libCrypto = libCrypto,
-        _hostname = hostName,
-        _securityLevel = securityLevel,
-        _openSslPskCallback = _createOpenSslPskCallback(pskCredentialsCallback);
+  }) : _ciphers = ciphers,
+       _verify = verify,
+       _withTrustedRoots = withTrustedRoots,
+       _rootCertificates = rootCertificates,
+       _libSsl = libSsl,
+       _libCrypto = libCrypto,
+       _hostname = hostName,
+       _securityLevel = securityLevel,
+       _openSslPskCallback = _createOpenSslPskCallback(pskCredentialsCallback);
 
   DtlsClient? _dtlsClient;
 
@@ -172,8 +172,9 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
         );
         eventBus.fire(CoapMessageReceivedEvent(message, address));
       },
-      onError: (final Object e, final StackTrace s) =>
-          eventBus.fire(CoapSocketErrorEvent(e, s)),
+      onError:
+          (final Object e, final StackTrace s) =>
+              eventBus.fire(CoapSocketErrorEvent(e, s)),
       onDone: () {
         isClosed = true;
 

@@ -31,8 +31,11 @@ FutureOr<void> main() async {
     client.events.on<Object>().listen(print);
 
     print('Sending post /large-create to ${baseUri.host}');
-    await client
-        .post(Uri(path: 'large-create'), payload: payload, options: [opt]);
+    await client.post(
+      Uri(path: 'large-create'),
+      payload: payload,
+      options: [opt],
+    );
   } on Exception catch (e) {
     print('CoAP encountered an exception: $e');
   }

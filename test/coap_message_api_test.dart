@@ -72,10 +72,7 @@ void main() {
     message.setOptions(options);
     expect(message.optionsLength, 1);
     expect(message.getOptions<UriQueryOption>().length, 1);
-    expect(
-      message.getFirstOption<UriQueryOption>()!.type,
-      OptionType.uriQuery,
-    );
+    expect(message.getFirstOption<UriQueryOption>()!.type, OptionType.uriQuery);
     expect(message.getFirstOption<UriPortOption>(), isNull);
     expect(message.hasOption<UriQueryOption>(), isTrue);
     expect(message.hasOption<UriPortOption>(), isFalse);
@@ -93,10 +90,7 @@ void main() {
     final ret = message.removeOption(opt1);
     expect(ret, isTrue);
     expect(message.getOptions<UriQueryOption>().length, 1);
-    expect(
-      message.getOptions<UriQueryOption>().toList()[0] == opt2,
-      isTrue,
-    );
+    expect(message.getOptions<UriQueryOption>().toList()[0] == opt2, isTrue);
     message.clearOptions();
     expect(message.optionsLength, 0);
   });

@@ -28,8 +28,11 @@ FutureOr<void> main() async {
 
   try {
     print('Sending post /large-create to ${baseUri.host}');
-    var response = await client
-        .post(Uri(path: 'large-create'), payload: payload, options: [opt]);
+    var response = await client.post(
+      Uri(path: 'large-create'),
+      payload: payload,
+      options: [opt],
+    );
     print('/large-create response status: ${response.statusCodeString}');
 
     print('Sending get /large-create to ${baseUri.host}');

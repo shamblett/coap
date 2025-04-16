@@ -143,7 +143,7 @@ enum CoapOrigin {
   local,
 
   /// Remote
-  remote
+  remote,
 }
 
 /// Data received Event

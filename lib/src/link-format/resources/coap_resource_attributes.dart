@@ -71,8 +71,9 @@ class CoapResourceAttributes {
 
   /// Adds an interface description.
   void addInterfaceDescription(final String description) {
-    _attributes[LinkFormatParameter.interfaceDescription.short]!
-        .add(description);
+    _attributes[LinkFormatParameter.interfaceDescription.short]!.add(
+      description,
+    );
   }
 
   /// Gets all interface descriptions.

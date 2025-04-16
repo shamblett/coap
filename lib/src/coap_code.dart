@@ -23,11 +23,8 @@ const _signal = 7;
 /// [RFC 7252, section 3]: https://www.rfc-editor.org/rfc/rfc7252#section-3
 @immutable
 class CoapCode {
-  const CoapCode(
-    this.codeClass,
-    this.codeDetail,
-    this.description,
-  ) : code = (codeClass << 5) + codeDetail;
+  const CoapCode(this.codeClass, this.codeDetail, this.description)
+    : code = (codeClass << 5) + codeDetail;
 
   static CoapCode? decode(final int code) {
     if (code == 0) {
@@ -144,14 +141,9 @@ enum RequestMethod {
   /// The iPATCH method
   ///
   /// Defined in [RFC 8132](https://datatracker.ietf.org/doc/html/rfc8132).
-  ipatch(0, 07, 'iPATCH'),
-  ;
+  ipatch(0, 07, 'iPATCH');
 
-  const RequestMethod(
-    this.codeClass,
-    this.codeDetail,
-    this.description,
-  );
+  const RequestMethod(this.codeClass, this.codeDetail, this.description);
 
   /// The code class of this [RequestMethod] (always 0).
   final int codeClass;
@@ -253,11 +245,7 @@ enum ResponseCode {
   /// 4.08 Request Entity Incomplete
   ///
   /// Defined in [RFC 7959](https://datatracker.ietf.org/doc/html/rfc7959).
-  requestEntityIncomplete(
-    4,
-    08,
-    'Request Entity Incomplete',
-  ),
+  requestEntityIncomplete(4, 08, 'Request Entity Incomplete'),
 
   /// 4.09 Conflict
   ///
@@ -273,11 +261,7 @@ enum ResponseCode {
   ///
   /// Defined in [RFC 7252](https://datatracker.ietf.org/doc/html/rfc7252) and
   /// [RFC 7959](https://datatracker.ietf.org/doc/html/rfc7959).
-  requestEntityTooLarge(
-    4,
-    13,
-    'Request Entity Too Large',
-  ),
+  requestEntityTooLarge(4, 13, 'Request Entity Too Large'),
 
   /// 4.15 Unsupported Content-Format
   ///
@@ -327,14 +311,9 @@ enum ResponseCode {
   /// 5.08 Hop Limit Reached
   ///
   /// Defined in [RFC 8768](https://datatracker.ietf.org/doc/html/rfc8768).
-  hopLimitReached(5, 08, 'Hop Limit Reached'),
-  ;
+  hopLimitReached(5, 08, 'Hop Limit Reached');
 
-  const ResponseCode(
-    this.codeClass,
-    this.codeDetail,
-    this.description,
-  );
+  const ResponseCode(this.codeClass, this.codeDetail, this.description);
 
   /// The code class of this [ResponseCode] (either 2, 4, or 5).
   final int codeClass;
@@ -395,11 +374,7 @@ enum SignalingCode {
   /// Defined in [RFC 8323](https://datatracker.ietf.org/doc/html/rfc8323).
   abort(7, 05, 'Abort');
 
-  const SignalingCode(
-    this.codeClass,
-    this.codeDetail,
-    this.description,
-  );
+  const SignalingCode(this.codeClass, this.codeDetail, this.description);
 
   /// The code class of this [SignalingCode] (always 7).
   final int codeClass;

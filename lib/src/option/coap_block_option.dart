@@ -22,8 +22,7 @@ enum BlockSize {
   blockSize256(4),
   blockSize512(5),
   blockSize1024(6),
-  reserved(7),
-  ;
+  reserved(7);
 
   /// Constructor
   const BlockSize(this.numericValue);
@@ -90,10 +89,8 @@ abstract class CoapBlockOption extends IntegerOption
       'Encountered reserved SZX value 7 in CoapBlockOption.';
 
   /// Base construction
-  CoapBlockOption(
-    final BlockOptionType blockOptionType,
-    final int value,
-  ) : super(blockOptionType.optionType, value) {
+  CoapBlockOption(final BlockOptionType blockOptionType, final int value)
+    : super(blockOptionType.optionType, value) {
     if (szx == BlockSize.reserved) {
       throw ArgumentError.value(szx, _szxErrorMessage);
     }
@@ -159,7 +156,7 @@ class Block2Option extends CoapBlockOption {
   Block2Option(final int rawValue) : super(BlockOptionType.block2, rawValue);
 
   Block2Option.parse(final Uint8Buffer bytes)
-      : super.parse(BlockOptionType.block2, bytes);
+    : super.parse(BlockOptionType.block2, bytes);
 
   /// num - Block number
   /// szx - Block size
@@ -175,7 +172,7 @@ class Block1Option extends CoapBlockOption {
   Block1Option(final int rawValue) : super(BlockOptionType.block1, rawValue);
 
   Block1Option.parse(final Uint8Buffer bytes)
-      : super.parse(BlockOptionType.block1, bytes);
+    : super.parse(BlockOptionType.block1, bytes);
 
   /// num - Block number
   /// szx - Block size
@@ -191,7 +188,7 @@ class QBlock2Option extends CoapBlockOption {
   QBlock2Option(final int rawValue) : super(BlockOptionType.qBlock2, rawValue);
 
   QBlock2Option.parse(final Uint8Buffer bytes)
-      : super.parse(BlockOptionType.qBlock2, bytes);
+    : super.parse(BlockOptionType.qBlock2, bytes);
 
   /// num - Block number
   /// szx - Block size
@@ -207,7 +204,7 @@ class QBlock1Option extends CoapBlockOption {
   QBlock1Option(final int rawValue) : super(BlockOptionType.qBlock1, rawValue);
 
   QBlock1Option.parse(final Uint8Buffer bytes)
-      : super.parse(BlockOptionType.qBlock1, bytes);
+    : super.parse(BlockOptionType.qBlock1, bytes);
 
   /// num - Block number
   /// szx - Block size

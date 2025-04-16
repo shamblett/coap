@@ -50,86 +50,83 @@ abstract class CoapEndpointResource {
 
   /// Resource type
   String? get resourceType =>
-      getAttributes(LinkFormatParameter.resourceType.short)
-          .firstOrNull
-          ?.valueAsString;
+      getAttributes(
+        LinkFormatParameter.resourceType.short,
+      ).firstOrNull?.valueAsString;
 
   set resourceType(final String? value) => setAttribute(
-        CoapLinkAttribute(LinkFormatParameter.resourceType.short, value),
-      );
+    CoapLinkAttribute(LinkFormatParameter.resourceType.short, value),
+  );
 
   /// Endpoint Name
   String? get endpointName =>
-      getAttributes(LinkFormatParameter.endpointName.short)
-          .firstOrNull
-          ?.valueAsString;
+      getAttributes(
+        LinkFormatParameter.endpointName.short,
+      ).firstOrNull?.valueAsString;
 
   set endpointName(final String? value) => setAttribute(
-        CoapLinkAttribute(LinkFormatParameter.endpointName.short, value),
-      );
+    CoapLinkAttribute(LinkFormatParameter.endpointName.short, value),
+  );
 
   /// Endpoint Type
   String? get endpointType =>
-      getAttributes(LinkFormatParameter.endpointType.short)
-          .firstOrNull
-          ?.valueAsString;
+      getAttributes(
+        LinkFormatParameter.endpointType.short,
+      ).firstOrNull?.valueAsString;
 
   set endpointType(final String? value) => setAttribute(
-        CoapLinkAttribute(LinkFormatParameter.endpointType.short, value),
-      );
+    CoapLinkAttribute(LinkFormatParameter.endpointType.short, value),
+  );
 
   /// Title
   String? get title =>
       getAttributes(LinkFormatParameter.title.short).firstOrNull?.valueAsString;
 
   set title(final String? value) {
-    setAttribute(
-      CoapLinkAttribute(LinkFormatParameter.title.short, value),
-    );
+    setAttribute(CoapLinkAttribute(LinkFormatParameter.title.short, value));
   }
 
   /// Interface descriptions
-  List<String?> get interfaceDescriptions => getStringValues(
+  List<String?> get interfaceDescriptions =>
+      getStringValues(
         getAttributes(LinkFormatParameter.interfaceDescription.short),
       ).toList();
 
   /// The interface description
   String? get interfaceDescription =>
-      getAttributes(LinkFormatParameter.interfaceDescription.short)
-          .firstOrNull
-          ?.valueAsString;
+      getAttributes(
+        LinkFormatParameter.interfaceDescription.short,
+      ).firstOrNull?.valueAsString;
 
   set interfaceDescription(final String? value) => setAttribute(
-        CoapLinkAttribute(
-          LinkFormatParameter.interfaceDescription.short,
-          value,
-        ),
-      );
+    CoapLinkAttribute(LinkFormatParameter.interfaceDescription.short, value),
+  );
 
   /// Content type codes
   List<int?> get contentTypeCodes =>
-      getIntValues(getAttributes(LinkFormatParameter.contentType.short))
-          .toList();
+      getIntValues(
+        getAttributes(LinkFormatParameter.contentType.short),
+      ).toList();
 
   /// The content type code
   int? get contentTypeCode =>
-      getAttributes(LinkFormatParameter.contentType.short)
-          .firstOrNull
-          ?.valueAsInt;
+      getAttributes(
+        LinkFormatParameter.contentType.short,
+      ).firstOrNull?.valueAsInt;
 
   set contentTypeCode(final int? value) => setAttribute(
-        CoapLinkAttribute(LinkFormatParameter.contentType.short, value),
-      );
+    CoapLinkAttribute(LinkFormatParameter.contentType.short, value),
+  );
 
   /// Maximum size estimate
   int? get maximumSizeEstimate =>
-      getAttributes(LinkFormatParameter.maxSizeEstimate.short)
-          .firstOrNull
-          ?.valueAsInt;
+      getAttributes(
+        LinkFormatParameter.maxSizeEstimate.short,
+      ).firstOrNull?.valueAsInt;
 
   set maximumSizeEstimate(final int? value) => setAttribute(
-        CoapLinkAttribute(LinkFormatParameter.maxSizeEstimate.short, value),
-      );
+    CoapLinkAttribute(LinkFormatParameter.maxSizeEstimate.short, value),
+  );
 
   /// Observable
   bool get observable =>

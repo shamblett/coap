@@ -8,10 +8,10 @@ import 'option.dart';
 
 abstract class StringOption extends Option<String> {
   StringOption(this.type, final String value)
-      : byteValue = Uint8Buffer()..addAll(utf8.encode(value));
+    : byteValue = Uint8Buffer()..addAll(utf8.encode(value));
 
   StringOption.parse(this.type, final Uint8Buffer? bytes)
-      : byteValue = Uint8Buffer()..addAll(bytes ?? []);
+    : byteValue = Uint8Buffer()..addAll(bytes ?? []);
 
   @override
   final Uint8Buffer byteValue;
@@ -61,51 +61,51 @@ abstract class PathOption extends StringOption {
 
 class LocationPathOption extends PathOption with OscoreOptionClassE {
   LocationPathOption(final String value)
-      : super(OptionType.locationPath, value);
+    : super(OptionType.locationPath, value);
 
   LocationPathOption.parse(final Uint8Buffer bytes)
-      : super.parse(OptionType.locationPath, bytes);
+    : super.parse(OptionType.locationPath, bytes);
 }
 
 class UriHostOption extends StringOption with OscoreOptionClassU {
   UriHostOption(final String value) : super(OptionType.uriHost, value);
 
   UriHostOption.parse(final Uint8Buffer bytes)
-      : super.parse(OptionType.uriHost, bytes);
+    : super.parse(OptionType.uriHost, bytes);
 }
 
 class UriPathOption extends PathOption with OscoreOptionClassE {
   UriPathOption(final String value) : super(OptionType.uriPath, value);
 
   UriPathOption.parse(final Uint8Buffer bytes)
-      : super.parse(OptionType.uriPath, bytes);
+    : super.parse(OptionType.uriPath, bytes);
 }
 
 class UriQueryOption extends QueryOption with OscoreOptionClassE {
   UriQueryOption(final String value) : super(OptionType.uriQuery, value);
 
   UriQueryOption.parse(final Uint8Buffer bytes)
-      : super.parse(OptionType.uriQuery, bytes);
+    : super.parse(OptionType.uriQuery, bytes);
 }
 
 class LocationQueryOption extends QueryOption with OscoreOptionClassE {
   LocationQueryOption(final String value)
-      : super(OptionType.locationQuery, value);
+    : super(OptionType.locationQuery, value);
 
   LocationQueryOption.parse(final Uint8Buffer bytes)
-      : super.parse(OptionType.locationQuery, bytes);
+    : super.parse(OptionType.locationQuery, bytes);
 }
 
 class ProxyUriOption extends StringOption with OscoreOptionClassU {
   ProxyUriOption(final String value) : super(OptionType.proxyUri, value);
 
   ProxyUriOption.parse(final Uint8Buffer bytes)
-      : super.parse(OptionType.proxyUri, bytes);
+    : super.parse(OptionType.proxyUri, bytes);
 }
 
 class ProxySchemeOption extends StringOption with OscoreOptionClassU {
   ProxySchemeOption(final String value) : super(OptionType.proxyUri, value);
 
   ProxySchemeOption.parse(final Uint8Buffer bytes)
-      : super.parse(OptionType.proxyUri, bytes);
+    : super.parse(OptionType.proxyUri, bytes);
 }

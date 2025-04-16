@@ -173,13 +173,7 @@ enum OptionType implements Comparable<OptionType> {
     maxLength: 255,
     repeatable: true,
   ),
-  block2(
-    23,
-    'Block2',
-    OptionFormat.integer,
-    minLength: 0,
-    maxLength: 3,
-  ),
+  block2(23, 'Block2', OptionFormat.integer, minLength: 0, maxLength: 3),
   block1(27, 'Block1', OptionFormat.integer, minLength: 0, maxLength: 3),
   size2(28, 'Size2', OptionFormat.integer, minLength: 0, maxLength: 4),
 
@@ -419,5 +413,5 @@ enum OptionFormat<T> {
   string<String>(),
   opaque<Uint8Buffer>(),
   oscore<OscoreOptionValue>(),
-  empty<void>();
+  empty<void>(),
 }

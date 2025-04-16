@@ -15,8 +15,11 @@ import './config/coap_config.dart';
 
 FutureOr<void> main() async {
   final conf = CoapConfig();
-  final baseUri =
-      Uri(scheme: 'coap', host: 'google.com', port: conf.defaultPort);
+  final baseUri = Uri(
+    scheme: 'coap',
+    host: 'google.com',
+    port: conf.defaultPort,
+  );
   final client = CoapClient(baseUri, config: conf);
 
   print('maxRetransmit config: ${conf.maxRetransmit}');

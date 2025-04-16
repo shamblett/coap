@@ -28,13 +28,12 @@ class CoapObserveClientRelation extends Stream<CoapResponse> {
     final Function? onError,
     final void Function()? onDone,
     final bool? cancelOnError,
-  }) =>
-      _filteredStream.listen(
-        onData,
-        onError: onError,
-        onDone: onDone,
-        cancelOnError: cancelOnError,
-      );
+  }) => _filteredStream.listen(
+    onData,
+    onError: onError,
+    onDone: onDone,
+    cancelOnError: cancelOnError,
+  );
 
   final CoapRequest _request;
 
@@ -75,14 +74,14 @@ class CoapObserveClientRelation extends Stream<CoapResponse> {
 
   /// Create a cancellation request
   @internal
-  CoapRequest cancellation() => CoapRequest.get(_request.uri)
-    // Copy options, but set Observe to cancel
-    ..setOptions(_request.getAllOptions())
-    ..observe = ObserveRegistration.deregister.value
-    // Use same Token
-    ..token = _request.token
-    ..destination = _request.destination
-
-    // Dispatch final response to the same message observers
-    ..copyEventHandler(_request);
+  CoapRequest cancellation() =>
+      CoapRequest.get(_request.uri)
+        // Copy options, but set Observe to cancel
+        ..setOptions(_request.getAllOptions())
+        ..observe = ObserveRegistration.deregister.value
+        // Use same Token
+        ..token = _request.token
+        ..destination = _request.destination
+        // Dispatch final response to the same message observers
+        ..copyEventHandler(_request);
 }

@@ -25,8 +25,8 @@ class CoapResponse extends CoapMessage {
     final CoapMessageType type, {
     final Uri? location,
     super.payload,
-  })  : location = location ?? Uri(path: '/'),
-        super(responseCode.coapCode, type);
+  }) : location = location ?? Uri(path: '/'),
+       super(responseCode.coapCode, type);
 
   final ResponseCode responseCode;
 
@@ -89,12 +89,7 @@ class CoapResponse extends CoapMessage {
     final Uri? location,
     final Iterable<int>? payload,
   }) =>
-      CoapResponse(
-        statusCode,
-        type,
-        location: location,
-        payload: payload,
-      )
+      CoapResponse(statusCode, type, location: location, payload: payload)
         ..destination = request.source
         ..token = request.token;
 
@@ -108,15 +103,15 @@ class CoapResponse extends CoapMessage {
     required final bool hasUnknownCriticalOption,
     required final bool hasFormatError,
     final Uri? location,
-  })  : location = location ?? Uri(path: '/'),
-        super.fromParsed(
-          responseCode.coapCode,
-          type,
-          id: id,
-          token: token,
-          options: options,
-          hasUnknownCriticalOption: hasUnknownCriticalOption,
-          hasFormatError: hasFormatError,
-          payload: payload,
-        );
+  }) : location = location ?? Uri(path: '/'),
+       super.fromParsed(
+         responseCode.coapCode,
+         type,
+         id: id,
+         token: token,
+         options: options,
+         hasUnknownCriticalOption: hasUnknownCriticalOption,
+         hasFormatError: hasFormatError,
+         payload: payload,
+       );
 }

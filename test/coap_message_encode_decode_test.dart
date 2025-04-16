@@ -207,7 +207,7 @@ void main() {
         116,
         101,
         110,
-      ]
+      ],
     ];
 
     /// Helper functions
@@ -217,10 +217,7 @@ void main() {
       print('Chk  is - ${check[testNo]}');
     }
 
-    void checkData(
-      final typed.Uint8Buffer data,
-      final int testNo,
-    ) {
+    void checkData(final typed.Uint8Buffer data, final int testNo) {
       printData(data.toList(), testNo);
       expect(data.toList().length, check[testNo].length);
       expect(leq.equals(data.toList(), check[testNo]), isTrue);
@@ -247,16 +244,17 @@ void main() {
     }
 
     void testMessageWithOptions(final int testNo) {
-      final CoapMessage msg = CoapRequest(
-        Uri.parse('coap://example.org'),
-        RequestMethod.get,
-        payload: utf8.encode('payload'),
-      )
-        ..id = 12345
-        ..addOption(
-          ContentFormatOption(CoapMediaType.textPlain.numericValue),
-        )
-        ..addOption(MaxAgeOption(30));
+      final CoapMessage msg =
+          CoapRequest(
+              Uri.parse('coap://example.org'),
+              RequestMethod.get,
+              payload: utf8.encode('payload'),
+            )
+            ..id = 12345
+            ..addOption(
+              ContentFormatOption(CoapMediaType.textPlain.numericValue),
+            )
+            ..addOption(MaxAgeOption(30));
       expect(msg.getFirstOption<ContentFormatOption>()!.value, 0);
       expect(msg.getFirstOption<MaxAgeOption>()!.value, 30);
       final data = serializeUdpMessage(msg);
@@ -286,13 +284,14 @@ void main() {
     }
 
     void testMessageWithExtendedOption(final int testNo) {
-      final CoapMessage msg = CoapRequest(
-        Uri.parse('coap://example.org'),
-        RequestMethod.get,
-        payload: utf8.encode('payload'),
-      )
-        ..id = 12345
-        ..addOption(ContentFormatOption(0));
+      final CoapMessage msg =
+          CoapRequest(
+              Uri.parse('coap://example.org'),
+              RequestMethod.get,
+              payload: utf8.encode('payload'),
+            )
+            ..id = 12345
+            ..addOption(ContentFormatOption(0));
       expect(msg.getFirstOption<ContentFormatOption>()!.value, 0);
 
       final data = serializeUdpMessage(msg);
@@ -318,19 +317,20 @@ void main() {
     }
 
     void testRequestParsing(final int testNo) {
-      final request = CoapRequest(
-        Uri.parse('coap://example.org'),
-        RequestMethod.post,
-        confirmable: false,
-      )
-        ..id = 7
-        ..token = (typed.Uint8Buffer()..addAll(<int>[11, 82, 165, 77, 3]))
-        ..addIfMatchOpaque(typed.Uint8Buffer()..addAll(<int>[34, 239]))
-        ..addIfMatchOpaque(
-          typed.Uint8Buffer()..addAll(<int>[88, 12, 254, 157, 5]),
-        )
-        ..contentType = CoapMediaType.fromIntValue(40)
-        ..accept = CoapMediaType.fromIntValue(40);
+      final request =
+          CoapRequest(
+              Uri.parse('coap://example.org'),
+              RequestMethod.post,
+              confirmable: false,
+            )
+            ..id = 7
+            ..token = (typed.Uint8Buffer()..addAll(<int>[11, 82, 165, 77, 3]))
+            ..addIfMatchOpaque(typed.Uint8Buffer()..addAll(<int>[34, 239]))
+            ..addIfMatchOpaque(
+              typed.Uint8Buffer()..addAll(<int>[88, 12, 254, 157, 5]),
+            )
+            ..contentType = CoapMediaType.fromIntValue(40)
+            ..accept = CoapMediaType.fromIntValue(40);
 
       final bytes = serializeUdpMessage(request);
       checkData(bytes, testNo);
@@ -352,15 +352,20 @@ void main() {
     }
 
     void testResponseParsing(final int testNo) {
-      final response = CoapResponse(
-        ResponseCode.content,
-        CoapMessageType.non,
-        location:
-            Uri(path: '/one/two/three/four/five/six/seven/eight/nine/ten'),
-      )
-        ..id = 9
-        ..token = (typed.Uint8Buffer()..addAll(<int>[22, 255, 0, 78, 100, 22]))
-        ..addETagOpaque(typed.Uint8Buffer()..addAll(<int>[1, 0, 0, 0, 0, 1]));
+      final response =
+          CoapResponse(
+              ResponseCode.content,
+              CoapMessageType.non,
+              location: Uri(
+                path: '/one/two/three/four/five/six/seven/eight/nine/ten',
+              ),
+            )
+            ..id = 9
+            ..token =
+                (typed.Uint8Buffer()..addAll(<int>[22, 255, 0, 78, 100, 22]))
+            ..addETagOpaque(
+              typed.Uint8Buffer()..addAll(<int>[1, 0, 0, 0, 0, 1]),
+            );
 
       final bytes = serializeUdpMessage(response);
       checkData(bytes, testNo);

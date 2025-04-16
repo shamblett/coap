@@ -107,8 +107,9 @@ class CoapNetworkUDP implements CoapINetwork {
         }
       },
       // ignore: avoid_types_on_closure_parameters
-      onError: (final Object e, final StackTrace s) =>
-          eventBus.fire(CoapSocketErrorEvent(e, s)),
+      onError:
+          (final Object e, final StackTrace s) =>
+              eventBus.fire(CoapSocketErrorEvent(e, s)),
       // Socket stream is done and can no longer be listened to
       onDone: () {
         isClosed = true;

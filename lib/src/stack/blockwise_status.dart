@@ -59,6 +59,7 @@ class BlockwiseStatus {
   }
 
   @override
-  String toString() => '[CurrentNum=$currentNUM, CurrentSzx=$currentSZX, '
+  String toString() =>
+      '[CurrentNum=$currentNUM, CurrentSzx=$currentSZX, '
       'Complete=$complete, RandomAccess=$randomAccess]';
 }

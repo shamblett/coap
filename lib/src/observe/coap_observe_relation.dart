@@ -26,10 +26,10 @@ class CoapObserveRelation {
     final CoapObservingEndpoint endpoint,
     final CoapResource resource,
     final CoapExchange exchange,
-  )   : _endpoint = endpoint,
-        _resource = resource,
-        _exchange = exchange,
-        established = true;
+  ) : _endpoint = endpoint,
+      _resource = resource,
+      _exchange = exchange,
+      established = true;
 
   final DefaultCoapConfig config;
 
@@ -94,11 +94,13 @@ class CoapObserveRelation {
   bool check() {
     var check = false;
     final now = DateTime.now();
-    check = check ||
+    check =
+        check ||
         _interestCheckTime
             .add(Duration(milliseconds: config.notificationCheckIntervalTime))
             .isBefore(now);
-    check = check ||
+    check =
+        check ||
         (++_interestCheckCounter >= config.notificationCheckIntervalCount);
     if (check) {
       _interestCheckTime = now;

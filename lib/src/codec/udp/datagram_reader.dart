@@ -15,8 +15,8 @@ import 'package:typed_data/typed_data.dart';
 class DatagramReader {
   /// Initializes a new DatagramReader object
   DatagramReader(this._buffer)
-      : _currentByte = ByteData(1),
-        _currentBitIndex = -1;
+    : _currentByte = ByteData(1),
+      _currentBitIndex = -1;
 
   final Uint8Buffer _buffer;
 

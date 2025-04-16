@@ -69,13 +69,13 @@ class TokenLayer extends BaseLayer {
   }
 
   Uint8Buffer _newToken() {
-    final buff = Uint8Buffer()
-      ..addAll(
-        List<int>.generate(
-          CoapConstants.tokenLength,
-          (final i) => _random.nextInt(256),
-        ),
-      );
+    final buff =
+        Uint8Buffer()..addAll(
+          List<int>.generate(
+            CoapConstants.tokenLength,
+            (final i) => _random.nextInt(256),
+          ),
+        );
     return buff;
   }
 }

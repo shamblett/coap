@@ -9,21 +9,21 @@ import 'option.dart';
 //              provide any real functionality.
 class OscoreOptionValue {
   OscoreOptionValue(this.partialIV, this.kid, this.kidContext)
-      : byteValue = _encodeOscoreOptionValue(partialIV, kid, kidContext);
+    : byteValue = _encodeOscoreOptionValue(partialIV, kid, kidContext);
 
   static const int _flagBitsByteLength = 1;
   static const int _kidContextLengthByteLength = 1;
 
   OscoreOptionValue.parse(this.byteValue)
-      : partialIV = _parsepartialIV(byteValue),
-        kid = _parseKid(byteValue),
-        kidContext = _parseKidContext(byteValue);
+    : partialIV = _parsepartialIV(byteValue),
+      kid = _parseKid(byteValue),
+      kidContext = _parseKidContext(byteValue);
 
   static Uint8List _encodeInteger(final int integer) => Uint8List.fromList(
-        Uint8List.sublistView(Uint64List.fromList([integer]))
-            .take((integer / 8).ceil())
-            .toList(),
-      );
+    Uint8List.sublistView(
+      Uint64List.fromList([integer]),
+    ).take((integer / 8).ceil()).toList(),
+  );
 
   static Uint8Buffer _encodeOscoreOptionValue(
     final int partialIV,
@@ -115,9 +115,7 @@ class OscoreOptionValue {
           offset + _kidContextLengthByteLength + _parseKidContextLength(bytes);
     }
 
-    return Uint64List.fromList(
-      Uint8Buffer()..addAll(bytes.skip(offset)),
-    )[0];
+    return Uint64List.fromList(Uint8Buffer()..addAll(bytes.skip(offset)))[0];
   }
 
   static int _parseKidContextLength(final Uint8Buffer bytes) {
@@ -138,7 +136,8 @@ class OscoreOptionValue {
       return null;
     }
 
-    final offset = _flagBitsByteLength +
+    final offset =
+        _flagBitsByteLength +
         _parsePartialIVLength(bytes) +
         _kidContextLengthByteLength;
     final kidContextLength = _parseKidContextLength(bytes);
@@ -160,7 +159,7 @@ class OscoreOption extends Option<OscoreOptionValue> with OscoreOptionClassU {
   OscoreOption(this.value);
 
   OscoreOption.parse(final Uint8Buffer bytes)
-      : value = OscoreOptionValue.parse(bytes);
+    : value = OscoreOptionValue.parse(bytes);
 
   @override
   final OscoreOptionValue value;

@@ -24,8 +24,8 @@ class CoapNetworkTCP implements CoapINetwork {
     this.isTls = false,
     final SecurityContext? tlsContext,
     final String namespace = '',
-  })  : eventBus = CoapEventBus(namespace: namespace),
-        _tlsContext = tlsContext;
+  }) : eventBus = CoapEventBus(namespace: namespace),
+       _tlsContext = tlsContext;
 
   final CoapEventBus eventBus;
 
@@ -51,10 +51,7 @@ class CoapNetworkTCP implements CoapINetwork {
   bool isClosed = true;
 
   @override
-  void send(
-    final CoapMessage message, [
-    final InternetAddress? _,
-  ]) {
+  void send(final CoapMessage message, [final InternetAddress? _]) {
     if (isClosed) {
       return;
     }
@@ -104,8 +101,9 @@ class CoapNetworkTCP implements CoapINetwork {
         eventBus.fire(CoapMessageReceivedEvent(message, address));
       },
       // ignore: avoid_types_on_closure_parameters
-      onError: (final Object e, final StackTrace s) =>
-          eventBus.fire(CoapSocketErrorEvent(e, s)),
+      onError:
+          (final Object e, final StackTrace s) =>
+              eventBus.fire(CoapSocketErrorEvent(e, s)),
       // Socket stream is done and can no longer be listened to
       onDone: () {
         isClosed = true;

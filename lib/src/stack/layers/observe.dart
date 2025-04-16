@@ -157,7 +157,8 @@ class ObserveLayer extends BaseLayer {
         final relation = exchange.relation!;
         final next = relation.nextControlNotification;
         relation
-          ..currentControlNotification = next // next may be null
+          ..currentControlNotification =
+              next // next may be null
           ..nextControlNotification = null;
         if (next != null) {
           // this is not a self replacement, hence a new ID
@@ -235,14 +236,15 @@ class _ReregistrationContext {
   void _timerElapsed() {
     final request = _exchange.request;
     if (!request.isCancelled) {
-      final refresh = CoapRequest.get(request.uri)
-        ..setOptions(request.getAllOptions())
-        // Make sure Observe is set and zero
-        ..observe = ObserveRegistration.register.value
-        // Use same Token
-        ..token = request.token
-        ..destination = request.destination
-        ..copyEventHandler(request);
+      final refresh =
+          CoapRequest.get(request.uri)
+            ..setOptions(request.getAllOptions())
+            // Make sure Observe is set and zero
+            ..observe = ObserveRegistration.register.value
+            // Use same Token
+            ..token = request.token
+            ..destination = request.destination
+            ..copyEventHandler(request);
       _exchange.fireReregistering(refresh);
       _reregister(refresh);
     }

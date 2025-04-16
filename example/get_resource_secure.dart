@@ -21,8 +21,10 @@ import 'package:coap/coap.dart';
 final identity = utf8.encode('Client_identity');
 final preSharedKey = utf8.encode('secretPSK');
 
-final pskCredentials =
-    PskCredentials(identity: identity, preSharedKey: preSharedKey);
+final pskCredentials = PskCredentials(
+  identity: identity,
+  preSharedKey: preSharedKey,
+);
 
 PskCredentials pskCredentialsCallback(final String? identityHint) =>
     pskCredentials;

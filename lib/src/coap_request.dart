@@ -32,9 +32,9 @@ class CoapRequest extends CoapMessage {
     final CoapMediaType? accept,
     super.contentFormat,
   }) : super(
-          method.coapCode,
-          confirmable ? CoapMessageType.con : CoapMessageType.non,
-        ) {
+         method.coapCode,
+         confirmable ? CoapMessageType.con : CoapMessageType.non,
+       ) {
     super.accept = accept;
   }
 
@@ -87,14 +87,13 @@ class CoapRequest extends CoapMessage {
     final bool confirmable = true,
     final Iterable<int>? payload,
     final CoapMediaType? accept,
-  }) =>
-      CoapRequest(
-        uri,
-        RequestMethod.get,
-        confirmable: confirmable,
-        payload: payload,
-        accept: accept,
-      );
+  }) => CoapRequest(
+    uri,
+    RequestMethod.get,
+    confirmable: confirmable,
+    payload: payload,
+    accept: accept,
+  );
 
   /// Construct a POST request.
   factory CoapRequest.post(
@@ -103,15 +102,14 @@ class CoapRequest extends CoapMessage {
     final Iterable<int>? payload,
     final CoapMediaType? contentFormat,
     final CoapMediaType? accept,
-  }) =>
-      CoapRequest(
-        uri,
-        RequestMethod.post,
-        confirmable: confirmable,
-        payload: payload,
-        contentFormat: contentFormat,
-        accept: accept,
-      );
+  }) => CoapRequest(
+    uri,
+    RequestMethod.post,
+    confirmable: confirmable,
+    payload: payload,
+    contentFormat: contentFormat,
+    accept: accept,
+  );
 
   /// Construct a PUT request.
   factory CoapRequest.put(
@@ -120,15 +118,14 @@ class CoapRequest extends CoapMessage {
     final Iterable<int>? payload,
     final CoapMediaType? contentFormat,
     final CoapMediaType? accept,
-  }) =>
-      CoapRequest(
-        uri,
-        RequestMethod.put,
-        confirmable: confirmable,
-        payload: payload,
-        contentFormat: contentFormat,
-        accept: accept,
-      );
+  }) => CoapRequest(
+    uri,
+    RequestMethod.put,
+    confirmable: confirmable,
+    payload: payload,
+    contentFormat: contentFormat,
+    accept: accept,
+  );
 
   /// Construct a DELETE request.
   factory CoapRequest.delete(
@@ -136,14 +133,13 @@ class CoapRequest extends CoapMessage {
     final bool confirmable = true,
     final Iterable<int>? payload,
     final CoapMediaType? accept,
-  }) =>
-      CoapRequest(
-        uri,
-        RequestMethod.delete,
-        confirmable: confirmable,
-        payload: payload,
-        accept: accept,
-      );
+  }) => CoapRequest(
+    uri,
+    RequestMethod.delete,
+    confirmable: confirmable,
+    payload: payload,
+    accept: accept,
+  );
 
   /// Construct a FETCH request.
   factory CoapRequest.fetch(
@@ -152,15 +148,14 @@ class CoapRequest extends CoapMessage {
     final Iterable<int>? payload,
     final CoapMediaType? contentFormat,
     final CoapMediaType? accept,
-  }) =>
-      CoapRequest(
-        uri,
-        RequestMethod.fetch,
-        confirmable: confirmable,
-        payload: payload,
-        contentFormat: contentFormat,
-        accept: accept,
-      );
+  }) => CoapRequest(
+    uri,
+    RequestMethod.fetch,
+    confirmable: confirmable,
+    payload: payload,
+    contentFormat: contentFormat,
+    accept: accept,
+  );
 
   /// Construct a PATCH request.
   factory CoapRequest.patch(
@@ -169,15 +164,14 @@ class CoapRequest extends CoapMessage {
     final Iterable<int>? payload,
     final CoapMediaType? contentFormat,
     final CoapMediaType? accept,
-  }) =>
-      CoapRequest(
-        uri,
-        RequestMethod.patch,
-        confirmable: confirmable,
-        payload: payload,
-        contentFormat: contentFormat,
-        accept: accept,
-      );
+  }) => CoapRequest(
+    uri,
+    RequestMethod.patch,
+    confirmable: confirmable,
+    payload: payload,
+    contentFormat: contentFormat,
+    accept: accept,
+  );
 
   /// Construct a iPATCH request.
   factory CoapRequest.iPatch(
@@ -186,15 +180,14 @@ class CoapRequest extends CoapMessage {
     final Iterable<int>? payload,
     final CoapMediaType? contentFormat,
     final CoapMediaType? accept,
-  }) =>
-      CoapRequest(
-        uri,
-        RequestMethod.ipatch,
-        confirmable: confirmable,
-        payload: payload,
-        contentFormat: contentFormat,
-        accept: accept,
-      );
+  }) => CoapRequest(
+    uri,
+    RequestMethod.ipatch,
+    confirmable: confirmable,
+    payload: payload,
+    contentFormat: contentFormat,
+    accept: accept,
+  );
 
   CoapRequest.fromParsed(
     this.uri,
@@ -207,13 +200,13 @@ class CoapRequest extends CoapMessage {
     required final bool hasUnknownCriticalOption,
     required final bool hasFormatError,
   }) : super.fromParsed(
-          method.coapCode,
-          type,
-          id: id,
-          token: token,
-          options: options,
-          hasUnknownCriticalOption: hasUnknownCriticalOption,
-          hasFormatError: hasFormatError,
-          payload: payload,
-        );
+         method.coapCode,
+         type,
+         id: id,
+         token: token,
+         options: options,
+         hasUnknownCriticalOption: hasUnknownCriticalOption,
+         hasFormatError: hasFormatError,
+         payload: payload,
+       );
 }

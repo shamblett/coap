@@ -26,10 +26,10 @@ class Endpoint {
   /// Instantiates a new endpoint with the
   /// specified channel and configuration.
   Endpoint(this._socket, this._config, {required final String namespace})
-      : _eventBus = CoapEventBus(namespace: namespace),
-        _matcher = CoapMatcher(_config, namespace: namespace),
-        _coapStack = LayerStack(_config),
-        _currentId = _config.useRandomIDStart ? Random().nextInt(1 << 16) : 0 {
+    : _eventBus = CoapEventBus(namespace: namespace),
+      _matcher = CoapMatcher(_config, namespace: namespace),
+      _coapStack = LayerStack(_config),
+      _currentId = _config.useRandomIDStart ? Random().nextInt(1 << 16) : 0 {
     subscr = _eventBus.on<CoapMessageReceivedEvent>().listen(_receiveMessage);
   }
 
@@ -154,10 +154,7 @@ class Endpoint {
     }
   }
 
-  void sendRequest(
-    final CoapExchange exchange,
-    final CoapRequest request,
-  ) {
+  void sendRequest(final CoapExchange exchange, final CoapRequest request) {
     _matcher.sendRequest(exchange, request);
     _eventBus.fire(CoapSendingRequestEvent(request));
 

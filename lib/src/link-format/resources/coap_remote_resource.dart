@@ -16,7 +16,7 @@ class CoapRemoteResource extends CoapEndpointResource {
 
   /// Hidden
   CoapRemoteResource.hide(super.resourceIdentifier, {super.hidden})
-      : super.hide();
+    : super.hide();
 
   /// New root
   static CoapRemoteResource newRoot(final String linkFormat) =>
