@@ -17,35 +17,14 @@ const _signal = 7;
 
 /// Models CoAP codes as described in [RFC 7252, section 3].
 ///
-/// Can [decode] the codes empty messages, requsts, responses, and signaling
+/// Can [decode] the codes empty messages, requests, responses, and signaling
 /// messages.
 ///
 /// [RFC 7252, section 3]: https://www.rfc-editor.org/rfc/rfc7252#section-3
 @immutable
 class CoapCode {
-  const CoapCode(this.codeClass, this.codeDetail, this.description)
-    : code = (codeClass << 5) + codeDetail;
-
-  static CoapCode? decode(final int code) {
-    if (code == 0) {
-      return RequestMethod.empty.coapCode;
-    }
-
-    final codeClass = code >> 5;
-
-    switch (codeClass) {
-      case _request:
-        return RequestMethod.decode(code)?.coapCode;
-      case _success:
-      case _clientError:
-      case _serverError:
-        return ResponseCode.decode(code)?.coapCode;
-      case _signal:
-        return SignalingCode.decode(code)?.coapCode;
-    }
-
-    return null;
-  }
+  static const codeByteShift = 5;
+  static const stringPadding = 2;
 
   /// An 8-bit representation combining the [codeClass] and the [codeDetail].
   final int code;
@@ -58,6 +37,9 @@ class CoapCode {
 
   /// A human-readable description of this [ResponseCode].
   final String description;
+
+  /// Code bit length
+  static const int bitLength = 8;
 
   /// Checks whether this [CoapCode] indicates an empty message.
   bool get isEmpty => this == RequestMethod.empty.coapCode;
@@ -80,11 +62,32 @@ class CoapCode {
   /// Checks whether this [CoapCode] indicates a signaling message.
   bool get isSignaling => codeClass == _signal;
 
-  /// Code bit length
-  static const int bitLength = 8;
-
   @override
   int get hashCode => code;
+
+  const CoapCode(this.codeClass, this.codeDetail, this.description)
+    : code = (codeClass << codeByteShift) + codeDetail;
+
+  static CoapCode? decode(final int code) {
+    if (code == 0) {
+      return RequestMethod.empty.coapCode;
+    }
+
+    final codeClass = code >> codeByteShift;
+
+    switch (codeClass) {
+      case _request:
+        return RequestMethod.decode(code)?.coapCode;
+      case _success:
+      case _clientError:
+      case _serverError:
+        return ResponseCode.decode(code)?.coapCode;
+      case _signal:
+        return SignalingCode.decode(code)?.coapCode;
+    }
+
+    return null;
+  }
 
   @override
   bool operator ==(final Object other) =>
@@ -92,7 +95,7 @@ class CoapCode {
 
   @override
   String toString() {
-    final formattedDetail = codeDetail.toString().padLeft(2, '0');
+    final formattedDetail = codeDetail.toString().padLeft(stringPadding, '0');
     return '$codeClass.$formattedDetail $description';
   }
 }

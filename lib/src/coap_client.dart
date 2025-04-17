@@ -82,6 +82,29 @@ class CoapMulticastResponseHandler {
 /// In most cases a resource can be created outside of the client with
 /// the relevant parameters then set in the client.
 class CoapClient {
+  /// Address type used for DNS lookups.
+  final InternetAddressType addressType;
+
+  /// The client's local socket bind address, if set explicitly
+  /// IPv4 default is 0.0.0.0, IPv6 default is 0:0:0:0:0:0:0:0
+  final InternetAddress? bindAddress;
+
+  /// The client endpoint URI
+  final Uri baseUri;
+
+  late final CoapEventBus _eventBus;
+
+  final DefaultCoapConfig _config;
+  Endpoint? _endpoint;
+  final _lock = Lock();
+
+  // Callback for providing [PskCredentials] (combination of a Pre-shared Key
+  // and an Identity) for DTLS, optionally based on an Identity Hint.
+  final PskCredentialsCallback? _pskCredentialsCallback;
+
+  /// The internal request/response event stream
+  CoapEventBus get events => _eventBus;
+
   /// Instantiates.
   /// A supplied request is optional depending on the API call being used.
   /// If it is specified it will be prepared and used.
@@ -101,29 +124,6 @@ class CoapClient {
        _pskCredentialsCallback = pskCredentialsCallback {
     _eventBus = CoapEventBus(namespace: hashCode.toString());
   }
-
-  /// Address type used for DNS lookups.
-  final InternetAddressType addressType;
-
-  /// The client's local socket bind address, if set explicitly
-  /// IPv4 default is 0.0.0.0, IPv6 default is 0:0:0:0:0:0:0:0
-  final InternetAddress? bindAddress;
-
-  /// The client endpoint URI
-  final Uri baseUri;
-
-  late final CoapEventBus _eventBus;
-
-  /// The internal request/response event stream
-  CoapEventBus get events => _eventBus;
-
-  final DefaultCoapConfig _config;
-  Endpoint? _endpoint;
-  final _lock = Lock();
-
-  /// Callback for providing [PskCredentials] (combination of a Pre-shared Key
-  /// and an Identity) for DTLS, optionally based on an Identity Hint.
-  final PskCredentialsCallback? _pskCredentialsCallback;
 
   /// Performs a CoAP ping.
   Future<bool> ping() async {
@@ -507,11 +507,9 @@ class CoapClient {
   Future<Iterable<CoapWebLink>?> discover({final Uri? uri}) async {
     final discover = CoapRequest.get(uri ?? CoapConstants.defaultWellKnownURI);
     final links = await send(discover);
-    if (links.contentFormat != CoapMediaType.applicationLinkFormat) {
-      return <CoapWebLink>[CoapWebLink('')];
-    } else {
-      return CoapLinkFormat.parse(links.payloadString);
-    }
+    return links.contentFormat != CoapMediaType.applicationLinkFormat
+        ? <CoapWebLink>[CoapWebLink('')]
+        : CoapLinkFormat.parse(links.payloadString);
   }
 
   /// Send
@@ -534,22 +532,6 @@ class CoapClient {
       );
     }
     return _waitForResponse(request, responseStream);
-  }
-
-  Stream<CoapResponse> _sendWithStreamResponse(
-    final CoapRequest request,
-  ) async* {
-    await _prepare(request);
-
-    final stream = _eventBus
-        .on<CoapCompletionEvent>()
-        .transform<CoapResponse>(_filterEventStream(request))
-        .where((final response) => _matchResponse(response, request))
-        .takeWhile((final _) => request.isActive);
-
-    _endpoint!.sendEpRequest(request);
-
-    yield* stream;
   }
 
   /// Sends a [request] and returns a [Stream] of [CoapResponse]s.
@@ -588,6 +570,22 @@ class CoapClient {
   /// Cancel all ongoing requests
   void close() {
     _endpoint?.stop();
+  }
+
+  Stream<CoapResponse> _sendWithStreamResponse(
+    final CoapRequest request,
+  ) async* {
+    await _prepare(request);
+
+    final stream = _eventBus
+        .on<CoapCompletionEvent>()
+        .transform<CoapResponse>(_filterEventStream(request))
+        .where((final response) => _matchResponse(response, request))
+        .takeWhile((final _) => request.isActive);
+
+    _endpoint!.sendEpRequest(request);
+
+    yield* stream;
   }
 
   void _build(
@@ -670,7 +668,7 @@ class CoapClient {
 
     final addresses = await InternetAddress.lookup(host, type: addressType);
     if (addresses.isNotEmpty) {
-      return addresses[0];
+      return addresses.first;
     }
 
     throw SocketException("Failed host lookup: '$host'");

@@ -1,18 +1,19 @@
 import 'dart:async';
 
 import 'package:build/build.dart';
+import 'package:characters/characters.dart';
 import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart';
 
 Builder configBuilder(final BuilderOptions options) => _ConfigBuilder();
 
 class _ConfigBuilder extends Builder {
+  static const String _defaultConfigFileName = 'coap_config';
+
   @override
   Map<String, List<String>> get buildExtensions => <String, List<String>>{
     '.yaml': <String>['.dart'],
   };
-
-  static const String _defaultConfigFileName = 'coap_config';
 
   @override
   FutureOr<void> build(final BuildStep buildStep) async {
@@ -73,7 +74,9 @@ String _generateDataScript(final YamlMap data, final String prefix) {
     }
 
     final variableName =
-        prefix.isEmpty ? key : prefix + key[0].toUpperCase() + key.substring(1);
+        prefix.isEmpty
+            ? key
+            : '$prefix${key[0].toUpperCase()}${key.characters.getRange(1)}';
 
     if (variableName == 'dtlsBackend') {
       buf
@@ -100,5 +103,5 @@ String _generateDataScript(final YamlMap data, final String prefix) {
 }
 
 extension StringExtension on String {
-  String capitalize() => this[0].toUpperCase() + substring(1);
+  String capitalize() => '${this[0].toUpperCase()}${characters.getRange(1)}';
 }
