@@ -19,6 +19,25 @@ import 'option/integer_option.dart';
 /// Provides a simple API to check whether a relation has successfully
 /// established and to cancel or refresh the relation.
 class CoapObserveClientRelation extends Stream<CoapResponse> {
+  final CoapRequest _request;
+
+  final Stream<CoapResponse> _responseStream;
+
+  bool _cancelled = false;
+
+  /// Cancelled
+  bool get isCancelled => _cancelled;
+
+  Stream<CoapResponse> get _filteredStream => _responseStream
+      .where(_responseTokenIsMatched)
+      .takeWhile((final _) => _request.isActive);
+
+  @internal
+  set isCancelled(final bool val) {
+    _request.isCancelled = val;
+    _cancelled = val;
+  }
+
   /// Construction
   CoapObserveClientRelation(this._request, this._responseStream);
 
@@ -35,41 +54,12 @@ class CoapObserveClientRelation extends Stream<CoapResponse> {
     cancelOnError: cancelOnError,
   );
 
-  final CoapRequest _request;
-
-  final Stream<CoapResponse> _responseStream;
-
-  Stream<CoapResponse> get _filteredStream => _responseStream
-      .where(_responseTokenIsMatched)
-      .takeWhile((final _) => _request.isActive);
-
-  bool _responseTokenIsMatched(final CoapResponse response) {
-    final requestToken = _request.token;
-    final responseToken = response.token;
-
-    if (requestToken == null || responseToken == null) {
-      return false;
-    }
-
-    return requestToken.equals(responseToken);
-  }
-
   void checkObserve() {
     _filteredStream.first.then((final resp) {
       if (!resp.hasOption<ObserveOption>()) {
         isCancelled = true;
       }
     });
-  }
-
-  bool _cancelled = false;
-
-  /// Cancelled
-  bool get isCancelled => _cancelled;
-  @internal
-  set isCancelled(final bool val) {
-    _request.isCancelled = val;
-    _cancelled = val;
   }
 
   /// Create a cancellation request
@@ -84,4 +74,15 @@ class CoapObserveClientRelation extends Stream<CoapResponse> {
         ..destination = _request.destination
         // Dispatch final response to the same message observers
         ..copyEventHandler(_request);
+
+  bool _responseTokenIsMatched(final CoapResponse response) {
+    final requestToken = _request.token;
+    final responseToken = response.token;
+
+    if (requestToken == null || responseToken == null) {
+      return false;
+    }
+
+    return requestToken.equals(responseToken);
+  }
 }
