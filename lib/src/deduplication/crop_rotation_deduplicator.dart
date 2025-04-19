@@ -8,20 +8,28 @@
 import 'dart:async';
 
 import '../coap_config.dart';
+import '../coap_constants.dart';
 import '../net/exchange.dart';
 import 'deduplicator.dart';
 
 /// Crop rotation deduplicator
 class CropRotationDeduplicator implements Deduplicator {
+  final List<Map<int?, CoapExchange>> _maps;
+
+  int _first = 0;
+
+  int _second = 1;
+
+  late Timer _timer;
+
+  final DefaultCoapConfig _config;
+
   /// Construction
   CropRotationDeduplicator(this._config)
-    : _maps = List<Map<int?, CoapExchange>>.filled(3, <int?, CoapExchange>{});
-
-  final List<Map<int?, CoapExchange>> _maps;
-  int _first = 0;
-  int _second = 1;
-  late Timer _timer;
-  final DefaultCoapConfig _config;
+    : _maps = List<Map<int?, CoapExchange>>.filled(
+        CoapConstants.maxDeduplicators,
+        <int?, CoapExchange>{},
+      );
 
   @override
   void start() {
@@ -73,7 +81,7 @@ class CropRotationDeduplicator implements Deduplicator {
   void _rotation(final Timer timer) {
     final third = _first;
     _first = _second;
-    _second = (_second + 1) % 3;
+    _second = (_second + 1) % CoapConstants.maxDeduplicators;
     _maps[third].clear();
   }
 }

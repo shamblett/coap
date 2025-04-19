@@ -22,6 +22,43 @@ import 'option/uri_converters.dart';
 /// 2. different ways to handle incoming responses:
 /// receiveResponse() or Response event.
 class CoapRequest extends CoapMessage {
+  /// Specifies the target resource of a request to a CoAP origin server.
+  ///
+  /// Composed from the Uri-Host, Uri-Port, Uri-Path, and Uri-Query Options.
+  ///
+  /// See [RFC 7252, Section 5.10.1] for more information.
+  ///
+  /// [RFC 7252, Section 5.10.1]: https://www.rfc-editor.org/rfc/rfc7252#section-5.10.1
+  Uri uri;
+
+  /// The request method(code)
+  final RequestMethod method;
+
+  Endpoint? _endpoint;
+
+  @override
+  CoapMessageType get type {
+    if (super.type == CoapMessageType.con && isMulticast) {
+      return CoapMessageType.non;
+    }
+
+    return super.type;
+  }
+
+  /// The endpoint for this request
+  @internal
+  Endpoint? get endpoint => _endpoint;
+
+  /// Indicates whether this request is a multicast request or not.
+  bool get isMulticast => destination?.isMulticast ?? false;
+
+  @internal
+  set endpoint(final Endpoint? endpoint) {
+    super.id = endpoint!.nextMessageId;
+    super.destination = endpoint.destination;
+    _endpoint = endpoint;
+  }
+
   /// Initializes a request message.
   /// Defaults to confirmable
   CoapRequest(
@@ -37,49 +74,6 @@ class CoapRequest extends CoapMessage {
        ) {
     super.accept = accept;
   }
-
-  /// The request method(code)
-  final RequestMethod method;
-
-  @override
-  CoapMessageType get type {
-    if (super.type == CoapMessageType.con && isMulticast) {
-      return CoapMessageType.non;
-    }
-
-    return super.type;
-  }
-
-  /// Indicates whether this request is a multicast request or not.
-  bool get isMulticast => destination?.isMulticast ?? false;
-
-  /// Specifies the target resource of a request to a CoAP origin server.
-  ///
-  /// Composed from the Uri-Host, Uri-Port, Uri-Path, and Uri-Query Options.
-  ///
-  /// See [RFC 7252, Section 5.10.1] for more information.
-  ///
-  /// [RFC 7252, Section 5.10.1]: https://www.rfc-editor.org/rfc/rfc7252#section-5.10.1
-  Uri uri;
-
-  @override
-  List<Option<Object?>> getAllOptions() =>
-      uriToOptions(uri, destination)..addAll(super.getAllOptions());
-
-  Endpoint? _endpoint;
-
-  /// The endpoint for this request
-  @internal
-  Endpoint? get endpoint => _endpoint;
-  @internal
-  set endpoint(final Endpoint? endpoint) {
-    super.id = endpoint!.nextMessageId;
-    super.destination = endpoint.destination;
-    _endpoint = endpoint;
-  }
-
-  @override
-  String toString() => '\n<<< Request Message >>>${super.toString()}';
 
   /// Construct a GET request.
   factory CoapRequest.get(
@@ -209,4 +203,11 @@ class CoapRequest extends CoapMessage {
          hasFormatError: hasFormatError,
          payload: payload,
        );
+
+  @override
+  List<Option<Object?>> getAllOptions() =>
+      uriToOptions(uri, destination)..addAll(super.getAllOptions());
+
+  @override
+  String toString() => '\n<<< Request Message >>>${super.toString()}';
 }

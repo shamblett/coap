@@ -1,3 +1,5 @@
+// ignore_for_file: no-magic-number
+
 /*
  * Package : Coap
  * Author : S. Hamblett <steve.hamblett@linux.com>
@@ -12,15 +14,17 @@ import 'package:typed_data/typed_data.dart';
 /// This class describes the functionality to write raw network-ordered
 /// datagrams on bit-level.
 class DatagramWriter {
+  final Uint8Buffer _buffer;
+
+  final ByteData _currentByte;
+
+  int _currentBitIndex;
+
   /// Initializes a new DatagramWriter object
   DatagramWriter()
     : _buffer = Uint8Buffer(),
       _currentByte = ByteData(1)..setUint8(0, 0),
       _currentBitIndex = 7;
-
-  final Uint8Buffer _buffer;
-  final ByteData _currentByte;
-  int _currentBitIndex;
 
   /// Writes a sequence of bits to the stream
   void write(final int? data, final int numBits) {

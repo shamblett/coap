@@ -72,4 +72,9 @@ class CoapConstants {
   /// Empty token
   ///
   static final Uint8Buffer emptyToken = Uint8Buffer();
+
+  ///
+  /// Maximum number of deduplicators
+  ///
+  static const maxDeduplicators = 3;
 }

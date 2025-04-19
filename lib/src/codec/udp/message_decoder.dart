@@ -1,3 +1,5 @@
+// ignore_for_file: no-magic-number
+
 /*
  * Package : Coap
  * Author : S. Hamblett <steve.hamblett@linux.com>
@@ -81,7 +83,7 @@ CoapMessage? deserializeUdpMessage(
       payload = reader.readBytesLeft();
     } else {
       // The first 4 bits of the byte represent the option delta
-      final optionDeltaNibble = (0xF0 & nextByte) >> 4;
+      final optionDeltaNibble = (nextByte & 0xF0) >> 4;
       final deltaValue = _getValueFromOptionNibble(optionDeltaNibble, reader);
 
       if (deltaValue == null) {
@@ -92,7 +94,7 @@ CoapMessage? deserializeUdpMessage(
       currentOption += deltaValue;
 
       // The second 4 bits represent the option length
-      final optionLengthNibble = 0x0F & nextByte;
+      final optionLengthNibble = nextByte & 0xF0;
       final optionLength = _getValueFromOptionNibble(
         optionLengthNibble,
         reader,
