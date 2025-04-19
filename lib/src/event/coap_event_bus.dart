@@ -19,40 +19,40 @@ import '../net/exchange.dart';
 abstract class CoapCompletionEvent {}
 
 abstract class CoapMessageEvent {
-  CoapMessageEvent(this.msg);
-
   /// Event message
   CoapMessage msg;
+
+  CoapMessageEvent(this.msg);
 
   @override
   String toString() => 'CoapMessageEvent: $msg';
 }
 
 abstract class CoapRequestEvent {
-  CoapRequestEvent(this.req);
-
   /// Event request
   CoapRequest req;
+
+  CoapRequestEvent(this.req);
 
   @override
   String toString() => 'CoapRequestEvent: $req';
 }
 
 abstract class CoapResponseEvent {
-  CoapResponseEvent(this.resp);
-
   /// Event response
   CoapResponse resp;
+
+  CoapResponseEvent(this.resp);
 
   @override
   String toString() => 'CoapResponseEvent: $resp';
 }
 
 abstract class CoapExchangeEvent {
-  CoapExchangeEvent(this.exchange);
-
   /// Event exchange
   CoapExchange exchange;
+
+  CoapExchangeEvent(this.exchange);
 
   @override
   String toString() =>
@@ -148,14 +148,14 @@ enum CoapOrigin {
 
 /// Data received Event
 class CoapMessageReceivedEvent {
-  /// Construction
-  CoapMessageReceivedEvent(this.coapMessage, this.address);
-
   /// The data
   final CoapMessage? coapMessage;
 
   /// The address
   InternetAddress address;
+
+  /// Construction
+  CoapMessageReceivedEvent(this.coapMessage, this.address);
 
   @override
   String toString() =>
@@ -171,14 +171,14 @@ class CoapSocketInitEvent {
 }
 
 class CoapSocketErrorEvent {
-  /// Construction
-  CoapSocketErrorEvent(this.error, this.stackTrace);
-
   /// The socket error
   Object error;
 
   /// The stack trace of the socket error
   StackTrace stackTrace;
+
+  /// Construction
+  CoapSocketErrorEvent(this.error, this.stackTrace);
 
   @override
   String toString() => 'CoapSocketErrorEvent:\n$error\n$stackTrace';
@@ -186,19 +186,22 @@ class CoapSocketErrorEvent {
 
 /// Event bus class
 class CoapEventBus {
-  /// Construction
-  factory CoapEventBus({required final String namespace}) =>
-      _singletons[namespace] ??= CoapEventBus._internal(namespace);
-
   final String namespace;
-
-  CoapEventBus._internal(this.namespace) : _eventBus = EventBus();
 
   /// Last event fired, useful for testing
   dynamic lastEvent;
 
   late final EventBus _eventBus;
+
   bool _destroyed = false;
+
+  static final _singletons = <String, CoapEventBus>{};
+
+  /// Construction
+  factory CoapEventBus({required final String namespace}) =>
+      _singletons[namespace] ??= CoapEventBus._internal(namespace);
+
+  CoapEventBus._internal(this.namespace) : _eventBus = EventBus();
 
   /// Fire
   void fire(final Object event) {
@@ -216,6 +219,4 @@ class CoapEventBus {
     _eventBus.destroy();
     _destroyed = true;
   }
-
-  static final _singletons = <String, CoapEventBus>{};
 }

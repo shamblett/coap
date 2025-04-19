@@ -20,10 +20,10 @@ class CoapRequestTimeoutException extends CoapRequestException {
   /// The number of retransmits after which the request timed out.
   final int retransmits;
 
-  CoapRequestTimeoutException(this.retransmits);
-
   @override
   String get failReason => 'Request timed out after $retransmits retransmits.';
+
+  CoapRequestTimeoutException(this.retransmits);
 }
 
 /// This [Exception] is thrown when a CoAP request has timed out.
