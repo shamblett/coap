@@ -8,19 +8,20 @@
 import 'coap_link_format.dart';
 import 'resources/coap_resource_attributes.dart';
 
-/// This class can be used to programmatically browse a remote CoAP endoint.
+/// This class can be used to programmatically browse a remote CoAP endpoint.
 class CoapWebLink implements Comparable<CoapWebLink> {
-  /// Instantiates.
-  CoapWebLink(this._uri);
-
   final String _uri;
+
+  final CoapResourceAttributes _attributes = CoapResourceAttributes();
 
   /// The URI
   String get uri => _uri;
-  final CoapResourceAttributes _attributes = CoapResourceAttributes();
 
   /// Attributes
   CoapResourceAttributes get attributes => _attributes;
+
+  /// Instantiates.
+  CoapWebLink(this._uri);
 
   @override
   int compareTo(final CoapWebLink other) => _uri.compareTo(other._uri);

@@ -26,17 +26,28 @@ abstract class CoapResource {
   /// the path of all its children.
   String? path;
 
+  /// The parent of this resource.
+  CoapResource? parent;
+
+  bool? _visible;
+
   String? _uri;
+
+  bool? _cachable;
+
+  bool? _observable;
+
+  Iterable<CoapResource>? _children;
+
+  Iterable<Endpoint>? _endpoints;
+
+  CoapResourceAttributes? _attributes;
 
   /// The uri of the resource.
   String? get uri => _uri;
 
-  bool? _visible;
-
   /// Indicates if the resource is visible to remote CoAP clients.
   bool? get visible => _visible;
-
-  bool? _cachable;
 
   /// Indicates if is the URI of the resource can be cached.
   /// If another request with the same destination URI arrives,
@@ -44,25 +55,14 @@ abstract class CoapResource {
   /// traveling through the resource tree looking for it.
   bool? get cachable => _cachable;
 
-  bool? _observable;
-
   /// Indicates if this resource is observable by remote CoAP clients.
   bool? get observable => _observable;
-
-  CoapResourceAttributes? _attributes;
 
   /// Gets the attributes of this resource.
   CoapResourceAttributes? get attributes => _attributes;
 
-  Iterable<Endpoint>? _endpoints;
-
   /// Gets the endpoints this resource is bound to.
   Iterable<Endpoint>? get endpoints => _endpoints;
-
-  /// The parent of this resource.
-  CoapResource? parent;
-
-  Iterable<CoapResource>? _children;
 
   /// Gets all child resources.
   Iterable<CoapResource>? get children => _children;

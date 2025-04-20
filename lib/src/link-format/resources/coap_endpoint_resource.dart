@@ -7,6 +7,7 @@
 
 import 'dart:collection';
 
+import 'package:characters/characters.dart';
 import 'package:collection/collection.dart';
 
 import '../../coap_request.dart';
@@ -15,28 +16,25 @@ import '../coap_link_format.dart';
 
 /// This class describes the functionality of a CoAP endpoint resource.
 abstract class CoapEndpointResource {
-  /// Initialize a resource.
-  CoapEndpointResource(this.name);
-
-  /// Initialize a resource.
-  CoapEndpointResource.hide(this.name, {this.hidden = true});
-
   /// The name of the resource identifier
   String name;
 
+  bool hidden = false;
+
   final HashSet<CoapLinkAttribute> _attributes = HashSet<CoapLinkAttribute>();
 
-  /// Attributes
-  Iterable<CoapLinkAttribute> get attributes => _attributes;
-
   CoapEndpointResource? _parent;
+
+  int _totalSubResourceCount = 0;
+
   final SplayTreeMap<String, CoapEndpointResource> _subResources =
       SplayTreeMap<String, CoapEndpointResource>();
 
   /// Sub resources
   SplayTreeMap<String, CoapEndpointResource> get subResources => _subResources;
 
-  int _totalSubResourceCount = 0;
+  /// Attributes
+  Iterable<CoapLinkAttribute> get attributes => _attributes;
 
   /// Gets the total count of sub-resources, including children
   /// and children's children...
@@ -45,18 +43,11 @@ abstract class CoapEndpointResource {
   /// Gets the count of sub-resources of this resource.
   int get subResourceCount => _subResources.length;
 
-  /// Hidden
-  bool hidden = false;
-
   /// Resource type
   String? get resourceType =>
       getAttributes(
         LinkFormatParameter.resourceType.short,
       ).firstOrNull?.valueAsString;
-
-  set resourceType(final String? value) => setAttribute(
-    CoapLinkAttribute(LinkFormatParameter.resourceType.short, value),
-  );
 
   /// Endpoint Name
   String? get endpointName =>
@@ -64,27 +55,15 @@ abstract class CoapEndpointResource {
         LinkFormatParameter.endpointName.short,
       ).firstOrNull?.valueAsString;
 
-  set endpointName(final String? value) => setAttribute(
-    CoapLinkAttribute(LinkFormatParameter.endpointName.short, value),
-  );
-
   /// Endpoint Type
   String? get endpointType =>
       getAttributes(
         LinkFormatParameter.endpointType.short,
       ).firstOrNull?.valueAsString;
 
-  set endpointType(final String? value) => setAttribute(
-    CoapLinkAttribute(LinkFormatParameter.endpointType.short, value),
-  );
-
   /// Title
   String? get title =>
       getAttributes(LinkFormatParameter.title.short).firstOrNull?.valueAsString;
-
-  set title(final String? value) {
-    setAttribute(CoapLinkAttribute(LinkFormatParameter.title.short, value));
-  }
 
   /// Interface descriptions
   List<String?> get interfaceDescriptions =>
@@ -98,10 +77,6 @@ abstract class CoapEndpointResource {
         LinkFormatParameter.interfaceDescription.short,
       ).firstOrNull?.valueAsString;
 
-  set interfaceDescription(final String? value) => setAttribute(
-    CoapLinkAttribute(LinkFormatParameter.interfaceDescription.short, value),
-  );
-
   /// Content type codes
   List<int?> get contentTypeCodes =>
       getIntValues(
@@ -114,33 +89,15 @@ abstract class CoapEndpointResource {
         LinkFormatParameter.contentType.short,
       ).firstOrNull?.valueAsInt;
 
-  set contentTypeCode(final int? value) => setAttribute(
-    CoapLinkAttribute(LinkFormatParameter.contentType.short, value),
-  );
-
   /// Maximum size estimate
   int? get maximumSizeEstimate =>
       getAttributes(
         LinkFormatParameter.maxSizeEstimate.short,
       ).firstOrNull?.valueAsInt;
 
-  set maximumSizeEstimate(final int? value) => setAttribute(
-    CoapLinkAttribute(LinkFormatParameter.maxSizeEstimate.short, value),
-  );
-
   /// Observable
   bool get observable =>
       getAttributes(LinkFormatParameter.observable.short).isNotEmpty;
-
-  set observable(final bool value) {
-    if (value) {
-      setAttribute(
-        CoapLinkAttribute(LinkFormatParameter.observable.short, value),
-      );
-    } else {
-      clearAttribute(LinkFormatParameter.observable.short);
-    }
-  }
 
   /// Resource types
   Iterable<String?> get resourceTypes =>
@@ -157,6 +114,51 @@ abstract class CoapEndpointResource {
     }
     return names.reversed.join('/');
   }
+
+  set resourceType(final String? value) => setAttribute(
+    CoapLinkAttribute(LinkFormatParameter.resourceType.short, value),
+  );
+
+  set endpointName(final String? value) => setAttribute(
+    CoapLinkAttribute(LinkFormatParameter.endpointName.short, value),
+  );
+
+  set endpointType(final String? value) => setAttribute(
+    CoapLinkAttribute(LinkFormatParameter.endpointType.short, value),
+  );
+
+  set title(final String? value) {
+    setAttribute(CoapLinkAttribute(LinkFormatParameter.title.short, value));
+  }
+
+  set interfaceDescription(final String? value) => setAttribute(
+    CoapLinkAttribute(LinkFormatParameter.interfaceDescription.short, value),
+  );
+
+  set contentTypeCode(final int? value) => setAttribute(
+    CoapLinkAttribute(LinkFormatParameter.contentType.short, value),
+  );
+
+  set maximumSizeEstimate(final int? value) => setAttribute(
+    CoapLinkAttribute(LinkFormatParameter.maxSizeEstimate.short, value),
+  );
+
+  set observable(final bool value) {
+    if (value) {
+      setAttribute(
+        CoapLinkAttribute(LinkFormatParameter.observable.short, value),
+      );
+    } else {
+      clearAttribute(LinkFormatParameter.observable.short);
+    }
+  }
+
+  /// Hidden
+  /// Initialize a resource.
+  CoapEndpointResource(this.name);
+
+  /// Initialize a resource.
+  CoapEndpointResource.hide(this.name, {this.hidden = true});
 
   /// Attributes
   List<CoapLinkAttribute> getAttributes(final String name) =>
@@ -242,7 +244,7 @@ abstract class CoapEndpointResource {
       while (root._parent != null) {
         root = root._parent!;
       }
-      final path1 = path == '/' ? null : path.substring(1);
+      final path1 = path == '/' ? null : '${path.characters.getRange(1)}';
       return root.getResourcePath(path1);
     }
 
@@ -254,8 +256,8 @@ abstract class CoapEndpointResource {
     if (pos == -1) {
       head = path;
     } else {
-      head = path.substring(0, pos);
-      tail = path.substring(pos + 1);
+      head = '${path.characters.getRange(0, pos)}';
+      tail = '${path.characters.getRange(pos + 1)}';
     }
 
     if (_subResources.containsKey(head)) {
@@ -271,7 +273,7 @@ abstract class CoapEndpointResource {
   void addSubResource(final CoapEndpointResource resource) {
     // no absolute paths allowed, use root directly
     while (resource.name.startsWith('/')) {
-      resource.name = resource.name.substring(1);
+      resource.name = '${resource.name.characters.getRange(1)}';
     }
 
     // Get last existing resource along path
@@ -283,9 +285,9 @@ abstract class CoapEndpointResource {
     }
     path += resource.name;
 
-    path = path.substring(baseRes.path.length);
+    path = '${path.characters.getRange(baseRes.path.length)}';
     if (path.startsWith('/')) {
-      path = path.substring(1);
+      path = '${path.characters.getRange(1)}';
     }
 
     if (path.isEmpty) {
@@ -301,7 +303,7 @@ abstract class CoapEndpointResource {
 
       final segments = path.split('/');
       if (segments.length > 1) {
-        resource.name = segments[segments.length - 1];
+        resource.name = segments.last;
 
         // insert middle segments
         CoapEndpointResource sub;

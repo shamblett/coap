@@ -31,5 +31,7 @@ class CoapRemoteResource extends CoapEndpointResource {
   void doCreateSubResource(
     final CoapRequest request,
     final String newIdentifier,
-  ) {}
+  ) {
+    return;
+  }
 }

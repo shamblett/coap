@@ -32,28 +32,70 @@ class CoapResourceAttributes {
   /// The resource title.
   String? get title => getValues(LinkFormatParameter.title.short)?.firstOrNull;
 
-  set title(final String? value) => set(LinkFormatParameter.title.short, value);
-
   /// Gets or sets a value indicating if the resource is observable.
   bool? get observable =>
       getValues(LinkFormatParameter.observable.short)?.firstOrNull?.isNotEmpty;
-
-  set observable(final bool? value) =>
-      set(LinkFormatParameter.observable.short, '');
 
   /// Gets or sets the maximum size estimate string value.
   String? get maximumSizeEstimateString =>
       getValues(LinkFormatParameter.maxSizeEstimate.short)?.first;
 
-  set maximumSizeEstimateString(final String? value) =>
-      set(LinkFormatParameter.maxSizeEstimate.short, value);
-
   /// Gets or sets the maximum size estimate.
   int get maximumSizeEstimate =>
       int.tryParse(maximumSizeEstimateString ?? '') ?? 0;
 
+  /// Gets all endpoint names.
+  Iterable<String?>? get endpointNames =>
+      _attributes[LinkFormatParameter.endpointName.short];
+
+  /// Gets or sets the lifetime string value.
+  String? get liftimeString =>
+      getValues(LinkFormatParameter.lifetime.short)?.first;
+
+  /// Gets or sets the page string value.
+  String? get pageString => getValues(LinkFormatParameter.page.short)?.first;
+
+  /// Gets or sets the page.
+  int get page => int.tryParse(pageString ?? '') ?? 0;
+
+  /// Gets or sets the lifetime.
+  int get lifetime => int.tryParse(liftimeString ?? '') ?? 0;
+
+  /// Gets or sets the count string value.
+  String? get countString => getValues(LinkFormatParameter.count.short)?.first;
+
+  /// Gets or sets the count.
+  int get count => int.tryParse(countString ?? '') ?? 0;
+
+  /// Gets all endpoint types.
+  Iterable<String?>? get endpointTypes =>
+      _attributes[LinkFormatParameter.endpointType.short];
+
+  set pageString(final String? value) =>
+      set(LinkFormatParameter.page.short, value);
+
   set maximumSizeEstimate(final int value) =>
       maximumSizeEstimateString = value.toString();
+
+  set observable(final bool? value) =>
+      set(LinkFormatParameter.observable.short, '');
+
+  set title(final String? value) => set(LinkFormatParameter.title.short, value);
+
+  set maximumSizeEstimateString(final String? value) =>
+      set(LinkFormatParameter.maxSizeEstimate.short, value);
+
+  set liftimeString(final String? value) =>
+      set(LinkFormatParameter.lifetime.short, value);
+
+  set lifetime(final int value) => liftimeString = value.toString();
+
+  set page(final int value) => pageString = value.toString();
+
+  set countString(final String? value) =>
+      set(LinkFormatParameter.count.short, value);
+
+  set count(final int value) => countString = value.toString();
 
   /// Adds a resource type.
   void addResourceType(final String type) {
@@ -104,57 +146,15 @@ class CoapResourceAttributes {
     _attributes[LinkFormatParameter.endpointName.short]!.add(endpointName);
   }
 
-  /// Gets all endpoint names.
-  Iterable<String?>? get endpointNames =>
-      _attributes[LinkFormatParameter.endpointName.short];
-
   /// Clears all endpoint names.
   void clearEndpointNames() {
     _attributes[LinkFormatParameter.endpointName.short] = <String>[];
   }
 
-  /// Gets or sets the lifetime string value.
-  String? get liftimeString =>
-      getValues(LinkFormatParameter.lifetime.short)?.first;
-
-  set liftimeString(final String? value) =>
-      set(LinkFormatParameter.lifetime.short, value);
-
-  /// Gets or sets the lifetime.
-  int get liftime => int.tryParse(liftimeString ?? '') ?? 0;
-
-  set liftime(final int value) => liftimeString = value.toString();
-
-  /// Gets or sets the page string value.
-  String? get pageString => getValues(LinkFormatParameter.page.short)?.first;
-
-  set pageString(final String? value) =>
-      set(LinkFormatParameter.page.short, value);
-
-  /// Gets or sets the page.
-  int get page => int.tryParse(pageString ?? '') ?? 0;
-
-  set page(final int value) => pageString = value.toString();
-
-  /// Gets or sets the count string value.
-  String? get countString => getValues(LinkFormatParameter.count.short)?.first;
-
-  set countString(final String? value) =>
-      set(LinkFormatParameter.count.short, value);
-
-  /// Gets or sets the count.
-  int get count => int.tryParse(countString ?? '') ?? 0;
-
-  set count(final int value) => countString = value.toString();
-
   /// Adds an [endpointType] specified by an [String].
   void addEndpointType(final String endpointType) {
     _attributes[LinkFormatParameter.endpointType.short]!.add(endpointType);
   }
-
-  /// Gets all endpoint types.
-  Iterable<String?>? get endpointTypes =>
-      _attributes[LinkFormatParameter.endpointType.short];
 
   /// Clears all resource types.
   void clearEndpointTypes() {
