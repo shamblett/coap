@@ -35,7 +35,7 @@ abstract class CoapINetwork {
   static const Duration initTimeout = Duration(seconds: 10);
 
   /// The reinit period for open connections
-  static Duration reinitPeriod = initTimeout + const Duration(seconds: 2);
+  static final Duration reinitPeriod = initTimeout + const Duration(seconds: 2);
 
   /// The local address
   InternetAddress get bindAddress;

@@ -23,28 +23,29 @@ import 'matcher.dart';
 
 /// EndPoint encapsulates the stack that executes the CoAP protocol.
 class Endpoint {
-  /// Instantiates a new endpoint with the
-  /// specified channel and configuration.
-  Endpoint(this._socket, this._config, {required final String namespace})
-    : _eventBus = CoapEventBus(namespace: namespace),
-      _matcher = CoapMatcher(_config, namespace: namespace),
-      _coapStack = LayerStack(_config),
-      _currentId = _config.useRandomIDStart ? Random().nextInt(1 << 16) : 0 {
-    subscr = _eventBus.on<CoapMessageReceivedEvent>().listen(_receiveMessage);
-  }
+  /// Identifier randomisation shift value
+  static const idShift = 16;
+
+  late final StreamSubscription<CoapMessageReceivedEvent> subscr;
 
   final CoapEventBus _eventBus;
 
-  String get namespace => _eventBus.namespace;
-
   final DefaultCoapConfig _config;
-
-  DefaultCoapConfig get config => _config;
 
   int _currentId;
 
+  final LayerStack _coapStack;
+
+  final CoapMatcher _matcher;
+
+  final CoapINetwork _socket;
+
+  String get namespace => _eventBus.namespace;
+
+  DefaultCoapConfig get config => _config;
+
   int get nextMessageId {
-    if (++_currentId >= (1 << 16)) {
+    if (++_currentId >= (1 << idShift)) {
       _currentId = 1;
     }
     return _currentId;
@@ -52,12 +53,16 @@ class Endpoint {
 
   InternetAddress? get destination => _socket.address;
 
-  final LayerStack _coapStack;
-  late final StreamSubscription<CoapMessageReceivedEvent> subscr;
-
-  final CoapMatcher _matcher;
-
-  final CoapINetwork _socket;
+  /// Instantiates a new endpoint with the
+  /// specified channel and configuration.
+  Endpoint(this._socket, this._config, {required final String namespace})
+    : _eventBus = CoapEventBus(namespace: namespace),
+      _matcher = CoapMatcher(_config, namespace: namespace),
+      _coapStack = LayerStack(_config),
+      _currentId =
+          _config.useRandomIDStart ? Random().nextInt(1 << idShift) : 0 {
+    subscr = _eventBus.on<CoapMessageReceivedEvent>().listen(_receiveMessage);
+  }
 
   void start() {
     try {
@@ -97,6 +102,43 @@ class Endpoint {
     final CoapEmptyMessage message,
   ) {
     _coapStack.sendEmptyMessage(exchange, message);
+  }
+
+  void sendRequest(final CoapExchange exchange, final CoapRequest request) {
+    _matcher.sendRequest(exchange, request);
+    _eventBus.fire(CoapSendingRequestEvent(request));
+
+    _sendMessage(request);
+  }
+
+  void sendResponse(final CoapExchange exchange, final CoapResponse response) {
+    _matcher.sendResponse(exchange, response);
+    _eventBus.fire(CoapSendingResponseEvent(response));
+
+    _sendMessage(response);
+  }
+
+  void sendEmptyMessage(
+    final CoapExchange exchange,
+    final CoapEmptyMessage message,
+  ) {
+    _matcher.sendEmptyMessage(exchange, message);
+    _eventBus.fire(CoapSendingEmptyMessageEvent(message));
+
+    _sendMessage(message);
+  }
+
+  void _reject(final CoapMessage message) {
+    final rst = CoapEmptyMessage.newRST(message);
+    _eventBus.fire(CoapSendingEmptyMessageEvent(rst));
+
+    _sendMessage(rst);
+  }
+
+  void _sendMessage(final CoapMessage message) {
+    if (!message.isCancelled) {
+      _socket.send(message);
+    }
   }
 
   void _receiveMessage(final CoapMessageReceivedEvent event) {
@@ -151,43 +193,6 @@ class Endpoint {
           }
         }
       }
-    }
-  }
-
-  void sendRequest(final CoapExchange exchange, final CoapRequest request) {
-    _matcher.sendRequest(exchange, request);
-    _eventBus.fire(CoapSendingRequestEvent(request));
-
-    _sendMessage(request);
-  }
-
-  void sendResponse(final CoapExchange exchange, final CoapResponse response) {
-    _matcher.sendResponse(exchange, response);
-    _eventBus.fire(CoapSendingResponseEvent(response));
-
-    _sendMessage(response);
-  }
-
-  void sendEmptyMessage(
-    final CoapExchange exchange,
-    final CoapEmptyMessage message,
-  ) {
-    _matcher.sendEmptyMessage(exchange, message);
-    _eventBus.fire(CoapSendingEmptyMessageEvent(message));
-
-    _sendMessage(message);
-  }
-
-  void _reject(final CoapMessage message) {
-    final rst = CoapEmptyMessage.newRST(message);
-    _eventBus.fire(CoapSendingEmptyMessageEvent(rst));
-
-    _sendMessage(rst);
-  }
-
-  void _sendMessage(final CoapMessage message) {
-    if (!message.isCancelled) {
-      _socket.send(message);
     }
   }
 }
