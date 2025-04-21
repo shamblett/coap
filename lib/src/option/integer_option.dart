@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_redundant_argument_values
+// ignore_for_file: avoid_redundant_argument_values, no-magic-number
 
 import 'dart:typed_data';
 
@@ -24,6 +24,26 @@ const _networkByteOrder = Endian.big;
 ///
 /// [RFC 7252, section 3.2]: https://www.rfc-editor.org/rfc/rfc7252#section-3.2
 abstract class IntegerOption extends Option<int> {
+  @override
+  final Uint8Buffer byteValue;
+
+  @override
+  final optionFormat = OptionFormat.integer;
+
+  @override
+  final OptionType type;
+
+  @override
+  final int value;
+
+  @override
+  String get valueString =>
+      (type == OptionType.accept || type == OptionType.contentFormat)
+          ? CoapMediaType.fromIntValue(value).toString()
+          : value.toString();
+
+  bool get isDefault => value == type.defaultValue;
+
   /// Create an [IntegerOption] of a specified [type], encoding the given
   /// [value].
   ///
@@ -37,23 +57,12 @@ abstract class IntegerOption extends Option<int> {
   IntegerOption.parse(this.type, this.byteValue)
     : value = _valueFromBytes(byteValue);
 
-  @override
-  final Uint8Buffer byteValue;
-
-  @override
-  final optionFormat = OptionFormat.integer;
-
-  @override
-  final OptionType type;
-  @override
-  final int value;
-
   static int _valueFromBytes(final Uint8Buffer byteValue) {
     switch (byteValue.length) {
       case 0:
         return 0;
       case 1:
-        return byteValue[0];
+        return byteValue.first;
       case 2:
         return ByteData.view(byteValue.buffer).getUint16(0, _networkByteOrder);
       case 3:
@@ -128,14 +137,6 @@ abstract class IntegerOption extends Option<int> {
 
     return buffer.elementAt(buffer.length - 2) == 0;
   }
-
-  @override
-  String get valueString =>
-      (type == OptionType.accept || type == OptionType.contentFormat)
-          ? CoapMediaType.fromIntValue(value).toString()
-          : value.toString();
-
-  bool get isDefault => value == type.defaultValue;
 }
 
 class ContentFormatOption extends IntegerOption with OscoreOptionClassE {
@@ -179,6 +180,11 @@ enum ObserveRegistration {
 /// [RFC 7641, section 2]: https://www.rfc-editor.org/rfc/rfc7641#section-2
 class ObserveOption extends IntegerOption
     with OscoreOptionClassE, OscoreOptionClassU {
+  /// Returns the [ObserveRegistration] value this option represents if its
+  /// value can be parsed as either a registration (= 0) or a deregistration.
+  ObserveRegistration? get registrationValue =>
+      ObserveRegistration.parse(value);
+
   ObserveOption(final int value) : super(OptionType.observe, value);
 
   ObserveOption.parse(final Uint8Buffer bytes)
@@ -191,11 +197,6 @@ class ObserveOption extends IntegerOption
   /// Creates a [ObserveOption] that terminates an observation process when
   /// included in a GET request.
   ObserveOption.deregister() : this(ObserveRegistration.deregister.value);
-
-  /// Returns the [ObserveRegistration] value this option represents if its
-  /// value can be parsed as either a registration (= 0) or a deregistration.
-  ObserveRegistration? get registrationValue =>
-      ObserveRegistration.parse(value);
 }
 
 class UriPortOption extends IntegerOption with OscoreOptionClassU {
@@ -253,6 +254,28 @@ class NoResponseOption extends IntegerOption {
 /// Base class for the OCF options [OcfAcceptContentFormatVersion] and
 /// [OcfContentFormatVersion].
 abstract class OcfVersionOption extends IntegerOption with OscoreOptionClassE {
+  static const _majorBitShift = 11;
+
+  static const _minorBitShift = 6;
+
+  /// The major version represented by the option [value].
+  ///
+  /// Represented by the five most significant bits.
+  int get majorVersion => (value >> _majorBitShift) & _maskBits(5);
+
+  /// The minor version represented by the option [value].
+  ///
+  /// Represented by bits 6 to 10.
+  int get minorVersion => (value >> _minorBitShift) & _maskBits(5);
+
+  /// The sub version represented by the option [value].
+  ///
+  /// Represented by the six least significant bits.
+  int get subVersion => value & _maskBits(6);
+
+  @override
+  String get valueString => '$majorVersion.$minorVersion.$subVersion';
+
   OcfVersionOption(super.type, super.value);
 
   OcfVersionOption.parse(super.type, super.bytes) : super.parse();
@@ -276,28 +299,6 @@ abstract class OcfVersionOption extends IntegerOption with OscoreOptionClassE {
       subVersion;
 
   static int _maskBits(final int maskLength) => (1 << maskLength) - 1;
-
-  static const _majorBitShift = 11;
-
-  static const _minorBitShift = 6;
-
-  /// The major version represented by the option [value].
-  ///
-  /// Represented by the five most significant bits.
-  int get majorVersion => (value >> _majorBitShift) & _maskBits(5);
-
-  /// The minor version represented by the option [value].
-  ///
-  /// Represented by bits 6 to 10.
-  int get minorVersion => (value >> _minorBitShift) & _maskBits(5);
-
-  /// The sub version represented by the option [value].
-  ///
-  /// Represented by the six least significant bits.
-  int get subVersion => value & _maskBits(6);
-
-  @override
-  String get valueString => '$majorVersion.$minorVersion.$subVersion';
 }
 
 class OcfAcceptContentFormatVersion extends OcfVersionOption {

@@ -42,6 +42,28 @@ PskCredentialsCallback? _createOpenSslPskCallback(
 
 /// DTLS network using OpenSSL
 class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
+  DtlsClient? _dtlsClient;
+
+  DtlsConnection? _dtlsConnection;
+
+  final List<Certificate> _rootCertificates;
+
+  final bool _verify;
+
+  final String? _ciphers;
+
+  final bool _withTrustedRoots;
+
+  final PskCredentialsCallback? _openSslPskCallback;
+
+  final DynamicLibrary? _libSsl;
+
+  final DynamicLibrary? _libCrypto;
+
+  final String? _hostname;
+
+  final int? _securityLevel;
+
   /// Initialize with an [address] and a [port].
   ///
   /// This [CoapINetwork] can be configured to be used [withTrustedRoots] and
@@ -76,28 +98,6 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
        _securityLevel = securityLevel,
        _openSslPskCallback = _createOpenSslPskCallback(pskCredentialsCallback);
 
-  DtlsClient? _dtlsClient;
-
-  DtlsConnection? _dtlsConnection;
-
-  final List<Certificate> _rootCertificates;
-
-  final bool _verify;
-
-  final String? _ciphers;
-
-  final bool _withTrustedRoots;
-
-  final PskCredentialsCallback? _openSslPskCallback;
-
-  final DynamicLibrary? _libSsl;
-
-  final DynamicLibrary? _libCrypto;
-
-  final String? _hostname;
-
-  final int? _securityLevel;
-
   @override
   void send(final CoapMessage coapMessage) {
     if (isClosed) {
@@ -107,17 +107,6 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
     final data = coapMessage.toUdpPayload();
     final bytes = Uint8List.view(data.buffer, data.offsetInBytes, data.length);
     _dtlsConnection?.send(bytes);
-  }
-
-  Future<void> _initializeClient() async {
-    eventBus.fire(CoapSocketInitEvent());
-
-    _dtlsClient = await DtlsClient.bind(
-      bindAddress,
-      0,
-      libSsl: _libSsl,
-      libCrypto: _libCrypto,
-    );
   }
 
   @override
@@ -191,6 +180,17 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
           }
         });
       },
+    );
+  }
+
+  Future<void> _initializeClient() async {
+    eventBus.fire(CoapSocketInitEvent());
+
+    _dtlsClient = await DtlsClient.bind(
+      bindAddress,
+      0,
+      libSsl: _libSsl,
+      libCrypto: _libCrypto,
     );
   }
 }

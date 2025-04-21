@@ -1,3 +1,5 @@
+// ignore_for_file: no-magic-number
+
 /*
  * Package : Coap
  * Author : S. Hamblett <steve.hamblett@linux.com>
@@ -85,6 +87,21 @@ enum BlockOptionType {
 /// This class describes the block options of the CoAP messages
 abstract class CoapBlockOption extends IntegerOption
     with OscoreOptionClassE, OscoreOptionClassU {
+  /// Block number.
+  int get num => value >> 4;
+
+  /// Block size.
+  BlockSize get szx => BlockSize.parse(value & 0x7);
+
+  /// More flag.
+  bool get m => (value >> 3 & 0x1) != 0;
+
+  /// Block bytes
+  Uint8Buffer get blockValueBytes => _compressValueBytes();
+
+  /// Gets the decoded block size in bytes (B).
+  int get size => szx.decodedValue;
+
   String get _szxErrorMessage =>
       'Encountered reserved SZX value 7 in CoapBlockOption.';
 
@@ -114,21 +131,6 @@ abstract class CoapBlockOption extends IntegerOption
     final BlockSize szx, {
     final bool m = false,
   }) : super(blockOptionType.optionType, _encode(num, szx, m));
-
-  /// Block number.
-  int get num => value >> 4;
-
-  /// Block size.
-  BlockSize get szx => BlockSize.parse(value & 0x7);
-
-  /// More flag.
-  bool get m => (value >> 3 & 0x1) != 0;
-
-  /// Block bytes
-  Uint8Buffer get blockValueBytes => _compressValueBytes();
-
-  /// Gets the decoded block size in bytes (B).
-  int get size => szx.decodedValue;
 
   @override
   String toString() =>

@@ -17,14 +17,15 @@ import 'coap_observe_relation.dart';
 /// for the maximum times allowed the server assumes the client is no longer
 /// reachable and cancels all relations that it has established to resources.
 class CoapObservingEndpoint {
-  /// Constructs a new observing endpoint.
-  CoapObservingEndpoint(this._endpoint);
-
   final InternetAddress _endpoint;
+
+  final List<CoapObserveRelation> _relations = <CoapObserveRelation>[];
 
   /// The endpoint
   InternetAddress get endpoint => _endpoint;
-  final List<CoapObserveRelation> _relations = <CoapObserveRelation>[];
+
+  /// Constructs a new observing endpoint.
+  CoapObservingEndpoint(this._endpoint);
 
   /// Adds the specified observe relation.
   void addObserveRelation(final CoapObserveRelation relation) {

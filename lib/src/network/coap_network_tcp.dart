@@ -16,17 +16,6 @@ import 'coap_inetwork.dart';
 
 /// TCP network
 class CoapNetworkTCP implements CoapINetwork {
-  /// Initialize with an address and a port
-  CoapNetworkTCP(
-    this.address,
-    this.port,
-    this.bindAddress, {
-    this.isTls = false,
-    final SecurityContext? tlsContext,
-    final String namespace = '',
-  }) : eventBus = CoapEventBus(namespace: namespace),
-       _tlsContext = tlsContext;
-
   final CoapEventBus eventBus;
 
   @override
@@ -38,17 +27,29 @@ class CoapNetworkTCP implements CoapINetwork {
   @override
   final InternetAddress bindAddress;
 
-  bool _shouldReinitialize = true;
-
   final bool isTls;
+
+  @override
+  bool isClosed = true;
+
+  bool _shouldReinitialize = true;
 
   final SecurityContext? _tlsContext;
 
   Socket? _socket;
+
   Socket? get socket => _socket;
 
-  @override
-  bool isClosed = true;
+  /// Initialize with an address and a port
+  CoapNetworkTCP(
+    this.address,
+    this.port,
+    this.bindAddress, {
+    this.isTls = false,
+    final SecurityContext? tlsContext,
+    final String namespace = '',
+  }) : eventBus = CoapEventBus(namespace: namespace),
+       _tlsContext = tlsContext;
 
   @override
   void send(final CoapMessage message, [final InternetAddress? _]) {
@@ -67,21 +68,20 @@ class CoapNetworkTCP implements CoapINetwork {
 
     eventBus.fire(CoapSocketInitEvent());
 
-    if (isTls) {
-      _socket = await SecureSocket.connect(
-        address,
-        port,
-        context: _tlsContext,
-        timeout: CoapINetwork.initTimeout,
-      );
-    } else {
-      _socket = await Socket.connect(
-        address,
-        port,
-        sourceAddress: bindAddress,
-        timeout: CoapINetwork.initTimeout,
-      );
-    }
+    _socket =
+        isTls
+            ? await SecureSocket.connect(
+              address,
+              port,
+              context: _tlsContext,
+              timeout: CoapINetwork.initTimeout,
+            )
+            : await Socket.connect(
+              address,
+              port,
+              sourceAddress: bindAddress,
+              timeout: CoapINetwork.initTimeout,
+            );
     _receive();
 
     isClosed = false;

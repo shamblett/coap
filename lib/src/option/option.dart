@@ -9,28 +9,6 @@ import 'string_option.dart';
 /// This class describes the options of the CoAP messages.
 @immutable
 abstract class Option<T> {
-  Option() {
-    _validate();
-  }
-
-  void _validate() {
-    final isValid = length >= minLength && length <= maxLength;
-
-    if (isValid) {
-      return;
-    }
-
-    final errorMessage =
-        'Invalid length (expected: $minLength-$maxLength bytes, '
-        'actual: $length bytes) for option $type, option number: $optionNumber';
-
-    if (type.isCritical) {
-      throw UnknownCriticalOptionException(optionNumber, errorMessage);
-    } else {
-      throw UnknownElectiveOptionException(optionNumber, errorMessage);
-    }
-  }
-
   /// The assigned number of this [Option].
   int get optionNumber => type.optionNumber;
 
@@ -76,16 +54,6 @@ abstract class Option<T> {
   @override
   int get hashCode => Object.hash(type, byteValue);
 
-  @override
-  bool operator ==(final Object other) =>
-      other is Option &&
-      optionFormat == other.optionFormat &&
-      type == other.type &&
-      byteValue.equals(other.byteValue);
-
-  @override
-  String toString() => '$name: $valueString';
-
   bool get valid => length >= type.minLength && length <= type.maxLength;
 
   bool get isUriOption =>
@@ -96,6 +64,38 @@ abstract class Option<T> {
 
   bool get isLocationOption =>
       this is LocationPathOption || this is LocationQueryOption;
+
+  Option() {
+    _validate();
+  }
+
+  @override
+  bool operator ==(final Object other) =>
+      other is Option &&
+      optionFormat == other.optionFormat &&
+      type == other.type &&
+      byteValue.equals(other.byteValue);
+
+  @override
+  String toString() => '$name: $valueString';
+
+  void _validate() {
+    final isValid = length >= minLength && length <= maxLength;
+
+    if (isValid) {
+      return;
+    }
+
+    final errorMessage =
+        'Invalid length (expected: $minLength-$maxLength bytes, '
+        'actual: $length bytes) for option $type, option number: $optionNumber';
+
+    if (type.isCritical) {
+      throw UnknownCriticalOptionException(optionNumber, errorMessage);
+    } else {
+      throw UnknownElectiveOptionException(optionNumber, errorMessage);
+    }
+  }
 }
 
 /// Mixin for an Oscore class E option (encrypted and integrity protected).

@@ -5,13 +5,8 @@ import 'coap_option_type.dart';
 import 'option.dart';
 
 abstract class OpaqueOption extends Option<Uint8Buffer> {
-  OpaqueOption(this.type, final Uint8Buffer bytes) : value = bytes;
-
   @override
   final Uint8Buffer value;
-
-  @override
-  Uint8Buffer get byteValue => value;
 
   @override
   final optionFormat = OptionFormat.opaque;
@@ -21,6 +16,11 @@ abstract class OpaqueOption extends Option<Uint8Buffer> {
 
   @override
   String get valueString => hex.encode(byteValue.toList());
+
+  @override
+  Uint8Buffer get byteValue => value;
+
+  OpaqueOption(this.type, final Uint8Buffer bytes) : value = bytes;
 }
 
 class IfMatchOption extends OpaqueOption with OscoreOptionClassE {
