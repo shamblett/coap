@@ -1,3 +1,5 @@
+// ignore_for_file: no-magic-number
+
 import 'dart:typed_data';
 
 import 'package:typed_data/typed_data.dart';
@@ -8,11 +10,20 @@ import 'option.dart';
 // TODO(JKRhb): This currently can only contain encoded values and does not
 //              provide any real functionality.
 class OscoreOptionValue {
-  OscoreOptionValue(this.partialIV, this.kid, this.kidContext)
-    : byteValue = _encodeOscoreOptionValue(partialIV, kid, kidContext);
+  final Uint8Buffer byteValue;
+
+  final int partialIV;
+
+  final int? kid;
+
+  final Uint8Buffer? kidContext;
 
   static const int _flagBitsByteLength = 1;
+
   static const int _kidContextLengthByteLength = 1;
+
+  OscoreOptionValue(this.partialIV, this.kid, this.kidContext)
+    : byteValue = _encodeOscoreOptionValue(partialIV, kid, kidContext);
 
   OscoreOptionValue.parse(this.byteValue)
     : partialIV = _parsepartialIV(byteValue),
@@ -91,7 +102,7 @@ class OscoreOptionValue {
     final length = _parsePartialIVLength(bytes);
     return Uint64List.fromList(
       Uint8Buffer()..addAll(bytes.getRange(1, length + 1)),
-    )[0];
+    ).first;
   }
 
   static int _parsePartialIVLength(final Uint8Buffer bytes) {
@@ -115,7 +126,7 @@ class OscoreOptionValue {
           offset + _kidContextLengthByteLength + _parseKidContextLength(bytes);
     }
 
-    return Uint64List.fromList(Uint8Buffer()..addAll(bytes.skip(offset)))[0];
+    return Uint64List.fromList(Uint8Buffer()..addAll(bytes.skip(offset))).first;
   }
 
   static int _parseKidContextLength(final Uint8Buffer bytes) {
@@ -145,27 +156,11 @@ class OscoreOptionValue {
     return Uint8Buffer()
       ..addAll(bytes.getRange(offset, offset + kidContextLength));
   }
-
-  final Uint8Buffer byteValue;
-
-  final int partialIV;
-
-  final int? kid;
-
-  final Uint8Buffer? kidContext;
 }
 
 class OscoreOption extends Option<OscoreOptionValue> with OscoreOptionClassU {
-  OscoreOption(this.value);
-
-  OscoreOption.parse(final Uint8Buffer bytes)
-    : value = OscoreOptionValue.parse(bytes);
-
   @override
   final OscoreOptionValue value;
-
-  @override
-  Uint8Buffer get byteValue => value.byteValue;
 
   @override
   final optionFormat = OptionFormat.oscore;
@@ -174,5 +169,13 @@ class OscoreOption extends Option<OscoreOptionValue> with OscoreOptionClassU {
   final OptionType type = OptionType.oscore;
 
   @override
+  Uint8Buffer get byteValue => value.byteValue;
+
+  @override
   String get valueString => value.toString();
+
+  OscoreOption(this.value);
+
+  OscoreOption.parse(final Uint8Buffer bytes)
+    : value = OscoreOptionValue.parse(bytes);
 }

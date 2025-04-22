@@ -7,12 +7,6 @@ import 'coap_option_type.dart';
 import 'option.dart';
 
 abstract class StringOption extends Option<String> {
-  StringOption(this.type, final String value)
-    : byteValue = Uint8Buffer()..addAll(utf8.encode(value));
-
-  StringOption.parse(this.type, final Uint8Buffer? bytes)
-    : byteValue = Uint8Buffer()..addAll(bytes ?? []);
-
   @override
   final Uint8Buffer byteValue;
 
@@ -27,24 +21,33 @@ abstract class StringOption extends Option<String> {
 
   @override
   String get valueString => value;
+
+  StringOption(this.type, final String value)
+    : byteValue = Uint8Buffer()..addAll(utf8.encode(value));
+
+  StringOption.parse(this.type, final Uint8Buffer? bytes)
+    : byteValue = Uint8Buffer()..addAll(bytes ?? []);
 }
 
 abstract class QueryOption extends StringOption {
-  QueryOption(super.type, super.value);
-
-  QueryOption.parse(super.type, Uint8Buffer super.bytes) : super.parse();
-
   @internal
   MapEntry<String, String?> get queryParameter {
     final parameter = this.value.split('=');
-    final key = parameter[0];
+    final key = parameter.first;
     final value = parameter.length > 1 ? parameter.sublist(1).join('=') : null;
 
     return MapEntry(key, value);
   }
+
+  QueryOption(super.type, super.value);
+
+  QueryOption.parse(super.type, Uint8Buffer super.bytes) : super.parse();
 }
 
 abstract class PathOption extends StringOption {
+  @internal
+  String get pathSegment => "/${value.replaceAll('/', '%2F')}";
+
   PathOption(super.type, super.value) {
     if (value == '..' || value == '.') {
       throw FormatException(
@@ -54,9 +57,6 @@ abstract class PathOption extends StringOption {
   }
 
   PathOption.parse(super.type, Uint8Buffer super.bytes) : super.parse();
-
-  @internal
-  String get pathSegment => "/${value.replaceAll('/', '%2F')}";
 }
 
 class LocationPathOption extends PathOption with OscoreOptionClassE {

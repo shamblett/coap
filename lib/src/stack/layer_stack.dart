@@ -23,6 +23,8 @@ import 'layers/top.dart';
 /// that process the CoAP protocol.
 @immutable
 class LayerStack {
+  final _topLayer = CoapStackTopLayer();
+
   /// Instantiates.
   LayerStack(final DefaultCoapConfig config) {
     _topLayer
@@ -32,8 +34,6 @@ class LayerStack {
       ..addLayer(ObserveLayer(config))
       ..addLayer(BottomLayer());
   }
-
-  final _topLayer = CoapStackTopLayer();
 
   /// Sends a request into the layer stack.
   void sendRequest(final CoapRequest request) {

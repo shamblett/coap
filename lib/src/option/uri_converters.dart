@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT
 
+// ignore_for_file: no-magic-number
+
 import 'dart:io';
 
 import 'integer_option.dart';

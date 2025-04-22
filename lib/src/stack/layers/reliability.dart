@@ -20,14 +20,15 @@ import '../base_layer.dart';
 
 /// The reliability layer
 class ReliabilityLayer extends BaseLayer {
-  /// Constructs a new reliability layer.
-  ReliabilityLayer(this._config);
-
   /// Context key
-  static String transmissionContextKey = 'TransmissionContext';
+  static const String transmissionContextKey = 'TransmissionContext';
 
   final DefaultCoapConfig _config;
+
   final Random _rand = Random();
+
+  /// Constructs a new reliability layer.
+  ReliabilityLayer(this._config);
 
   /// Schedules a retransmission for confirmable messages.
   @override
@@ -81,32 +82,6 @@ class ReliabilityLayer extends BaseLayer {
     }
 
     _resendServerMessages(exchange, request);
-  }
-
-  /// Resends ACK, RST or response messages for duplicated requests.
-  ///
-  /// If the server has not yet decided whether to acknowledge or
-  /// reject the request, it will simply drop the duplicated request.
-  void _resendServerMessages(
-    final CoapExchange exchange,
-    final CoapRequest request,
-  ) {
-    if (exchange.currentResponse != null) {
-      super.sendResponse(exchange, exchange.currentResponse!);
-      return;
-    }
-
-    final currentRequest = exchange.currentRequest;
-    if (currentRequest.isAcknowledged) {
-      final ack = CoapEmptyMessage.newACK(request);
-      sendEmptyMessage(exchange, ack);
-      return;
-    }
-
-    if (currentRequest.isRejected) {
-      final rst = CoapEmptyMessage.newRST(request);
-      sendEmptyMessage(exchange, rst);
-    }
   }
 
   /// When we receive a Confirmable response, we acknowledge it and it also
@@ -197,10 +172,52 @@ class ReliabilityLayer extends BaseLayer {
   int _initialTimeout(final int initialTimeout, final double factor) =>
       (initialTimeout + initialTimeout * (factor - 1.0) * _rand.nextDouble())
           .toInt();
+
+  // Resends ACK, RST or response messages for duplicated requests.
+  //
+  // If the server has not yet decided whether to acknowledge or
+  // reject the request, it will simply drop the duplicated request.
+  void _resendServerMessages(
+    final CoapExchange exchange,
+    final CoapRequest request,
+  ) {
+    if (exchange.currentResponse != null) {
+      super.sendResponse(exchange, exchange.currentResponse!);
+      return;
+    }
+
+    final currentRequest = exchange.currentRequest;
+    if (currentRequest.isAcknowledged) {
+      final ack = CoapEmptyMessage.newACK(request);
+      sendEmptyMessage(exchange, ack);
+      return;
+    }
+
+    if (currentRequest.isRejected) {
+      final rst = CoapEmptyMessage.newRST(request);
+      sendEmptyMessage(exchange, rst);
+    }
+  }
 }
 
 /// Transmission context
 class _TransmissionContext {
+  /// Current timeout
+  int currentTimeout = 0;
+
+  /// Failed transmission count
+  int failedTransmissionCount = 0;
+
+  final DefaultCoapConfig _config;
+
+  final CoapExchange _exchange;
+
+  final CoapMessage _message;
+
+  Timer? _timer;
+
+  final void Function(_TransmissionContext) _retransmit;
+
   /// Construction
   _TransmissionContext(
     this._config,
@@ -210,18 +227,6 @@ class _TransmissionContext {
   ) {
     currentTimeout = _message.ackTimeout;
   }
-
-  final DefaultCoapConfig _config;
-  final CoapExchange _exchange;
-  final CoapMessage _message;
-
-  /// Current timeout
-  int currentTimeout = 0;
-
-  /// Failed transmission count
-  int failedTransmissionCount = 0;
-  Timer? _timer;
-  final void Function(_TransmissionContext) _retransmit;
 
   /// Start
   void start() {

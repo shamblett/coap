@@ -18,6 +18,8 @@ import '../base_layer.dart';
 /// Doesn't do much yet except for setting a simple token. Notice that empty
 /// tokens must be represented as byte array of length 0 (not null).
 class TokenLayer extends BaseLayer {
+  static const newTokenRandomiser = 256;
+
   final Random _random = Random();
 
   @override
@@ -69,13 +71,11 @@ class TokenLayer extends BaseLayer {
   }
 
   Uint8Buffer _newToken() {
-    final buff =
-        Uint8Buffer()..addAll(
-          List<int>.generate(
-            CoapConstants.tokenLength,
-            (final i) => _random.nextInt(256),
-          ),
-        );
-    return buff;
+    return Uint8Buffer()..addAll(
+      List<int>.generate(
+        CoapConstants.tokenLength,
+        (final i) => _random.nextInt(newTokenRandomiser),
+      ),
+    );
   }
 }

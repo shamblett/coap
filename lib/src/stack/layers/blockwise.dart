@@ -27,16 +27,18 @@ import '../blockwise_status.dart';
 
 /// Blockwise layer
 class BlockwiseLayer extends BaseLayer {
+  late int _maxMessageSize;
+
+  late int _preferredBlockSize;
+
+  late int _blockTimeout;
+
   /// Constructs a blockwise layer.
   BlockwiseLayer(final DefaultCoapConfig config) {
     _maxMessageSize = config.maxMessageSize;
     _preferredBlockSize = config.preferredBlockSize;
     _blockTimeout = config.blockwiseStatusLifetime;
   }
-
-  late int _maxMessageSize;
-  late int _preferredBlockSize;
-  late int _blockTimeout;
 
   @override
   void sendRequest(
@@ -222,34 +224,6 @@ class BlockwiseLayer extends BaseLayer {
       _clearBlockCleanup(exchange);
       super.sendResponse(exchange, response);
     }
-  }
-
-  BlockwiseStatus _copyBlockStatus(
-    final BlockwiseStatus? oldBlockwiseStatus,
-    final BlockSize currentSZX,
-  ) {
-    final newStatus = BlockwiseStatus.withSize(
-      oldBlockwiseStatus!.contentFormat,
-      oldBlockwiseStatus.currentNUM,
-      currentSZX,
-    )..blocks = oldBlockwiseStatus.blocks;
-    return newStatus;
-  }
-
-  CoapExchange _convertMutlicastToUnicastExchange(
-    final CoapMulticastExchange exchange,
-    final CoapRequest block,
-  ) {
-    final endpoint = exchange.endpoint;
-    final originalRequest = exchange.request;
-    final newExchange = CoapExchange(
-      block,
-      exchange.origin,
-      endpoint,
-      namespace: exchange.namespace,
-      originalMulticastRequest: originalRequest,
-    );
-    return newExchange;
   }
 
   @override
@@ -496,7 +470,7 @@ class BlockwiseLayer extends BaseLayer {
               response.contentType,
               BlockSize.fromDecodedValue(_preferredBlockSize),
             )
-            ..currentNUM = blockOptions.toList()[0].value
+            ..currentNUM = blockOptions.toList().first.value
             ..complete = false;
       exchange.responseBlockStatus = status;
     }
@@ -514,17 +488,14 @@ class BlockwiseLayer extends BaseLayer {
     final szx = status.currentSZX;
     final num = status.currentNUM;
 
-    if (response.hasOption<ObserveOption>()) {
-      // A blockwise notification transmits the first block only
-      block = response;
-    } else {
-      block =
-          CoapResponse(response.responseCode, response.type)
-            ..destination = response.destination
-            ..token = response.token
-            ..setOptions(response.getAllOptions())
-            ..isTimedOut = true;
-    }
+    block =
+        response.hasOption<ObserveOption>()
+              ? response
+              : CoapResponse(response.responseCode, response.type)
+          ..destination = response.destination
+          ..token = response.token
+          ..setOptions(response.getAllOptions())
+          ..isTimedOut = true;
 
     final payloadSize = response.payloadSize;
     final currentSize = szx.decodedValue;
@@ -577,4 +548,30 @@ class BlockwiseLayer extends BaseLayer {
   ) =>
       response.payloadSize > _maxMessageSize ||
       exchange.responseBlockStatus != null;
+
+  BlockwiseStatus _copyBlockStatus(
+    final BlockwiseStatus? oldBlockwiseStatus,
+    final BlockSize currentSZX,
+  ) {
+    return BlockwiseStatus.withSize(
+      oldBlockwiseStatus!.contentFormat,
+      oldBlockwiseStatus.currentNUM,
+      currentSZX,
+    )..blocks = oldBlockwiseStatus.blocks;
+  }
+
+  CoapExchange _convertMutlicastToUnicastExchange(
+    final CoapMulticastExchange exchange,
+    final CoapRequest block,
+  ) {
+    final endpoint = exchange.endpoint;
+    final originalRequest = exchange.request;
+    return CoapExchange(
+      block,
+      exchange.origin,
+      endpoint,
+      namespace: exchange.namespace,
+      originalMulticastRequest: originalRequest,
+    );
+  }
 }

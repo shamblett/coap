@@ -11,16 +11,6 @@ import '../../coap.dart';
 
 /// Represents the status of a blockwise transfer of a request or a response.
 class BlockwiseStatus {
-  /// Instantiates a new blockwise status.
-  BlockwiseStatus(this._contentFormat, this.currentSZX);
-
-  /// Instantiates a new blockwise status.
-  BlockwiseStatus.withSize(
-    this._contentFormat,
-    this.currentNUM,
-    this.currentSZX,
-  );
-
   /// Current num
   int currentNUM = 0;
 
@@ -29,15 +19,6 @@ class BlockwiseStatus {
 
   /// Random access indicator
   bool randomAccess = false;
-
-  /// Random access indicator
-  bool get isRandomAccess => randomAccess;
-
-  /// The Content-Format must stay the same for the whole transfer.
-  final CoapMediaType? _contentFormat;
-
-  /// Content format
-  CoapMediaType? get contentFormat => _contentFormat;
 
   /// Complete
   bool complete = false;
@@ -48,8 +29,27 @@ class BlockwiseStatus {
   /// Blocks
   List<Uint8Buffer> blocks = <Uint8Buffer>[];
 
+  // The Content-Format must stay the same for the whole transfer.
+  final CoapMediaType? _contentFormat;
+
+  /// Random access indicator
+  bool get isRandomAccess => randomAccess;
+
+  /// Content format
+  CoapMediaType? get contentFormat => _contentFormat;
+
   /// Block count
   int get blockCount => blocks.length;
+
+  /// Instantiates a new blockwise status.
+  BlockwiseStatus(this._contentFormat, this.currentSZX);
+
+  /// Instantiates a new blockwise status.
+  BlockwiseStatus.withSize(
+    this._contentFormat,
+    this.currentNUM,
+    this.currentSZX,
+  );
 
   /// Adds the specified block to the current list of blocks.
   void addBlock(final Uint8Buffer? block) {
