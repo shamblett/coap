@@ -10,7 +10,6 @@ import 'package:meta/meta.dart';
 /// Class for linkformat attributes.
 @immutable
 class CoapLinkAttribute {
-
   final String _name;
 
   final Object? _value;
