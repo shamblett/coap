@@ -94,7 +94,7 @@ CoapMessage? deserializeUdpMessage(
       currentOption += deltaValue;
 
       // The second 4 bits represent the option length
-      final optionLengthNibble = nextByte & 0xF0;
+      final optionLengthNibble = nextByte & 0x0F;
       final optionLength = _getValueFromOptionNibble(
         optionLengthNibble,
         reader,
