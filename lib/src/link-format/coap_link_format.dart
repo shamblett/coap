@@ -306,121 +306,6 @@ class CoapLinkFormat {
     return null;
   }
 
-  static bool _matchesOption(
-    final CoapEndpointResource resource,
-    final Iterable<Option<String>>? query,
-  ) {
-    if (query == null) {
-      return true;
-    }
-    for (final q in query) {
-      final s = q.value;
-      final delim = s.indexOf('=');
-      if (delim == -1) {
-        // flag attribute
-        if (resource.attributes.isNotEmpty) {
-          return true;
-        }
-      } else {
-        final attrName = '${s.characters.getRange(0, delim)}';
-        var expected = '${s.characters.getRange(delim + 1)}';
-        if (attrName == CoapLinkFormat.link) {
-          return expected.endsWith('*')
-              ? resource.path.startsWith(
-                expected.substring(0, expected.length - 1),
-              )
-              : resource.path == expected;
-        }
-
-        for (final attr in resource.getAttributes(attrName)) {
-          var actual = attr.value.toString();
-          // get prefix length according to '*'
-          final prefixLength = expected.indexOf('*');
-          if (prefixLength >= 0 && prefixLength < actual.length) {
-            // reduce to prefixes
-            expected = expected.substring(0, prefixLength);
-            actual = actual.substring(0, prefixLength);
-          }
-          // handle case like rt=[Type1 Type2]
-          if (actual.contains(' ')) {
-            for (final part in actual.split(' ')) {
-              if (part == expected) {
-                return true;
-              }
-            }
-          }
-          if (expected == actual) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
-
-  static bool _matchesString(
-    final CoapResource resource,
-    final Iterable<String>? query,
-  ) {
-    if (query == null) {
-      return true;
-    }
-
-    final attributes = resource.attributes;
-    final path = resource.path! + resource.name!;
-    if (query.isEmpty) {
-      return true;
-    }
-    for (final ie in query) {
-      final s = ie;
-
-      final delim = s.indexOf('=');
-      if (delim == -1) {
-        // flag attribute
-        if (attributes!.contains(s)) {
-          return true;
-        }
-      } else {
-        final attrName = s.substring(0, delim);
-        var expected = s.substring(delim + 1);
-
-        if (attrName == CoapLinkFormat.link) {
-          if (expected.endsWith('*')) {
-            return path.startsWith(expected.substring(0, expected.length - 1));
-          } else {
-            return path == expected;
-          }
-        } else if (attributes!.contains(attrName)) {
-          // lookup attribute value
-          for (final value in attributes.getValues(attrName)!) {
-            var actual = value;
-            // get prefix length according to '*'
-            final prefixLength = expected.indexOf('*');
-            if (prefixLength >= 0 && prefixLength < actual!.length) {
-              // reduce to prefixes
-              expected = expected.substring(0, prefixLength);
-              actual = actual.substring(0, prefixLength);
-            }
-
-            // handle case like rt=[Type1 Type2]
-            if (actual!.contains(' ')) {
-              for (final part in actual.split(' ')) {
-                if (part == expected) {
-                  return true;
-                }
-              }
-            }
-
-            if (expected == actual) {
-              return true;
-            }
-          }
-        }
-      }
-    }
-    return false;
-  }
-
   /// Add attribute
   static bool addAttribute(
     final HashSet<CoapLinkAttribute> attributes,
@@ -514,5 +399,120 @@ class CoapLinkFormat {
     for (final value in values) {
       sb.write('="$value"');
     }
+  }
+
+  static bool _matchesString(
+    final CoapResource resource,
+    final Iterable<String>? query,
+  ) {
+    if (query == null) {
+      return true;
+    }
+
+    final attributes = resource.attributes;
+    final path = resource.path! + resource.name!;
+    if (query.isEmpty) {
+      return true;
+    }
+    for (final ie in query) {
+      final s = ie;
+
+      final delim = s.indexOf('=');
+      if (delim == -1) {
+        // flag attribute
+        if (attributes!.contains(s)) {
+          return true;
+        }
+      } else {
+        final attrName = '${s.characters.getRange(0, delim)}';
+        var expected = '${s.characters.getRange(delim + 1)}';
+
+        if (attrName == CoapLinkFormat.link) {
+          return expected.endsWith('*')
+              ? path.startsWith(
+                '${expected.characters.getRange(0, expected.length - 1)}',
+              )
+              : path == expected;
+        } else if (attributes!.contains(attrName)) {
+          // lookup attribute value
+          for (final value in attributes.getValues(attrName)!) {
+            var actual = value;
+            // get prefix length according to '*'
+            final prefixLength = expected.indexOf('*');
+            if (prefixLength >= 0 && prefixLength < actual!.length) {
+              // reduce to prefixes
+              expected = '${expected.characters.getRange(0, prefixLength)}';
+              actual = '${actual.characters.getRange(0, prefixLength)}';
+            }
+
+            // handle case like rt=[Type1 Type2]
+            if (actual!.contains(' ')) {
+              for (final part in actual.split(' ')) {
+                if (part == expected) {
+                  return true;
+                }
+              }
+            }
+
+            if (expected == actual) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  static bool _matchesOption(
+    final CoapEndpointResource resource,
+    final Iterable<Option<String>>? query,
+  ) {
+    if (query == null) {
+      return true;
+    }
+    for (final q in query) {
+      final s = q.value;
+      final delim = s.indexOf('=');
+      if (delim == -1) {
+        // flag attribute
+        if (resource.attributes.isNotEmpty) {
+          return true;
+        }
+      } else {
+        final attrName = '${s.characters.getRange(0, delim)}';
+        var expected = '${s.characters.getRange(delim + 1)}';
+        if (attrName == CoapLinkFormat.link) {
+          return expected.endsWith('*')
+              ? resource.path.startsWith(
+                '${expected.characters.getRange(0, expected.length - 1)}',
+              )
+              : resource.path == expected;
+        }
+
+        for (final attr in resource.getAttributes(attrName)) {
+          var actual = attr.value.toString();
+          // get prefix length according to '*'
+          final prefixLength = expected.indexOf('*');
+          if (prefixLength >= 0 && prefixLength < actual.length) {
+            // reduce to prefixes
+            expected = '${expected.characters.getRange(0, prefixLength)}';
+            actual = '${actual.characters.getRange(0, prefixLength)}';
+          }
+          // handle case like rt=[Type1 Type2]
+          if (actual.contains(' ')) {
+            for (final part in actual.split(' ')) {
+              if (part == expected) {
+                return true;
+              }
+            }
+          }
+          if (expected == actual) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
 }
