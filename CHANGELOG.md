@@ -1,4 +1,7 @@
 
+# 9.1.1
+- [Issue 204](https://github.com/shamblett/coap/issues/204)
+
 # 9.1.0
 PR's 200, 201, 202, 203
 - [PR 200](https://github.com/shamblett/coap/pull/200)
