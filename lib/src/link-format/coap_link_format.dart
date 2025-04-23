@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_classes_with_only_static_members
+// ignore_for_file: avoid_classes_with_only_static_members, no-magic-number
 
 /*
  * Package : Coap
@@ -8,6 +8,7 @@
  */
 
 import 'dart:collection';
+import 'package:characters/characters.dart';
 
 import '../option/option.dart';
 import '../util/coap_scanner.dart';
@@ -22,7 +23,7 @@ enum LinkFormatParameterType {
   // TODO(JKRhb): Revisit typing
   bool,
   string,
-  uint;
+  uint,
 }
 
 enum LinkFormatParameter {
@@ -160,22 +161,6 @@ class CoapLinkFormat {
   static String serialize(final CoapResource root) =>
       _serializeQueries(root, null);
 
-  static String _serializeQueries(
-    final CoapResource root,
-    final Iterable<String>? queries,
-  ) {
-    final linkFormat = StringBuffer();
-
-    for (final child in root.children!) {
-      _serializeTree(child, queries, linkFormat);
-    }
-    var ret = linkFormat.toString();
-    if (linkFormat.length > 1) {
-      ret = ret.substring(0, linkFormat.length - 2);
-    }
-    return ret;
-  }
-
   /// Parse
   static Iterable<CoapWebLink> parse(final String linkFormat) {
     final links = <CoapWebLink>[];
@@ -186,7 +171,7 @@ class CoapLinkFormat {
       while (scanner.scan(resourceNameRegex)) {
         final matched = scanner.lastMatch!;
         path = matched.group(0);
-        path = path!.substring(1, path.length - 1);
+        path = '${path!.characters.getRange(1, path.length - 1)}';
         final link = CoapWebLink(path);
         links.add(link);
         // Check for the end of the link format string
@@ -204,21 +189,18 @@ class CoapLinkFormat {
           var attributeString = scanner.takeUntil(linkStart);
 
           // Condition the string before splitting
-          if (attributeString.endsWith(delimiter)) {
-            attributeString =
-                attributeString.substring(0, attributeString.length - 1);
-          } else {
-            attributeString =
-                attributeString.substring(0, attributeString.length);
-          }
+          attributeString =
+              attributeString.endsWith(delimiter)
+                  ? '${attributeString.characters.getRange(0, attributeString.length - 1)}'
+                  : '${attributeString.characters.getRange(0, attributeString.length)}';
           // Split on delimiter
           final attrs = attributeString.split(separator);
           for (final attr in attrs) {
             final parts = attr.split(attrNameValueSeparator);
             if (parts.length == 1) {
-              link.attributes.addNoValue(parts[0]);
+              link.attributes.addNoValue(parts.first);
             } else {
-              link.attributes.add(parts[0], parts[1]);
+              link.attributes.add(parts.first, parts[1]);
             }
           }
 
@@ -228,59 +210,6 @@ class CoapLinkFormat {
       }
     }
     return links;
-  }
-
-  static void _serializeTree(
-    final CoapResource resource,
-    final Iterable<String>? queries,
-    final StringBuffer sb,
-  ) {
-    if (resource.visible! && _matchesString(resource, queries)) {
-      _serializeResource(resource, sb);
-      sb.write(',');
-    }
-    // sort by resource name
-    final children = resource.children! as List<CoapResource>
-      ..sort(
-        (final r1, final r2) => r1.name!.compareTo(r2.name!),
-      );
-    for (final child in children) {
-      _serializeTree(child, queries, sb);
-    }
-  }
-
-  static void _serializeResource(
-    final CoapResource resource,
-    final StringBuffer sb,
-  ) {
-    sb.write('<${resource.path}${resource.name}>');
-    _serializeAttributes(resource.attributes!, sb);
-  }
-
-  static void _serializeAttributes(
-    final CoapResourceAttributes attributes,
-    final StringBuffer sb,
-  ) {
-    final keys = attributes.keys as List<String>..sort();
-    for (final name in keys) {
-      final values = attributes.getValues(name)! as List<String?>;
-      if (values.isEmpty) {
-        continue;
-      }
-      sb.write(separator);
-      _serializeAttribute(name, values, sb);
-    }
-  }
-
-  static void _serializeAttribute(
-    final String name,
-    final Iterable<String?> values,
-    final StringBuffer sb,
-  ) {
-    sb.write(name);
-    for (final value in values) {
-      sb.write('="$value"');
-    }
   }
 
   /// Serialize options
@@ -328,7 +257,7 @@ class CoapLinkFormat {
     while (scanner.scan(resourceNameRegex)) {
       final matched = scanner.lastMatch!;
       var path = matched.group(0)!;
-      path = path.substring(1, path.length - 1);
+      path = '${path.characters.getRange(1, path.length - 1)}';
       // Retrieve specified resource, create if necessary
       final resource = CoapRemoteResource(path);
       if (scanner.position == linkFormat.length) {
@@ -361,7 +290,7 @@ class CoapLinkFormat {
           scanner.scan(quotedStringRegex);
           final matched = scanner.lastMatch!;
           final s = matched.group(0)!;
-          value = s.substring(1, s.length - 1);
+          value = '${s.characters.getRange(1, s.length - 1)}';
         } else if (scanner.matches(cardinalRegex)) {
           scanner.scan(cardinalRegex);
           final matched = scanner.lastMatch!;
@@ -375,122 +304,6 @@ class CoapLinkFormat {
       return CoapLinkAttribute(name!, value);
     }
     return null;
-  }
-
-  static bool _matchesOption(
-    final CoapEndpointResource resource,
-    final Iterable<Option<String>>? query,
-  ) {
-    if (query == null) {
-      return true;
-    }
-    for (final q in query) {
-      final s = q.value;
-      final delim = s.indexOf('=');
-      if (delim == -1) {
-        // flag attribute
-        if (resource.attributes.isNotEmpty) {
-          return true;
-        }
-      } else {
-        final attrName = s.substring(0, delim);
-        var expected = s.substring(delim + 1);
-        if (attrName == CoapLinkFormat.link) {
-          if (expected.endsWith('*')) {
-            return resource.path
-                .startsWith(expected.substring(0, expected.length - 1));
-          } else {
-            return resource.path == expected;
-          }
-        }
-
-        for (final attr in resource.getAttributes(attrName)) {
-          var actual = attr.value.toString();
-          // get prefix length according to '*'
-          final prefixLength = expected.indexOf('*');
-          if (prefixLength >= 0 && prefixLength < actual.length) {
-            // reduce to prefixes
-            expected = expected.substring(0, prefixLength);
-            actual = actual.substring(0, prefixLength);
-          }
-          // handle case like rt=[Type1 Type2]
-          if (actual.contains(' ')) {
-            for (final part in actual.split(' ')) {
-              if (part == expected) {
-                return true;
-              }
-            }
-          }
-          if (expected == actual) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
-
-  static bool _matchesString(
-    final CoapResource resource,
-    final Iterable<String>? query,
-  ) {
-    if (query == null) {
-      return true;
-    }
-
-    final attributes = resource.attributes;
-    final path = resource.path! + resource.name!;
-    if (query.isEmpty) {
-      return true;
-    }
-    for (final ie in query) {
-      final s = ie;
-
-      final delim = s.indexOf('=');
-      if (delim == -1) {
-        // flag attribute
-        if (attributes!.contains(s)) {
-          return true;
-        }
-      } else {
-        final attrName = s.substring(0, delim);
-        var expected = s.substring(delim + 1);
-
-        if (attrName == CoapLinkFormat.link) {
-          if (expected.endsWith('*')) {
-            return path.startsWith(expected.substring(0, expected.length - 1));
-          } else {
-            return path == expected;
-          }
-        } else if (attributes!.contains(attrName)) {
-          // lookup attribute value
-          for (final value in attributes.getValues(attrName)!) {
-            var actual = value;
-            // get prefix length according to '*'
-            final prefixLength = expected.indexOf('*');
-            if (prefixLength >= 0 && prefixLength < actual!.length) {
-              // reduce to prefixes
-              expected = expected.substring(0, prefixLength);
-              actual = actual.substring(0, prefixLength);
-            }
-
-            // handle case like rt=[Type1 Type2]
-            if (actual!.contains(' ')) {
-              for (final part in actual.split(' ')) {
-                if (part == expected) {
-                  return true;
-                }
-              }
-            }
-
-            if (expected == actual) {
-              return true;
-            }
-          }
-        }
-      }
-    }
-    return false;
   }
 
   /// Add attribute
@@ -518,5 +331,188 @@ class CoapLinkFormat {
     }
     attributes.add(attrToAdd);
     return true;
+  }
+
+  static String _serializeQueries(
+    final CoapResource root,
+    final Iterable<String>? queries,
+  ) {
+    final linkFormat = StringBuffer();
+
+    for (final child in root.children!) {
+      _serializeTree(child, queries, linkFormat);
+    }
+    var ret = linkFormat.toString();
+    if (linkFormat.length > 1) {
+      ret = '${ret.characters.getRange(0, linkFormat.length - 2)}';
+    }
+    return ret;
+  }
+
+  static void _serializeTree(
+    final CoapResource resource,
+    final Iterable<String>? queries,
+    final StringBuffer sb,
+  ) {
+    if (resource.visible! && _matchesString(resource, queries)) {
+      _serializeResource(resource, sb);
+      sb.write(',');
+    }
+    // sort by resource name
+    final children =
+        resource.children! as List<CoapResource>
+          ..sort((final r1, final r2) => r1.name!.compareTo(r2.name!));
+    for (final child in children) {
+      _serializeTree(child, queries, sb);
+    }
+  }
+
+  static void _serializeResource(
+    final CoapResource resource,
+    final StringBuffer sb,
+  ) {
+    sb.write('<${resource.path}${resource.name}>');
+    _serializeAttributes(resource.attributes!, sb);
+  }
+
+  static void _serializeAttributes(
+    final CoapResourceAttributes attributes,
+    final StringBuffer sb,
+  ) {
+    final keys = attributes.keys as List<String>..sort();
+    for (final name in keys) {
+      final values = attributes.getValues(name)! as List<String?>;
+      if (values.isEmpty) {
+        continue;
+      }
+      sb.write(separator);
+      _serializeAttribute(name, values, sb);
+    }
+  }
+
+  static void _serializeAttribute(
+    final String name,
+    final Iterable<String?> values,
+    final StringBuffer sb,
+  ) {
+    sb.write(name);
+    for (final value in values) {
+      sb.write('="$value"');
+    }
+  }
+
+  static bool _matchesString(
+    final CoapResource resource,
+    final Iterable<String>? query,
+  ) {
+    if (query == null) {
+      return true;
+    }
+
+    final attributes = resource.attributes;
+    final path = resource.path! + resource.name!;
+    if (query.isEmpty) {
+      return true;
+    }
+    for (final ie in query) {
+      final s = ie;
+
+      final delim = s.indexOf('=');
+      if (delim == -1) {
+        // flag attribute
+        if (attributes!.contains(s)) {
+          return true;
+        }
+      } else {
+        final attrName = '${s.characters.getRange(0, delim)}';
+        var expected = '${s.characters.getRange(delim + 1)}';
+
+        if (attrName == CoapLinkFormat.link) {
+          return expected.endsWith('*')
+              ? path.startsWith(
+                '${expected.characters.getRange(0, expected.length - 1)}',
+              )
+              : path == expected;
+        } else if (attributes!.contains(attrName)) {
+          // lookup attribute value
+          for (final value in attributes.getValues(attrName)!) {
+            var actual = value;
+            // get prefix length according to '*'
+            final prefixLength = expected.indexOf('*');
+            if (prefixLength >= 0 && prefixLength < actual!.length) {
+              // reduce to prefixes
+              expected = '${expected.characters.getRange(0, prefixLength)}';
+              actual = '${actual.characters.getRange(0, prefixLength)}';
+            }
+
+            // handle case like rt=[Type1 Type2]
+            if (actual!.contains(' ')) {
+              for (final part in actual.split(' ')) {
+                if (part == expected) {
+                  return true;
+                }
+              }
+            }
+
+            if (expected == actual) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  static bool _matchesOption(
+    final CoapEndpointResource resource,
+    final Iterable<Option<String>>? query,
+  ) {
+    if (query == null) {
+      return true;
+    }
+    for (final q in query) {
+      final s = q.value;
+      final delim = s.indexOf('=');
+      if (delim == -1) {
+        // flag attribute
+        if (resource.attributes.isNotEmpty) {
+          return true;
+        }
+      } else {
+        final attrName = '${s.characters.getRange(0, delim)}';
+        var expected = '${s.characters.getRange(delim + 1)}';
+        if (attrName == CoapLinkFormat.link) {
+          return expected.endsWith('*')
+              ? resource.path.startsWith(
+                '${expected.characters.getRange(0, expected.length - 1)}',
+              )
+              : resource.path == expected;
+        }
+
+        for (final attr in resource.getAttributes(attrName)) {
+          var actual = attr.value.toString();
+          // get prefix length according to '*'
+          final prefixLength = expected.indexOf('*');
+          if (prefixLength >= 0 && prefixLength < actual.length) {
+            // reduce to prefixes
+            expected = '${expected.characters.getRange(0, prefixLength)}';
+            actual = '${actual.characters.getRange(0, prefixLength)}';
+          }
+          // handle case like rt=[Type1 Type2]
+          if (actual.contains(' ')) {
+            for (final part in actual.split(' ')) {
+              if (part == expected) {
+                return true;
+              }
+            }
+          }
+          if (expected == actual) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
 }

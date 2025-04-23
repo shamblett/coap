@@ -114,9 +114,10 @@ void main() {
     const bitsIn = 0x1;
     final bytesIn = typed.Uint8Buffer()..addAll('Some aligned bytes'.codeUnits);
 
-    final writer = DatagramWriter()
-      ..write(bitsIn, bitCount)
-      ..writeBytes(bytesIn);
+    final writer =
+        DatagramWriter()
+          ..write(bitsIn, bitCount)
+          ..writeBytes(bytesIn);
 
     final reader = DatagramReader(writer.toByteArray());
     final bitsOut = reader.read(bitCount);
@@ -130,9 +131,10 @@ void main() {
     const bitsIn = 0x5;
     final bytesIn = typed.Uint8Buffer()..addAll('Some aligned bytes'.codeUnits);
 
-    final writer = DatagramWriter()
-      ..write(bitsIn, bitCount)
-      ..writeBytes(bytesIn);
+    final writer =
+        DatagramWriter()
+          ..write(bitsIn, bitCount)
+          ..writeBytes(bytesIn);
 
     final reader = DatagramReader(writer.toByteArray());
     final bitsOut = reader.read(bitCount);
@@ -146,9 +148,10 @@ void main() {
     const bitsIn = 0x69;
     final bytesIn = typed.Uint8Buffer()..addAll('Some aligned bytes'.codeUnits);
 
-    final writer = DatagramWriter()
-      ..write(bitsIn, bitCount)
-      ..writeBytes(bytesIn);
+    final writer =
+        DatagramWriter()
+          ..write(bitsIn, bitCount)
+          ..writeBytes(bytesIn);
 
     final reader = DatagramReader(writer.toByteArray());
     final bitsOut = reader.read(bitCount);
@@ -162,9 +165,10 @@ void main() {
     const bitsIn = 0xaa;
     final bytesIn = typed.Uint8Buffer()..addAll('Some aligned bytes'.codeUnits);
 
-    final writer = DatagramWriter()
-      ..write(bitsIn, bitCount)
-      ..writeBytes(bytesIn);
+    final writer =
+        DatagramWriter()
+          ..write(bitsIn, bitCount)
+          ..writeBytes(bytesIn);
 
     final reader = DatagramReader(writer.toByteArray());
     final bitsOut = reader.read(bitCount);
@@ -178,9 +182,10 @@ void main() {
     const bitsIn = 0x55;
     final bytesIn = typed.Uint8Buffer()..addAll('Some aligned bytes'.codeUnits);
 
-    final writer = DatagramWriter()
-      ..write(bitsIn, bitCount)
-      ..writeBytes(bytesIn);
+    final writer =
+        DatagramWriter()
+          ..write(bitsIn, bitCount)
+          ..writeBytes(bytesIn);
 
     final reader = DatagramReader(writer.toByteArray());
     final bitsOut = reader.read(bitCount);
@@ -201,12 +206,13 @@ void main() {
     const msgIdIn = 0x1234;
     const msgIdSz = 16;
 
-    final writer = DatagramWriter()
-      ..write(versionIn, versionSz)
-      ..write(typeIn, typeSz)
-      ..write(optionCntIn, optionCntSz)
-      ..write(codeIn, codeSz)
-      ..write(msgIdIn, msgIdSz);
+    final writer =
+        DatagramWriter()
+          ..write(versionIn, versionSz)
+          ..write(typeIn, typeSz)
+          ..write(optionCntIn, optionCntSz)
+          ..write(codeIn, codeSz)
+          ..write(msgIdIn, msgIdSz);
 
     final data = writer.toByteArray();
     final dataRef = typed.Uint8Buffer()..addAll(<int>[0x41, 0x01, 0x12, 0x34]);
@@ -231,10 +237,10 @@ void main() {
     const leq = ListEquality<int>();
 
     for (final tokenLength in [200, 500]) {
-      final token = (typed.Uint8Buffer()
-        ..addAll(
-          List<int>.generate(tokenLength, ((final index) => index % 256)),
-        ));
+      final token =
+          (typed.Uint8Buffer()..addAll(
+            List<int>.generate(tokenLength, ((final index) => index % 256)),
+          ));
       final request =
           CoapRequest(Uri.parse('coap://example.org'), RequestMethod.get)
             ..id = 5

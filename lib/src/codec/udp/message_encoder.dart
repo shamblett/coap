@@ -1,3 +1,5 @@
+// ignore_for_file: no-magic-number
+
 /*
  * Package : Coap
  * Author : S. Hamblett <steve.hamblett@linux.com>
@@ -165,10 +167,7 @@ void _writeExtendedTokenLength(
 /// Determine a potentially extended token length as specified in [RFC 8974].
 ///
 /// [RFC 8974]: https://datatracker.ietf.org/doc/html/rfc8974
-int _getExtendedTokenLength(
-  final int tokenLength,
-  final Uint8Buffer token,
-) {
+int _getExtendedTokenLength(final int tokenLength, final Uint8Buffer token) {
   switch (tokenLength) {
     case 13:
       return token.length - 13;

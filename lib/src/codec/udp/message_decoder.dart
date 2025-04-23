@@ -1,3 +1,5 @@
+// ignore_for_file: no-magic-number
+
 /*
  * Package : Coap
  * Author : S. Hamblett <steve.hamblett@linux.com>
@@ -81,11 +83,8 @@ CoapMessage? deserializeUdpMessage(
       payload = reader.readBytesLeft();
     } else {
       // The first 4 bits of the byte represent the option delta
-      final optionDeltaNibble = (0xF0 & nextByte) >> 4;
-      final deltaValue = _getValueFromOptionNibble(
-        optionDeltaNibble,
-        reader,
-      );
+      final optionDeltaNibble = (nextByte & 0xF0) >> 4;
+      final deltaValue = _getValueFromOptionNibble(optionDeltaNibble, reader);
 
       if (deltaValue == null) {
         hasFormatError = true;
@@ -95,7 +94,7 @@ CoapMessage? deserializeUdpMessage(
       currentOption += deltaValue;
 
       // The second 4 bits represent the option length
-      final optionLengthNibble = 0x0F & nextByte;
+      final optionLengthNibble = nextByte & 0x0F;
       final optionLength = _getValueFromOptionNibble(
         optionLengthNibble,
         reader,
@@ -207,21 +206,16 @@ Uint8Buffer _readToken(final int tokenLength, final DatagramReader reader) {
 int? _readExtendedTokenLength(
   final int tokenLength,
   final DatagramReader reader,
-) =>
-    _readExtendedLength(tokenLength, reader);
+) => _readExtendedLength(tokenLength, reader);
 
 /// Calculates the value used in the extended option fields as specified
 /// in RFC 7252, section 3.1.
 int? _getValueFromOptionNibble(
   final int nibble,
   final DatagramReader datagram,
-) =>
-    _readExtendedLength(nibble, datagram);
+) => _readExtendedLength(nibble, datagram);
 
-int? _readExtendedLength(
-  final int value,
-  final DatagramReader datagram,
-) {
+int? _readExtendedLength(final int value, final DatagramReader datagram) {
   if (value < 13) {
     return value;
   } else if (value == 13) {

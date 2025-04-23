@@ -10,15 +10,12 @@ import 'package:meta/meta.dart';
 /// Class for linkformat attributes.
 @immutable
 class CoapLinkAttribute {
-  /// Initializes an attribute.
-  const CoapLinkAttribute(this._name, this._value);
-
   final String _name;
+
+  final Object? _value;
 
   /// Name
   String get name => _name;
-
-  final Object? _value;
 
   /// Value
   Object? get value => _value;
@@ -28,6 +25,12 @@ class CoapLinkAttribute {
 
   /// Value as String
   String? get valueAsString => _value is String ? _value as String? : null;
+
+  @override
+  int get hashCode => _name.hashCode;
+
+  /// Initializes an attribute.
+  const CoapLinkAttribute(this._name, this._value);
 
   /// Serializes this attribute into its string representation.
   void serialize(final StringBuffer builder) {
@@ -63,7 +66,4 @@ class CoapLinkAttribute {
     }
     return _name == other.name && _value == other.value;
   }
-
-  @override
-  int get hashCode => _name.hashCode;
 }

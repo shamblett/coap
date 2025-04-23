@@ -1,3 +1,5 @@
+// ignore_for_file: no-magic-number
+
 /*
  * Package : Coap
  * Author : S. Hamblett <steve.hamblett@linux.com>
@@ -13,18 +15,19 @@ import 'package:typed_data/typed_data.dart';
 /// This class describes the functionality to read raw network-ordered
 /// datagrams on bit-level.
 class DatagramReader {
-  /// Initializes a new DatagramReader object
-  DatagramReader(this._buffer)
-      : _currentByte = ByteData(1),
-        _currentBitIndex = -1;
-
   final Uint8Buffer _buffer;
+
+  final ByteData _currentByte;
+
+  int _currentBitIndex;
 
   /// Bytes available
   bool get bytesAvailable => _buffer.isNotEmpty;
 
-  final ByteData _currentByte;
-  int _currentBitIndex;
+  /// Initializes a new DatagramReader object
+  DatagramReader(this._buffer)
+    : _currentByte = ByteData(1),
+      _currentBitIndex = -1;
 
   /// Reads a sequence of bits from the stream
   int read(final int numBits) {
@@ -74,7 +77,7 @@ class DatagramReader {
   }
 
   /// Reads the next byte from the stream.
-  int readNextByte() => readBytes(1)[0];
+  int readNextByte() => readBytes(1).first;
 
   /// Reads the complete sequence of bytes left in the stream
   Uint8Buffer readBytesLeft() => readBytes(-1);

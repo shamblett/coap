@@ -13,16 +13,19 @@ class NoopDeduplicator implements Deduplicator {
   @override
   void start() {
     // Do nothing
+    return;
   }
 
   @override
   void stop() {
     // Do nothing
+    return;
   }
 
   @override
   void clear() {
     // Do nothing
+    return;
   }
 
   @override

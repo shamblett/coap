@@ -16,7 +16,7 @@ class CoapRemoteResource extends CoapEndpointResource {
 
   /// Hidden
   CoapRemoteResource.hide(super.resourceIdentifier, {super.hidden})
-      : super.hide();
+    : super.hide();
 
   /// New root
   static CoapRemoteResource newRoot(final String linkFormat) =>
@@ -31,5 +31,7 @@ class CoapRemoteResource extends CoapEndpointResource {
   void doCreateSubResource(
     final CoapRequest request,
     final String newIdentifier,
-  ) {}
+  ) {
+    return;
+  }
 }

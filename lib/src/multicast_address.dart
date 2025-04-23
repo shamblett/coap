@@ -59,8 +59,7 @@ enum MulticastAddress {
   /// Specified in [RFC 9176, section 9.5].
   ///
   /// [RFC 9176, section 9.5]: https://datatracker.ietf.org/doc/html/rfc9176#section-9.5
-  allCoreRDsSiteLocalIPv6('FF05::FE'),
-  ;
+  allCoreRDsSiteLocalIPv6('FF05::FE');
 
   /// Constructor.
   const MulticastAddress(this.address);

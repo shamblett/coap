@@ -17,6 +17,43 @@ import 'coap_observing_endpoint.dart';
 /// Represents a relation between a client endpoint and a resource on the
 /// server.
 class CoapObserveRelation {
+  final DefaultCoapConfig config;
+
+  /// Current control notification
+  CoapResponse? currentControlNotification;
+
+  /// Next control notification
+  CoapResponse? nextControlNotification;
+
+  /// A value indicating if this relation has been established
+  bool established;
+
+  final CoapObservingEndpoint _endpoint;
+
+  final CoapResource _resource;
+
+  final CoapExchange _exchange;
+
+  DateTime _interestCheckTime = DateTime.now();
+
+  int _interestCheckCounter = 1;
+
+  // The notifications that have been sent, so they can be
+  // removed from the Matcher.
+  final Queue<CoapResponse?> _notifications = Queue<CoapResponse?>();
+
+  /// Source endpoint of the observing endpoint
+  InternetAddress? get source => _endpoint.endpoint;
+
+  /// The resource
+  CoapResource? get resource => _resource;
+
+  /// The exchange
+  CoapExchange get exchange => _exchange;
+
+  /// Key
+  String get key => '$source#${_exchange.request.tokenString}';
+
   /// Constructs a new observe relation.
   ///
   /// Takes the observing [endpoint], the observed [resource], and the
@@ -26,45 +63,10 @@ class CoapObserveRelation {
     final CoapObservingEndpoint endpoint,
     final CoapResource resource,
     final CoapExchange exchange,
-  )   : _endpoint = endpoint,
-        _resource = resource,
-        _exchange = exchange,
-        established = true;
-
-  final DefaultCoapConfig config;
-
-  final CoapObservingEndpoint _endpoint;
-
-  /// Source endpoint of the observing endpoint
-  InternetAddress? get source => _endpoint.endpoint;
-
-  final CoapResource _resource;
-
-  /// The resource
-  CoapResource? get resource => _resource;
-
-  final CoapExchange _exchange;
-
-  /// The exchange
-  CoapExchange get exchange => _exchange;
-
-  /// Current control notification
-  CoapResponse? currentControlNotification;
-
-  /// Next control notification
-  CoapResponse? nextControlNotification;
-
-  /// Key
-  String get key => '$source#${_exchange.request.tokenString}';
-
-  /// A value indicating if this relation has been established
-  bool established;
-  DateTime _interestCheckTime = DateTime.now();
-  int _interestCheckCounter = 1;
-
-  /// The notifications that have been sent, so they can be
-  /// removed from the Matcher.
-  final Queue<CoapResponse?> _notifications = Queue<CoapResponse?>();
+  ) : _endpoint = endpoint,
+      _resource = resource,
+      _exchange = exchange,
+      established = true;
 
   /// Cancel this observe relation.
   void cancel() {
@@ -94,11 +96,13 @@ class CoapObserveRelation {
   bool check() {
     var check = false;
     final now = DateTime.now();
-    check = check ||
+    check =
+        check ||
         _interestCheckTime
             .add(Duration(milliseconds: config.notificationCheckIntervalTime))
             .isBefore(now);
-    check = check ||
+    check =
+        check ||
         (++_interestCheckCounter >= config.notificationCheckIntervalCount);
     if (check) {
       _interestCheckTime = now;

@@ -47,7 +47,9 @@ FutureOr<void> main() async {
     final futures = <Future<void>>[];
     print('Sending get /large to ${baseUri.host}');
     futures.add(
-      client.get(Uri(path: 'large')).then(
+      client
+          .get(Uri(path: 'large'))
+          .then(
             (final resp) => print('/large response: ${resp.payloadString}'),
           ),
     );
@@ -61,7 +63,9 @@ FutureOr<void> main() async {
 
     print('Sending get /separate to ${baseUri.host}');
     futures.add(
-      client.get(Uri(path: 'separate')).then(
+      client
+          .get(Uri(path: 'separate'))
+          .then(
             (final resp) => print('/separate response: ${resp.payloadString}'),
           ),
     );

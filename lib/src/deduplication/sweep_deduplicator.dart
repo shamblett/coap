@@ -13,12 +13,14 @@ import 'deduplicator.dart';
 
 /// Sweep deduplicator
 class SweepDeduplicator implements Deduplicator {
+  Timer? _timer;
+
+  final Map<int?, CoapExchange> _incomingMessages = <int?, CoapExchange>{};
+
+  final DefaultCoapConfig _config;
+
   /// Construction
   SweepDeduplicator(this._config);
-
-  Timer? _timer;
-  final Map<int?, CoapExchange> _incomingMessages = <int?, CoapExchange>{};
-  final DefaultCoapConfig _config;
 
   @override
   void start() {
@@ -59,8 +61,8 @@ class SweepDeduplicator implements Deduplicator {
   }
 
   void _sweep(final Timer timer) {
-    final oldestAllowed = DateTime.now()
-      ..add(Duration(milliseconds: _config.exchangeLifetime));
+    final oldestAllowed =
+        DateTime.now()..add(Duration(milliseconds: _config.exchangeLifetime));
     _incomingMessages.removeWhere(
       (final key, final value) => value.timestamp!.isBefore(oldestAllowed),
     );

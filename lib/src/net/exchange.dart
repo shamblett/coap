@@ -22,27 +22,7 @@ import 'endpoint.dart';
 /// when the request has been canceled, or when a request or response timed out,
 /// i.e., has reached the retransmission limit without being acknowledged.
 class CoapExchange {
-  /// Construction
-  CoapExchange(
-    this.request,
-    this._origin,
-    this.endpoint, {
-    required this.namespace,
-    this.originalMulticastRequest,
-  }) : currentRequest = request {
-    _eventBus = CoapEventBus(namespace: namespace);
-    _timestamp = DateTime.now();
-  }
-
   final String namespace;
-
-  late final CoapEventBus _eventBus;
-
-  final Map<Object, Object> _attributes = <Object, Object>{};
-  final CoapOrigin _origin;
-
-  /// The origin
-  CoapOrigin get origin => _origin;
 
   /// The request
   CoapRequest request;
@@ -62,11 +42,6 @@ class CoapExchange {
   /// The endpoint which has created and processed this exchange.
   final Endpoint endpoint;
 
-  DateTime? _timestamp;
-
-  /// Time
-  DateTime? get timestamp => _timestamp;
-
   /// the status of the blockwise transfer of the response,
   /// or null in case of a normal transfer,
   BlockwiseStatus? responseBlockStatus;
@@ -83,7 +58,26 @@ class CoapExchange {
   /// Observe relation
   CoapObserveRelation? relation;
 
+  late final CoapEventBus _eventBus;
+
+  final Map<Object, Object> _attributes = <Object, Object>{};
+
+  final CoapOrigin _origin;
+
+  DateTime? _timestamp;
+
   late bool _timedOut;
+
+  late bool _complete;
+
+  /// The origin
+  CoapOrigin get origin => _origin;
+
+  /// Time
+  DateTime? get timestamp => _timestamp;
+
+  /// Complete
+  bool get complete => _complete;
 
   /// Timed out
   bool get timedOut => _timedOut;
@@ -95,16 +89,23 @@ class CoapExchange {
     }
   }
 
-  late bool _complete;
-
-  /// Complete
-  bool get complete => _complete;
-
   set complete(final bool value) {
     _complete = value;
     if (value) {
       _eventBus.fire(CoapCompletedEvent(this));
     }
+  }
+
+  /// Construction
+  CoapExchange(
+    this.request,
+    this._origin,
+    this.endpoint, {
+    required this.namespace,
+    this.originalMulticastRequest,
+  }) : currentRequest = request {
+    _eventBus = CoapEventBus(namespace: namespace);
+    _timestamp = DateTime.now();
   }
 
   /// Reject this exchange and therefore the request.

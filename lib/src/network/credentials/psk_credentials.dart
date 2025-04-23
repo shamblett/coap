@@ -11,9 +11,7 @@
 /// As the format of the [identityHint] is not well-defined, this parameter
 /// can probably be ignored in most cases, when both the identity and the key
 /// are known in advance.
-typedef PskCredentialsCallback = PskCredentials Function(
-  String? identityHint,
-);
+typedef PskCredentialsCallback = PskCredentials Function(String? identityHint);
 
 /// Credentials used for PSK Cipher Suites consisting of an [identity]
 /// and a [preSharedKey].

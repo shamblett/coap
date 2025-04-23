@@ -42,6 +42,28 @@ PskCredentialsCallback? _createOpenSslPskCallback(
 
 /// DTLS network using OpenSSL
 class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
+  DtlsClient? _dtlsClient;
+
+  DtlsConnection? _dtlsConnection;
+
+  final List<Certificate> _rootCertificates;
+
+  final bool _verify;
+
+  final String? _ciphers;
+
+  final bool _withTrustedRoots;
+
+  final PskCredentialsCallback? _openSslPskCallback;
+
+  final DynamicLibrary? _libSsl;
+
+  final DynamicLibrary? _libCrypto;
+
+  final String? _hostname;
+
+  final int? _securityLevel;
+
   /// Initialize with an [address] and a [port].
   ///
   /// This [CoapINetwork] can be configured to be used [withTrustedRoots] and
@@ -66,37 +88,15 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
     final DynamicLibrary? libCrypto,
     final String? hostName,
     final int? securityLevel,
-  })  : _ciphers = ciphers,
-        _verify = verify,
-        _withTrustedRoots = withTrustedRoots,
-        _rootCertificates = rootCertificates,
-        _libSsl = libSsl,
-        _libCrypto = libCrypto,
-        _hostname = hostName,
-        _securityLevel = securityLevel,
-        _openSslPskCallback = _createOpenSslPskCallback(pskCredentialsCallback);
-
-  DtlsClient? _dtlsClient;
-
-  DtlsConnection? _dtlsConnection;
-
-  final List<Certificate> _rootCertificates;
-
-  final bool _verify;
-
-  final String? _ciphers;
-
-  final bool _withTrustedRoots;
-
-  final PskCredentialsCallback? _openSslPskCallback;
-
-  final DynamicLibrary? _libSsl;
-
-  final DynamicLibrary? _libCrypto;
-
-  final String? _hostname;
-
-  final int? _securityLevel;
+  }) : _ciphers = ciphers,
+       _verify = verify,
+       _withTrustedRoots = withTrustedRoots,
+       _rootCertificates = rootCertificates,
+       _libSsl = libSsl,
+       _libCrypto = libCrypto,
+       _hostname = hostName,
+       _securityLevel = securityLevel,
+       _openSslPskCallback = _createOpenSslPskCallback(pskCredentialsCallback);
 
   @override
   void send(final CoapMessage coapMessage) {
@@ -107,17 +107,6 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
     final data = coapMessage.toUdpPayload();
     final bytes = Uint8List.view(data.buffer, data.offsetInBytes, data.length);
     _dtlsConnection?.send(bytes);
-  }
-
-  Future<void> _initializeClient() async {
-    eventBus.fire(CoapSocketInitEvent());
-
-    _dtlsClient = await DtlsClient.bind(
-      bindAddress,
-      0,
-      libSsl: _libSsl,
-      libCrypto: _libCrypto,
-    );
   }
 
   @override
@@ -172,8 +161,9 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
         );
         eventBus.fire(CoapMessageReceivedEvent(message, address));
       },
-      onError: (final Object e, final StackTrace s) =>
-          eventBus.fire(CoapSocketErrorEvent(e, s)),
+      onError:
+          (final Object e, final StackTrace s) =>
+              eventBus.fire(CoapSocketErrorEvent(e, s)),
       onDone: () {
         isClosed = true;
 
@@ -190,6 +180,17 @@ class CoapNetworkUDPOpenSSL extends CoapNetworkUDP {
           }
         });
       },
+    );
+  }
+
+  Future<void> _initializeClient() async {
+    eventBus.fire(CoapSocketInitEvent());
+
+    _dtlsClient = await DtlsClient.bind(
+      bindAddress,
+      0,
+      libSsl: _libSsl,
+      libCrypto: _libCrypto,
     );
   }
 }

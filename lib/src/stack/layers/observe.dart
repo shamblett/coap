@@ -20,16 +20,16 @@ import '../base_layer.dart';
 
 /// Observe layer
 class ObserveLayer extends BaseLayer {
+  /// Context key
+  static const String reregistrationContextKey = 'ReregistrationContext';
+
+  /// Additional time to wait until re-registration
+  late int _backoff;
+
   /// Constructs a new observe layer.
   ObserveLayer(final DefaultCoapConfig config) {
     _backoff = config.notificationReregistrationBackoff;
   }
-
-  /// Context key
-  static String reregistrationContextKey = 'ReregistrationContext';
-
-  /// Additional time to wait until re-registration
-  late int _backoff;
 
   @override
   void sendResponse(
@@ -144,8 +144,7 @@ class ObserveLayer extends BaseLayer {
     final type = response.type;
     final acked = response.isAcknowledged;
     final timeout = response.isTimedOut;
-    final result = type == CoapMessageType.con && !acked && !timeout;
-    return result;
+    return type == CoapMessageType.con && !acked && !timeout;
   }
 
   void _prepareSelfReplacement(
@@ -157,7 +156,8 @@ class ObserveLayer extends BaseLayer {
         final relation = exchange.relation!;
         final next = relation.nextControlNotification;
         relation
-          ..currentControlNotification = next // next may be null
+          ..currentControlNotification =
+              next // next may be null
           ..nextControlNotification = null;
         if (next != null) {
           // this is not a self replacement, hence a new ID
@@ -196,7 +196,9 @@ class ObserveLayer extends BaseLayer {
     final void Function(CoapRequest) reregister,
   ) {
     final timeout =
-        (response.maxAge ?? CoapConstants.defaultMaxAge) * 1000 + _backoff;
+        (response.maxAge ?? CoapConstants.defaultMaxAge) *
+            CoapConstants.millisecondsInSecond +
+        _backoff;
     exchange
         .getOrAdd<_ReregistrationContext>(
           reregistrationContextKey,
@@ -208,13 +210,16 @@ class ObserveLayer extends BaseLayer {
 
 /// Registration context
 class _ReregistrationContext {
+  final CoapExchange _exchange;
+
+  final void Function(CoapRequest) _reregister;
+
+  Timer? _timer;
+
+  final int _timeout;
+
   /// Construction
   _ReregistrationContext(this._exchange, this._timeout, this._reregister);
-
-  final CoapExchange _exchange;
-  final void Function(CoapRequest) _reregister;
-  Timer? _timer;
-  final int _timeout;
 
   /// Start
   void start() {
@@ -235,14 +240,15 @@ class _ReregistrationContext {
   void _timerElapsed() {
     final request = _exchange.request;
     if (!request.isCancelled) {
-      final refresh = CoapRequest.get(request.uri)
-        ..setOptions(request.getAllOptions())
-        // Make sure Observe is set and zero
-        ..observe = ObserveRegistration.register.value
-        // Use same Token
-        ..token = request.token
-        ..destination = request.destination
-        ..copyEventHandler(request);
+      final refresh =
+          CoapRequest.get(request.uri)
+            ..setOptions(request.getAllOptions())
+            // Make sure Observe is set and zero
+            ..observe = ObserveRegistration.register.value
+            // Use same Token
+            ..token = request.token
+            ..destination = request.destination
+            ..copyEventHandler(request);
       _exchange.fireReregistering(refresh);
       _reregister(refresh);
     }

@@ -9,14 +9,14 @@ import '../coap_response.dart';
 import 'exchange.dart';
 
 class CoapMulticastExchange extends CoapExchange {
+  final List<CoapResponse> responses = [];
+
   CoapMulticastExchange(
     super.request,
     super.origin,
     super.endpoint, {
     required super.namespace,
   });
-
-  final List<CoapResponse> responses = [];
 
   bool alreadyReceived(final CoapResponse response) {
     final filteredResponses = responses.where(

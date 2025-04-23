@@ -99,9 +99,11 @@ void main() {
       final opt1 = UriPathOption('Hello');
       final opt2 = UriPathOption('from');
       final opt3 = UriPathOption('me');
-      final str = [opt1, opt2, opt3]
-          .map((final option) => option.valueString)
-          .join('/');
+      final str = [
+        opt1,
+        opt2,
+        opt3,
+      ].map((final option) => option.valueString).join('/');
       expect(str, 'Hello/from/me');
     });
 
@@ -124,8 +126,11 @@ void main() {
     });
 
     test('OCF Options', () {
-      final ocfContentFormatVersion =
-          OcfContentFormatVersion.fromVersion(10, 13, 2);
+      final ocfContentFormatVersion = OcfContentFormatVersion.fromVersion(
+        10,
+        13,
+        2,
+      );
       expect(ocfContentFormatVersion.valueString, '10.13.2');
 
       final ocfAcceptContentFormatVersion =

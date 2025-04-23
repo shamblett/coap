@@ -52,21 +52,13 @@ enum CoapMediaType {
   imagePng(23, 'image', 'png'),
 
   /// application/link-format
-  applicationLinkFormat(
-    40,
-    'application',
-    'link-format',
-  ),
+  applicationLinkFormat(40, 'application', 'link-format'),
 
   /// application/xml
   applicationXml(41, 'application', 'xml'),
 
   /// application/octet-stream
-  applicationOctetStream(
-    42,
-    'application',
-    'octet-stream',
-  ),
+  applicationOctetStream(42, 'application', 'octet-stream'),
 
   /// application/exi
   applicationExi(47, 'application', 'exi'),
@@ -167,11 +159,7 @@ enum CoapMediaType {
   /// Defined in [RFC-ietf-sacm-coswid-22].
   ///
   /// [RFC-ietf-sacm-coswid-22]: https://datatracker.ietf.org/doc/html/draft-ietf-sacm-coswid-22
-  applicationSwidCbor(
-    258,
-    'application',
-    'swid+cbor',
-  ),
+  applicationSwidCbor(258, 'application', 'swid+cbor'),
 
   /// application/dots+cbor
   applicationDotsCbor(271, 'application', 'dots+cbor'),
@@ -285,8 +273,7 @@ enum CoapMediaType {
   textCss(20000, 'text', 'css'),
 
   /// application/svg+xml
-  imageSvgXml(30000, 'image', 'svg+xml'),
-  ;
+  imageSvgXml(30000, 'image', 'svg+xml');
 
   const CoapMediaType(
     this.numericValue,
@@ -312,11 +299,11 @@ enum CoapMediaType {
   final String? encoding;
 
   ContentType get contentType => ContentType(
-        primaryType,
-        subType,
-        charset: charset,
-        parameters: parameters,
-      );
+    primaryType,
+    subType,
+    charset: charset,
+    parameters: parameters,
+  );
 
   static final _registry = HashMap.fromEntries(
     values.map(

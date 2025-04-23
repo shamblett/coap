@@ -82,6 +82,29 @@ class CoapMulticastResponseHandler {
 /// In most cases a resource can be created outside of the client with
 /// the relevant parameters then set in the client.
 class CoapClient {
+  /// Address type used for DNS lookups.
+  final InternetAddressType addressType;
+
+  /// The client's local socket bind address, if set explicitly
+  /// IPv4 default is 0.0.0.0, IPv6 default is 0:0:0:0:0:0:0:0
+  final InternetAddress? bindAddress;
+
+  /// The client endpoint URI
+  final Uri baseUri;
+
+  late final CoapEventBus _eventBus;
+
+  final DefaultCoapConfig _config;
+  Endpoint? _endpoint;
+  final _lock = Lock();
+
+  // Callback for providing [PskCredentials] (combination of a Pre-shared Key
+  // and an Identity) for DTLS, optionally based on an Identity Hint.
+  final PskCredentialsCallback? _pskCredentialsCallback;
+
+  /// The internal request/response event stream
+  CoapEventBus get events => _eventBus;
+
   /// Instantiates.
   /// A supplied request is optional depending on the API call being used.
   /// If it is specified it will be prepared and used.
@@ -97,33 +120,10 @@ class CoapClient {
     this.bindAddress,
     final PskCredentialsCallback? pskCredentialsCallback,
     final DefaultCoapConfig? config,
-  })  : _config = config ?? CoapConfigDefault(),
-        _pskCredentialsCallback = pskCredentialsCallback {
+  }) : _config = config ?? CoapConfigDefault(),
+       _pskCredentialsCallback = pskCredentialsCallback {
     _eventBus = CoapEventBus(namespace: hashCode.toString());
   }
-
-  /// Address type used for DNS lookups.
-  final InternetAddressType addressType;
-
-  /// The client's local socket bind address, if set explicitly
-  /// IPv4 default is 0.0.0.0, IPv6 default is 0:0:0:0:0:0:0:0
-  final InternetAddress? bindAddress;
-
-  /// The client endpoint URI
-  final Uri baseUri;
-
-  late final CoapEventBus _eventBus;
-
-  /// The internal request/response event stream
-  CoapEventBus get events => _eventBus;
-
-  final DefaultCoapConfig _config;
-  Endpoint? _endpoint;
-  final _lock = Lock();
-
-  /// Callback for providing [PskCredentials] (combination of a Pre-shared Key
-  /// and an Identity) for DTLS, optionally based on an Identity Hint.
-  final PskCredentialsCallback? _pskCredentialsCallback;
 
   /// Performs a CoAP ping.
   Future<bool> ping() async {
@@ -145,14 +145,12 @@ class CoapClient {
     final int maxRetransmit = 0,
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) {
-    final request =
-        CoapRequest.get(uri, confirmable: confirmable, accept: accept);
-    _build(
-      request,
-      options,
-      earlyBlock2Negotiation,
-      maxRetransmit,
+    final request = CoapRequest.get(
+      uri,
+      confirmable: confirmable,
+      accept: accept,
     );
+    _build(request, options, earlyBlock2Negotiation, maxRetransmit);
     return send(request, onMulticastResponse: onMulticastResponse);
   }
 
@@ -175,12 +173,7 @@ class CoapClient {
       contentFormat: format,
       payload: utf8.encode(payload),
     );
-    _build(
-      request,
-      options,
-      earlyBlock2Negotiation,
-      maxRetransmit,
-    );
+    _build(request, options, earlyBlock2Negotiation, maxRetransmit);
     return send(request, onMulticastResponse: onMulticastResponse);
   }
 
@@ -203,12 +196,7 @@ class CoapClient {
       contentFormat: format,
       payload: payload,
     );
-    _build(
-      request,
-      options,
-      earlyBlock2Negotiation,
-      maxRetransmit,
-    );
+    _build(request, options, earlyBlock2Negotiation, maxRetransmit);
     return send(request, onMulticastResponse: onMulticastResponse);
   }
 
@@ -291,12 +279,7 @@ class CoapClient {
       confirmable: confirmable,
       accept: accept,
     );
-    _build(
-      request,
-      options,
-      earlyBlock2Negotiation,
-      maxRetransmit,
-    );
+    _build(request, options, earlyBlock2Negotiation, maxRetransmit);
     return send(request, onMulticastResponse: onMulticastResponse);
   }
 
@@ -323,12 +306,7 @@ class CoapClient {
       contentFormat: format,
       payload: utf8.encode(payload),
     );
-    _build(
-      request,
-      options,
-      earlyBlock2Negotiation,
-      maxRetransmit,
-    );
+    _build(request, options, earlyBlock2Negotiation, maxRetransmit);
     return send(request, onMulticastResponse: onMulticastResponse);
   }
 
@@ -355,12 +333,7 @@ class CoapClient {
       contentFormat: format,
       payload: payload,
     );
-    _build(
-      request,
-      options,
-      earlyBlock2Negotiation,
-      maxRetransmit,
-    );
+    _build(request, options, earlyBlock2Negotiation, maxRetransmit);
     return send(request, onMulticastResponse: onMulticastResponse);
   }
 
@@ -531,16 +504,12 @@ class CoapClient {
   }
 
   /// Discovers remote resources.
-  Future<Iterable<CoapWebLink>?> discover({
-    final Uri? uri,
-  }) async {
+  Future<Iterable<CoapWebLink>?> discover({final Uri? uri}) async {
     final discover = CoapRequest.get(uri ?? CoapConstants.defaultWellKnownURI);
     final links = await send(discover);
-    if (links.contentFormat != CoapMediaType.applicationLinkFormat) {
-      return <CoapWebLink>[CoapWebLink('')];
-    } else {
-      return CoapLinkFormat.parse(links.payloadString);
-    }
+    return links.contentFormat != CoapMediaType.applicationLinkFormat
+        ? <CoapWebLink>[CoapWebLink('')]
+        : CoapLinkFormat.parse(links.payloadString);
   }
 
   /// Send
@@ -548,8 +517,9 @@ class CoapClient {
     final CoapRequest request, {
     final CoapMulticastResponseHandler? onMulticastResponse,
   }) async {
-    final responseStream = _sendWithStreamResponse(request)
-        .asBroadcastStream(onCancel: (final sub) => sub.cancel());
+    final responseStream = _sendWithStreamResponse(
+      request,
+    ).asBroadcastStream(onCancel: (final sub) => sub.cancel());
     if (request.isMulticast) {
       if (onMulticastResponse == null) {
         throw ArgumentError('Missing onMulticastResponse argument');
@@ -562,22 +532,6 @@ class CoapClient {
       );
     }
     return _waitForResponse(request, responseStream);
-  }
-
-  Stream<CoapResponse> _sendWithStreamResponse(
-    final CoapRequest request,
-  ) async* {
-    await _prepare(request);
-
-    final stream = _eventBus
-        .on<CoapCompletionEvent>()
-        .transform<CoapResponse>(_filterEventStream(request))
-        .where((final response) => _matchResponse(response, request))
-        .takeWhile((final _) => request.isActive);
-
-    _endpoint!.sendEpRequest(request);
-
-    yield* stream;
   }
 
   /// Sends a [request] and returns a [Stream] of [CoapResponse]s.
@@ -606,15 +560,32 @@ class CoapClient {
   /// Cancels a request
   void cancel(final CoapRequest request) {
     request.isCancelled = true;
-    final response = CoapEmptyMessage(CoapMessageType.rst)
-      ..id = request.id
-      ..token = request.token;
+    final response =
+        CoapEmptyMessage(CoapMessageType.rst)
+          ..id = request.id
+          ..token = request.token;
     _eventBus.fire(CoapCancelledEvent(response));
   }
 
   /// Cancel all ongoing requests
   void close() {
     _endpoint?.stop();
+  }
+
+  Stream<CoapResponse> _sendWithStreamResponse(
+    final CoapRequest request,
+  ) async* {
+    await _prepare(request);
+
+    final stream = _eventBus
+        .on<CoapCompletionEvent>()
+        .transform<CoapResponse>(_filterEventStream(request))
+        .where((final response) => _matchResponse(response, request))
+        .takeWhile((final _) => request.isActive);
+
+    _endpoint!.sendEpRequest(request);
+
+    yield* stream;
   }
 
   void _build(
@@ -675,16 +646,16 @@ class CoapClient {
   }
 
   Uri _buildUri(final Uri uri) => baseUri.replace(
-        scheme: uri.scheme.isEmpty ? null : uri.scheme,
-        userInfo: uri.userInfo.isEmpty ? null : uri.userInfo,
-        host: uri.host.isEmpty ? null : uri.host,
-        port: uri.port == 0 ? null : uri.port,
-        // pathSegments included in path
-        path: uri.path.isEmpty ? null : uri.path,
-        // queryParameters included in query
-        query: uri.query.isEmpty ? null : uri.query,
-        fragment: uri.fragment.isEmpty ? null : uri.fragment,
-      );
+    scheme: uri.scheme.isEmpty ? null : uri.scheme,
+    userInfo: uri.userInfo.isEmpty ? null : uri.userInfo,
+    host: uri.host.isEmpty ? null : uri.host,
+    port: uri.port == 0 ? null : uri.port,
+    // pathSegments included in path
+    path: uri.path.isEmpty ? null : uri.path,
+    // queryParameters included in query
+    query: uri.query.isEmpty ? null : uri.query,
+    fragment: uri.fragment.isEmpty ? null : uri.fragment,
+  );
 
   Future<InternetAddress> _lookupHost(
     final String host,
@@ -697,7 +668,7 @@ class CoapClient {
 
     final addresses = await InternetAddress.lookup(host, type: addressType);
     if (addresses.isNotEmpty) {
-      return addresses[0];
+      return addresses.first;
     }
 
     throw SocketException("Failed host lookup: '$host'");
@@ -710,24 +681,26 @@ class CoapClient {
     final Stream<CoapResponse> responseStream,
   ) {
     final completer = Completer<CoapResponse>();
-    responseStream.take(1).listen(
-      (final response) {
-        if (completer.isCompleted) {
-          return;
-        }
+    responseStream
+        .take(1)
+        .listen(
+          (final response) {
+            if (completer.isCompleted) {
+              return;
+            }
 
-        response.timestamp = DateTime.now();
-        completer.complete(response);
-      },
-      // ignore: avoid_types_on_closure_parameters
-      onError: (final Object error) {
-        if (completer.isCompleted) {
-          return;
-        }
+            response.timestamp = DateTime.now();
+            completer.complete(response);
+          },
+          // ignore: avoid_types_on_closure_parameters
+          onError: (final Object error) {
+            if (completer.isCompleted) {
+              return;
+            }
 
-        completer.completeError(error);
-      },
-    );
+            completer.completeError(error);
+          },
+        );
     return completer.future;
   }
 
@@ -740,13 +713,13 @@ class CoapClient {
         .where((final e) => e.msg.id == req.id)
         .take(1)
         .listen((final e) {
-      if (!req.isActive) {
-        completer.complete(null);
-      } else {
-        e.msg.timestamp = DateTime.now();
-        completer.complete(e.msg);
-      }
-    });
+          if (!req.isActive) {
+            completer.complete(null);
+          } else {
+            e.msg.timestamp = DateTime.now();
+            completer.complete(e.msg);
+          }
+        });
     return completer.future;
   }
 }
@@ -757,31 +730,30 @@ bool _matchResponse(final CoapResponse response, final CoapRequest request) =>
 
 StreamTransformer<CoapCompletionEvent, CoapResponse> _filterEventStream(
   final CoapRequest request,
-) =>
-    StreamTransformer<CoapCompletionEvent, CoapResponse>(
-        (final input, final cancelOnError) {
-      final controller = StreamController<CoapResponse>();
+) => StreamTransformer<CoapCompletionEvent, CoapResponse>((
+  final input,
+  final cancelOnError,
+) {
+  final controller = StreamController<CoapResponse>();
 
-      controller.onListen = () {
-        final subscription = input.listen(
-          (final event) async {
-            if (event is CoapRespondEvent) {
-              controller.add(event.resp);
-            } else if (event is CoapTimedOutEvent) {
-              controller.addError(
-                CoapRequestTimeoutException(request.retransmits),
-              );
-            }
-          },
-          onDone: controller.close,
-          onError: controller.addError,
-          cancelOnError: cancelOnError,
-        );
-        controller
-          ..onPause = subscription.pause
-          ..onResume = subscription.resume
-          ..onCancel = subscription.cancel;
-      };
+  controller.onListen = () {
+    final subscription = input.listen(
+      (final event) async {
+        if (event is CoapRespondEvent) {
+          controller.add(event.resp);
+        } else if (event is CoapTimedOutEvent) {
+          controller.addError(CoapRequestTimeoutException(request.retransmits));
+        }
+      },
+      onDone: controller.close,
+      onError: controller.addError,
+      cancelOnError: cancelOnError,
+    );
+    controller
+      ..onPause = subscription.pause
+      ..onResume = subscription.resume
+      ..onCancel = subscription.cancel;
+  };
 
-      return controller.stream.listen(null);
-    });
+  return controller.stream.listen(null);
+});

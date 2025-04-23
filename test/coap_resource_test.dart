@@ -86,8 +86,11 @@ void main() {
       const link3 = '</a>';
       const format = '$link1,$link2,$link3';
       final res = CoapRemoteResource.newRoot(format);
-      final result =
-          CoapLinkFormat.serializeOptions(res, null, recursive: true);
+      final result = CoapLinkFormat.serializeOptions(
+        res,
+        null,
+        recursive: true,
+      );
       expect(result, '$link3,$link2,$link1');
     });
     test('Concrete test', () {
@@ -96,8 +99,11 @@ void main() {
       const reco =
           '</careless>;rt="SepararateResponseTester";title="This resource will ACK anything, but never send a separate response",</feedback>;rt="FeedbackMailSender";title="POST feedback using mail",</helloWorld>;rt="HelloWorldDisplayer";title="GET a friendly greeting!",</image>;title="GET an image with different content-types";rt="Image";sz=18029;ct=24;ct=23;ct=22;ct=21,</large>;rt="block";title="Large resource",</large_update>;rt="block";rt="observe";title="Large resource that can be updated using PUT method",</mirror>;rt="RequestMirroring";title="POST request to receive it back as echo",</obs>;obs;rt="observe";title="Observable resource which changes every 5 seconds",</query>;title="Resource accepting query parameters",</seg1/seg2/seg3>;title="Long path resource",</separate>;title="Resource which cannot be served immediately and which cannot be acknowledged in a piggy-backed way",</storage>;obs;rt="Storage";title="PUT your data here or POST resources!",</test>;title="Default test resource",</timeResource>;rt="CurrentTime";title="GET the current time",</toUpper>;rt="UppercaseConverter";title="POST text here to convert it to uppercase",</weatherResource>;rt="ZurichWeather";title="GET the current weather in zurich"';
       final res = CoapRemoteResource.newRoot(link);
-      final result =
-          CoapLinkFormat.serializeOptions(res, null, recursive: true);
+      final result = CoapLinkFormat.serializeOptions(
+        res,
+        null,
+        recursive: true,
+      );
       expect(result, reco);
     });
     test('Match test', () {
@@ -109,8 +115,11 @@ void main() {
       final res = CoapRemoteResource.newRoot(format);
 
       final query = <Option<String>>[UriQueryOption('rt=MyName')];
-      final queried =
-          CoapLinkFormat.serializeOptions(res, query, recursive: true);
+      final queried = CoapLinkFormat.serializeOptions(
+        res,
+        query,
+        recursive: true,
+      );
       expect(queried, '$link2,$link1');
     });
 

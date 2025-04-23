@@ -15,14 +15,6 @@ import 'coap_inetwork.dart';
 
 /// UDP network
 class CoapNetworkUDP implements CoapINetwork {
-  /// Initialize with an address and a port
-  CoapNetworkUDP(
-    this.address,
-    this.port,
-    this.bindAddress, {
-    final String namespace = '',
-  }) : eventBus = CoapEventBus(namespace: namespace);
-
   @override
   final InternetAddress address;
 
@@ -32,16 +24,26 @@ class CoapNetworkUDP implements CoapINetwork {
   @override
   final InternetAddress bindAddress;
 
-  bool _shouldReinitialize = true;
-  bool get shouldReinitialize => _shouldReinitialize;
-
   final CoapEventBus eventBus;
-
-  RawDatagramSocket? _socket;
-  RawDatagramSocket? get socket => _socket;
 
   @override
   bool isClosed = true;
+
+  bool _shouldReinitialize = true;
+
+  RawDatagramSocket? _socket;
+
+  bool get shouldReinitialize => _shouldReinitialize;
+
+  RawDatagramSocket? get socket => _socket;
+
+  /// Initialize with an address and a port
+  CoapNetworkUDP(
+    this.address,
+    this.port,
+    this.bindAddress, {
+    final String namespace = '',
+  }) : eventBus = CoapEventBus(namespace: namespace);
 
   @override
   void send(final CoapMessage coapMessage) {
@@ -107,8 +109,9 @@ class CoapNetworkUDP implements CoapINetwork {
         }
       },
       // ignore: avoid_types_on_closure_parameters
-      onError: (final Object e, final StackTrace s) =>
-          eventBus.fire(CoapSocketErrorEvent(e, s)),
+      onError:
+          (final Object e, final StackTrace s) =>
+              eventBus.fire(CoapSocketErrorEvent(e, s)),
       // Socket stream is done and can no longer be listened to
       onDone: () {
         isClosed = true;

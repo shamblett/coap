@@ -19,6 +19,25 @@ import 'option/integer_option.dart';
 /// Provides a simple API to check whether a relation has successfully
 /// established and to cancel or refresh the relation.
 class CoapObserveClientRelation extends Stream<CoapResponse> {
+  final CoapRequest _request;
+
+  final Stream<CoapResponse> _responseStream;
+
+  bool _cancelled = false;
+
+  /// Cancelled
+  bool get isCancelled => _cancelled;
+
+  Stream<CoapResponse> get _filteredStream => _responseStream
+      .where(_responseTokenIsMatched)
+      .takeWhile((final _) => _request.isActive);
+
+  @internal
+  set isCancelled(final bool val) {
+    _request.isCancelled = val;
+    _cancelled = val;
+  }
+
   /// Construction
   CoapObserveClientRelation(this._request, this._responseStream);
 
@@ -28,21 +47,33 @@ class CoapObserveClientRelation extends Stream<CoapResponse> {
     final Function? onError,
     final void Function()? onDone,
     final bool? cancelOnError,
-  }) =>
-      _filteredStream.listen(
-        onData,
-        onError: onError,
-        onDone: onDone,
-        cancelOnError: cancelOnError,
-      );
+  }) => _filteredStream.listen(
+    onData,
+    onError: onError,
+    onDone: onDone,
+    cancelOnError: cancelOnError,
+  );
 
-  final CoapRequest _request;
+  void checkObserve() {
+    _filteredStream.first.then((final resp) {
+      if (!resp.hasOption<ObserveOption>()) {
+        isCancelled = true;
+      }
+    });
+  }
 
-  final Stream<CoapResponse> _responseStream;
-
-  Stream<CoapResponse> get _filteredStream => _responseStream
-      .where(_responseTokenIsMatched)
-      .takeWhile((final _) => _request.isActive);
+  /// Create a cancellation request
+  @internal
+  CoapRequest cancellation() =>
+      CoapRequest.get(_request.uri)
+        // Copy options, but set Observe to cancel
+        ..setOptions(_request.getAllOptions())
+        ..observe = ObserveRegistration.deregister.value
+        // Use same Token
+        ..token = _request.token
+        ..destination = _request.destination
+        // Dispatch final response to the same message observers
+        ..copyEventHandler(_request);
 
   bool _responseTokenIsMatched(final CoapResponse response) {
     final requestToken = _request.token;
@@ -54,35 +85,4 @@ class CoapObserveClientRelation extends Stream<CoapResponse> {
 
     return requestToken.equals(responseToken);
   }
-
-  void checkObserve() {
-    _filteredStream.first.then((final resp) {
-      if (!resp.hasOption<ObserveOption>()) {
-        isCancelled = true;
-      }
-    });
-  }
-
-  bool _cancelled = false;
-
-  /// Cancelled
-  bool get isCancelled => _cancelled;
-  @internal
-  set isCancelled(final bool val) {
-    _request.isCancelled = val;
-    _cancelled = val;
-  }
-
-  /// Create a cancellation request
-  @internal
-  CoapRequest cancellation() => CoapRequest.get(_request.uri)
-    // Copy options, but set Observe to cancel
-    ..setOptions(_request.getAllOptions())
-    ..observe = ObserveRegistration.deregister.value
-    // Use same Token
-    ..token = _request.token
-    ..destination = _request.destination
-
-    // Dispatch final response to the same message observers
-    ..copyEventHandler(_request);
 }

@@ -23,16 +23,11 @@ import 'multicast_exchange.dart';
 
 /// Matcher class
 class CoapMatcher {
-  /// Construction
-  CoapMatcher(final DefaultCoapConfig config, {required this.namespace}) {
-    _eventBus = CoapEventBus(namespace: namespace);
-    _deduplicator = DeduplicatorFactory.createDeduplicator(config);
-    subscr = _eventBus.on<CoapCompletedEvent>().listen(onExchangeCompleted);
-  }
+  final String namespace;
+
+  late StreamSubscription<CoapCompletedEvent> subscr;
 
   late final CoapEventBus _eventBus;
-  final String namespace;
-  late StreamSubscription<CoapCompletedEvent> subscr;
 
   /// For all
   final Map<int?, CoapExchange> _exchangesById = <int?, CoapExchange>{};
@@ -44,6 +39,13 @@ class CoapMatcher {
   final Map<String, CoapExchange> _ongoingExchanges = <String, CoapExchange>{};
 
   late final Deduplicator _deduplicator;
+
+  /// Construction
+  CoapMatcher(final DefaultCoapConfig config, {required this.namespace}) {
+    _eventBus = CoapEventBus(namespace: namespace);
+    _deduplicator = DeduplicatorFactory.createDeduplicator(config);
+    subscr = _eventBus.on<CoapCompletedEvent>().listen(onExchangeCompleted);
+  }
 
   void start() {
     _deduplicator.start();

@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT
 
+// ignore_for_file: no-magic-number
+
 import 'dart:io';
 
 import 'integer_option.dart';
@@ -29,13 +31,13 @@ int? _defaultPortFromScheme(final String? scheme) {
 }
 
 bool _isSupportedUriScheme(final String scheme) => const [
-      'coap',
-      'coaps',
-      'coap+tcp',
-      'coaps+tcp',
-      'coap+ws',
-      'coaps+ws',
-    ].contains(scheme);
+  'coap',
+  'coaps',
+  'coap+tcp',
+  'coaps+tcp',
+  'coap+ws',
+  'coaps+ws',
+].contains(scheme);
 
 /// Converts a list of [Option]s to a [Uri] of a provided [scheme] as specified
 /// in [RFC 7252, section 6.5].
@@ -94,13 +96,7 @@ Uri optionsToUri(
     path = '/';
   }
 
-  return Uri(
-    scheme: scheme,
-    host: host,
-    port: port,
-    path: path,
-    query: query,
-  );
+  return Uri(scheme: scheme, host: host, port: port, path: path, query: query);
 }
 
 /// Converts a [uri] into a list of [Option]s as specified
@@ -130,9 +126,7 @@ List<Option<Object?>> uriToOptions(
   }
 
   if (uri.hasFragment) {
-    throw FormatException(
-      '$uri contains a URI fragment, which is not allowed',
-    );
+    throw FormatException('$uri contains a URI fragment, which is not allowed');
   }
 
   final host = uri.host;
@@ -155,9 +149,9 @@ List<Option<Object?>> uriToOptions(
 
 /// Converts a relative [location] URI into a list of [Option]s.
 List<Option<Object?>> locationToOptions(final Uri location) => [
-      ..._uriPathsToOptions<LocationPathOption>(location),
-      ..._uriQueriesToOptions<LocationQueryOption>(location),
-    ];
+  ..._uriPathsToOptions<LocationPathOption>(location),
+  ..._uriQueriesToOptions<LocationQueryOption>(location),
+];
 
 /// Converts a [uri]'s path components into a list of [PathOption]s as specified
 /// in [RFC 7252, section 6.4].

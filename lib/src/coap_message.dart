@@ -36,6 +36,403 @@ typedef HookFunction = void Function();
 /// each of which has a MessageType, a message identifier,
 /// a token (0-8 bytes), a collection of Options and a payload.
 abstract class CoapMessage {
+  bool hasUnknownCriticalOption = false;
+
+  bool hasFormatError = false;
+
+  /// The code of this CoAP message.
+  final CoapCode code;
+
+  /// Bind address if not using the default
+  InternetAddress? bindAddress;
+
+  /// The destination endpoint.
+  @internal
+  InternetAddress? destination;
+
+  /// The source endpoint.
+  @internal
+  InternetAddress? source;
+
+  /// Timed out hook function for attaching a callback if needed
+  HookFunction? timedOutHook;
+
+  /// Acknowledged hook for attaching a callback if needed
+  HookFunction? acknowledgedHook;
+
+  /// Retransmit hook function
+  HookFunction? retransmittingHook;
+
+  /// The max times this message should be retransmitted if no ACK received.
+  /// A value of 0 means that the CoapConstants.maxRetransmit time
+  /// shoud be taken into account, while a negative means NO retransmission.
+  /// The default value is 0.
+  int maxRetransmit = 0;
+
+  /// The amount of time in milliseconds after which this message will time out.
+  /// A value of 0 indicates that the time should be decided
+  /// automatically from the configuration.
+  /// The default value is 0.
+  int ackTimeout = 0;
+
+  /// The payload of this CoAP message.
+  final Uint8Buffer payload;
+
+  CoapMessageType _type;
+
+  int? _id;
+
+  CoapEventBus? _eventBus = CoapEventBus(namespace: '');
+
+  final List<Option<Object?>> _options = [];
+
+  Uint8Buffer? _token;
+
+  bool _acknowledged = false;
+
+  bool _rejected = false;
+
+  bool _timedOut = false;
+
+  int _retransmits = 0;
+
+  bool _cancelled = false;
+
+  bool _duplicate = false;
+
+  DateTime? _timestamp;
+
+  /// The type of this CoAP message.
+  CoapMessageType get type => _type;
+
+  /// The codestring
+  String get codeString => code.toString();
+
+  /// The ID of this CoAP message.
+  int? get id => _id;
+
+  int get optionsLength => _options.length;
+
+  CoapEventBus? get eventBus => _eventBus;
+
+  String? get namespace => _eventBus?.namespace;
+
+  /// Indicates if this message needs to be rejected as specified in
+  /// [RFC 7252, section 5.4.1].
+  ///
+  /// [RFC 7252, section 5.4.1]: https://www.rfc-editor.org/rfc/rfc7252#section-5.4.1
+  bool get needsRejection =>
+      (type == CoapMessageType.non && hasUnknownCriticalOption) ||
+      hasFormatError ||
+      (this is CoapResponse && hasUnknownCriticalOption);
+
+  /// The 0-8 byte token.
+  Uint8Buffer? get token => _token;
+
+  /// As a string
+  String get tokenString {
+    final token = _token;
+    return token != null ? CoapByteArrayUtil.toHexString(token) : '';
+  }
+
+  /// Gets a value that indicates whether this CoAP message is a
+  /// request message.
+  bool get isRequest => code.isRequest;
+
+  /// Gets a value that indicates whether this CoAP message is a
+  /// response message.
+  bool get isResponse => code.isResponse;
+
+  /// Gets a value that indicates whether this CoAP message is
+  /// an empty message.
+  bool get isEmpty => code.isEmpty;
+
+  /// Indicates whether this message has been acknowledged.
+  bool get isAcknowledged => _acknowledged;
+
+  /// Indicates whether this message has been rejected.
+  bool get isRejected => _rejected;
+
+  /// Indicates whether this message has been timed out.
+  bool get isTimedOut => _timedOut;
+
+  /// Returns `true` if this [CoapMessage] has neither timed out nor has been
+  /// canceled.
+  bool get isActive => !isTimedOut && !isCancelled && !isRejected;
+
+  /// The current number of retransmits
+  int get retransmits => _retransmits;
+
+  /// Indicates whether this message has been cancelled.
+  bool get isCancelled => _cancelled;
+
+  /// Indicates whether this message is a duplicate.
+  bool get duplicate => _duplicate;
+
+  /// The timestamp when this message has been received or sent,
+  /// or null if neither has happened yet.
+  DateTime? get timestamp => _timestamp;
+
+  /// The size of the payload of this CoAP message.
+  int get payloadSize => payload.length;
+
+  /// Etags
+  List<ETagOption> get etags => getOptions<ETagOption>();
+
+  /// The payload of this CoAP message in string representation.
+  String get payloadString {
+    final payload = this.payload;
+    if (payload.isNotEmpty) {
+      try {
+        return utf8.decode(payload);
+      } on FormatException catch (_) {
+        // The payload may be incomplete, if so and the conversion
+        // fails indicate this.
+        return '<<<< Payload incomplete >>>>>';
+      }
+    }
+    return '';
+  }
+
+  /// If-Matches.
+  List<IfMatchOption> get ifMatches => getOptions<IfMatchOption>();
+
+  /// If-None Matches.
+  List<IfNoneMatchOption> get ifNoneMatches => getOptions<IfNoneMatchOption>();
+
+  /// Content type
+  CoapMediaType? get contentType {
+    final opt = getFirstOption<ContentFormatOption>();
+    if (opt == null) {
+      return null;
+    }
+
+    return CoapMediaType.fromIntValue(opt.value);
+  }
+
+  /// The content-format of this CoAP message,
+  /// Same as ContentType, only another name.
+  CoapMediaType? get contentFormat => contentType;
+
+  /// The max-age of this CoAP message.
+  int? get maxAge {
+    final opt = getFirstOption<MaxAgeOption>();
+    return opt?.value;
+  }
+
+  /// Accept
+  CoapMediaType? get accept {
+    final opt = getFirstOption<AcceptOption>();
+    if (opt == null) {
+      return null;
+    }
+
+    return CoapMediaType.fromIntValue(opt.value);
+  }
+
+  /// Proxy uri
+  Uri? get proxyUri {
+    final opt = getFirstOption<ProxyUriOption>();
+    if (opt == null) {
+      return null;
+    }
+    var proxyUriString = opt.toString();
+    if (!proxyUriString.startsWith('coap://') &&
+        !proxyUriString.startsWith('coaps://') &&
+        !proxyUriString.startsWith('http://') &&
+        !proxyUriString.startsWith('https://')) {
+      proxyUriString = 'coap://$proxyUriString';
+    }
+    return Uri.dataFromString(proxyUriString);
+  }
+
+  /// Proxy scheme
+  String? get proxyScheme {
+    final opt = getFirstOption<ProxySchemeOption>();
+    return opt?.toString();
+  }
+
+  /// Observe
+  int? get observe => getFirstOption<ObserveOption>()?.value;
+
+  /// Size 1
+  int? get size1 {
+    final opt = getFirstOption<Size1Option>();
+    return opt?.value;
+  }
+
+  /// Size 2
+  int? get size2 {
+    final opt = getFirstOption<Size2Option>();
+    return opt?.value;
+  }
+
+  /// Block 1
+  CoapBlockOption? get block1 => getFirstOption<Block1Option>();
+
+  /// Block 2
+  CoapBlockOption? get block2 => getFirstOption<Block2Option>();
+
+  String? get _formattedOptions {
+    final options = getAllOptions();
+
+    if (options.isEmpty) {
+      return null;
+    }
+
+    const indent = '\n  ';
+    const optionDelimiter = ',$indent';
+
+    final formattedOptions = options
+        .groupListsBy((final option) => option.type)
+        .values
+        .map(
+          (final optionList) => optionList
+              .map((final option) => option.toString())
+              .join(optionDelimiter),
+        )
+        .join(optionDelimiter);
+
+    return 'Options: [$indent$formattedOptions\n]';
+  }
+
+  set proxyScheme(final String? value) {
+    if (value == null) {
+      removeOptions<ProxySchemeOption>();
+    } else {
+      setOption(ProxySchemeOption(value));
+    }
+  }
+
+  /// Block 1
+  set block1(final CoapBlockOption? value) {
+    if (value == null) {
+      removeOptions<Block1Option>();
+    } else {
+      setOption(value);
+    }
+  }
+
+  @internal
+  set type(final CoapMessageType type) => _type = type;
+
+  @internal
+  set id(final int? val) => _id = val;
+
+  @internal
+  set eventBus(final CoapEventBus? eventBus) => _eventBus = eventBus;
+
+  set token(final Uint8Buffer? value) {
+    const maxValue = (1 << 16) - 270;
+    if (value != null && value.length > maxValue) {
+      throw ArgumentError.value(
+        value,
+        'Message::token',
+        'Token length must be between 0 and $maxValue inclusive.',
+      );
+    }
+    _token = value;
+  }
+
+  @internal
+  set isAcknowledged(final bool value) {
+    _acknowledged = value;
+    _eventBus?.fire(CoapAcknowledgedEvent(this));
+    acknowledgedHook?.call();
+  }
+
+  @internal
+  set isRejected(final bool value) {
+    _rejected = value;
+    _eventBus?.fire(CoapRejectedEvent(this));
+  }
+
+  @internal
+  set isTimedOut(final bool value) {
+    _timedOut = value;
+    _eventBus?.fire(CoapTimedOutEvent(this));
+    timedOutHook?.call();
+  }
+
+  @internal
+  set isCancelled(final bool value) {
+    _cancelled = value;
+    _eventBus?.fire(CoapCancelledEvent(this));
+  }
+
+  @internal
+  set duplicate(final bool val) => _duplicate = val;
+
+  set contentType(final CoapMediaType? value) {
+    if (value == null) {
+      removeOptions<ContentFormatOption>();
+    } else {
+      setOption(ContentFormatOption(value.numericValue));
+    }
+  }
+
+  set contentFormat(final CoapMediaType? value) => contentType = value;
+
+  @internal
+  set timestamp(final DateTime? val) => _timestamp = val;
+
+  set maxAge(final int? value) {
+    if (value == null) {
+      removeOptions<MaxAgeOption>();
+    } else {
+      setOption(MaxAgeOption(value));
+    }
+  }
+
+  set accept(final CoapMediaType? value) {
+    if (value == null) {
+      removeOptions<AcceptOption>();
+    } else {
+      setOption(AcceptOption(value.numericValue));
+    }
+  }
+
+  set proxyUri(final Uri? value) {
+    if (value == null) {
+      removeOptions<ProxyUriOption>();
+    } else {
+      setOption(ProxyUriOption(value.toString()));
+    }
+  }
+
+  @internal
+  set observe(final int? value) {
+    if (value == null) {
+      removeOptions<ObserveOption>();
+    } else {
+      setOption(ObserveOption(value));
+    }
+  }
+
+  set size1(final int? value) {
+    if (value == null) {
+      removeOptions<Size1Option>();
+    } else {
+      setOption(Size1Option(value));
+    }
+  }
+
+  set size2(final int? value) {
+    if (value == null) {
+      removeOptions<Size2Option>();
+    } else {
+      setOption(Size2Option(value));
+    }
+  }
+
+  set block2(final CoapBlockOption? value) {
+    if (value == null) {
+      removeOptions<Block2Option>();
+    } else {
+      setOption(value);
+    }
+  }
+
   CoapMessage(
     this.code,
     this._type, {
@@ -60,47 +457,6 @@ abstract class CoapMessage {
     setOptions(options);
   }
 
-  bool hasUnknownCriticalOption = false;
-
-  bool hasFormatError = false;
-
-  CoapMessageType _type;
-
-  @internal
-  set type(final CoapMessageType type) => _type = type;
-
-  /// The type of this CoAP message.
-  CoapMessageType get type => _type;
-
-  /// The code of this CoAP message.
-  final CoapCode code;
-
-  /// The codestring
-  String get codeString => code.toString();
-
-  int? _id;
-
-  /// The ID of this CoAP message.
-  int? get id => _id;
-  @internal
-  set id(final int? val) => _id = val;
-
-  final List<Option<Object?>> _options = [];
-
-  int get optionsLength => _options.length;
-
-  CoapEventBus? _eventBus = CoapEventBus(namespace: '');
-
-  /// Bind address if not using the default
-  InternetAddress? bindAddress;
-
-  @internal
-  set eventBus(final CoapEventBus? eventBus) => _eventBus = eventBus;
-
-  CoapEventBus? get eventBus => _eventBus;
-
-  String? get namespace => _eventBus?.namespace;
-
   /// Adds an option to the list of options of this [CoapMessage].
   void addOption(final Option<Object?> option) {
     if (!option.repeatable) {
@@ -108,15 +464,6 @@ abstract class CoapMessage {
     }
     _options.add(option);
   }
-
-  /// Indicates if this message needs to be rejected as specified in
-  /// [RFC 7252, section 5.4.1].
-  ///
-  /// [RFC 7252, section 5.4.1]: https://www.rfc-editor.org/rfc/rfc7252#section-5.4.1
-  bool get needsRejection =>
-      (type == CoapMessageType.non && hasUnknownCriticalOption) ||
-      hasFormatError ||
-      (this is CoapResponse && hasUnknownCriticalOption);
 
   /// Remove a specific option, returns true if the option has been removed.
   bool removeOption(final Option<Object?> option) => _options.remove(option);
@@ -165,167 +512,12 @@ abstract class CoapMessage {
   /// Returns true if options of the specified type exists.
   bool hasOption<T extends Option<Object?>>() => getFirstOption<T>() != null;
 
-  Uint8Buffer? _token;
-
-  /// The 0-8 byte token.
-  Uint8Buffer? get token => _token;
-
-  /// As a string
-  String get tokenString {
-    final token = _token;
-    return token != null ? CoapByteArrayUtil.toHexString(token) : '';
-  }
-
-  set token(final Uint8Buffer? value) {
-    const maxValue = (1 << 16) - 270;
-    if (value != null && value.length > maxValue) {
-      throw ArgumentError.value(
-        value,
-        'Message::token',
-        'Token length must be between 0 and $maxValue inclusive.',
-      );
-    }
-    _token = value;
-  }
-
-  /// Gets a value that indicates whether this CoAP message is a
-  /// request message.
-  bool get isRequest => code.isRequest;
-
-  /// Gets a value that indicates whether this CoAP message is a
-  /// response message.
-  bool get isResponse => code.isResponse;
-
-  /// Gets a value that indicates whether this CoAP message is
-  /// an empty message.
-  bool get isEmpty => code.isEmpty;
-
-  /// The destination endpoint.
-  @internal
-  InternetAddress? destination;
-
-  /// The source endpoint.
-  @internal
-  InternetAddress? source;
-
-  /// Acknowledged hook for attaching a callback if needed
-  HookFunction? acknowledgedHook;
-
-  bool _acknowledged = false;
-
-  /// Indicates whether this message has been acknowledged.
-  bool get isAcknowledged => _acknowledged;
-  @internal
-  set isAcknowledged(final bool value) {
-    _acknowledged = value;
-    _eventBus?.fire(CoapAcknowledgedEvent(this));
-    acknowledgedHook?.call();
-  }
-
-  bool _rejected = false;
-
-  /// Indicates whether this message has been rejected.
-  bool get isRejected => _rejected;
-  @internal
-  set isRejected(final bool value) {
-    _rejected = value;
-    _eventBus?.fire(CoapRejectedEvent(this));
-  }
-
-  /// Timed out hook function for attaching a callback if needed
-  HookFunction? timedOutHook;
-
-  bool _timedOut = false;
-
-  /// Indicates whether this message has been timed out.
-  bool get isTimedOut => _timedOut;
-  @internal
-  set isTimedOut(final bool value) {
-    _timedOut = value;
-    _eventBus?.fire(CoapTimedOutEvent(this));
-    timedOutHook?.call();
-  }
-
-  /// Returns `true` if this [CoapMessage] has neither timed out nor has been
-  /// canceled.
-  bool get isActive => !isTimedOut && !isCancelled && !isRejected;
-
-  /// Retransmit hook function
-  HookFunction? retransmittingHook;
-
-  int _retransmits = 0;
-
-  /// The current number of retransmits
-  int get retransmits => _retransmits;
-
   /// Fire retransmitting event
   void fireRetransmitting() {
     _retransmits++;
     _eventBus?.fire(CoapRetransmitEvent(this));
     retransmittingHook?.call();
   }
-
-  bool _cancelled = false;
-
-  /// Indicates whether this message has been cancelled.
-  bool get isCancelled => _cancelled;
-  @internal
-  set isCancelled(final bool value) {
-    _cancelled = value;
-    _eventBus?.fire(CoapCancelledEvent(this));
-  }
-
-  bool _duplicate = false;
-
-  /// Indicates whether this message is a duplicate.
-  bool get duplicate => _duplicate;
-  @internal
-  set duplicate(final bool val) => _duplicate = val;
-
-  DateTime? _timestamp;
-
-  /// The timestamp when this message has been received or sent,
-  /// or null if neither has happened yet.
-  DateTime? get timestamp => _timestamp;
-  @internal
-  set timestamp(final DateTime? val) => _timestamp = val;
-
-  /// The max times this message should be retransmitted if no ACK received.
-  /// A value of 0 means that the CoapConstants.maxRetransmit time
-  /// shoud be taken into account, while a negative means NO retransmission.
-  /// The default value is 0.
-  int maxRetransmit = 0;
-
-  /// The amount of time in milliseconds after which this message will time out.
-  /// A value of 0 indicates that the time should be decided
-  /// automatically from the configuration.
-  /// The default value is 0.
-  int ackTimeout = 0;
-
-  /// The payload of this CoAP message.
-  final Uint8Buffer payload;
-
-  /// The size of the payload of this CoAP message.
-  int get payloadSize => payload.length;
-
-  /// The payload of this CoAP message in string representation.
-  String get payloadString {
-    final payload = this.payload;
-    if (payload.isNotEmpty) {
-      try {
-        final ret = utf8.decode(payload);
-        return ret;
-      } on FormatException catch (_) {
-        // The payload may be incomplete, if so and the conversion
-        // fails indicate this.
-        return '<<<< Payload incomplete >>>>>';
-      }
-    }
-    return '';
-  }
-
-  /// If-Matches.
-  List<IfMatchOption> get ifMatches => getOptions<IfMatchOption>();
 
   /// Add an if match option
   void addIfMatch(final String etag) =>
@@ -352,9 +544,6 @@ abstract class CoapMessage {
   void clearIfMatches() {
     removeOptions<IfMatchOption>();
   }
-
-  /// Etags
-  List<ETagOption> get etags => getOptions<ETagOption>();
 
   /// Contains an opaque E-tag
   bool containsETagOpaque(final Uint8Buffer opaque) =>
@@ -385,183 +574,19 @@ abstract class CoapMessage {
   /// Clear the E tags
   void clearETags() => removeOptions<ETagOption>();
 
-  /// If-None Matches.
-  List<IfNoneMatchOption> get ifNoneMatches => getOptions<IfNoneMatchOption>();
-
   /// Remove an if none match option
   void removeIfNoneMatch(final IfNoneMatchOption option) {
     removeOption(option);
   }
 
-  /// Content type
-  CoapMediaType? get contentType {
-    final opt = getFirstOption<ContentFormatOption>();
-    if (opt == null) {
-      return null;
-    }
-
-    return CoapMediaType.fromIntValue(opt.value);
-  }
-
-  set contentType(final CoapMediaType? value) {
-    if (value == null) {
-      removeOptions<ContentFormatOption>();
-    } else {
-      setOption(ContentFormatOption(value.numericValue));
-    }
-  }
-
-  /// The content-format of this CoAP message,
-  /// Same as ContentType, only another name.
-  CoapMediaType? get contentFormat => contentType;
-
-  set contentFormat(final CoapMediaType? value) => contentType = value;
-
-  /// The max-age of this CoAP message.
-  int? get maxAge {
-    final opt = getFirstOption<MaxAgeOption>();
-    return opt?.value;
-  }
-
-  set maxAge(final int? value) {
-    if (value == null) {
-      removeOptions<MaxAgeOption>();
-    } else {
-      setOption(MaxAgeOption(value));
-    }
-  }
-
-  /// Accept
-  CoapMediaType? get accept {
-    final opt = getFirstOption<AcceptOption>();
-    if (opt == null) {
-      return null;
-    }
-
-    return CoapMediaType.fromIntValue(opt.value);
-  }
-
-  set accept(final CoapMediaType? value) {
-    if (value == null) {
-      removeOptions<AcceptOption>();
-    } else {
-      setOption(AcceptOption(value.numericValue));
-    }
-  }
-
-  /// Proxy uri
-  Uri? get proxyUri {
-    final opt = getFirstOption<ProxyUriOption>();
-    if (opt == null) {
-      return null;
-    }
-    var proxyUriString = opt.toString();
-    if (!proxyUriString.startsWith('coap://') &&
-        !proxyUriString.startsWith('coaps://') &&
-        !proxyUriString.startsWith('http://') &&
-        !proxyUriString.startsWith('https://')) {
-      proxyUriString = 'coap://$proxyUriString';
-    }
-    return Uri.dataFromString(proxyUriString);
-  }
-
-  set proxyUri(final Uri? value) {
-    if (value == null) {
-      removeOptions<ProxyUriOption>();
-    } else {
-      setOption(ProxyUriOption(value.toString()));
-    }
-  }
-
-  /// Proxy scheme
-  String? get proxyScheme {
-    final opt = getFirstOption<ProxySchemeOption>();
-    return opt?.toString();
-  }
-
-  set proxyScheme(final String? value) {
-    if (value == null) {
-      removeOptions<ProxySchemeOption>();
-    } else {
-      setOption(ProxySchemeOption(value));
-    }
-  }
-
-  /// Observe
-  int? get observe => getFirstOption<ObserveOption>()?.value;
-
-  @internal
-  set observe(final int? value) {
-    if (value == null) {
-      removeOptions<ObserveOption>();
-    } else {
-      setOption(ObserveOption(value));
-    }
-  }
-
-  /// Size 1
-  int? get size1 {
-    final opt = getFirstOption<Size1Option>();
-    return opt?.value;
-  }
-
-  set size1(final int? value) {
-    if (value == null) {
-      removeOptions<Size1Option>();
-    } else {
-      setOption(Size1Option(value));
-    }
-  }
-
-  /// Size 2
-  int? get size2 {
-    final opt = getFirstOption<Size2Option>();
-    return opt?.value;
-  }
-
-  set size2(final int? value) {
-    if (value == null) {
-      removeOptions<Size2Option>();
-    } else {
-      setOption(Size2Option(value));
-    }
-  }
-
-  /// Block 1
-  CoapBlockOption? get block1 => getFirstOption<Block1Option>();
-
-  /// Block 1
-  set block1(final CoapBlockOption? value) {
-    if (value == null) {
-      removeOptions<Block1Option>();
-    } else {
-      setOption(value);
-    }
-  }
-
   /// Block 1
   void setBlock1(final BlockSize szx, final int num, {required final bool m}) {
-    setOption(
-      Block1Option.fromParts(num, szx, m: m),
-    );
-  }
-
-  /// Block 2
-  CoapBlockOption? get block2 => getFirstOption<Block2Option>();
-
-  set block2(final CoapBlockOption? value) {
-    if (value == null) {
-      removeOptions<Block2Option>();
-    } else {
-      setOption(value);
-    }
+    setOption(Block1Option.fromParts(num, szx, m: m));
   }
 
   /// Block 2
   void setBlock2(final BlockSize szx, final int num, {required final bool m}) {
-    setOption(
-      Block2Option.fromParts(num, szx, m: m),
-    );
+    setOption(Block2Option.fromParts(num, szx, m: m));
   }
 
   /// Copy an event handler
@@ -569,29 +594,6 @@ abstract class CoapMessage {
     acknowledgedHook = msg.acknowledgedHook;
     retransmittingHook = msg.retransmittingHook;
     timedOutHook = msg.timedOutHook;
-  }
-
-  String? get _formattedOptions {
-    final options = getAllOptions();
-
-    if (options.isEmpty) {
-      return null;
-    }
-
-    const indent = '\n  ';
-    const optionDelimiter = ',$indent';
-
-    final formattedOptions = options
-        .groupListsBy((final option) => option.type)
-        .values
-        .map(
-          (final optionList) => optionList
-              .map((final option) => option.toString())
-              .join(optionDelimiter),
-        )
-        .join(optionDelimiter);
-
-    return 'Options: [$indent$formattedOptions\n]';
   }
 
   @override
@@ -623,12 +625,11 @@ abstract class CoapMessage {
     final Uint8Buffer data,
     final String scheme, {
     final InternetAddress? destinationAddress,
-  }) =>
-      deserializeUdpMessage(
-        data,
-        scheme,
-        destinationAddress: destinationAddress,
-      );
+  }) => deserializeUdpMessage(
+    data,
+    scheme,
+    destinationAddress: destinationAddress,
+  );
 
   /// Serializes this CoAP message into the UDP message format.
   ///
@@ -646,7 +647,8 @@ abstract class CoapMessage {
   /// Serializes this CoAP message into the TCP message format.
   ///
   /// Is also used for TLS.
-  Uint8Buffer toTcpPayload() => throw UnimplementedError(
+  Uint8Buffer toTcpPayload() =>
+      throw UnimplementedError(
         'TCP segment serialization is not implemented yet.',
       );
 }

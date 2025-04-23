@@ -4,22 +4,22 @@ import 'coap_option_type.dart';
 import 'option.dart';
 
 abstract class EmptyOption extends Option<void> {
-  EmptyOption(this.type);
-
   @override
   final Uint8Buffer byteValue = Uint8Buffer();
 
   @override
-  OptionFormat<Object?> get optionFormat => OptionFormat.empty;
+  final OptionType type;
 
   @override
-  final OptionType type;
+  OptionFormat<Object?> get optionFormat => OptionFormat.empty;
 
   @override
   String get valueString => '';
 
   @override
   void get value => {};
+
+  EmptyOption(this.type);
 }
 
 class IfNoneMatchOption extends EmptyOption with OscoreOptionClassE {

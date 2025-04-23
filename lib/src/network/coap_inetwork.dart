@@ -23,7 +23,8 @@ class UnsupportedProtocolException implements Exception {
   UnsupportedProtocolException(this.uriScheme);
 
   @override
-  String toString() => 'UnsupportedProtocolException: '
+  String toString() =>
+      'UnsupportedProtocolException: '
       'Unsupported URI scheme $uriScheme encountered.';
 }
 
@@ -34,7 +35,7 @@ abstract class CoapINetwork {
   static const Duration initTimeout = Duration(seconds: 10);
 
   /// The reinit period for open connections
-  static Duration reinitPeriod = initTimeout + const Duration(seconds: 2);
+  static final Duration reinitPeriod = initTimeout + const Duration(seconds: 2);
 
   /// The local address
   InternetAddress get bindAddress;
@@ -66,9 +67,10 @@ abstract class CoapINetwork {
     final InternetAddress? bindAddress,
     final PskCredentialsCallback? pskCredentialsCallback,
   }) {
-    final defaultBindAddress = address.type == InternetAddressType.IPv4
-        ? InternetAddress.anyIPv4
-        : InternetAddress.anyIPv6;
+    final defaultBindAddress =
+        address.type == InternetAddressType.IPv4
+            ? InternetAddress.anyIPv4
+            : InternetAddress.anyIPv6;
     final port = uri.port > 0 ? uri.port : null;
     switch (uri.scheme) {
       case CoapConstants.uriScheme:
