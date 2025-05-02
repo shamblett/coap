@@ -7,6 +7,7 @@
 
 import 'dart:async';
 
+import 'package:coap/src/option/coap_option_type.dart';
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 
@@ -66,8 +67,14 @@ class CoapObserveClientRelation extends Stream<CoapResponse> {
   @internal
   CoapRequest cancellation() =>
       CoapRequest.get(_request.uri)
-        // Copy options, but set Observe to cancel
-        ..setOptions(_request.getAllOptions())
+        // Copy options except for URI host and Path, but set Observe to cancel
+        ..setOptions(
+          _request.getAllOptions().skipWhile(
+            (option) =>
+                option.type == OptionType.uriHost ||
+                option.type == OptionType.uriPath,
+          ),
+        )
         ..observe = ObserveRegistration.deregister.value
         // Use same Token
         ..token = _request.token
