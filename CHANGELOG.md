@@ -1,4 +1,7 @@
 
+# 9.1.2
+- [Issue 206](https://github.com/shamblett/coap/issues/206)
+
 # 9.1.1
 - [Issue 204](https://github.com/shamblett/coap/issues/204)
 
