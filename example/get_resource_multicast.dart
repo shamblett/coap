@@ -14,14 +14,22 @@
  */
 
 import 'dart:async';
+import 'dart:io';
 import 'package:coap/coap.dart';
 
 FutureOr<void> main() async {
-  final uri = Uri.parse('coap://${MulticastAddress.allNodesLinkLocalIPV6}');
+  final iface = Platform.environment['COAP_IFACE'];
+  final uri =
+      iface == null
+          ? Uri.parse('coap://${MulticastAddress.allCOAPNodesLinkLocalIPV6}')
+          : Uri.parse(
+            'coap://[${MulticastAddress.allCOAPNodesLinkLocalIPV6.address}%$iface]',
+          );
   final client = CoapClient(uri);
 
   try {
     final request = CoapRequest.get(Uri(path: '/.well-known/core'));
+    request.token = CoapConstants.emptyToken;
 
     await for (final response in client.sendMulticast(request)) {
       print(response.payloadString);

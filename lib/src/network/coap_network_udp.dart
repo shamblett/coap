@@ -82,6 +82,44 @@ class CoapNetworkUDP implements CoapINetwork {
 
     // Use port 0 to generate a random source port
     _socket = await RawDatagramSocket.bind(bindAddress, 0);
+    _socket!.multicastLoopback = false;
+
+    if (address.isMulticast) {
+      final iface = await _findInterfaceFor(address);
+      if (iface != null) {
+        _socket!.setRawOption(
+          RawSocketOption.fromInt(
+            RawSocketOption.levelIPv6,
+            RawSocketOption.IPv6MulticastInterface,
+            iface.index,
+          ),
+        );
+        _socket!.joinMulticast(address, iface);
+      } else {
+        _socket!.joinMulticast(address);
+      }
+    }
+  }
+
+  Future<NetworkInterface?> _findInterfaceFor(
+    final InternetAddress multicastAddress,
+  ) async {
+    final zoneIndex = multicastAddress.address.split('%');
+    if (zoneIndex.length != 2) {
+      return null;
+    }
+
+    final ifaceName = zoneIndex.last;
+    final interfaces = await NetworkInterface.list(
+      type: InternetAddressType.any,
+      includeLinkLocal: true,
+    );
+
+    try {
+      return interfaces.firstWhere((final i) => i.name == ifaceName);
+    } on StateError {
+      return null;
+    }
   }
 
   void _receive() {
