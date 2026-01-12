@@ -20,11 +20,11 @@ import 'package:coap/coap.dart';
 FutureOr<void> main() async {
   final iface = Platform.environment['COAP_IFACE'];
   final uri =
-  iface == null
-      ? Uri.parse('coap://${MulticastAddress.allCOAPNodesLinkLocalIPV6}')
-      : Uri.parse(
-    'coap://[${MulticastAddress.allCOAPNodesLinkLocalIPV6.address}%$iface]',
-  );
+      iface == null
+          ? Uri.parse('coap://${MulticastAddress.allCOAPNodesLinkLocalIPV6}')
+          : Uri.parse(
+            'coap://[${MulticastAddress.allCOAPNodesLinkLocalIPV6.address}%$iface]',
+          );
   final client = CoapClient(uri);
 
   try {
