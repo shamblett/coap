@@ -108,7 +108,6 @@ class CoapNetworkUDP implements CoapINetwork {
             break;
         }
       },
-      // ignore: avoid_types_on_closure_parameters
       onError:
           (final Object e, final StackTrace s) =>
               eventBus.fire(CoapSocketErrorEvent(e, s)),

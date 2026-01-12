@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_classes_with_only_static_members, no-magic-number
+// ignore_for_file: avoid_classes_with_only_static_members
 
 /*
  * Package : Coap
@@ -267,7 +267,6 @@ class CoapLinkFormat {
       while (scanner.readChar() == separator.codeUnitAt(0)) {
         final attr = parseAttribute(scanner);
         addAttribute(resource.attributes as HashSet<CoapLinkAttribute>, attr!);
-        // ignore: invariant_booleans
         if (scanner.position == linkFormat.length) {
           break;
         }

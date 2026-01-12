@@ -100,7 +100,6 @@ class CoapNetworkTCP implements CoapINetwork {
         final message = CoapMessage.fromTcpPayload(Uint8Buffer()..addAll(data));
         eventBus.fire(CoapMessageReceivedEvent(message, address));
       },
-      // ignore: avoid_types_on_closure_parameters
       onError:
           (final Object e, final StackTrace s) =>
               eventBus.fire(CoapSocketErrorEvent(e, s)),

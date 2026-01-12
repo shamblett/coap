@@ -21,10 +21,10 @@ class CoapLinkAttribute {
   Object? get value => _value;
 
   /// Value as integer
-  int? get valueAsInt => _value is int ? _value as int? : -1;
+  int? get valueAsInt => _value is int ? _value : -1;
 
   /// Value as String
-  String? get valueAsString => _value is String ? _value as String? : null;
+  String? get valueAsString => _value is String ? _value : null;
 
   @override
   int get hashCode => _name.hashCode;

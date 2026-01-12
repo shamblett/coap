@@ -1,3 +1,5 @@
+// ignore_for_file: avoid-passing-self-as-argument
+
 import '../../coap_empty_message.dart';
 import '../../coap_request.dart';
 import '../../coap_response.dart';

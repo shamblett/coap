@@ -5,7 +5,7 @@ import 'package:characters/characters.dart';
 import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart';
 
-Builder configBuilder(final BuilderOptions options) => _ConfigBuilder();
+Builder configBuilder(final BuilderOptions _) => _ConfigBuilder();
 
 class _ConfigBuilder extends Builder {
   static const String _defaultConfigFileName = 'coap_config';
