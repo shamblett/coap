@@ -131,7 +131,6 @@ class ReliabilityLayer extends BaseLayer {
           exchange.currentResponse!.isRejected = true;
         }
         break;
-      // ignore: no_default_cases
       default:
         break;
     }

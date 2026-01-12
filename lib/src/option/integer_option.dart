@@ -1,4 +1,10 @@
-// ignore_for_file: avoid_redundant_argument_values, no-magic-number
+// ignore_for_file: avoid_redundant_argument_values
+/*
+ * Package : Coap
+ * Author : S. Hamblett <steve.hamblett@linux.com>
+ * Date   : 12/04/2017
+ * Copyright :  S.Hamblett
+ */
 
 import 'dart:typed_data';
 

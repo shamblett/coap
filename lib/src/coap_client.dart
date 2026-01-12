@@ -531,7 +531,7 @@ class CoapClient {
         cancelOnError: onMulticastResponse.cancelOnError,
       );
     }
-    return _waitForResponse(request, responseStream);
+    return _waitForResponse(responseStream);
   }
 
   /// Sends a [request] and returns a [Stream] of [CoapResponse]s.
@@ -675,9 +675,8 @@ class CoapClient {
   }
 
   /// Wait for a response.
-  /// Returns the response, or null if timeout occured.
+  /// Returns the response, or null if timeout occurred.
   static Future<CoapResponse> _waitForResponse(
-    final CoapRequest request,
     final Stream<CoapResponse> responseStream,
   ) {
     final completer = Completer<CoapResponse>();
@@ -692,7 +691,6 @@ class CoapClient {
             response.timestamp = DateTime.now();
             completer.complete(response);
           },
-          // ignore: avoid_types_on_closure_parameters
           onError: (final Object error) {
             if (completer.isCompleted) {
               return;
@@ -738,7 +736,7 @@ StreamTransformer<CoapCompletionEvent, CoapResponse> _filterEventStream(
 
   controller.onListen = () {
     final subscription = input.listen(
-      (final event) async {
+      (final event) {
         if (event is CoapRespondEvent) {
           controller.add(event.resp);
         } else if (event is CoapTimedOutEvent) {

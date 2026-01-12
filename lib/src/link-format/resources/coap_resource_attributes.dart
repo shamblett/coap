@@ -77,7 +77,7 @@ class CoapResourceAttributes {
   set maximumSizeEstimate(final int value) =>
       maximumSizeEstimateString = value.toString();
 
-  set observable(final bool? value) =>
+  set observable(final bool? _) =>
       set(LinkFormatParameter.observable.short, '');
 
   set title(final String? value) => set(LinkFormatParameter.title.short, value);
