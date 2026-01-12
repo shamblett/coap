@@ -661,12 +661,16 @@ class CoapClient {
     final String host,
     final InternetAddressType addressType,
   ) async {
-    final parsedAddress = InternetAddress.tryParse(host);
+    final decodedHost = Uri.decodeComponent(host);
+    final parsedAddress = InternetAddress.tryParse(decodedHost);
     if (parsedAddress != null) {
       return parsedAddress;
     }
 
-    final addresses = await InternetAddress.lookup(host, type: addressType);
+    final addresses = await InternetAddress.lookup(
+      decodedHost,
+      type: addressType,
+    );
     if (addresses.isNotEmpty) {
       return addresses.first;
     }
