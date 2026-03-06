@@ -1,3 +1,6 @@
+# 9.2.1
+- [Issue 212](https://github.com/shamblett/coap/issues/212)
+
 # 9.2.0
 - [Issue 209](https://github.com/shamblett/coap/issues/209)
 - [Issue 208](https://github.com/shamblett/coap/issues/208)
