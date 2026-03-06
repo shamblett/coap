@@ -5,18 +5,18 @@ DocumentName: coap
 DocumentNamespace: https://pub.dev/packages/coap
 LicenseListVersion: 3.8
 Creator: Tool: https://pub.dev/packages/sbom
-Created: 2026-03-06T09:30:31Z
+Created: 2026-03-06T09:51:15Z
 
 
 PackageName: coap
 SPDXID: SPDXRef-Package-coap
-PackageVersion: 9.2.1
+PackageVersion: 9.2.0
 PackageFileName: coap
 PackageSupplier: NOASSERTION
 PackageOriginator: NOASSERTION
 PackageDownloadLocation: https://pub.dev/packages/coap
 FilesAnalyzed: true
-PackageVerificationCode: 5d1f078abc3b2086ea2524a35c0a2e7f2d3d8f27
+PackageVerificationCode: 8c0157acb1a756c9719a5b828b8c7521d736f950
 PackageHomePage: https://pub.dev/packages/coap
 PackageLicenseConcluded: MIT
 PackageLicenseInfoFromFiles: NOASSERTION
@@ -622,7 +622,7 @@ FileCopyrightText: NOASSERTION
 FileName: pubspec.yaml
 SPDXID: SPDXRef-pubspec-66
 FileType: TEXT
-FileChecksum: SHA1: 15e96a195609824641e11515ad6b475226815573
+FileChecksum: SHA1: 95a2d46d76f08981365cec05bc55e40991bf400e
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: NOASSERTION
 FileCopyrightText: NOASSERTION
