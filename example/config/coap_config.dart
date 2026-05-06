@@ -8,6 +8,9 @@ import 'package:coap/coap.dart';
 /// The file can't be empty, so version must as a minimum be present.
 class CoapConfig extends DefaultCoapConfig {
   @override
+  int get version => 1;
+
+  @override
   int get defaultPort => 5683;
 
   @override
@@ -53,6 +56,9 @@ class CoapConfig extends DefaultCoapConfig {
   int get notificationReregistrationBackoff => 2000;
 
   @override
+  String get deduplicator => 'MarkAndSweep';
+
+  @override
   int get cropRotationPeriod => 2000;
 
   @override
@@ -65,5 +71,8 @@ class CoapConfig extends DefaultCoapConfig {
   int get channelReceivePacketSize => 2048;
 
   @override
-  String get deduplicator => 'MarkAndSweep';
+  bool get dtlsVerify => false;
+
+  @override
+  bool get dtlsWithTrustedRoots => false;
 }
